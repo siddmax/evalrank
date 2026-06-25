@@ -10,6 +10,7 @@ from evalrank_core.contracts import (
     RawEntry,
     RankedEntity,
     Recommendation,
+    TheCall,
 )
 
 
@@ -104,4 +105,8 @@ def sample_recommendation() -> Recommendation:
         ranked=[sample_ranked_entity()],
         generated_at=PUBLIC_GENERATED_AT,
         depth_rationale="one public demo candidate clears the evidence floor",
+        the_call=TheCall.recommend(
+            confidence=0.86,
+            reason="one public demo candidate clears the evidence floor",
+        ),
     )

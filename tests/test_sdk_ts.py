@@ -10,7 +10,7 @@ CORE_SRC = REPO_ROOT / "packages" / "core" / "src"
 SDK_TS = REPO_ROOT / "packages" / "sdk-ts"
 sys.path.insert(0, str(CORE_SRC))
 
-from evalrank_core.contracts import EVIDENCE_KINDS, TRUST_TIERS  # noqa: E402
+from evalrank_core.contracts import EVIDENCE_KINDS, THE_CALL_DECISIONS, TRUST_TIERS  # noqa: E402
 
 
 class TypeScriptSdkTests(unittest.TestCase):
@@ -31,6 +31,7 @@ class TypeScriptSdkTests(unittest.TestCase):
 
         self.assertEqual(TRUST_TIERS, _exported_string_array(source, "TRUST_TIERS"))
         self.assertEqual(EVIDENCE_KINDS, _exported_string_array(source, "EVIDENCE_KINDS"))
+        self.assertEqual(THE_CALL_DECISIONS, _exported_string_array(source, "THE_CALL_DECISIONS"))
 
     def test_public_interfaces_cover_schema_payloads(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
@@ -43,6 +44,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "RankedEntity",
             "RawEntry",
             "Recommendation",
+            "TheCall",
         ):
             self.assertIn(f"export interface {name}", source)
 
@@ -69,8 +71,11 @@ class TypeScriptSdkTests(unittest.TestCase):
             "recommendation_id",
             "recommend_id",
             "search_run_id",
+            "abstention_reason",
         ):
             self.assertRegex(source, rf"\b{field}\??:")
+
+        self.assertIn("the_call: TheCall | null;", source)
 
 
 def _exported_string_array(source: str, name: str) -> set[str]:

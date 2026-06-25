@@ -45,6 +45,8 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("req_public_fixture_01", payload["request_id"])
         self.assertEqual("single-scale", payload["comparability"])
         self.assertEqual([sample_ranked_entity().to_dict()], payload["ranked"])
+        self.assertEqual("recommend", payload["the_call"]["decision"])
+        self.assertEqual(0.86, payload["the_call"]["confidence"])
         self.assertEqual(sample_recommendation().recommendation_id, rec.recommendation_id)
 
     def test_sample_evidence_item_is_public_contract_payload(self):

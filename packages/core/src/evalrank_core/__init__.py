@@ -8,6 +8,8 @@ from evalrank_core.contracts import (
     RawEntry,
     Recommendation,
     RankedEntity,
+    THE_CALL_DECISIONS,
+    TheCall,
 )
 from evalrank_core.fixtures import (
     sample_capability_fingerprint_input,
@@ -31,6 +33,8 @@ __all__ = [
     "RawEntry",
     "Recommendation",
     "RankedEntity",
+    "THE_CALL_DECISIONS",
+    "TheCall",
     "sample_capability_fingerprint_input",
     "sample_entity_ref",
     "sample_evidence_item",

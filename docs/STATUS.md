@@ -10,7 +10,7 @@ Last updated: 2026-06-25
 - `CLAUDE.md` shim to `@AGENTS.md`.
 - Public boundary checker for private imports, disallowed coupling, excluded method markers, and missing package license/notice files.
 - Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
-- Core Python capability fingerprint, raw entry, request, recommendation, and evidence contracts in `packages/core`.
+- Core Python capability fingerprint, raw entry, request, `the_call`, recommendation, and evidence contracts in `packages/core`.
 - Public core fixture factory for canonical capability fingerprint, raw entry, request, recommendation, and evidence payloads.
 - Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, ranked entities, recommendations, and evidence items.
 - Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
@@ -44,15 +44,16 @@ Last updated: 2026-06-25
 - Recommendation join aliases build log in `docs/build-log/2026-06-25-recommendation-join-aliases.md`.
 - Public port-over status refresh in `docs/build-log/2026-06-25-public-port-over-status.md`.
 - Raw entry contract build log in `docs/build-log/2026-06-25-raw-entry-contract.md`.
+- Structured `the_call` contract build log in `docs/build-log/2026-06-25-the-call-contract.md`.
 
 ## Current Public Surface
 
 | Surface | Built | Not built yet |
 | --- | --- | --- |
-| Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, `EvidenceItem`, public constants, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, trust/security policy runtime. |
+| Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, `EvidenceItem`, public constants, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, trust/security policy runtime. |
 | Schemas | JSON Schemas for capability fingerprints, raw entries, evaluation requests, ranked entities, recommendations, and evidence items, with drift tests against Python contracts and pinned public patterns. | OpenAPI route schemas and persistence schemas. |
 | Python SDK | Package metadata and public re-exports from `evalrank_core`. | Installed package release flow and non-fixture client behavior. |
-| TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry`. | Built JS distribution, published package release flow, and non-fixture client behavior. |
+| TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry` and `TheCall`. | Built JS distribution, published package release flow, and non-fixture client behavior. |
 | CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture evidence`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
 | Methods | Public scoring-stage vocabulary and private-boundary note. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
@@ -67,19 +68,19 @@ Last updated: 2026-06-25
   - Public JSON Schemas in `schemas/`
   - Public porting decisions in `docs/PORTING.md`
 - Private Syndai build-readiness docs and operational plans, summarized here only when public-safe.
-- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. Public recommendation identifier aliases and the storage-free `RawEntry` contract have moved. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, and held-out evaluation material stay private.
+- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. Public recommendation identifier aliases, storage-free `RawEntry`, and structured public `the_call` have moved. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, scorer thresholds, and held-out evaluation material stay private.
 
 ## Current Port-Over Snapshot
 
 | Change or source area | Public status | Owning workstream |
 | --- | --- | --- |
 | Public repository scaffold, package boundaries, CI, license/notice hygiene, and boundary scanner | Ported here | Open-Core Boundary / CI |
-| Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, ranked entity, recommendation, recommendation aliases, entity reference, and evidence item | Ported here | Public Contracts |
+| Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, `the_call`, ranked entity, recommendation, recommendation aliases, entity reference, and evidence item | Ported here | Public Contracts |
 | Public JSON Schemas and schema drift tests for current payloads | Ported here | Methods / Schemas, Public Contracts |
 | Synthetic fixtures, runnable public example, CLI fixture command, MCP fixture adapter, Python SDK re-exports, and TypeScript public types | Ported here | SDK / CLI / MCP, Examples |
 | Public scoring-stage vocabulary and private-boundary note | Ported here | Methods / Schemas |
 | `RawEntry` ingestion-normalization contract | Ported here as a storage-free synthetic fixture contract | Public Contracts |
-| Structured public `the_call` / decision-confidence shape | Port later after public semantics are isolated from private thresholds | Public Contracts, Methods / Schemas |
+| Structured public `the_call` / decision-confidence shape | Ported here as a storage-free nested recommendation contract | Public Contracts, Methods / Schemas |
 | REST/OpenAPI source of truth | Wait for the first concrete public route contract | Public Surface Contracts |
 | Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | Keep private | DB Bootstrap / Syndai Ops |
 | Deterministic scorer, materializer, entity graph persistence, and evidence-ledger runtime | Incubate private until separable from production data and proprietary tuning | Scoring / Materializer Runtime |
@@ -90,7 +91,7 @@ Last updated: 2026-06-25
 
 | Priority | Workstream | Destination | Public handling |
 | --- | --- | --- | --- |
-| 1 | Public Contracts | This repo | First raw entry, request, recommendation, recommendation alias, and entity/evidence slices ported; extend only for new public payload contracts. |
+| 1 | Public Contracts | This repo | First raw entry, request, `the_call`, recommendation, recommendation alias, and entity/evidence slices ported; extend only for new public payload contracts. |
 | 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary ported; add details only after private material is removed. |
 | 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK types, CLI fixture, and MCP fixture slices ported; extend after concrete non-fixture contracts are pinned. |
 | 4 | Docs / Public Planning | This repo | Current status, repo structure, porting docs, and first runnable example are public-safe; keep updating them with each port. |
@@ -103,7 +104,7 @@ Last updated: 2026-06-25
 
 ## Next
 
-- Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior; after `RawEntry`, the next likely candidate is a structured public `the_call` shape if it can stay free of private thresholds.
+- Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior; after `the_call`, the next likely candidate is a public route/OpenAPI contract only when a concrete route exists.
 - SDK / CLI / MCP workstream: promote fixture-only adapters to real commands/tools only after the target public contract exists.
 - Public Surface Contracts workstream: add an OpenAPI skeleton only when the first REST route exists or a concrete route contract is ready.
 - Scoring / Materializer Runtime workstream: keep runtime and private evidence material in incubation until the deterministic, storage-free public core is separable.

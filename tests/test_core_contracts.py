@@ -16,6 +16,7 @@ from evalrank_core.contracts import (  # noqa: E402
     RawEntry,
     Recommendation,
     RankedEntity,
+    TheCall,
 )
 
 
@@ -285,6 +286,42 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(base.recommendation_id, same_payload_new_request.recommendation_id)
         self.assertNotEqual(base.recommendation_id, changed_methodology.recommendation_id)
 
+    def test_the_call_serializes_public_decision_confidence(self):
+        call = TheCall.recommend(confidence=0.86, reason="clear top set")
+        abstain = TheCall.abstain(reason="insufficient_evidence")
+
+        self.assertEqual(
+            {
+                "decision": "recommend",
+                "confidence": 0.86,
+                "reason": "clear top set",
+                "abstention_reason": None,
+            },
+            call.to_dict(),
+        )
+        self.assertEqual(
+            {
+                "decision": "abstain",
+                "confidence": None,
+                "reason": "insufficient_evidence",
+                "abstention_reason": "insufficient_evidence",
+            },
+            abstain.to_dict(),
+        )
+
+    def test_the_call_rejects_private_or_incomplete_shapes(self):
+        with self.assertRaisesRegex(ValueError, "decision"):
+            TheCall(decision="maybe", confidence=0.5, reason="not a public decision")
+
+        with self.assertRaisesRegex(ValueError, "confidence"):
+            TheCall(decision="recommend", confidence=None, reason="missing confidence")
+
+        with self.assertRaisesRegex(ValueError, "confidence"):
+            TheCall.recommend(confidence=1.2, reason="outside unit interval")
+
+        with self.assertRaisesRegex(ValueError, "reason"):
+            TheCall.recommend(confidence=0.5, reason="")
+
     def test_abstention_is_not_value_bearing(self):
         rec = Recommendation.abstain(
             request_id="req_01",
@@ -296,7 +333,8 @@ class CoreContractTests(unittest.TestCase):
 
         self.assertFalse(rec.result_usable)
         self.assertEqual([], rec.ranked)
-        self.assertEqual("insufficient_evidence", rec.the_call["abstention_reason"])
+        self.assertEqual("abstain", rec.the_call.decision)
+        self.assertEqual("insufficient_evidence", rec.to_dict()["the_call"]["abstention_reason"])
 
     def test_methodology_version_rejects_unpinned_format(self):
         with self.assertRaisesRegex(ValueError, "methodology_version"):

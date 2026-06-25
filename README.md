@@ -63,9 +63,10 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_raw_entry
+from evalrank_sdk import sample_recommendation
 
-payload = sample_raw_entry().to_dict()
+payload = sample_recommendation().to_dict()
+call = payload["the_call"]
 ```
 
 MCP adapter:
@@ -79,7 +80,7 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type CapabilityFingerprint } from "@evalrank/sdk";
+import { type TheCall } from "@evalrank/sdk";
 
-const object: CapabilityFingerprint["object"] = "capability_fingerprint";
+const call: TheCall["decision"] = "recommend";
 ```

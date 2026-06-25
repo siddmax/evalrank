@@ -11,7 +11,7 @@ Public EvalRank JSON Schema contracts live here.
 
 Schemas that expose `methodology_version` require `YYYY-MM-DD.SEQ.slug`.
 
-Recommendation schemas require `recommendation_id`, `recommend_id`, and `search_run_id` to share the public `rec_` ID shape.
+Recommendation schemas require `recommendation_id`, `recommend_id`, and `search_run_id` to share the public `rec_` ID shape. They also pin the nested public `the_call` shape to `decision`, `confidence`, `reason`, and `abstention_reason`.
 
 Run:
 

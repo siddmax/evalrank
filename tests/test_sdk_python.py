@@ -13,11 +13,13 @@ from evalrank_core.contracts import CapabilityFingerprintInput as CoreCapability
 from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E402
 from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
 from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
+from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
     EvaluationRequest,
     EvidenceItem,
     RawEntry,
+    TheCall,
     sample_capability_fingerprint_input,
     sample_evidence_item,
     sample_evaluation_request,
@@ -53,6 +55,10 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(RawEntry, CoreRawEntry)
         self.assertIsInstance(entry, CoreRawEntry)
         self.assertEqual("raw_entry", entry.to_dict()["object"])
+
+    def test_sdk_re_exports_core_the_call_contract(self):
+        self.assertIs(TheCall, CoreTheCall)
+        self.assertEqual("recommend", TheCall.recommend(confidence=0.86, reason="clear top set").decision)
 
 
 if __name__ == "__main__":

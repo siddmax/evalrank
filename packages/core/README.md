@@ -7,3 +7,5 @@ Use `evalrank_core.fixtures.sample_capability_fingerprint_input()`, `sample_raw_
 Public `methodology_version` values use `YYYY-MM-DD.SEQ.slug`, for example `2026-06-25.1.public-fixture-v1`.
 
 Recommendation payloads expose `recommendation_id`, `recommend_id`, and `search_run_id` as the same public ID.
+
+Recommendation `the_call` payloads expose only `decision`, `confidence`, `reason`, and `abstention_reason`; scorer thresholds and private confidence tuning stay out of this package.

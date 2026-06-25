@@ -18,6 +18,7 @@ from evalrank_core.contracts import (  # noqa: E402
     Freshness,
     Recommendation,
     RankedEntity,
+    THE_CALL_DECISIONS,
     TRUST_TIERS,
 )
 from evalrank_core.fixtures import sample_evidence_item, sample_evaluation_request, sample_raw_entry  # noqa: E402
@@ -88,6 +89,10 @@ class SchemaContractTests(unittest.TestCase):
             set(ranked_schema["properties"]["freshness"]["properties"]["status"]["enum"]),
         )
         self.assertEqual(COMPARABILITY_MODES, set(recommendation_schema["properties"]["comparability"]["enum"]))
+        self.assertEqual(
+            THE_CALL_DECISIONS,
+            set(recommendation_schema["properties"]["the_call"]["properties"]["decision"]["enum"]),
+        )
         evidence_schema = _schema("evidence-item.schema.json")
         self.assertEqual(EVIDENCE_KINDS, set(evidence_schema["properties"]["kind"]["enum"]))
 
@@ -114,6 +119,20 @@ class SchemaContractTests(unittest.TestCase):
         raw_entry_schema = _schema("raw-entry.schema.json")
 
         self.assertEqual(1, raw_entry_schema["properties"]["declared_capability_shape"]["minProperties"])
+
+    def test_recommendation_schema_pins_the_call_shape(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+        the_call = recommendation_schema["properties"]["the_call"]
+
+        self.assertEqual(["object", "null"], the_call["type"])
+        self.assertFalse(the_call["additionalProperties"])
+        self.assertEqual(
+            {"decision", "confidence", "reason", "abstention_reason"},
+            set(the_call["required"]),
+        )
+        self.assertEqual(["number", "null"], the_call["properties"]["confidence"]["type"])
+        self.assertEqual(0, the_call["properties"]["confidence"]["minimum"])
+        self.assertEqual(1, the_call["properties"]["confidence"]["maximum"])
 
 
 def _schema(filename: str) -> dict:

@@ -24,10 +24,16 @@ export const EVIDENCE_KINDS = [
   "trace",
 ] as const;
 
+export const THE_CALL_DECISIONS = [
+  "abstain",
+  "recommend",
+] as const;
+
 export type TrustTier = (typeof TRUST_TIERS)[number];
 export type FreshnessStatus = (typeof FRESHNESS_STATUSES)[number];
 export type ComparabilityMode = (typeof COMPARABILITY_MODES)[number];
 export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];
+export type TheCallDecision = (typeof THE_CALL_DECISIONS)[number];
 
 export interface Freshness {
   last_eval: string;
@@ -81,6 +87,13 @@ export interface EvidenceItem {
   metadata: Record<string, unknown>;
 }
 
+export interface TheCall {
+  decision: TheCallDecision;
+  confidence: number | null;
+  reason: string;
+  abstention_reason: string | null;
+}
+
 export interface RankedEntity {
   entity_type: string;
   id: string;
@@ -109,7 +122,7 @@ export interface Recommendation {
   comparability: ComparabilityMode;
   ranked: RankedEntity[];
   groups: Record<string, unknown>[] | null;
-  the_call: Record<string, unknown> | null;
+  the_call: TheCall | null;
   exclusions: Record<string, unknown>[];
   recommendation_id: string;
   recommend_id: string;

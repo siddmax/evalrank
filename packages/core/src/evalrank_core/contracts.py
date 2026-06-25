@@ -11,6 +11,7 @@ TRUST_TIERS = {"verified", "standardized", "self-reported", "tracking-only"}
 FRESHNESS_STATUSES = {"fresh", "stale", "recalibrating"}
 COMPARABILITY_MODES = {"single-scale", "kind-grouped"}
 EVIDENCE_KINDS = {"attestation", "benchmark", "documentation", "runtime-observation", "trace"}
+THE_CALL_DECISIONS = {"recommend", "abstain"}
 _METHODOLOGY_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$")
 
 
@@ -304,6 +305,53 @@ class RankedEntity:
 
 
 @dataclass(frozen=True)
+class TheCall:
+    decision: str
+    confidence: float | None
+    reason: str
+    abstention_reason: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.decision not in THE_CALL_DECISIONS:
+            raise ValueError(f"decision must be one of {sorted(THE_CALL_DECISIONS)}")
+        if not self.reason:
+            raise ValueError("reason is required")
+        if self.decision == "recommend":
+            if self.confidence is None:
+                raise ValueError("confidence is required for recommend")
+            if self.abstention_reason is not None:
+                raise ValueError("abstention_reason must be null for recommend")
+        if self.decision == "abstain":
+            if self.confidence is not None:
+                raise ValueError("confidence must be null for abstain")
+            if not self.abstention_reason:
+                raise ValueError("abstention_reason is required for abstain")
+        if self.confidence is not None:
+            _require_unit_interval("confidence", self.confidence)
+
+    @classmethod
+    def recommend(cls, *, confidence: float, reason: str) -> "TheCall":
+        return cls(decision="recommend", confidence=confidence, reason=reason)
+
+    @classmethod
+    def abstain(cls, *, reason: str) -> "TheCall":
+        return cls(
+            decision="abstain",
+            confidence=None,
+            reason=reason,
+            abstention_reason=reason,
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "decision": self.decision,
+            "confidence": None if self.confidence is None else _round_score(self.confidence),
+            "reason": self.reason,
+            "abstention_reason": self.abstention_reason,
+        }
+
+
+@dataclass(frozen=True)
 class Recommendation:
     object: ClassVar[str] = "recommendation"
 
@@ -319,7 +367,7 @@ class Recommendation:
     degraded: bool = False
     served_from: str = "base"
     base_snapshot_lag_ms: int = 0
-    the_call: dict[str, Any] | None = None
+    the_call: TheCall | None = None
     exclusions: list[dict[str, Any]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -352,6 +400,7 @@ class Recommendation:
         ranked: list[RankedEntity],
         generated_at: str,
         depth_rationale: str,
+        the_call: TheCall | None = None,
         exclusions: list[dict[str, Any]] | None = None,
     ) -> "Recommendation":
         return cls(
@@ -364,6 +413,7 @@ class Recommendation:
             groups=None,
             shortlist_depth=len(ranked),
             depth_rationale=depth_rationale,
+            the_call=the_call,
             exclusions=exclusions or [],
         )
 
@@ -387,7 +437,7 @@ class Recommendation:
             groups=None,
             shortlist_depth=0,
             depth_rationale=reason,
-            the_call={"abstention_reason": reason},
+            the_call=TheCall.abstain(reason=reason),
         )
 
     @property
@@ -398,7 +448,7 @@ class Recommendation:
 
     @property
     def result_usable(self) -> bool:
-        return bool(self.ranked or self.groups) and not (self.the_call or {}).get("abstention_reason")
+        return bool(self.ranked or self.groups) and (self.the_call is None or self.the_call.decision != "abstain")
 
     def to_dict(self) -> dict[str, Any]:
         payload = self._payload()
@@ -423,7 +473,7 @@ class Recommendation:
             "comparability": self.comparability,
             "ranked": [row.to_dict() for row in self.ranked],
             "groups": self.groups,
-            "the_call": self.the_call,
+            "the_call": None if self.the_call is None else self.the_call.to_dict(),
             "exclusions": self.exclusions,
         }
 
