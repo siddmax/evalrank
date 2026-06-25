@@ -38,4 +38,5 @@ See `TESTS.md` for the current test map.
 - When a new top-level code area is added, add a scoped `AGENTS.md` if agents need different commands, boundaries, or ownership rules there.
 - When build progress changes, update `docs/STATUS.md`; when directory ownership changes, update `docs/REPO_STRUCTURE.md`.
 - When porting work from Syndai/private systems, update `docs/PORTING.md` and run the public boundary check before committing.
+- When scanning private-side work, route adjacent Memphant, AgentsDB, memory, or general agent-system docs to their own workstream unless there is an explicit storage-free EvalRank contract to port here.
 - When tests or navigable surfaces change, update `TESTS.md` or create/update `NAVIGATION.md` in the same change.

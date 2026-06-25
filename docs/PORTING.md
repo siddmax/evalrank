@@ -10,6 +10,7 @@ Last reviewed: 2026-06-26
 - Private by default: secrets, live DB operations, customer data, production telemetry, private evidence rows, held-out benchmark tasks or answers, billing/admin internals, vendor intent data, hosted-product-only workflows, and private Syndai/Finn/Savida integration code.
 - When unsure, keep the source private and port a short public summary instead.
 - Do not copy raw private planning docs into this repo. Rewrite as public-safe summaries with synthetic examples.
+- Do not rely on platform secret scanning as the only guard. Run the repo boundary check before every port, and treat anything sensitive that reaches Git history as compromised.
 
 ## Already Public
 
@@ -48,6 +49,7 @@ Last reviewed: 2026-06-26
 - Public JSON-object fields hardened for evidence item `metadata` and evaluation request `constraints`: object values only, string keys only, and JSON-serializable values only.
 - Shared public fixture-kind dispatch reused by CLI, MCP, Python SDK, and TypeScript SDK types.
 - Public `NAVIGATION.md` route map for the first API contract.
+- Public/private porting audit confirming that the current private Syndai dirty worktree contains Memphant spec edits only, with no EvalRank public-port candidate.
 
 ## Ported To Date
 
@@ -81,6 +83,7 @@ Use this table before copying anything from private EvalRank planning into this 
 | Hosted deploy, Fly/Doppler/Modal/R2/OpenObserve wiring, production schedulers | Private hosted systems | Hosted Ops / Deploy Ops | Keep out of this repo; only public setup docs may move after secrets and live IDs are removed. |
 | Auth, billing, admin, onboarding, tiering, account ops, GTM/vendor intent | Private hosted systems | Hosted Ops / GTM | Keep private unless converted into product-neutral public docs with no customer or operational data. |
 | Held-out suites, graders, answer keys, model traces, judge calibration, private benchmark results | Private eval systems | Evaluation Integrity | Never port; publish only synthetic or public reproducible fixtures. |
+| Adjacent Memphant, AgentsDB, memory, or general agent-system planning docs | Their owning private/public workstream, not EvalRank by default | Docs / Public Planning routes only when an EvalRank contract is explicitly extracted | Do not port into this repo unless the extracted artifact is storage-free, product-neutral, synthetic-testable, and public-safe. |
 
 ## Immediate Port Routing
 
@@ -109,6 +112,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Ranked entity score-component map hardening. | Already ported because it closes an existing public payload shape without exposing formulas, weights, or scorer calibration. | Public Contracts, Methods / Schemas |
 | Recommendation envelope validation hardening. | Already ported because it aligns the public Python contract with the public schema and blocks duplicate ranked rows without exposing scorer/runtime behavior. | Public Contracts, Methods / Schemas |
 | Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |
+| Private Syndai dirty worktree contained only Memphant spec edits during the latest check. | Do not port into EvalRank. Keep out of this public repo unless a future task extracts a concrete EvalRank contract and strips private context. | Docs / Public Planning |
 | Next non-fixture recommendation client behavior. | Port later only after client semantics are pinned against `POST /v1/recommendations`; keep auth, tenant context, hosted receipts, private DTOs, and service dependencies private. | SDK / CLI / MCP, Public Surface Contracts |
 | Runtime scorer/materializer and graph/evidence lookup. | Keep private during incubation; split only public-input-only code later. | Scoring / Materializer Runtime |
 | DB migrations, Supabase bootstrap, grants/RLS, live checks, and deploy wiring. | Keep in Syndai/private systems until an explicit EvalRank persistence cutover exists. | DB Bootstrap / Syndai Ops, Hosted Ops / Deploy Ops |
@@ -128,6 +132,16 @@ Reviewed the private-side EvalRank planning and migration surface by category on
 | Keep telemetry operations, billing/admin, vendor intent, account operations, private integrations, credentials, and live project refs out of this repo. | Hosted Ops / GTM, Secrets / Deploy Ops |
 
 Public docs may summarize private planning decisions, but must not copy raw private plans, live identifiers, customer examples, runbooks, production rows, or held-out evaluation details.
+
+## Latest Dirty-Worktree Check
+
+Checked the private Syndai worktree on 2026-06-26 before this public doc sync.
+
+| Private-side state | Port decision | Workstream |
+| --- | --- | --- |
+| Uncommitted files were limited to `docs/superpowers/specs/memphant/` spec edits. | Do not port to EvalRank. They are adjacent memory/eval planning, not the EvalRank public core. | Memphant / memory-system workstream, outside this repo |
+| EvalRank private source areas still exist in Syndai docs, plans, backend migration scripts, and `backend/evalrank_migrations/`. | Keep using them only as inputs for sanitized summaries and explicit storage-free public contracts. | Public Contracts, Public Surface Contracts, DB Bootstrap / Syndai Ops |
+| No current uncommitted EvalRank-specific private artifact was found that should move now. | Next public work remains contract hardening and pinned storage-free payloads, not raw private-doc copying. | Docs / Public Planning, Public Contracts |
 
 ## Current Private-Side Scan
 
@@ -174,6 +188,7 @@ Use this table for the next port decision. The destination is this public repo o
 | UI routes, API-route navigation docs, deeplinks, and `NAVIGATION.md` | API route navigation is ported for the first public route; UI/deeplink docs wait until those surfaces exist. | Public Surface Contracts, Docs / Public Planning |
 | Hosted ops, telemetry, billing/admin/GTM, vendor intent, credentials, deploy files, live project refs, private integrations, and account operations | Keep private unless later rewritten as product-neutral public docs with all operational detail removed. | Hosted Ops / GTM, Secrets / Deploy Ops |
 | Held-out suites, graders, answer keys, traces, judge calibration, private benchmark results, and proprietary ranking experiments | Never port. Publish only synthetic or public reproducible fixtures. | Evaluation Integrity |
+| Adjacent Memphant, AgentsDB, memory, or general agent-system specs | Do not port into EvalRank by default. Route to their owning workstream unless a concrete EvalRank contract is extracted, sanitized, and tested. | Docs / Public Planning, Public Contracts when explicitly extracted |
 
 ## Porting Decisions
 
@@ -262,7 +277,7 @@ Before moving anything into this repo, verify:
 ## External Guardrails
 
 - GitHub push protection can block supported secrets before they enter a repository: https://docs.github.com/en/code-security/concepts/secret-security/push-protection
-- GitHub secret scanning can detect hardcoded credentials in repository history, but prevention is cheaper than cleanup: https://docs.github.com/en/code-security/reference/secret-security/supported-secret-scanning-patterns
+- GitHub secret scanning runs automatically for public repositories and can detect hardcoded credentials in repository history, but prevention is cheaper than cleanup: https://docs.github.com/en/code-security/concepts/secret-security/secret-scanning
 - If sensitive data reaches Git history, treat it as compromised, rotate credentials, and follow a coordinated removal process.
 - Supabase custom schemas must be deliberately exposed and granted for API access; EvalRank incubation uses private schema bootstrap outside this public repo: https://supabase.com/docs/guides/api/using-custom-schemas
 - For public API design, prefer a dedicated exposed API schema and keep internal tables/helpers in non-exposed schemas; grants and RLS together decide what API roles can touch: https://supabase.com/docs/guides/api/securing-your-api

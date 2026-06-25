@@ -29,6 +29,7 @@ Last updated: 2026-06-26
 - Public progress tracker and repo structure map.
 - Public route navigation map in `NAVIGATION.md`.
 - Public porting map for deciding what moves from Syndai/private workstreams into this repo.
+- Public/private porting audit confirming the current private Syndai dirty worktree is Memphant-only and has no EvalRank public-port candidate.
 - Direct `main` push workflow during scratch-build phase; branch protection is currently removed.
 - `make check` local gate shared with CI.
 - W0 public exit packet in `docs/build-log/2026-06-25-w0-public-exit.md`.
@@ -72,6 +73,7 @@ Last updated: 2026-06-26
 - Score-component map hardening build log in `docs/build-log/2026-06-26-score-components-contract-hardening.md`.
 - Recommendation envelope validation hardening build log in `docs/build-log/2026-06-26-recommendation-envelope-contract-hardening.md`.
 - JSON-object metadata validation hardening build log in `docs/build-log/2026-06-26-json-object-contract-hardening.md`.
+- Public doc progress and porting audit in `docs/build-log/2026-06-26-public-doc-progress-porting-audit.md`.
 
 ## Current Public Surface
 
@@ -108,6 +110,7 @@ Last updated: 2026-06-26
 | Ranked entity `score_components` now reject non-object maps, blank/non-string names, booleans, and out-of-range values before serialization. | Built here as public contract hardening; no private scorer formula was added. | Public Contracts, Methods / Schemas |
 | Recommendation envelopes now reject schema-incompatible metadata and duplicate ranked entities before serialization. | Built here as public contract hardening; no scorer/runtime, route implementation, hosted receipt, or private evidence behavior was added. | Public Contracts, Methods / Schemas |
 | Evidence item `metadata` and evaluation request `constraints` now reject non-object, non-string-key, and non-JSON values before serialization. | Built here as public contract hardening; no private evidence lookup, source adapter, or policy behavior was added. | Public Contracts, Methods / Schemas |
+| Private-side dirty worktree check found only Memphant spec edits, not EvalRank public-port candidates. | Documented here as a routing decision; no private Memphant planning text was copied into the public repo. | Docs / Public Planning, Open-Core Boundary / CI |
 | Non-fixture clients, live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
 
 ## In Progress
@@ -118,6 +121,7 @@ Last updated: 2026-06-26
   - Public JSON Schemas in `schemas/`
   - Public porting decisions in `docs/PORTING.md`
 - Private Syndai build-readiness docs and operational plans, summarized here only when public-safe.
+- Latest private-side dirty check: Syndai had uncommitted `docs/superpowers/specs/memphant/` edits only. Treat those as adjacent memory-system planning, not EvalRank public-port material, unless a later task extracts an explicit EvalRank storage-free contract from them.
 - Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. Public recommendation identifier aliases, storage-free `RawEntry`, public `CandidateSet`, public `StageCandidate`, public `EvidenceItem`, public `ResultRow`, public `UseCaseCatalog`, public `RankingGroup`, public `EvidenceSet`, public `Exclusion`, structured public `the_call`, the first storage-free OpenAPI route contracts, and retry-aware public Problem Details error shape have moved. The private-side planning scan is summarized in `docs/PORTING.md` by workstream, not copied. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, graph lookup, live evidence lookup, evidence ledger runtime, cross-kind score normalization, benchmark weights, IRT fit clusters, thin-coverage/synthesis policy details, Stage-2+ scorer rows, gate policy, private reason taxonomy, scorer thresholds, private problem types, and held-out evaluation material stay private.
 
 ## Current Port-Over Snapshot

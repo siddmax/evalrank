@@ -39,6 +39,7 @@ Schemas define interoperability payloads, not private storage tables.
 - `docs/build-log/` stores dated progress, build-order, and port-over snapshots. Entries must be public-safe summaries, not raw private planning text.
 - `docs/superpowers/plans/` stores public-safe implementation plans for agentic work.
 - `docs/AGENTS.md` gives scoped doc-editing rules.
+- Adjacent private planning areas such as Memphant, AgentsDB, memory, or general agent-system specs are not EvalRank directories. Route them through `docs/PORTING.md` only when an explicit EvalRank storage-free contract is extracted.
 
 ## Tests And Scripts
 
