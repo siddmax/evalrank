@@ -15,6 +15,7 @@ make check
 - `tests/test_mcp_fixture.py` checks the public MCP fixture tool manifest and result shape.
 - `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys, raw-entry, candidate-set, stage-candidate, result-row, use-case catalog, ranking-group, evidence-set, and exclusion schema shapes, RFC 9457 Problem Details plus public retry extensions, structured `the_call`, recommendation alias patterns, and pinned public patterns.
 - `tests/test_openapi_contract.py` checks the public OpenAPI route contract, reusable Problem Details responses, retry/rate-limit headers, schema refs, and storage-free boundary.
+- `tests/test_methods_docs.py` checks public method notes stay aligned with the use-case taxonomy contract and private boundary.
 - `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts.
 - `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces, including public Problem Details codes and types.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.

@@ -20,7 +20,7 @@ Last updated: 2026-06-26
 - TypeScript SDK package metadata and mirrored public contract types/constants, including public Problem Details codes and type shape.
 - CLI package metadata and deterministic public fixture command, including `result-row`, `use-cases`, and `ranking-group`.
 - MCP package metadata and deterministic public fixture adapter, including `result-row`, `use-cases`, and `ranking-group`.
-- Public scoring-stage vocabulary and method-boundary note.
+- Public scoring-stage vocabulary, use-case taxonomy method, and method-boundary notes.
 - Runnable public fixture example.
 - Schema drift tests for core payload keys and public enum constants.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
@@ -59,6 +59,7 @@ Last updated: 2026-06-26
 - Public porting assessment refresh in `docs/build-log/2026-06-26-public-porting-assessment.md`.
 - Use-case catalog contract build log in `docs/build-log/2026-06-26-use-case-catalog-contract.md`.
 - Ranking group contract build log in `docs/build-log/2026-06-26-ranking-group-contract.md`.
+- Use-case taxonomy method build log in `docs/build-log/2026-06-26-use-case-taxonomy-method.md`.
 
 ## Current Public Surface
 
@@ -70,7 +71,7 @@ Last updated: 2026-06-26
 | TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry`, `CandidateSet`, `StageCandidate`, `ResultRow`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, and `ProblemDetails`. | Built JS distribution, published package release flow, and non-fixture client behavior. |
 | CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture result-row`, `fixture use-cases`, `fixture ranking-group`, `fixture evidence-set`, `fixture exclusion`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence`, `result-row`, `use-cases`, `ranking-group`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
-| Methods | Public scoring-stage vocabulary, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`, and private-boundary note. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
+| Methods | Public scoring-stage vocabulary, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`; public use-case taxonomy method; and private-boundary notes. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
 | Examples | `examples/public_fixture.py` prints synthetic public recommendation and evidence JSON. | Non-fixture demos, live API examples, and private-data examples. |
 | Docs | Status tracker, repo structure map, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
 
@@ -92,7 +93,7 @@ Last updated: 2026-06-26
 | Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, ranked entity, recommendation, recommendation aliases, and entity reference | Ported here | Public Contracts |
 | Public JSON Schemas and schema drift tests for current payloads | Ported here, including retry-aware Problem Details extensions | Methods / Schemas, Public Contracts, Public Surface Contracts |
 | Synthetic fixtures, runnable public example, CLI fixture command, MCP fixture adapter, Python SDK re-exports, and TypeScript public types | Ported here, including candidate-set, stage-candidate, result-row, use-cases, ranking-group, evidence-set, and exclusion fixture surfaces | SDK / CLI / MCP, Examples |
-| Public scoring-stage vocabulary and private-boundary note | Ported here, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion` | Methods / Schemas |
+| Public scoring-stage vocabulary and private-boundary notes | Ported here, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, and the use-case taxonomy method | Methods / Schemas |
 | `RawEntry` ingestion-normalization contract | Ported here as a storage-free synthetic fixture contract | Public Contracts |
 | `CandidateSet` candidate-resolution contract | Ported here as a storage-free list of public `EntityRef` candidates | Public Contracts, Methods / Schemas |
 | `StageCandidate` Stage-1 retrieval row | Ported here as a storage-free candidate fingerprint plus public entity, fused score, RRF ranks, and retrieval provenance | Public Contracts, Methods / Schemas |
@@ -101,7 +102,7 @@ Last updated: 2026-06-26
 | `Exclusion` exclusions-with-reasons contract | Ported here as a storage-free subject plus public reason/detail row | Public Contracts, Methods / Schemas |
 | Structured public `the_call` / decision-confidence shape | Ported here as a storage-free nested recommendation contract | Public Contracts, Methods / Schemas |
 | REST/OpenAPI source of truth | Route contracts ported for `GET /v1/use-cases` and `POST /v1/recommendations`; public errors use reusable RFC 9457 Problem Details responses plus retry and rate-limit headers | Public Surface Contracts |
-| Use-case taxonomy and `/v1/use-cases` route shape | Ported here as storage-free public taxonomy only: id/slug, name, one-line definition, entity-kind spans, ranked-vs-overlay policy, fixture, schema, SDK/CLI/MCP parity, and OpenAPI route contract | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
+| Use-case taxonomy and `/v1/use-cases` route shape | Ported here as storage-free public taxonomy only: id/slug, name, one-line definition, entity-kind spans, ranked-vs-overlay policy, fixture, schema, SDK/CLI/MCP parity, OpenAPI route contract, and sanitized method note | Public Contracts, Public Surface Contracts, SDK / CLI / MCP, Methods / Schemas |
 | Recommendation comparability and ranking groups | Ported here as storage-free grouped response shape only: `kind-grouped` recommendations now contain closed `RankingGroup` rows with within-kind ranked entities and rationale | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | Use-case benchmark weights, IRT cluster crosswalk, confidence policies, and synthesis/coverage rules | Keep private for now; later publish only sanitized method notes that omit weights, held-out tasks, proprietary tuning, and private benchmark outputs | Methods / Schemas, Scoring / Materializer Runtime, Evaluation Integrity |
 | Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | Keep private | DB Bootstrap / Syndai Ops |
@@ -114,7 +115,7 @@ Last updated: 2026-06-26
 | Priority | Workstream | Destination | Public handling |
 | --- | --- | --- | --- |
 | 1 | Public Contracts | This repo | First raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, recommendation, recommendation alias, and entity/evidence slices ported; extend only for new public payload contracts. |
-| 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary ported; add details only after private material is removed. |
+| 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary and use-case taxonomy method note ported; add details only after private material is removed. |
 | 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK types, CLI fixture, and MCP fixture slices ported; extend after concrete non-fixture contracts are pinned. |
 | 4 | Docs / Public Planning | This repo | Current status, repo structure, porting docs, and first runnable example are public-safe; keep updating them with each port. |
 | 5 | Public Surface Contracts | This repo | First OpenAPI route contract and retry-aware public error responses are ported; add more routes only when concrete public contracts exist, and keep private DTOs and hosted auth outside. |
