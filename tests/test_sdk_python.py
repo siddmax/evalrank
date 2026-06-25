@@ -1,6 +1,9 @@
+import json
 import sys
 import unittest
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from threading import Thread
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +34,8 @@ from evalrank_core.fixtures import sample_problem_details as core_sample_problem
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
     CandidateSet,
+    EvalRankApiError,
+    EvalRankClient,
     Exclusion,
     EvaluationRequest,
     EvidenceItem,
@@ -54,6 +59,7 @@ from evalrank_sdk import (  # noqa: E402
     sample_public_fixture,
     sample_problem_details,
     sample_raw_entry,
+    sample_recommendation,
     sample_ranking_group,
     sample_result_row,
     sample_scoring_stage_catalog,
@@ -91,6 +97,8 @@ class PythonSdkTests(unittest.TestCase):
             "ProblemDetails",
             "PROBLEM_CODES",
             "EntityRef",
+            "EvalRankClient",
+            "EvalRankApiError",
             "PUBLIC_FIXTURE_KINDS",
             "sample_public_fixture",
         ):
@@ -227,6 +235,83 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIsInstance(catalog, CoreUseCaseCatalog)
         self.assertEqual("use_case_catalog", catalog.to_dict()["object"])
         self.assertEqual(22, len(catalog.to_dict()["use_cases"]))
+
+    def test_recommend_posts_public_request_and_returns_recommendation_json(self):
+        server = _SdkTestServer(response_status=200, response_body=sample_recommendation().to_dict())
+        try:
+            response = EvalRankClient(server.base_url).recommend(sample_evaluation_request())
+        finally:
+            server.close()
+
+        self.assertEqual("recommendation", response["object"])
+        self.assertEqual("/v1/recommendations", server.path)
+        self.assertEqual("application/json", server.headers["Content-Type"])
+        self.assertEqual("application/json", server.headers["Accept"])
+        self.assertEqual(sample_evaluation_request().to_dict(), server.request_json)
+
+    def test_recommend_raises_public_problem_details_error(self):
+        problem = core_sample_problem_details().to_dict()
+        server = _SdkTestServer(
+            response_status=429,
+            response_body=problem,
+            response_headers={"Content-Type": "application/problem+json", "Retry-After": "3"},
+        )
+        try:
+            with self.assertRaises(EvalRankApiError) as raised:
+                EvalRankClient(server.base_url).recommend(sample_evaluation_request())
+        finally:
+            server.close()
+
+        self.assertEqual(429, raised.exception.status)
+        self.assertEqual(problem, raised.exception.problem)
+        self.assertEqual(3, raised.exception.retry_after)
+
+    def test_client_rejects_non_http_base_url(self):
+        with self.assertRaisesRegex(ValueError, "base_url must be an http or https URL"):
+            EvalRankClient("file:///tmp/evalrank").recommend(sample_evaluation_request())
+
+
+class _SdkTestServer:
+    def __init__(
+        self,
+        *,
+        response_status: int,
+        response_body: dict,
+        response_headers: dict[str, str] | None = None,
+    ) -> None:
+        self.request_json: dict | None = None
+        self.headers: dict[str, str] = {}
+        self.path = ""
+
+        owner = self
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self) -> None:
+                owner.path = self.path
+                owner.headers = {key: self.headers[key] for key in self.headers}
+                body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
+                owner.request_json = json.loads(body.decode("utf-8"))
+                encoded = json.dumps(response_body).encode("utf-8")
+                self.send_response(response_status)
+                for key, value in (response_headers or {"Content-Type": "application/json"}).items():
+                    self.send_header(key, value)
+                self.send_header("Content-Length", str(len(encoded)))
+                self.end_headers()
+                self.wfile.write(encoded)
+
+            def log_message(self, format: str, *args: object) -> None:
+                return
+
+        self._server = HTTPServer(("127.0.0.1", 0), Handler)
+        self._thread = Thread(target=self._server.serve_forever, daemon=True)
+        self._thread.start()
+        host, port = self._server.server_address
+        self.base_url = f"http://{host}:{port}"
+
+    def close(self) -> None:
+        self._server.shutdown()
+        self._thread.join(timeout=5)
+        self._server.server_close()
 
 
 if __name__ == "__main__":

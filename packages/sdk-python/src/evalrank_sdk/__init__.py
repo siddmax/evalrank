@@ -1,3 +1,9 @@
+import json
+import urllib.error
+import urllib.parse
+import urllib.request
+from typing import Any
+
 from evalrank_core import (
     Abstention,
     CapabilityFingerprintInput,
@@ -54,7 +60,57 @@ from evalrank_core import (
 
 __version__ = "0.0.0"
 
+
+class EvalRankApiError(Exception):
+    def __init__(self, *, status: int, problem: dict[str, Any], retry_after: int | None = None) -> None:
+        self.status = status
+        self.problem = problem
+        self.retry_after = retry_after
+        super().__init__(f"EvalRank API error {status}: {problem.get('title', 'request failed')}")
+
+
+class EvalRankClient:
+    def __init__(self, base_url: str, *, timeout: float | None = None) -> None:
+        parsed = urllib.parse.urlparse(base_url)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise ValueError("base_url must be an http or https URL")
+        self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
+
+    def recommend(self, request: EvaluationRequest | dict[str, Any]) -> dict[str, Any]:
+        body = json.dumps(_payload_dict(request), separators=(",", ":"), sort_keys=True, allow_nan=False).encode("utf-8")
+        http_request = urllib.request.Request(
+            f"{self.base_url}/v1/recommendations",
+            data=body,
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(http_request, timeout=self.timeout) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            problem = json.loads(exc.read().decode("utf-8"))
+            raise EvalRankApiError(status=exc.code, problem=problem, retry_after=_retry_after(exc.headers)) from exc
+
+
+def _payload_dict(value: EvaluationRequest | dict[str, Any]) -> dict[str, Any]:
+    if isinstance(value, EvaluationRequest):
+        return value.to_dict()
+    if isinstance(value, dict):
+        return value
+    raise TypeError("request must be an EvaluationRequest or dict")
+
+
+def _retry_after(headers: Any) -> int | None:
+    value = headers.get("Retry-After")
+    return None if value is None else int(value)
+
 __all__ = [
+    "EvalRankApiError",
+    "EvalRankClient",
     "CapabilityFingerprintInput",
     "Abstention",
     "CandidateSet",
