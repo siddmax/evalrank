@@ -131,6 +131,16 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual(22, len(payload["use_cases"]))
         self.assertEqual("safety-robustness", payload["use_cases"][-1]["id"])
 
+    def test_fixture_ranking_group_writes_public_json(self):
+        stdout = StringIO()
+
+        exit_code = main(["fixture", "ranking-group"], stdout=stdout, stderr=StringIO())
+
+        self.assertEqual(0, exit_code)
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual("ranking_group", payload["object"])
+        self.assertEqual("mcp_server", payload["entity_type"])
+
     def test_invalid_fixture_exits_nonzero(self):
         stderr = StringIO()
 

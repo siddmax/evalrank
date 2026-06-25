@@ -70,6 +70,7 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture ca
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture stage-candidate
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture result-row
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture ranking-group
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture use-cases
@@ -79,12 +80,13 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_recommendation, sample_result_row, sample_stage_candidate, sample_use_case_catalog
+from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_ranking_group, sample_recommendation, sample_result_row, sample_stage_candidate, sample_use_case_catalog
 
 use_cases = sample_use_case_catalog().to_dict()
 candidate_set = sample_candidate_set().to_dict()
 stage_candidate = sample_stage_candidate().to_dict()
 result_row = sample_result_row().to_dict()
+ranking_group = sample_ranking_group().to_dict()
 evidence_set = sample_evidence_set().to_dict()
 exclusion = sample_exclusion().to_dict()
 payload = sample_recommendation().to_dict()
@@ -102,12 +104,13 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type ResultRow, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
+import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type RankingGroup, type ResultRow, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
 
 const useCases: UseCaseCatalog["use_cases"] = [];
 const candidates: CandidateSet["candidates"] = [{ entity_type: "mcp_server", id: "tool:public-search-demo" }];
 const arms: StageCandidate["retrieval_provenance"]["arms"] = ["lexical", "semantic"];
 const verification: ResultRow["verification_state"] = "verified";
+const grouped: RankingGroup["ranked"] = [];
 const evidence: EvidenceSet["evidence_items"] = [];
 const exclusion: Exclusion["reason"] = "unknown_cost";
 const call: TheCall["decision"] = "recommend";

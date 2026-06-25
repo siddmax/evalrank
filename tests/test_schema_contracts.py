@@ -208,6 +208,20 @@ class SchemaContractTests(unittest.TestCase):
 
         self.assertEqual("exclusion.schema.json", recommendation_schema["properties"]["exclusions"]["items"]["$ref"])
 
+    def test_recommendation_schema_pins_ranking_group_shape(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+        group_schema = recommendation_schema["$defs"]["RankingGroup"]
+
+        self.assertEqual("#/$defs/RankingGroup", recommendation_schema["properties"]["groups"]["items"]["$ref"])
+        self.assertFalse(group_schema["additionalProperties"])
+        self.assertEqual(
+            {"object", "group_key", "entity_type", "ranked", "group_rationale"},
+            set(group_schema["required"]),
+        )
+        self.assertEqual("ranking_group", group_schema["properties"]["object"]["const"])
+        self.assertEqual("ranked-entity.schema.json", group_schema["properties"]["ranked"]["items"]["$ref"])
+        self.assertEqual(1, group_schema["properties"]["ranked"]["minItems"])
+
     def test_exclusion_schema_pins_public_reason_shape(self):
         exclusion_schema = _schema("exclusion.schema.json")
 

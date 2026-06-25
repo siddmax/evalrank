@@ -657,6 +657,41 @@ class TheCall:
 
 
 @dataclass(frozen=True)
+class RankingGroup:
+    object: ClassVar[str] = "ranking_group"
+
+    group_key: str
+    entity_type: str
+    ranked: tuple[RankedEntity, ...]
+    group_rationale: str
+
+    def __post_init__(self) -> None:
+        _require_nonempty_string("group_key", self.group_key)
+        _require_nonempty_string("entity_type", self.entity_type)
+        _require_nonempty_string("group_rationale", self.group_rationale)
+        if not isinstance(self.ranked, tuple) or not self.ranked:
+            raise ValueError("ranked is required")
+        seen: set[str] = set()
+        for row in self.ranked:
+            if not isinstance(row, RankedEntity):
+                raise TypeError("ranked must contain RankedEntity values")
+            if row.entity_type != self.entity_type:
+                raise ValueError("ranked rows must match group entity_type")
+            if row.entity_id in seen:
+                raise ValueError("duplicate ranked entity")
+            seen.add(row.entity_id)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "group_key": self.group_key,
+            "entity_type": self.entity_type,
+            "ranked": [row.to_dict() for row in self.ranked],
+            "group_rationale": self.group_rationale,
+        }
+
+
+@dataclass(frozen=True)
 class Recommendation:
     object: ClassVar[str] = "recommendation"
 
@@ -666,7 +701,7 @@ class Recommendation:
     generated_at: str
     comparability: str
     ranked: list[RankedEntity]
-    groups: list[dict[str, Any]] | None
+    groups: list[RankingGroup] | None
     shortlist_depth: int
     depth_rationale: str
     degraded: bool = False
@@ -689,11 +724,19 @@ class Recommendation:
             raise ValueError("single-scale recommendations must not include groups")
         if self.comparability == "kind-grouped" and self.ranked:
             raise ValueError("kind-grouped recommendations must not include ranked rows")
+        if self.comparability == "kind-grouped" and not self.groups:
+            raise ValueError("kind-grouped recommendations require groups")
         if self.shortlist_depth < 0:
             raise ValueError("shortlist_depth must be >= 0")
         for row in self.ranked:
             if row.methodology_version != self.methodology_version:
                 raise ValueError("ranked rows must carry the envelope methodology_version")
+        for group in self.groups or []:
+            if not isinstance(group, RankingGroup):
+                raise TypeError("groups must contain RankingGroup values")
+            for row in group.ranked:
+                if row.methodology_version != self.methodology_version:
+                    raise ValueError("group rows must carry the envelope methodology_version")
         for exclusion in self.exclusions:
             if not isinstance(exclusion, Exclusion):
                 raise TypeError("exclusions must contain Exclusion values")
@@ -720,6 +763,33 @@ class Recommendation:
             ranked=ranked,
             groups=None,
             shortlist_depth=len(ranked),
+            depth_rationale=depth_rationale,
+            the_call=the_call,
+            exclusions=exclusions or [],
+        )
+
+    @classmethod
+    def kind_grouped(
+        cls,
+        *,
+        request_id: str,
+        use_case: str,
+        methodology_version: str,
+        groups: list[RankingGroup],
+        generated_at: str,
+        depth_rationale: str,
+        the_call: TheCall | None = None,
+        exclusions: list[Exclusion] | None = None,
+    ) -> "Recommendation":
+        return cls(
+            request_id=request_id,
+            use_case=use_case,
+            methodology_version=methodology_version,
+            generated_at=generated_at,
+            comparability="kind-grouped",
+            ranked=[],
+            groups=groups,
+            shortlist_depth=sum(len(group.ranked) for group in groups),
             depth_rationale=depth_rationale,
             the_call=the_call,
             exclusions=exclusions or [],
@@ -780,7 +850,7 @@ class Recommendation:
             "generated_at": self.generated_at,
             "comparability": self.comparability,
             "ranked": [row.to_dict() for row in self.ranked],
-            "groups": self.groups,
+            "groups": None if self.groups is None else [group.to_dict() for group in self.groups],
             "the_call": None if self.the_call is None else self.the_call.to_dict(),
             "exclusions": [exclusion.to_dict() for exclusion in self.exclusions],
         }

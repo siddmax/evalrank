@@ -16,6 +16,7 @@ from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E4
 from evalrank_core.contracts import EvidenceSet as CoreEvidenceSet  # noqa: E402
 from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
 from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
+from evalrank_core.contracts import RankingGroup as CoreRankingGroup  # noqa: E402
 from evalrank_core.contracts import ResultRow as CoreResultRow  # noqa: E402
 from evalrank_core.contracts import StageCandidate as CoreStageCandidate  # noqa: E402
 from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
@@ -28,6 +29,7 @@ from evalrank_sdk import (  # noqa: E402
     EvidenceItem,
     EvidenceSet,
     RawEntry,
+    RankingGroup,
     ResultRow,
     StageCandidate,
     TheCall,
@@ -39,6 +41,7 @@ from evalrank_sdk import (  # noqa: E402
     sample_evidence_set,
     sample_evaluation_request,
     sample_raw_entry,
+    sample_ranking_group,
     sample_result_row,
     sample_stage_candidate,
     sample_use_case_catalog,
@@ -101,6 +104,13 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(ResultRow, CoreResultRow)
         self.assertIsInstance(row, CoreResultRow)
         self.assertEqual("result_row", row.to_dict()["object"])
+
+    def test_sdk_re_exports_core_ranking_group_contracts(self):
+        group = sample_ranking_group()
+
+        self.assertIs(RankingGroup, CoreRankingGroup)
+        self.assertIsInstance(group, CoreRankingGroup)
+        self.assertEqual("ranking_group", group.to_dict()["object"])
 
     def test_sdk_re_exports_core_stage_candidate_contracts(self):
         candidate = sample_stage_candidate()

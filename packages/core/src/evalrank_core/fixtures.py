@@ -13,6 +13,7 @@ from evalrank_core.contracts import (
     RawEntry,
     RankedEntity,
     Recommendation,
+    RankingGroup,
     ResultRow,
     StageCandidate,
     TheCall,
@@ -124,6 +125,15 @@ def sample_ranked_entity() -> RankedEntity:
             "evidence": 0.91,
             "freshness": 0.87,
         },
+    )
+
+
+def sample_ranking_group() -> RankingGroup:
+    return RankingGroup(
+        group_key="mcp_server",
+        entity_type="mcp_server",
+        ranked=(sample_ranked_entity(),),
+        group_rationale="ranked within mcp_server only; no cross-kind score comparison",
     )
 
 

@@ -15,6 +15,7 @@ from evalrank_core.fixtures import (
     sample_evaluation_request,
     sample_raw_entry,
     sample_recommendation,
+    sample_ranking_group,
     sample_result_row,
     sample_stage_candidate,
     sample_use_case_catalog,
@@ -56,6 +57,7 @@ def _parser() -> argparse.ArgumentParser:
             "fingerprint",
             "raw-entry",
             "recommendation",
+            "ranking-group",
             "result-row",
             "request",
             "stage-candidate",
@@ -81,6 +83,8 @@ def _fixture_payload(kind: str) -> dict:
         return sample_raw_entry().to_dict()
     if kind == "recommendation":
         return sample_recommendation().to_dict()
+    if kind == "ranking-group":
+        return sample_ranking_group().to_dict()
     if kind == "result-row":
         return sample_result_row().to_dict()
     if kind == "request":

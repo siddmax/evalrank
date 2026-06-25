@@ -74,6 +74,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "EvaluationRequest",
             "EvidenceItem",
             "RankedEntity",
+            "RankingGroup",
             "RawEntry",
             "Recommendation",
             "ResultRow",
@@ -122,6 +123,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "attribution_string",
             "verification_state",
             "recommendation_id",
+            "group_key",
+            "group_rationale",
             "recommend_id",
             "search_run_id",
             "rrf_components",
@@ -139,6 +142,7 @@ class TypeScriptSdkTests(unittest.TestCase):
 
         self.assertIn("the_call: TheCall | null;", source)
         self.assertIn("exclusions: Exclusion[];", source)
+        self.assertIn("groups: RankingGroup[] | null;", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
         self.assertIn("export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];", source)
         self.assertIn("export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];", source)

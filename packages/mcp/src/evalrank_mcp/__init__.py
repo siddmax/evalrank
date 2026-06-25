@@ -12,6 +12,7 @@ from evalrank_core.fixtures import (
     sample_evaluation_request,
     sample_raw_entry,
     sample_recommendation,
+    sample_ranking_group,
     sample_result_row,
     sample_stage_candidate,
     sample_use_case_catalog,
@@ -42,6 +43,7 @@ def list_tools() -> list[dict[str, Any]]:
                             "fingerprint",
                             "raw-entry",
                             "recommendation",
+                            "ranking-group",
                             "result-row",
                             "request",
                             "stage-candidate",
@@ -86,6 +88,8 @@ def _fixture_payload(kind: Any) -> dict[str, Any]:
         return sample_raw_entry().to_dict()
     if kind == "recommendation":
         return sample_recommendation().to_dict()
+    if kind == "ranking-group":
+        return sample_ranking_group().to_dict()
     if kind == "result-row":
         return sample_result_row().to_dict()
     if kind == "request":
@@ -96,8 +100,8 @@ def _fixture_payload(kind: Any) -> dict[str, Any]:
         return sample_use_case_catalog().to_dict()
     raise ValueError(
         "fixture kind must be 'candidate-set', 'evidence', 'evidence-set', "
-        "'exclusion', 'fingerprint', 'raw-entry', 'recommendation', 'request', "
-        "'result-row', 'stage-candidate', or 'use-cases'"
+        "'exclusion', 'fingerprint', 'raw-entry', 'recommendation', 'ranking-group', "
+        "'request', 'result-row', 'stage-candidate', or 'use-cases'"
     )
 
 

@@ -19,6 +19,7 @@ from evalrank_core.contracts import (  # noqa: E402
     RawEntry,
     Recommendation,
     RankedEntity,
+    RankingGroup,
     ResultRow,
     StageCandidate,
     TheCall,
@@ -334,6 +335,86 @@ class CoreContractTests(unittest.TestCase):
         self.assertTrue(payload["recommendation_id"].startswith("rec_"))
         self.assertEqual(payload["recommendation_id"], payload["recommend_id"])
         self.assertEqual(payload["recommendation_id"], payload["search_run_id"])
+
+    def test_ranking_group_serializes_within_kind_rows(self):
+        row = _row("tool:exa-search-mcp")
+        group = RankingGroup(
+            group_key="mcp_server",
+            entity_type="mcp_server",
+            ranked=(row,),
+            group_rationale="MCP servers are ranked only against MCP servers",
+        )
+
+        self.assertEqual(
+            {
+                "object": "ranking_group",
+                "group_key": "mcp_server",
+                "entity_type": "mcp_server",
+                "ranked": [row.to_dict()],
+                "group_rationale": "MCP servers are ranked only against MCP servers",
+            },
+            group.to_dict(),
+        )
+
+    def test_kind_grouped_recommendation_serializes_groups_not_global_ranked_rows(self):
+        row = _row("tool:exa-search-mcp")
+        group = RankingGroup(
+            group_key="mcp_server",
+            entity_type="mcp_server",
+            ranked=(row,),
+            group_rationale="MCP servers are ranked only against MCP servers",
+        )
+
+        rec = Recommendation.kind_grouped(
+            request_id="req_01",
+            use_case="mcp-tool-orchestration",
+            methodology_version=PINNED_METHODOLOGY_VERSION,
+            groups=[group],
+            generated_at="2026-06-25T00:00:00Z",
+            depth_rationale="different entity kinds are not on one score scale",
+        )
+
+        payload = rec.to_dict()
+
+        self.assertEqual("kind-grouped", payload["comparability"])
+        self.assertEqual([], payload["ranked"])
+        self.assertEqual([group.to_dict()], payload["groups"])
+        self.assertEqual(1, payload["shortlist_depth"])
+        self.assertTrue(rec.result_usable)
+
+    def test_ranking_group_rejects_private_or_cross_kind_shapes(self):
+        row = _row("model:public-demo", entity_type="model_version")
+
+        with self.assertRaisesRegex(ValueError, "entity_type"):
+            RankingGroup(
+                group_key="tool_server",
+                entity_type="tool_server",
+                ranked=(row,),
+                group_rationale="wrong entity type",
+            )
+
+        with self.assertRaisesRegex(ValueError, "methodology_version"):
+            Recommendation.kind_grouped(
+                request_id="req_01",
+                use_case="mcp-tool-orchestration",
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                groups=[
+                    RankingGroup(
+                        group_key="model_version",
+                        entity_type="model_version",
+                        ranked=(
+                            _row(
+                                "model:public-demo",
+                                methodology_version="2026-06-25.2.public-fixture-v1",
+                                entity_type="model_version",
+                            ),
+                        ),
+                        group_rationale="different methodology",
+                    )
+                ],
+                generated_at="2026-06-25T00:00:00Z",
+                depth_rationale="different methodology should not serialize",
+            )
 
     def test_recommendation_id_is_content_addressed(self):
         base = Recommendation.single_scale(
@@ -901,9 +982,13 @@ class CoreContractTests(unittest.TestCase):
             )
 
 
-def _row(entity_id: str, methodology_version: str = PINNED_METHODOLOGY_VERSION) -> RankedEntity:
+def _row(
+    entity_id: str,
+    methodology_version: str = PINNED_METHODOLOGY_VERSION,
+    entity_type: str = "mcp_server",
+) -> RankedEntity:
     return RankedEntity(
-        entity_type="mcp_server",
+        entity_type=entity_type,
         entity_id=entity_id,
         rank=1,
         capability_score=0.84,

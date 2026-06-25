@@ -78,8 +78,7 @@
         "null"
       ],
       "items": {
-        "type": "object",
-        "additionalProperties": true
+        "$ref": "#/$defs/RankingGroup"
       }
     },
     "the_call": {
@@ -144,6 +143,43 @@
     "request_id": {
       "type": "string",
       "minLength": 1
+    }
+  },
+  "$defs": {
+    "RankingGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "group_key",
+        "entity_type",
+        "ranked",
+        "group_rationale"
+      ],
+      "properties": {
+        "object": {
+          "const": "ranking_group"
+        },
+        "group_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ranked": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "ranked-entity.schema.json"
+          }
+        },
+        "group_rationale": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   }
 }

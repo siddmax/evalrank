@@ -15,6 +15,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_evidence_set,
     sample_evaluation_request,
     sample_ranked_entity,
+    sample_ranking_group,
     sample_raw_entry,
     sample_recommendation,
     sample_result_row,
@@ -54,6 +55,15 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("recommend", payload["the_call"]["decision"])
         self.assertEqual(0.86, payload["the_call"]["confidence"])
         self.assertEqual(sample_recommendation().recommendation_id, rec.recommendation_id)
+
+    def test_sample_ranking_group_is_public_contract_payload(self):
+        payload = sample_ranking_group().to_dict()
+
+        self.assertEqual("ranking_group", payload["object"])
+        self.assertEqual("mcp_server", payload["group_key"])
+        self.assertEqual("mcp_server", payload["entity_type"])
+        self.assertEqual([sample_ranked_entity().to_dict()], payload["ranked"])
+        self.assertIn("within", payload["group_rationale"])
 
     def test_sample_evidence_item_is_public_contract_payload(self):
         evidence = sample_evidence_item()

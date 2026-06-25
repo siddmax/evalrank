@@ -28,6 +28,7 @@ class McpFixtureTests(unittest.TestCase):
                 "fingerprint",
                 "raw-entry",
                 "recommendation",
+                "ranking-group",
                 "result-row",
                 "request",
                 "stage-candidate",
@@ -117,6 +118,14 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual("use_case_catalog", payload["object"])
         self.assertEqual(22, len(payload["use_cases"]))
         self.assertEqual("safety-robustness", payload["use_cases"][-1]["id"])
+
+    def test_call_tool_returns_public_ranking_group_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "ranking-group"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("ranking_group", payload["object"])
+        self.assertEqual("mcp_server", payload["group_key"])
 
     def test_call_tool_rejects_unknown_tool(self):
         with self.assertRaisesRegex(ValueError, "unknown tool"):

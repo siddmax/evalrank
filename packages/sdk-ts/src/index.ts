@@ -251,6 +251,14 @@ export interface RankedEntity {
   caveats: string[];
 }
 
+export interface RankingGroup {
+  object: "ranking_group";
+  group_key: string;
+  entity_type: string;
+  ranked: RankedEntity[];
+  group_rationale: string;
+}
+
 export interface Recommendation {
   object: "recommendation";
   use_case: string;
@@ -263,7 +271,7 @@ export interface Recommendation {
   generated_at: string;
   comparability: ComparabilityMode;
   ranked: RankedEntity[];
-  groups: Record<string, unknown>[] | null;
+  groups: RankingGroup[] | null;
   the_call: TheCall | null;
   exclusions: Exclusion[];
   recommendation_id: string;
