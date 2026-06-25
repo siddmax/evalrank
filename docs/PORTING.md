@@ -51,6 +51,8 @@ Last reviewed: 2026-06-26
 - Shared public fixture-kind dispatch reused by CLI, MCP, Python SDK, and TypeScript SDK types.
 - Public `NAVIGATION.md` route map for the first API contract.
 - Public/private porting audit confirming that the current private Syndai dirty worktree contains Memphant spec edits only, with no EvalRank public-port candidate.
+- Public/private source routing snapshot for the current Syndai EvalRank specs, build-readiness plans, migration bootstrap, doc validators, and UI proof assets.
+- GitHub public-repo security metadata snapshot showing secret scanning, push protection, and Dependabot security updates enabled.
 
 ## Ported To Date
 
@@ -98,6 +100,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Non-fixture SDK/CLI/MCP behavior for `POST /v1/recommendations` | This repo after client semantics are pinned | SDK / CLI / MCP, Public Surface Contracts | Port later as product-neutral request/response behavior; exclude auth, tenant context, live hosted receipts, private DTOs, and production service dependencies. |
 | Additional public API routes or route-specific Problem Details | This repo | Public Surface Contracts | Port later only for concrete public routes; shared retry/rate-limit vocabulary is already public. |
 | Sanitized scoring and use-case method notes | This repo | Methods / Schemas | Port selectively after removing weights, thresholds, held-out task references, private benchmark outputs, private corpora, and production traces. |
+| Public-facing doc-drift checks distilled from Syndai EvalRank validators | This repo only after matching public claims exist | Open-Core Boundary / CI, Docs / Public Planning | Port later as deterministic tests over public docs. Do not copy private spec names, private plan paths, or private-only assertions. |
 | Deterministic scorer/materializer components | Private incubation first | Scoring / Materializer Runtime | Split only public-input-only components later; keep proprietary tuning, live workers, private evidence rows, source adapters, and graph persistence out. |
 | Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | Syndai/private systems until an explicit EvalRank persistence cutover exists | DB Bootstrap / Syndai Ops | Keep private. If EvalRank later owns persistence, design the migration ownership and public exposure model before adding migrations here. |
 | Hosted auth, telemetry, billing/admin, GTM, vendor intent, deploy config, credentials, and live project refs | Private hosted systems | Hosted Ops / GTM, Secrets / Deploy Ops | Keep private unless rewritten later as product-neutral public docs with all operational identifiers removed. |
@@ -115,6 +118,8 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |
 | Primitive and sequence field hardening for existing public payloads. | Already ported because it aligns existing Python contracts with existing schemas without adding new public surface or private runtime behavior. | Public Contracts, Methods / Schemas |
 | Private Syndai dirty worktree contained only Memphant spec edits during the latest check. | Do not port into EvalRank. Keep out of this public repo unless a future task extracts a concrete EvalRank contract and strips private context. | Docs / Public Planning |
+| Private EvalRank source scan found spec docs, build-readiness plans, migration bootstrap, migration guards, doc validators, and UI proof assets. | Document as routing input only; do not copy raw private docs, proof assets, migration scripts, or private plan text into the public repo. | Docs / Public Planning, Public Surface Contracts, DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
+| GitHub repository security metadata check. | Public visibility, secret scanning, push protection, and Dependabot security updates are enabled; local public-boundary checks remain required before porting or pushing. | Open-Core Boundary / CI, Secrets / Deploy Ops |
 | Next non-fixture recommendation client behavior. | Port later only after client semantics are pinned against `POST /v1/recommendations`; keep auth, tenant context, hosted receipts, private DTOs, and service dependencies private. | SDK / CLI / MCP, Public Surface Contracts |
 | Runtime scorer/materializer and graph/evidence lookup. | Keep private during incubation; split only public-input-only code later. | Scoring / Materializer Runtime |
 | DB migrations, Supabase bootstrap, grants/RLS, live checks, and deploy wiring. | Keep in Syndai/private systems until an explicit EvalRank persistence cutover exists. | DB Bootstrap / Syndai Ops, Hosted Ops / Deploy Ops |
@@ -130,6 +135,7 @@ Reviewed the private-side EvalRank planning and migration surface by category on
 | Port REST/OpenAPI contracts here only after a concrete public route contract exists; keep shared retry/error vocabulary public and hosted enforcement private. | Public Surface Contracts |
 | Port deterministic runtime code only after it is separable from private data, live workers, proprietary tuning, and hosted-only controls. | Scoring / Materializer Runtime |
 | Keep Supabase schema bootstrap, migration runners, roles, workload isolation, live deployment wiring, and operational checks private during incubation. | DB Bootstrap / Syndai Ops |
+| Keep private EvalRank spec docs, build-readiness plans, UI proof assets, and doc validators out of this repo unless a public-safe contract or deterministic public doc check is deliberately extracted. | Docs / Public Planning, Open-Core Boundary / CI, Public Surface Contracts |
 | Keep held-out tasks, graders, answers, traces, private benchmark results, and judge-calibration material private. | Evaluation Integrity |
 | Keep telemetry operations, billing/admin, vendor intent, account operations, private integrations, credentials, and live project refs out of this repo. | Hosted Ops / GTM, Secrets / Deploy Ops |
 
@@ -155,6 +161,10 @@ The latest private-side scan found EvalRank planning material in private spec, A
 | Public API route shapes and Problem Details error semantics | Shared retry-aware Problem Details semantics are ported; port only concrete public route contracts after that, and keep hosted auth, tenant logic, receipt storage, private DTOs, live throttling, and private problem types out. | Public Surface Contracts |
 | Public use-case taxonomy names, definitions, entity-kind spans, safety-overlay policy, and sanitized method explanation | Ported as a storage-free `UseCaseCatalog` contract, synthetic fixture, schema, SDK/CLI/MCP parity surface, `GET /v1/use-cases` OpenAPI route contract, and public method note. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP, Methods / Schemas |
 | Public recommendation comparability discriminator and ranking-group row shape | Ported as closed `RankingGroup` rows for `kind-grouped` responses; this only says groups are ranked within one entity type. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
+| Private build-readiness plans under `docs/superpowers/plans/evalrank/` | Keep raw plans private; port only public-safe status/build-order summaries and dated build logs. | Docs / Public Planning |
+| Private EvalRank spec docs under `docs/superpowers/specs/evidence-ranked-platform/` | Use as inputs only. Extract one storage-free API, method, or payload contract at a time, rewrite with synthetic examples, and test before porting. | Public Contracts, Public Surface Contracts, Methods / Schemas |
+| Syndai EvalRank doc validators and tests | Keep private validators with private specs. Distill public-facing invariants into this repo only when public docs carry the matching claim. | Docs / Public Planning, Open-Core Boundary / CI |
+| UI proof assets and hosted-product design docs | Keep private until a public UI route or public product doc intentionally exists; then port only public-safe assets or generated/synthetic screenshots. | Public Surface Contracts, Hosted Ops / GTM |
 | Use-case benchmark weights, IRT fit clusters, benchmark crosswalk, confidence policies, and thin-coverage/synthesis details | Keep private during incubation; later publish only sanitized method explanations that omit weights, held-out tasks, private corpora, proprietary thresholds, and benchmark outputs. | Methods / Schemas, Scoring / Materializer Runtime, Evaluation Integrity |
 | Public scoring-stage names, use-case taxonomy, trust/freshness vocabulary, and method-boundary explanations | Scoring-stage and use-case taxonomy notes are ported; future notes must omit formulas, thresholds, held-out eval details, private benchmark outputs, and production traces. | Methods / Schemas |
 | Boundary checks, license/notice hygiene, schema drift tests, and secret/private-data guards | Port aggressively when they reduce public leak risk or contract drift. | Open-Core Boundary / CI |
@@ -185,6 +195,8 @@ Use this table for the next port decision. The destination is this public repo o
 | Recommendation comparability and ranking groups | Ported as storage-free `RankingGroup` rows for within-kind rankings only; cross-kind normalization, scorer internals, and private score semantics stay private. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | Recommendation receipt route and HMAC-backed hosted ID derivation | Do not port yet. Public aliases are enough for open-core interoperability; secret-backed derivation belongs with hosted route design. | Public Surface Contracts, Hosted Ops / Deploy Ops |
 | Entity graph tables, evidence ledger storage, methodology table, migrations, grants, RLS, and live DB checks | Keep in Syndai/private systems until EvalRank owns persistence or its own Supabase project. | DB Bootstrap / Syndai Ops |
+| EvalRank migration guard and runner scripts in Syndai | Keep private with the shared Finn/Supabase bootstrap. If persistence moves here, port the policy as a new public migration subsystem, not by copying live operational scripts. | DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
+| Public-facing doc-drift checks distilled from Syndai EvalRank validators | Port later only after matching public claims exist; do not copy private spec names, private plan paths, or private-only assertions. | Open-Core Boundary / CI, Docs / Public Planning |
 | Deterministic scorer and materializer runtime | Incubate privately first, then split only public-input-only pieces that do not depend on production rows, private workers, or proprietary tuning. | Scoring / Materializer Runtime |
 | SDK/CLI/MCP behavior beyond fixtures | Port one public contract at a time after the corresponding contract and schema are pinned. | SDK / CLI / MCP |
 | UI routes, API-route navigation docs, deeplinks, and `NAVIGATION.md` | API route navigation is ported for the first public route; UI/deeplink docs wait until those surfaces exist. | Public Surface Contracts, Docs / Public Planning |
@@ -207,7 +219,6 @@ Use this table for the next port decision. The destination is this public repo o
 | REST/OpenAPI contracts | This repo | Public Surface Contracts | `GET /v1/use-cases`, `POST /v1/recommendations`, and retry-aware Problem Details contracts ported |
 | SDK, CLI, and MCP implementations | This repo | SDK / CLI / MCP | Python SDK re-export, TypeScript public types, CLI fixture command, and MCP fixture adapter ported, including candidate-set, stage-candidate, result-row, use-cases, ranking-group, evidence-set, and exclusion fixture surfaces |
 | Public methodology notes | This repo | Methods / Schemas | Scoring-stage and use-case taxonomy notes ported; future notes only after removing held-out and proprietary details |
-| Deterministic scorer/materializer runtime | Private incubation first | Scoring / Materializer Runtime | Port later only if storage-free and public-input-only |
 | Finn/Supabase `evalrank` schema bootstrap and migration runner | Syndai repo | DB Bootstrap / Syndai Ops | Keep private during incubation |
 | Secrets, Doppler config, live project refs, and deployment credentials | Private ops only | Secrets / Deploy Ops | Never port |
 | Production evidence graph rows, telemetry, and customer traces | Private hosted systems | Hosted Ops | Never port |
@@ -237,6 +248,8 @@ Use this table for the next port decision. The destination is this public repo o
 - Public scoring method details after proprietary thresholds, held-out eval details, and private ranking experiments are removed.
 - Deterministic scorer/materializer runtime after it is split from private evidence rows, hosted workers, and proprietary tuning.
 - Persistence migrations only after EvalRank owns its own deploy/release path or has its own Supabase project.
+- Public migration-policy checks only after EvalRank owns persistence; do not copy Syndai live migration scripts or deployment assumptions.
+- Public doc-drift checks distilled from private validators only after the corresponding public docs exist.
 - UI route docs after routes, deeplinks, or navigation-critical UI docs exist.
 
 ## Never Port
@@ -283,3 +296,16 @@ Before moving anything into this repo, verify:
 - If sensitive data reaches Git history, treat it as compromised, rotate credentials, and follow a coordinated removal process.
 - Supabase custom schemas must be deliberately exposed and granted for API access; EvalRank incubation uses private schema bootstrap outside this public repo: https://supabase.com/docs/guides/api/using-custom-schemas
 - For public API design, prefer a dedicated exposed API schema and keep internal tables/helpers in non-exposed schemas; grants and RLS together decide what API roles can touch: https://supabase.com/docs/guides/api/securing-your-api
+
+## Current GitHub Public-Repo Check
+
+Checked on 2026-06-26 with `gh api repos/siddmax/evalrank`.
+
+| Setting | Status | Porting implication |
+| --- | --- | --- |
+| Repository visibility | Public | Treat every committed byte and all future history as public. |
+| Secret scanning | Enabled | Backstop only; still run the local boundary check before every push. |
+| Secret scanning push protection | Enabled | Helps block supported secrets before push, but does not replace review. |
+| Dependabot security updates | Enabled | Dependency security backstop for future package work. |
+| Secret scanning non-provider patterns | Disabled | Revisit under Secrets / Deploy Ops if EvalRank later defines organization-specific secret formats. |
+| Secret scanning validity checks | Disabled | Revisit under Secrets / Deploy Ops if managed secrets ever become part of a public workflow. |
