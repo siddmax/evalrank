@@ -33,3 +33,4 @@ Date: 2026-06-26
 - Green: `python3 -m unittest tests.test_core_contracts tests.test_core_fixtures tests.test_schema_contracts tests.test_cli_fixture tests.test_mcp_fixture tests.test_sdk_python tests.test_sdk_ts tests.test_openapi_contract`
 - Green: `npm run check --prefix packages/sdk-ts`
 - Green: `make check`
+- Pushed directly to `main` and verified the matching GitHub Actions `CI` run.

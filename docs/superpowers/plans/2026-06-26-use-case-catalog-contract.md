@@ -64,7 +64,7 @@
 - [x] Run `npm run check --prefix packages/sdk-ts`.
 - [x] Run `make check`.
 - [x] Run gstack pre-landing review.
-- [ ] Commit and push directly to `main`; verify the GitHub Actions run for the pushed SHA.
+- [x] Commit and push directly to `main`; verify the GitHub Actions run for the pushed SHA.
 
 ## GSTACK REVIEW REPORT
 
