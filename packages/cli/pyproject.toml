@@ -1,0 +1,12 @@
+[project]
+name = "evalrank-cli"
+version = "0.0.0"
+description = "Public EvalRank CLI"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = [
+  "evalrank-core==0.0.0"
+]
+
+[project.scripts]
+evalrank = "evalrank_cli:main"

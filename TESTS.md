@@ -10,6 +10,7 @@ make check
 
 - `tests/test_core_contracts.py` checks public recommendation, ranking, and evidence contract behavior.
 - `tests/test_core_fixtures.py` checks reusable public recommendation and evidence fixture payloads.
+- `tests/test_cli_fixture.py` checks deterministic public CLI fixture output and invalid input handling.
 - `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys.
 - `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.
