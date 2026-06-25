@@ -44,6 +44,34 @@
         }
       }
     },
+    "/v1/scoring-stages": {
+      "get": {
+        "tags": [
+          "metadata"
+        ],
+        "operationId": "listScoringStages",
+        "summary": "List public scoring stages",
+        "description": "Contract-only public scoring-stage catalog route. Formulas, thresholds, scorer behavior, storage, and hosted deployment details are intentionally outside this file.",
+        "responses": {
+          "200": {
+            "description": "Public scoring-stage catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScoringStageCatalog"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
     "/v1/recommendations": {
       "post": {
         "tags": [
@@ -102,6 +130,9 @@
       },
       "UseCaseCatalog": {
         "$ref": "use-case-catalog.schema.json"
+      },
+      "ScoringStageCatalog": {
+        "$ref": "scoring-stage-catalog.schema.json"
       },
       "ProblemDetails": {
         "$ref": "problem.schema.json"

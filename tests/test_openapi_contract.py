@@ -40,6 +40,20 @@ class OpenApiContractTests(unittest.TestCase):
         self.assertEqual("#/components/responses/RateLimited", operation["responses"]["429"]["$ref"])
         self.assertEqual("#/components/responses/ServiceUnavailable", operation["responses"]["503"]["$ref"])
 
+    def test_public_openapi_contract_pins_scoring_stages_route(self):
+        spec = _openapi()
+        operation = spec["paths"]["/v1/scoring-stages"]["get"]
+
+        self.assertEqual("listScoringStages", operation["operationId"])
+        self.assertEqual(["metadata"], operation["tags"])
+        self.assertNotIn("requestBody", operation)
+        self.assertEqual(
+            "#/components/schemas/ScoringStageCatalog",
+            operation["responses"]["200"]["content"]["application/json"]["schema"]["$ref"],
+        )
+        self.assertEqual("#/components/responses/RateLimited", operation["responses"]["429"]["$ref"])
+        self.assertEqual("#/components/responses/ServiceUnavailable", operation["responses"]["503"]["$ref"])
+
     def test_openapi_components_reference_existing_public_schemas(self):
         spec = _openapi()
 
@@ -58,6 +72,10 @@ class OpenApiContractTests(unittest.TestCase):
         self.assertEqual(
             "use-case-catalog.schema.json",
             spec["components"]["schemas"]["UseCaseCatalog"]["$ref"],
+        )
+        self.assertEqual(
+            "scoring-stage-catalog.schema.json",
+            spec["components"]["schemas"]["ScoringStageCatalog"]["$ref"],
         )
         for schema in spec["components"]["schemas"].values():
             ref = schema["$ref"]

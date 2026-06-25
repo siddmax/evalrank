@@ -47,7 +47,7 @@ Scoring stage catalog schemas expose only public stage order, contract refs, and
 
 Problem Details schemas intentionally allow extension members. Public extensions are limited to `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url`; private problem types, hosted error internals, auth context, and tenant details stay outside this repo.
 
-The OpenAPI contract includes `GET /v1/use-cases` and `POST /v1/recommendations`. It reuses response components for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts. `429` responses expose `Retry-After`, `RateLimit`, and `RateLimit-Policy` header contracts; the repo does not implement live throttling.
+The OpenAPI contract includes `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`. It reuses response components for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts. `429` responses expose `Retry-After`, `RateLimit`, and `RateLimit-Policy` header contracts; the repo does not implement live throttling.
 
 Run:
 
