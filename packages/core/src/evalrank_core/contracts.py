@@ -12,6 +12,9 @@ TRUST_TIERS = {"verified", "standardized", "self-reported", "tracking-only"}
 FRESHNESS_STATUSES = {"fresh", "stale", "recalibrating"}
 COMPARABILITY_MODES = {"single-scale", "kind-grouped"}
 EVIDENCE_KINDS = {"attestation", "benchmark", "documentation", "runtime-observation", "trace"}
+RESULT_ENTITY_KINDS = {"model", "tool_server", "agent"}
+RESULT_VERIFICATION_STATES = {"verified", "provisional"}
+RESULT_FLAG_KEYS = ("saturated", "contaminated", "judge_model_dependent", "scaffold_nonstandard")
 THE_CALL_DECISIONS = {"recommend", "abstain"}
 _FINGERPRINT_RE = re.compile(r"^[a-f0-9]{64}$")
 _METHODOLOGY_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$")
@@ -237,6 +240,90 @@ class EvidenceItem:
             "summary": self.summary,
             "score": None if self.score is None else _round_score(self.score),
             "metadata": {key: self.metadata[key] for key in sorted(self.metadata)},
+        }
+
+
+@dataclass(frozen=True)
+class ResultRow:
+    object: ClassVar[str] = "result_row"
+
+    entity_id: str
+    entity_kind: str
+    benchmark_id: str
+    benchmark_version: str
+    harness: str
+    harness_version: str
+    is_self_reported: bool
+    n_items: int
+    ci95: ConfidenceInterval
+    score_raw: float
+    score_unit: str
+    date_run: str
+    model_version: str
+    provenance: dict[str, Any]
+    source_url: str
+    attribution_string: str
+    flags: dict[str, bool]
+    verification_state: str
+
+    def __post_init__(self) -> None:
+        for name in (
+            "entity_id",
+            "benchmark_id",
+            "benchmark_version",
+            "harness",
+            "harness_version",
+            "score_unit",
+            "date_run",
+            "model_version",
+            "source_url",
+            "attribution_string",
+        ):
+            _require_nonempty_string(name, getattr(self, name))
+        if self.entity_kind not in RESULT_ENTITY_KINDS:
+            raise ValueError(f"entity_kind must be one of {sorted(RESULT_ENTITY_KINDS)}")
+        if not isinstance(self.is_self_reported, bool):
+            raise ValueError("is_self_reported must be a boolean")
+        if not isinstance(self.n_items, int) or isinstance(self.n_items, bool) or self.n_items < 0:
+            raise ValueError("n_items must be an integer >= 0")
+        if not isinstance(self.ci95, ConfidenceInterval):
+            raise TypeError("ci95 must be a ConfidenceInterval")
+        _require_finite_number("score_raw", self.score_raw)
+        if not isinstance(self.provenance, dict):
+            raise ValueError("provenance must be a JSON object")
+        _require_string_keys("provenance", self.provenance)
+        _normalize_json_object("provenance", self.provenance)
+        if not isinstance(self.flags, dict):
+            raise ValueError("flags must be a JSON object")
+        if set(self.flags) != set(RESULT_FLAG_KEYS):
+            raise ValueError(f"flags must include {', '.join(RESULT_FLAG_KEYS)}")
+        for key, value in self.flags.items():
+            if not isinstance(value, bool):
+                raise ValueError(f"flags.{key} must be a boolean")
+        if self.verification_state not in RESULT_VERIFICATION_STATES:
+            raise ValueError(f"verification_state must be one of {sorted(RESULT_VERIFICATION_STATES)}")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "entity_id": self.entity_id,
+            "entity_kind": self.entity_kind,
+            "benchmark_id": self.benchmark_id,
+            "benchmark_version": self.benchmark_version,
+            "harness": self.harness,
+            "harness_version": self.harness_version,
+            "is_self_reported": self.is_self_reported,
+            "n_items": self.n_items,
+            "ci95": self.ci95.to_list(),
+            "score_raw": _round_score(float(self.score_raw)),
+            "score_unit": self.score_unit,
+            "date_run": self.date_run,
+            "model_version": self.model_version,
+            "provenance": _normalize_json_object("provenance", self.provenance),
+            "source_url": self.source_url,
+            "attribution_string": self.attribution_string,
+            "flags": {key: self.flags[key] for key in RESULT_FLAG_KEYS},
+            "verification_state": self.verification_state,
         }
 
 
@@ -636,6 +723,16 @@ def _require_unit_interval(name: str, value: float) -> None:
 def _require_nonnegative_finite(name: str, value: float) -> None:
     if not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value) or value < 0:
         raise ValueError(f"{name} must be a finite number >= 0")
+
+
+def _require_finite_number(name: str, value: float) -> None:
+    if not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value):
+        raise ValueError(f"{name} must be a finite number")
+
+
+def _require_nonempty_string(name: str, value: Any) -> None:
+    if not isinstance(value, str) or not value:
+        raise ValueError(f"{name} is required")
 
 
 def _require_methodology_version(value: str) -> None:

@@ -19,6 +19,7 @@ from evalrank_core.contracts import (  # noqa: E402
     RawEntry,
     Recommendation,
     RankedEntity,
+    ResultRow,
     StageCandidate,
     TheCall,
 )
@@ -397,6 +398,112 @@ class CoreContractTests(unittest.TestCase):
                 summary="invalid score",
                 score=1.2,
             )
+
+    def test_result_row_serializes_public_provenance_envelope(self):
+        row = ResultRow(
+            entity_id="tool:public-search-demo",
+            entity_kind="tool_server",
+            benchmark_id="bench_public_search_freshness",
+            benchmark_version="2026-06-25",
+            harness="public-fixture-harness",
+            harness_version="2026-06-25.1",
+            is_self_reported=False,
+            n_items=40,
+            ci95=ConfidenceInterval(low=0.80, high=0.88),
+            score_raw=0.8754321,
+            score_unit="pass_rate",
+            date_run="2026-06-25",
+            model_version="public-search-demo@2026-06-25",
+            provenance={
+                "raw_snapshot_uri": "https://example.com/evalrank/public-search-demo/raw.json",
+                "source": "public-fixture",
+            },
+            source_url="https://example.com/evalrank/public-search-demo",
+            attribution_string="Synthetic public fixture",
+            flags={
+                "saturated": False,
+                "contaminated": False,
+                "judge_model_dependent": False,
+                "scaffold_nonstandard": False,
+            },
+            verification_state="verified",
+        )
+
+        payload = row.to_dict()
+
+        self.assertEqual("result_row", payload["object"])
+        self.assertEqual("tool:public-search-demo", payload["entity_id"])
+        self.assertEqual("tool_server", payload["entity_kind"])
+        self.assertEqual([0.8, 0.88], payload["ci95"])
+        self.assertEqual(0.875432, payload["score_raw"])
+        self.assertEqual(["raw_snapshot_uri", "source"], sorted(payload["provenance"]))
+        self.assertEqual(
+            {
+                "contaminated": False,
+                "judge_model_dependent": False,
+                "saturated": False,
+                "scaffold_nonstandard": False,
+            },
+            payload["flags"],
+        )
+        self.assertEqual("verified", payload["verification_state"])
+
+    def test_result_row_rejects_invalid_public_shape(self):
+        valid = {
+            "entity_id": "tool:public-search-demo",
+            "entity_kind": "tool_server",
+            "benchmark_id": "bench_public_search_freshness",
+            "benchmark_version": "2026-06-25",
+            "harness": "public-fixture-harness",
+            "harness_version": "2026-06-25.1",
+            "is_self_reported": False,
+            "n_items": 40,
+            "ci95": ConfidenceInterval(low=0.80, high=0.88),
+            "score_raw": 0.8754321,
+            "score_unit": "pass_rate",
+            "date_run": "2026-06-25",
+            "model_version": "public-search-demo@2026-06-25",
+            "provenance": {"source": "public-fixture"},
+            "source_url": "https://example.com/evalrank/public-search-demo",
+            "attribution_string": "Synthetic public fixture",
+            "flags": {
+                "saturated": False,
+                "contaminated": False,
+                "judge_model_dependent": False,
+                "scaffold_nonstandard": False,
+            },
+            "verification_state": "verified",
+        }
+
+        with self.assertRaisesRegex(ValueError, "entity_kind"):
+            ResultRow(**{**valid, "entity_kind": "mcp_server"})
+
+        with self.assertRaisesRegex(ValueError, "n_items"):
+            ResultRow(**{**valid, "n_items": -1})
+
+        with self.assertRaisesRegex(ValueError, "score_raw"):
+            ResultRow(**{**valid, "score_raw": float("nan")})
+
+        with self.assertRaisesRegex(ValueError, "source_url"):
+            ResultRow(**{**valid, "source_url": 123})
+
+        with self.assertRaisesRegex(ValueError, "provenance"):
+            ResultRow(**{**valid, "provenance": {1: "not-public-json-key"}})
+
+        with self.assertRaisesRegex(ValueError, "flags"):
+            ResultRow(**{**valid, "flags": ["saturated"]})
+
+        with self.assertRaisesRegex(ValueError, "flags"):
+            ResultRow(**{**valid, "flags": {"saturated": False}})
+
+        with self.assertRaisesRegex(ValueError, "flags"):
+            ResultRow(**{**valid, "flags": {**valid["flags"], "extra": False}})
+
+        with self.assertRaisesRegex(ValueError, "flags"):
+            ResultRow(**{**valid, "flags": {**valid["flags"], "saturated": "false"}})
+
+        with self.assertRaisesRegex(ValueError, "verification_state"):
+            ResultRow(**{**valid, "verification_state": "unverified"})
 
     def test_exclusion_serializes_public_subject_and_reason(self):
         exclusion = Exclusion(

@@ -35,6 +35,17 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
         self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
 
+    def test_fixture_result_row_writes_public_json(self):
+        stdout = StringIO()
+
+        exit_code = main(["fixture", "result-row"], stdout=stdout, stderr=StringIO())
+
+        self.assertEqual(0, exit_code)
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual("result_row", payload["object"])
+        self.assertEqual("bench_public_search_freshness", payload["benchmark_id"])
+        self.assertEqual("verified", payload["verification_state"])
+
     def test_fixture_exclusion_writes_public_json(self):
         stdout = StringIO()
 

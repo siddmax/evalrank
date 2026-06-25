@@ -17,6 +17,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_ranked_entity,
     sample_raw_entry,
     sample_recommendation,
+    sample_result_row,
     sample_stage_candidate,
 )
 
@@ -62,6 +63,17 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("trace", payload["kind"])
         self.assertEqual("public-fixture", payload["source"])
         self.assertEqual(["latency_ms"], sorted(payload["metadata"]))
+
+    def test_sample_result_row_is_public_contract_payload(self):
+        row = sample_result_row()
+        payload = row.to_dict()
+
+        self.assertEqual("result_row", payload["object"])
+        self.assertEqual("tool:public-search-demo", payload["entity_id"])
+        self.assertEqual("tool_server", payload["entity_kind"])
+        self.assertEqual("bench_public_search_freshness", payload["benchmark_id"])
+        self.assertEqual("pass_rate", payload["score_unit"])
+        self.assertEqual("verified", payload["verification_state"])
 
     def test_sample_exclusion_is_public_contract_payload(self):
         exclusion = sample_exclusion()

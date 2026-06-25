@@ -10,16 +10,16 @@ Last updated: 2026-06-26
 - `CLAUDE.md` shim to `@AGENTS.md`.
 - Public boundary checker for private imports, disallowed coupling, excluded method markers, and missing package license/notice files.
 - Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
-- Core Python capability fingerprint, raw entry, request, candidate set, stage candidate, evidence set, exclusion, `the_call`, recommendation, and evidence contracts in `packages/core`.
-- Public core fixture factory for canonical capability fingerprint, raw entry, request, candidate set, stage candidate, evidence set, exclusion, recommendation, and evidence payloads.
-- Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, evidence sets, exclusions, ranked entities, recommendations, evidence items, and retry-aware RFC 9457 Problem Details.
+- Core Python capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, result row, evidence set, exclusion, `the_call`, and recommendation contracts in `packages/core`.
+- Public core fixture factory for canonical capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, result row, evidence set, exclusion, and recommendation payloads.
+- Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, evidence sets, exclusions, ranked entities, recommendations, evidence items, and retry-aware RFC 9457 Problem Details.
 - Public OpenAPI 3.1.1 contract for `POST /v1/recommendations`, including reusable Problem Details responses for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts.
 - Public retry-aware Problem Details extensions: `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url`.
 - Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
 - Python SDK package metadata and public core contract re-exports.
 - TypeScript SDK package metadata and mirrored public contract types/constants, including public Problem Details codes and type shape.
-- CLI package metadata and deterministic public fixture command.
-- MCP package metadata and deterministic public fixture adapter.
+- CLI package metadata and deterministic public fixture command, including `result-row`.
+- MCP package metadata and deterministic public fixture adapter, including `result-row`.
 - Public scoring-stage vocabulary and method-boundary note.
 - Runnable public fixture example.
 - Schema drift tests for core payload keys and public enum constants.
@@ -55,18 +55,19 @@ Last updated: 2026-06-26
 - Exclusion contract build log in `docs/build-log/2026-06-26-exclusion-contract.md`.
 - Stage candidate contract build log in `docs/build-log/2026-06-26-stage-candidate-contract.md`.
 - Retry-aware Problem Details contract build log in `docs/build-log/2026-06-26-problem-details-retry-contract.md`.
+- Result row contract build log in `docs/build-log/2026-06-26-result-row-contract.md`.
 
 ## Current Public Surface
 
 | Surface | Built | Not built yet |
 | --- | --- | --- |
-| Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, `EvidenceItem`, public constants, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, Stage-2+ scorer rows, trust/security policy runtime. |
-| Schemas | JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, evidence sets, exclusions, ranked entities, recommendations, evidence items, and retry-aware RFC 9457 Problem Details, plus OpenAPI 3.1.1 for `POST /v1/recommendations`, with drift tests against public contracts and pinned public patterns. | Persistence schemas, scorer-runtime schemas, and additional route-specific problem types beyond the current public error vocabulary. |
+| Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `ResultRow`, `EvidenceSet`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, public constants, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, Stage-2+ scorer rows, trust/security policy runtime. |
+| Schemas | JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, evidence sets, exclusions, ranked entities, recommendations, evidence items, and retry-aware RFC 9457 Problem Details, plus OpenAPI 3.1.1 for `POST /v1/recommendations`, with drift tests against public contracts and pinned public patterns. | Persistence schemas, scorer-runtime schemas, and additional route-specific problem types beyond the current public error vocabulary. |
 | Python SDK | Package metadata and public re-exports from `evalrank_core`. | Installed package release flow and non-fixture client behavior. |
-| TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `Exclusion`, `TheCall`, and `ProblemDetails`. | Built JS distribution, published package release flow, and non-fixture client behavior. |
-| CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture evidence-set`, `fixture exclusion`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
-| MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
-| Methods | Public scoring-stage vocabulary, including `CandidateSet`, `StageCandidate`, `EvidenceSet`, and `Exclusion`, and private-boundary note. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
+| TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry`, `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, `TheCall`, and `ProblemDetails`. | Built JS distribution, published package release flow, and non-fixture client behavior. |
+| CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture result-row`, `fixture evidence-set`, `fixture exclusion`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
+| MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence`, `result-row`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
+| Methods | Public scoring-stage vocabulary, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`, and private-boundary note. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
 | Examples | `examples/public_fixture.py` prints synthetic public recommendation and evidence JSON. | Non-fixture demos, live API examples, and private-data examples. |
 | Docs | Status tracker, repo structure map, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
 
@@ -78,20 +79,21 @@ Last updated: 2026-06-26
   - Public JSON Schemas in `schemas/`
   - Public porting decisions in `docs/PORTING.md`
 - Private Syndai build-readiness docs and operational plans, summarized here only when public-safe.
-- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. Public recommendation identifier aliases, storage-free `RawEntry`, public `CandidateSet`, public `StageCandidate`, public `EvidenceSet`, public `Exclusion`, structured public `the_call`, the first storage-free OpenAPI route contract, and retry-aware public Problem Details error shape have moved. The private-side planning scan is summarized in `docs/PORTING.md` by workstream, not copied. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, graph lookup, live evidence lookup, evidence ledger runtime, Stage-2+ scorer rows, gate policy, private reason taxonomy, scorer thresholds, private problem types, and held-out evaluation material stay private.
+- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. Public recommendation identifier aliases, storage-free `RawEntry`, public `CandidateSet`, public `StageCandidate`, public `EvidenceItem`, public `ResultRow`, public `EvidenceSet`, public `Exclusion`, structured public `the_call`, the first storage-free OpenAPI route contract, and retry-aware public Problem Details error shape have moved. The private-side planning scan is summarized in `docs/PORTING.md` by workstream, not copied. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, graph lookup, live evidence lookup, evidence ledger runtime, Stage-2+ scorer rows, gate policy, private reason taxonomy, scorer thresholds, private problem types, and held-out evaluation material stay private.
 
 ## Current Port-Over Snapshot
 
 | Change or source area | Public status | Owning workstream |
 | --- | --- | --- |
 | Public repository scaffold, package boundaries, CI, license/notice hygiene, and boundary scanner | Ported here | Open-Core Boundary / CI |
-| Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, candidate set, stage candidate, evidence set, exclusion, `the_call`, ranked entity, recommendation, recommendation aliases, entity reference, and evidence item | Ported here | Public Contracts |
+| Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, evidence set, exclusion, `the_call`, ranked entity, recommendation, recommendation aliases, and entity reference | Ported here | Public Contracts |
 | Public JSON Schemas and schema drift tests for current payloads | Ported here, including retry-aware Problem Details extensions | Methods / Schemas, Public Contracts, Public Surface Contracts |
-| Synthetic fixtures, runnable public example, CLI fixture command, MCP fixture adapter, Python SDK re-exports, and TypeScript public types | Ported here, including candidate-set, stage-candidate, evidence-set, and exclusion fixture surfaces | SDK / CLI / MCP, Examples |
-| Public scoring-stage vocabulary and private-boundary note | Ported here, including `CandidateSet`, `StageCandidate`, `EvidenceSet`, and `Exclusion` | Methods / Schemas |
+| Synthetic fixtures, runnable public example, CLI fixture command, MCP fixture adapter, Python SDK re-exports, and TypeScript public types | Ported here, including candidate-set, stage-candidate, result-row, evidence-set, and exclusion fixture surfaces | SDK / CLI / MCP, Examples |
+| Public scoring-stage vocabulary and private-boundary note | Ported here, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion` | Methods / Schemas |
 | `RawEntry` ingestion-normalization contract | Ported here as a storage-free synthetic fixture contract | Public Contracts |
 | `CandidateSet` candidate-resolution contract | Ported here as a storage-free list of public `EntityRef` candidates | Public Contracts, Methods / Schemas |
 | `StageCandidate` Stage-1 retrieval row | Ported here as a storage-free candidate fingerprint plus public entity, fused score, RRF ranks, and retrieval provenance | Public Contracts, Methods / Schemas |
+| `ResultRow` ingested result provenance envelope | Ported here as a storage-free benchmark/result row with public flags and verification state | Public Contracts, Methods / Schemas |
 | `EvidenceSet` evidence-attachment contract | Ported here as a storage-free list of public `EvidenceItem` rows; empty lists are allowed for no-evidence or abstention paths | Public Contracts, Methods / Schemas |
 | `Exclusion` exclusions-with-reasons contract | Ported here as a storage-free subject plus public reason/detail row | Public Contracts, Methods / Schemas |
 | Structured public `the_call` / decision-confidence shape | Ported here as a storage-free nested recommendation contract | Public Contracts, Methods / Schemas |
@@ -105,7 +107,7 @@ Last updated: 2026-06-26
 
 | Priority | Workstream | Destination | Public handling |
 | --- | --- | --- | --- |
-| 1 | Public Contracts | This repo | First raw entry, request, candidate set, stage candidate, evidence set, exclusion, `the_call`, recommendation, recommendation alias, and entity/evidence slices ported; extend only for new public payload contracts. |
+| 1 | Public Contracts | This repo | First raw entry, request, candidate set, stage candidate, result row, evidence set, exclusion, `the_call`, recommendation, recommendation alias, and entity/evidence slices ported; extend only for new public payload contracts. |
 | 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary ported; add details only after private material is removed. |
 | 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK types, CLI fixture, and MCP fixture slices ported; extend after concrete non-fixture contracts are pinned. |
 | 4 | Docs / Public Planning | This repo | Current status, repo structure, porting docs, and first runnable example are public-safe; keep updating them with each port. |

@@ -18,6 +18,9 @@ from evalrank_core.contracts import (  # noqa: E402
     Freshness,
     Recommendation,
     RankedEntity,
+    RESULT_ENTITY_KINDS,
+    RESULT_FLAG_KEYS,
+    RESULT_VERIFICATION_STATES,
     THE_CALL_DECISIONS,
     TRUST_TIERS,
 )
@@ -28,6 +31,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_evidence_set,
     sample_evaluation_request,
     sample_raw_entry,
+    sample_result_row,
     sample_stage_candidate,
 )
 
@@ -57,6 +61,7 @@ class SchemaContractTests(unittest.TestCase):
         candidate_set_schema = _schema("candidate-set.schema.json")
         fingerprint_schema = _schema("capability-fingerprint.schema.json")
         raw_entry_schema = _schema("raw-entry.schema.json")
+        result_row_schema = _schema("result-row.schema.json")
 
         ranked_payload = _row().to_dict()
         recommendation_payload = Recommendation.single_scale(
@@ -96,6 +101,9 @@ class SchemaContractTests(unittest.TestCase):
         raw_entry_payload = sample_raw_entry().to_dict()
         self.assertEqual(set(raw_entry_payload), set(raw_entry_schema["properties"]))
         self.assertLessEqual(set(raw_entry_schema["required"]), set(raw_entry_payload))
+        result_row_payload = sample_result_row().to_dict()
+        self.assertEqual(set(result_row_payload), set(result_row_schema["properties"]))
+        self.assertLessEqual(set(result_row_schema["required"]), set(result_row_payload))
 
     def test_schemas_are_draft_2020_12_objects(self):
         for filename in (
@@ -109,6 +117,7 @@ class SchemaContractTests(unittest.TestCase):
             "candidate-set.schema.json",
             "capability-fingerprint.schema.json",
             "raw-entry.schema.json",
+            "result-row.schema.json",
             "problem.schema.json",
         ):
             schema = _schema(filename)
@@ -137,6 +146,12 @@ class SchemaContractTests(unittest.TestCase):
         )
         evidence_schema = _schema("evidence-item.schema.json")
         self.assertEqual(EVIDENCE_KINDS, set(evidence_schema["properties"]["kind"]["enum"]))
+        result_row_schema = _schema("result-row.schema.json")
+        self.assertEqual(RESULT_ENTITY_KINDS, set(result_row_schema["properties"]["entity_kind"]["enum"]))
+        self.assertEqual(
+            RESULT_VERIFICATION_STATES,
+            set(result_row_schema["properties"]["verification_state"]["enum"]),
+        )
 
     def test_methodology_version_schema_pattern_matches_pinned_format(self):
         ranked_schema = _schema("ranked-entity.schema.json")
@@ -254,6 +269,42 @@ class SchemaContractTests(unittest.TestCase):
         self.assertTrue(evidence_items["uniqueItems"])
         self.assertNotIn("minItems", evidence_items)
         self.assertEqual("evidence-item.schema.json", evidence_items["items"]["$ref"])
+
+    def test_result_row_schema_pins_public_provenance_envelope(self):
+        result_row_schema = _schema("result-row.schema.json")
+
+        self.assertEqual("result_row", result_row_schema["properties"]["object"]["const"])
+        self.assertEqual(
+            {
+                "object",
+                "entity_id",
+                "entity_kind",
+                "benchmark_id",
+                "benchmark_version",
+                "harness",
+                "harness_version",
+                "is_self_reported",
+                "n_items",
+                "ci95",
+                "score_raw",
+                "score_unit",
+                "date_run",
+                "model_version",
+                "provenance",
+                "source_url",
+                "attribution_string",
+                "flags",
+                "verification_state",
+            },
+            set(result_row_schema["required"]),
+        )
+        flags = result_row_schema["properties"]["flags"]
+        self.assertFalse(flags["additionalProperties"])
+        self.assertEqual(set(RESULT_FLAG_KEYS), set(flags["required"]))
+        for key in RESULT_FLAG_KEYS:
+            self.assertEqual("boolean", flags["properties"][key]["type"])
+        self.assertEqual(0, result_row_schema["properties"]["n_items"]["minimum"])
+        self.assertEqual("uri-reference", result_row_schema["properties"]["source_url"]["format"])
 
     def test_stage_candidate_schema_pins_stage_one_boundary(self):
         stage_candidate_schema = _schema("stage-candidate.schema.json")

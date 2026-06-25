@@ -10,7 +10,14 @@ CORE_SRC = REPO_ROOT / "packages" / "core" / "src"
 SDK_TS = REPO_ROOT / "packages" / "sdk-ts"
 sys.path.insert(0, str(CORE_SRC))
 
-from evalrank_core.contracts import EVIDENCE_KINDS, THE_CALL_DECISIONS, TRUST_TIERS  # noqa: E402
+from evalrank_core.contracts import (  # noqa: E402
+    EVIDENCE_KINDS,
+    RESULT_ENTITY_KINDS,
+    RESULT_FLAG_KEYS,
+    RESULT_VERIFICATION_STATES,
+    THE_CALL_DECISIONS,
+    TRUST_TIERS,
+)
 
 PROBLEM_CODES = {
     "rate_limited",
@@ -44,6 +51,12 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertEqual(EVIDENCE_KINDS, _exported_string_array(source, "EVIDENCE_KINDS"))
         self.assertEqual(THE_CALL_DECISIONS, _exported_string_array(source, "THE_CALL_DECISIONS"))
         self.assertEqual(PROBLEM_CODES, _exported_string_array(source, "PROBLEM_CODES"))
+        self.assertEqual(RESULT_ENTITY_KINDS, _exported_string_array(source, "RESULT_ENTITY_KINDS"))
+        self.assertEqual(set(RESULT_FLAG_KEYS), _exported_string_array(source, "RESULT_FLAG_KEYS"))
+        self.assertEqual(
+            RESULT_VERIFICATION_STATES,
+            _exported_string_array(source, "RESULT_VERIFICATION_STATES"),
+        )
 
     def test_public_interfaces_cover_schema_payloads(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
@@ -59,6 +72,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "RankedEntity",
             "RawEntry",
             "Recommendation",
+            "ResultRow",
             "StageCandidate",
             "TheCall",
             "ProblemDetails",
@@ -78,6 +92,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "entity_types",
             "requested_at",
             "constraints",
+            "benchmark_id",
+            "benchmark_version",
             "candidates",
             "detail",
             "evidence_items",
@@ -89,6 +105,16 @@ class TypeScriptSdkTests(unittest.TestCase):
             "observed_at",
             "summary",
             "metadata",
+            "harness_version",
+            "is_self_reported",
+            "score_raw",
+            "score_unit",
+            "date_run",
+            "model_version",
+            "provenance",
+            "source_url",
+            "attribution_string",
+            "verification_state",
             "recommendation_id",
             "recommend_id",
             "search_run_id",
@@ -104,9 +130,13 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("the_call: TheCall | null;", source)
         self.assertIn("exclusions: Exclusion[];", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
+        self.assertIn("export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];", source)
+        self.assertIn("export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];", source)
         self.assertIn("code?: ProblemCode;", source)
         self.assertIn("retriable?: boolean;", source)
         self.assertIn("[key: string]: unknown;", source)
+        self.assertIn("entity_kind: ResultEntityKind;", source)
+        self.assertIn("verification_state: ResultVerificationState;", source)
 
 
 def _exported_string_array(source: str, name: str) -> set[str]:

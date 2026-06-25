@@ -11,6 +11,10 @@ from evalrank_core.contracts import (
     RawEntry,
     Recommendation,
     RankedEntity,
+    RESULT_ENTITY_KINDS,
+    RESULT_FLAG_KEYS,
+    RESULT_VERIFICATION_STATES,
+    ResultRow,
     StageCandidate,
     THE_CALL_DECISIONS,
     TheCall,
@@ -26,6 +30,7 @@ from evalrank_core.fixtures import (
     sample_ranked_entity,
     sample_raw_entry,
     sample_recommendation,
+    sample_result_row,
     sample_stage_candidate,
 )
 
@@ -44,6 +49,10 @@ __all__ = [
     "RawEntry",
     "Recommendation",
     "RankedEntity",
+    "RESULT_ENTITY_KINDS",
+    "RESULT_FLAG_KEYS",
+    "RESULT_VERIFICATION_STATES",
+    "ResultRow",
     "StageCandidate",
     "THE_CALL_DECISIONS",
     "TheCall",
@@ -57,6 +66,7 @@ __all__ = [
     "sample_ranked_entity",
     "sample_raw_entry",
     "sample_recommendation",
+    "sample_result_row",
     "sample_stage_candidate",
     "__version__",
 ]

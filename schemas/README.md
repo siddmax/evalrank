@@ -8,6 +8,7 @@ Public EvalRank JSON Schema contracts live here.
 - `recommendation.schema.json` mirrors `Recommendation.to_dict()` and core enum constants.
 - `exclusion.schema.json` mirrors `Exclusion.to_dict()` and is referenced from recommendations.
 - `evidence-item.schema.json` mirrors `EvidenceItem.to_dict()` and core enum constants.
+- `result-row.schema.json` mirrors `ResultRow.to_dict()` for public ingested benchmark/result rows.
 - `evidence-set.schema.json` mirrors `EvidenceSet.to_dict()` and reuses `evidence-item.schema.json`.
 - `evaluation-request.schema.json` mirrors `EvaluationRequest.to_dict()`.
 - `candidate-set.schema.json` mirrors `CandidateSet.to_dict()`.
@@ -25,6 +26,8 @@ Candidate set schemas require at least one unique public `EntityRef`; source ada
 Stage candidate schemas define one storage-free Stage-1 row with RRF ranks and retrieval provenance. Stage-2+ scorer fields, graph lookup, source adapters, storage, telemetry, and private tuning stay outside this repo.
 
 Evidence set schemas allow an empty `evidence_items` array for abstention or no-evidence paths. Live evidence lookup, evidence ledger persistence, and private source rows stay outside this repo.
+
+Result row schemas expose the storage-free provenance envelope for ingested scores. Source adapters, raw production rows, private benchmark material, scorer fitting, and storage tables stay outside this repo.
 
 Exclusion schemas describe the public row shape only. Stage-0 gate policy, private safety taxonomy, and constraint evaluation stay outside this repo.
 

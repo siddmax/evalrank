@@ -24,6 +24,24 @@ export const EVIDENCE_KINDS = [
   "trace",
 ] as const;
 
+export const RESULT_ENTITY_KINDS = [
+  "model",
+  "tool_server",
+  "agent",
+] as const;
+
+export const RESULT_VERIFICATION_STATES = [
+  "verified",
+  "provisional",
+] as const;
+
+export const RESULT_FLAG_KEYS = [
+  "saturated",
+  "contaminated",
+  "judge_model_dependent",
+  "scaffold_nonstandard",
+] as const;
+
 export const THE_CALL_DECISIONS = [
   "abstain",
   "recommend",
@@ -44,6 +62,8 @@ export type TrustTier = (typeof TRUST_TIERS)[number];
 export type FreshnessStatus = (typeof FRESHNESS_STATUSES)[number];
 export type ComparabilityMode = (typeof COMPARABILITY_MODES)[number];
 export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];
+export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];
+export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];
 export type TheCallDecision = (typeof THE_CALL_DECISIONS)[number];
 export type ProblemCode = (typeof PROBLEM_CODES)[number];
 
@@ -135,6 +155,33 @@ export interface EvidenceItem {
   summary: string;
   score: number | null;
   metadata: Record<string, unknown>;
+}
+
+export interface ResultRow {
+  object: "result_row";
+  entity_id: string;
+  entity_kind: ResultEntityKind;
+  benchmark_id: string;
+  benchmark_version: string;
+  harness: string;
+  harness_version: string;
+  is_self_reported: boolean;
+  n_items: number;
+  ci95: [number, number];
+  score_raw: number;
+  score_unit: string;
+  date_run: string;
+  model_version: string;
+  provenance: Record<string, unknown>;
+  source_url: string;
+  attribution_string: string;
+  flags: {
+    saturated: boolean;
+    contaminated: boolean;
+    judge_model_dependent: boolean;
+    scaffold_nonstandard: boolean;
+  };
+  verification_state: ResultVerificationState;
 }
 
 export interface TheCall {

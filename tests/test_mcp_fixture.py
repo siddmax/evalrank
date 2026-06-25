@@ -28,6 +28,7 @@ class McpFixtureTests(unittest.TestCase):
                 "fingerprint",
                 "raw-entry",
                 "recommendation",
+                "result-row",
                 "request",
                 "stage-candidate",
             ],
@@ -49,6 +50,15 @@ class McpFixtureTests(unittest.TestCase):
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
         self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+
+    def test_call_tool_returns_public_result_row_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "result-row"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("result_row", payload["object"])
+        self.assertEqual("bench_public_search_freshness", payload["benchmark_id"])
+        self.assertEqual("verified", payload["verification_state"])
 
     def test_call_tool_returns_public_exclusion_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "exclusion"})

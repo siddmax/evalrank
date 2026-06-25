@@ -12,6 +12,7 @@ from evalrank_core.fixtures import (
     sample_evaluation_request,
     sample_raw_entry,
     sample_recommendation,
+    sample_result_row,
     sample_stage_candidate,
 )
 
@@ -40,6 +41,7 @@ def list_tools() -> list[dict[str, Any]]:
                             "fingerprint",
                             "raw-entry",
                             "recommendation",
+                            "result-row",
                             "request",
                             "stage-candidate",
                         ],
@@ -82,6 +84,8 @@ def _fixture_payload(kind: Any) -> dict[str, Any]:
         return sample_raw_entry().to_dict()
     if kind == "recommendation":
         return sample_recommendation().to_dict()
+    if kind == "result-row":
+        return sample_result_row().to_dict()
     if kind == "request":
         return sample_evaluation_request().to_dict()
     if kind == "stage-candidate":
@@ -89,7 +93,7 @@ def _fixture_payload(kind: Any) -> dict[str, Any]:
     raise ValueError(
         "fixture kind must be 'candidate-set', 'evidence', 'evidence-set', "
         "'exclusion', 'fingerprint', 'raw-entry', 'recommendation', 'request', "
-        "or 'stage-candidate'"
+        "'result-row', or 'stage-candidate'"
     )
 
 

@@ -13,6 +13,7 @@ from evalrank_core.contracts import (
     RawEntry,
     RankedEntity,
     Recommendation,
+    ResultRow,
     StageCandidate,
     TheCall,
 )
@@ -96,6 +97,37 @@ def sample_evidence_item() -> EvidenceItem:
         summary="public search demo returned a fresh cited result",
         score=0.8754321,
         metadata={"latency_ms": 1200},
+    )
+
+
+def sample_result_row() -> ResultRow:
+    return ResultRow(
+        entity_id="tool:public-search-demo",
+        entity_kind="tool_server",
+        benchmark_id="bench_public_search_freshness",
+        benchmark_version="2026-06-25",
+        harness="public-fixture-harness",
+        harness_version="2026-06-25.1",
+        is_self_reported=False,
+        n_items=40,
+        ci95=ConfidenceInterval(low=0.80, high=0.88),
+        score_raw=0.8754321,
+        score_unit="pass_rate",
+        date_run="2026-06-25",
+        model_version="public-search-demo@2026-06-25",
+        provenance={
+            "source": "public-fixture",
+            "raw_snapshot_uri": "https://example.com/evalrank/public-search-demo/raw.json",
+        },
+        source_url="https://example.com/evalrank/public-search-demo",
+        attribution_string="Synthetic public fixture",
+        flags={
+            "saturated": False,
+            "contaminated": False,
+            "judge_model_dependent": False,
+            "scaffold_nonstandard": False,
+        },
+        verification_state="verified",
     )
 
 

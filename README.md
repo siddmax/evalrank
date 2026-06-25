@@ -66,6 +66,7 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture candidate-set
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture stage-candidate
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture result-row
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
@@ -74,10 +75,11 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_recommendation, sample_stage_candidate
+from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_recommendation, sample_result_row, sample_stage_candidate
 
 candidate_set = sample_candidate_set().to_dict()
 stage_candidate = sample_stage_candidate().to_dict()
+result_row = sample_result_row().to_dict()
 evidence_set = sample_evidence_set().to_dict()
 exclusion = sample_exclusion().to_dict()
 payload = sample_recommendation().to_dict()
@@ -95,10 +97,11 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type StageCandidate, type TheCall } from "@evalrank/sdk";
+import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type ResultRow, type StageCandidate, type TheCall } from "@evalrank/sdk";
 
 const candidates: CandidateSet["candidates"] = [{ entity_type: "mcp_server", id: "tool:public-search-demo" }];
 const arms: StageCandidate["retrieval_provenance"]["arms"] = ["lexical", "semantic"];
+const verification: ResultRow["verification_state"] = "verified";
 const evidence: EvidenceSet["evidence_items"] = [];
 const exclusion: Exclusion["reason"] = "unknown_cost";
 const call: TheCall["decision"] = "recommend";
