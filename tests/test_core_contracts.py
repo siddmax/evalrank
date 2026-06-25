@@ -22,6 +22,8 @@ from evalrank_core.contracts import (  # noqa: E402
     ResultRow,
     StageCandidate,
     TheCall,
+    UseCase,
+    UseCaseCatalog,
 )
 
 
@@ -187,6 +189,77 @@ class CoreContractTests(unittest.TestCase):
                 raw_metadata={"homepage": "https://example.com/evalrank/public-search-demo"},
                 declared_capability_shape={},
                 fetched_at="2026-06-25T00:00:00Z",
+            )
+
+    def test_use_case_catalog_serializes_public_taxonomy(self):
+        use_case = UseCase(
+            id="code-generation",
+            name="Code generation",
+            definition="Produce correct code from a spec or prompt",
+            entity_kinds=("model", "tool", "agent"),
+            rank_policy="ranked",
+            is_overlay=False,
+        )
+        catalog = UseCaseCatalog(
+            methodology_version=PINNED_METHODOLOGY_VERSION,
+            generated_at="2026-06-25T00:00:00Z",
+            use_cases=(use_case,),
+        )
+
+        self.assertEqual(
+            {
+                "object": "use_case_catalog",
+                "methodology_version": PINNED_METHODOLOGY_VERSION,
+                "generated_at": "2026-06-25T00:00:00Z",
+                "use_cases": [
+                    {
+                        "object": "use_case",
+                        "id": "code-generation",
+                        "name": "Code generation",
+                        "definition": "Produce correct code from a spec or prompt",
+                        "entity_kinds": ["model", "tool", "agent"],
+                        "rank_policy": "ranked",
+                        "is_overlay": False,
+                    }
+                ],
+            },
+            catalog.to_dict(),
+        )
+
+    def test_use_case_rejects_invalid_public_shape(self):
+        with self.assertRaisesRegex(ValueError, "entity_kinds"):
+            UseCase(
+                id="code-generation",
+                name="Code generation",
+                definition="Produce correct code from a spec or prompt",
+                entity_kinds=("model", "private_vendor"),
+                rank_policy="ranked",
+                is_overlay=False,
+            )
+
+        with self.assertRaisesRegex(ValueError, "duplicate use_case id"):
+            row = UseCase(
+                id="code-generation",
+                name="Code generation",
+                definition="Produce correct code from a spec or prompt",
+                entity_kinds=("model",),
+                rank_policy="ranked",
+                is_overlay=False,
+            )
+            UseCaseCatalog(
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                generated_at="2026-06-25T00:00:00Z",
+                use_cases=(row, row),
+            )
+
+        with self.assertRaisesRegex(ValueError, "rank_policy"):
+            UseCase(
+                id="safety-robustness",
+                name="Safety / robustness",
+                definition="Resistance to harmful or manipulated operation",
+                entity_kinds=("model", "tool", "agent"),
+                rank_policy="ranked",
+                is_overlay=True,
             )
 
     def test_ranked_entity_requires_score_context(self):

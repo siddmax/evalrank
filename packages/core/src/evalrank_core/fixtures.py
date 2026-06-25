@@ -16,11 +16,38 @@ from evalrank_core.contracts import (
     ResultRow,
     StageCandidate,
     TheCall,
+    UseCase,
+    UseCaseCatalog,
 )
 
 
 PUBLIC_METHODOLOGY_VERSION = "2026-06-25.1.public-fixture-v1"
 PUBLIC_GENERATED_AT = "2026-06-25T00:00:00Z"
+
+
+_USE_CASE_ROWS = (
+    ("code-generation", "Code generation", "Produce correct code from a spec or prompt", ("model", "tool", "agent")),
+    ("autonomous-swe-agent", "Autonomous SWE agent", "End-to-end repo-level engineering", ("model", "agent")),
+    ("function-calling", "Function / tool calling", "Emit correct schema-valid tool calls", ("model", "tool")),
+    ("mcp-tool-orchestration", "MCP tool orchestration", "Chain MCP tools to complete a task", ("model", "tool", "agent")),
+    ("web-browsing", "Web browsing / navigation", "Retrieve and act on live web content", ("model", "tool", "agent")),
+    ("computer-use", "Computer use", "Operate a GUI or desktop to accomplish a task", ("model", "agent")),
+    ("deep-research", "Deep research", "Multi-source synthesis with citations", ("model", "tool", "agent")),
+    ("customer-support", "Customer support agent", "Resolve user issues end to end", ("model", "agent")),
+    ("enterprise-crm-workflow", "Enterprise / CRM workflow", "Execute business workflows over SaaS systems", ("tool", "agent")),
+    ("math-reasoning", "Math / quant reasoning", "Solve quantitative or symbolic problems", ("model",)),
+    ("general-knowledge-qa", "General knowledge / QA", "Answer factual questions accurately", ("model", "tool")),
+    ("rag-retrieval", "RAG / retrieval", "Retrieve relevant context and ground answers", ("model", "tool")),
+    ("long-term-memory", "Long-term memory", "Persist and recall across sessions", ("model", "tool", "agent")),
+    ("finance", "Finance", "Domain-grounded financial reasoning and workflows", ("model", "tool", "agent")),
+    ("legal", "Legal", "Domain-grounded legal reasoning and drafting", ("model", "tool", "agent")),
+    ("medical", "Medical", "Domain-grounded clinical reasoning and QA", ("model", "tool", "agent")),
+    ("multilingual", "Multilingual", "Quality across languages including translation", ("model", "tool", "agent")),
+    ("vision-multimodal", "Vision / multimodal", "Reason over images, audio, or video", ("model", "agent")),
+    ("web-frontend-code-generation", "Web / frontend code generation", "Build and iterate web UIs from a spec", ("model", "agent")),
+    ("devops-sre-terminal", "DevOps / SRE / terminal", "Resolve infra or incident tasks in a terminal", ("model", "agent")),
+    ("mobile-codegen", "Mobile app code generation", "Build and iterate native or cross-platform mobile apps", ("model", "agent")),
+)
 
 
 def sample_capability_fingerprint_input() -> CapabilityFingerprintInput:
@@ -52,6 +79,31 @@ def sample_raw_entry() -> RawEntry:
             "param_schemas": {"search": {"type": "object"}},
         },
         fetched_at=PUBLIC_GENERATED_AT,
+    )
+
+
+def sample_use_case_catalog() -> UseCaseCatalog:
+    use_cases = tuple(
+        UseCase(
+            id=use_case_id,
+            name=name,
+            definition=definition,
+            entity_kinds=entity_kinds,
+        )
+        for use_case_id, name, definition, entity_kinds in _USE_CASE_ROWS
+    )
+    safety_overlay = UseCase(
+        id="safety-robustness",
+        name="Safety / robustness",
+        definition="Resistance to injection, jailbreak, tool-poisoning, SSRF, rug-pull, or harmful output",
+        entity_kinds=("model", "tool", "agent"),
+        rank_policy="veto_overlay",
+        is_overlay=True,
+    )
+    return UseCaseCatalog(
+        methodology_version=PUBLIC_METHODOLOGY_VERSION,
+        generated_at=PUBLIC_GENERATED_AT,
+        use_cases=(*use_cases, safety_overlay),
     )
 
 

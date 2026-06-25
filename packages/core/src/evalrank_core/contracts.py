@@ -16,6 +16,8 @@ RESULT_ENTITY_KINDS = {"model", "tool_server", "agent"}
 RESULT_VERIFICATION_STATES = {"verified", "provisional"}
 RESULT_FLAG_KEYS = ("saturated", "contaminated", "judge_model_dependent", "scaffold_nonstandard")
 THE_CALL_DECISIONS = {"recommend", "abstain"}
+USE_CASE_ENTITY_KINDS = {"model", "tool", "agent"}
+USE_CASE_RANK_POLICIES = {"ranked", "veto_overlay"}
 _FINGERPRINT_RE = re.compile(r"^[a-f0-9]{64}$")
 _METHODOLOGY_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$")
 _RRF_COMPONENT_KEYS = ("lexical_rank", "semantic_rank", "graph_rank")
@@ -176,6 +178,78 @@ class EntityRef:
         return {
             "entity_type": self.entity_type,
             "id": self.entity_id,
+        }
+
+
+@dataclass(frozen=True)
+class UseCase:
+    object: ClassVar[str] = "use_case"
+
+    id: str
+    name: str
+    definition: str
+    entity_kinds: tuple[str, ...]
+    rank_policy: str = "ranked"
+    is_overlay: bool = False
+
+    def __post_init__(self) -> None:
+        _require_nonempty_string("id", self.id)
+        _require_nonempty_string("name", self.name)
+        _require_nonempty_string("definition", self.definition)
+        if not isinstance(self.entity_kinds, tuple) or not self.entity_kinds:
+            raise ValueError("entity_kinds is required")
+        if len(set(self.entity_kinds)) != len(self.entity_kinds):
+            raise ValueError("entity_kinds must be unique")
+        if any(kind not in USE_CASE_ENTITY_KINDS for kind in self.entity_kinds):
+            raise ValueError(f"entity_kinds must be one of {sorted(USE_CASE_ENTITY_KINDS)}")
+        if self.rank_policy not in USE_CASE_RANK_POLICIES:
+            raise ValueError(f"rank_policy must be one of {sorted(USE_CASE_RANK_POLICIES)}")
+        if not isinstance(self.is_overlay, bool):
+            raise ValueError("is_overlay must be a boolean")
+        if self.is_overlay and self.rank_policy != "veto_overlay":
+            raise ValueError("rank_policy must be veto_overlay for overlays")
+        if not self.is_overlay and self.rank_policy != "ranked":
+            raise ValueError("rank_policy must be ranked for non-overlay use cases")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "id": self.id,
+            "name": self.name,
+            "definition": self.definition,
+            "entity_kinds": list(self.entity_kinds),
+            "rank_policy": self.rank_policy,
+            "is_overlay": self.is_overlay,
+        }
+
+
+@dataclass(frozen=True)
+class UseCaseCatalog:
+    object: ClassVar[str] = "use_case_catalog"
+
+    methodology_version: str
+    generated_at: str
+    use_cases: tuple[UseCase, ...]
+
+    def __post_init__(self) -> None:
+        _require_methodology_version(self.methodology_version)
+        _require_nonempty_string("generated_at", self.generated_at)
+        if not isinstance(self.use_cases, tuple) or not self.use_cases:
+            raise ValueError("use_cases is required")
+        seen: set[str] = set()
+        for use_case in self.use_cases:
+            if not isinstance(use_case, UseCase):
+                raise TypeError("use_cases must contain UseCase values")
+            if use_case.id in seen:
+                raise ValueError("duplicate use_case id")
+            seen.add(use_case.id)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "methodology_version": self.methodology_version,
+            "generated_at": self.generated_at,
+            "use_cases": [use_case.to_dict() for use_case in self.use_cases],
         }
 
 

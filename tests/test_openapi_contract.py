@@ -26,6 +26,20 @@ class OpenApiContractTests(unittest.TestCase):
             operation["responses"]["200"]["content"]["application/json"]["schema"]["$ref"],
         )
 
+    def test_public_openapi_contract_pins_use_cases_route(self):
+        spec = _openapi()
+        operation = spec["paths"]["/v1/use-cases"]["get"]
+
+        self.assertEqual("listUseCases", operation["operationId"])
+        self.assertEqual(["metadata"], operation["tags"])
+        self.assertNotIn("requestBody", operation)
+        self.assertEqual(
+            "#/components/schemas/UseCaseCatalog",
+            operation["responses"]["200"]["content"]["application/json"]["schema"]["$ref"],
+        )
+        self.assertEqual("#/components/responses/RateLimited", operation["responses"]["429"]["$ref"])
+        self.assertEqual("#/components/responses/ServiceUnavailable", operation["responses"]["503"]["$ref"])
+
     def test_openapi_components_reference_existing_public_schemas(self):
         spec = _openapi()
 
@@ -40,6 +54,10 @@ class OpenApiContractTests(unittest.TestCase):
         self.assertEqual(
             "problem.schema.json",
             spec["components"]["schemas"]["ProblemDetails"]["$ref"],
+        )
+        self.assertEqual(
+            "use-case-catalog.schema.json",
+            spec["components"]["schemas"]["UseCaseCatalog"]["$ref"],
         )
         for schema in spec["components"]["schemas"].values():
             ref = schema["$ref"]

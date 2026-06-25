@@ -9,9 +9,41 @@
     {
       "name": "recommendations",
       "description": "Evaluate a public request payload and return a recommendation payload."
+    },
+    {
+      "name": "metadata",
+      "description": "Read public EvalRank metadata contracts."
     }
   ],
   "paths": {
+    "/v1/use-cases": {
+      "get": {
+        "tags": [
+          "metadata"
+        ],
+        "operationId": "listUseCases",
+        "summary": "List public use cases",
+        "description": "Contract-only public taxonomy route. Benchmark weights, scorer behavior, storage, and hosted deployment details are intentionally outside this file.",
+        "responses": {
+          "200": {
+            "description": "Public use-case taxonomy catalog.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UseCaseCatalog"
+                }
+              }
+            }
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
+          }
+        }
+      }
+    },
     "/v1/recommendations": {
       "post": {
         "tags": [
@@ -67,6 +99,9 @@
       },
       "Recommendation": {
         "$ref": "recommendation.schema.json"
+      },
+      "UseCaseCatalog": {
+        "$ref": "use-case-catalog.schema.json"
       },
       "ProblemDetails": {
         "$ref": "problem.schema.json"

@@ -43,9 +43,12 @@ The boundary gate rejects private imports, Smithery coupling, Min-K% implementat
 
 ## Public API Contract
 
-The first route contract is `POST /v1/recommendations` in `schemas/openapi.json`. It accepts `EvaluationRequest` JSON, returns `Recommendation` JSON, and uses RFC 9457 `application/problem+json` for malformed payloads, validation errors, rate limits, temporary unavailability, and upstream timeouts.
+The public route contracts live in `schemas/openapi.json`.
 
-The public error contract includes optional retry fields and reusable `Retry-After`, `RateLimit`, and `RateLimit-Policy` header definitions. This is a contract only. Hosted auth, scorer runtime, rate-limit enforcement, persistence, receipt IDs, private problem types, and deployment wiring stay outside this public repo.
+- `GET /v1/use-cases` returns the storage-free `UseCaseCatalog` taxonomy contract.
+- `POST /v1/recommendations` accepts `EvaluationRequest` JSON, returns `Recommendation` JSON, and uses RFC 9457 `application/problem+json` for malformed payloads, validation errors, rate limits, temporary unavailability, and upstream timeouts.
+
+The public error contract includes optional retry fields and reusable `Retry-After`, `RateLimit`, and `RateLimit-Policy` header definitions. This is a contract only. Hosted auth, scorer runtime, benchmark weights, rate-limit enforcement, persistence, receipt IDs, private problem types, and deployment wiring stay outside this public repo.
 
 ## Public Fixture Surfaces
 
@@ -69,14 +72,16 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture ev
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture result-row
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture use-cases
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
 ```
 
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_recommendation, sample_result_row, sample_stage_candidate
+from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_recommendation, sample_result_row, sample_stage_candidate, sample_use_case_catalog
 
+use_cases = sample_use_case_catalog().to_dict()
 candidate_set = sample_candidate_set().to_dict()
 stage_candidate = sample_stage_candidate().to_dict()
 result_row = sample_result_row().to_dict()
@@ -97,8 +102,9 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type ResultRow, type StageCandidate, type TheCall } from "@evalrank/sdk";
+import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type ResultRow, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
 
+const useCases: UseCaseCatalog["use_cases"] = [];
 const candidates: CandidateSet["candidates"] = [{ entity_type: "mcp_server", id: "tool:public-search-demo" }];
 const arms: StageCandidate["retrieval_provenance"]["arms"] = ["lexical", "semantic"];
 const verification: ResultRow["verification_state"] = "verified";

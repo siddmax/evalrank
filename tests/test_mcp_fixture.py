@@ -31,6 +31,7 @@ class McpFixtureTests(unittest.TestCase):
                 "result-row",
                 "request",
                 "stage-candidate",
+                "use-cases",
             ],
             tools[0]["inputSchema"]["properties"]["kind"]["enum"],
         )
@@ -107,6 +108,15 @@ class McpFixtureTests(unittest.TestCase):
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("raw_entry", payload["object"])
         self.assertEqual("public-fixture:search-demo:2026-06-25", payload["source_id"])
+
+    def test_call_tool_returns_public_use_cases_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "use-cases"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("use_case_catalog", payload["object"])
+        self.assertEqual(22, len(payload["use_cases"]))
+        self.assertEqual("safety-robustness", payload["use_cases"][-1]["id"])
 
     def test_call_tool_rejects_unknown_tool(self):
         with self.assertRaisesRegex(ValueError, "unknown tool"):

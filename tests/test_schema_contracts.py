@@ -23,6 +23,8 @@ from evalrank_core.contracts import (  # noqa: E402
     RESULT_VERIFICATION_STATES,
     THE_CALL_DECISIONS,
     TRUST_TIERS,
+    USE_CASE_ENTITY_KINDS,
+    USE_CASE_RANK_POLICIES,
 )
 from evalrank_core.fixtures import (  # noqa: E402
     sample_candidate_set,
@@ -33,6 +35,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_raw_entry,
     sample_result_row,
     sample_stage_candidate,
+    sample_use_case_catalog,
 )
 
 
@@ -62,6 +65,7 @@ class SchemaContractTests(unittest.TestCase):
         fingerprint_schema = _schema("capability-fingerprint.schema.json")
         raw_entry_schema = _schema("raw-entry.schema.json")
         result_row_schema = _schema("result-row.schema.json")
+        use_case_catalog_schema = _schema("use-case-catalog.schema.json")
 
         ranked_payload = _row().to_dict()
         recommendation_payload = Recommendation.single_scale(
@@ -104,6 +108,9 @@ class SchemaContractTests(unittest.TestCase):
         result_row_payload = sample_result_row().to_dict()
         self.assertEqual(set(result_row_payload), set(result_row_schema["properties"]))
         self.assertLessEqual(set(result_row_schema["required"]), set(result_row_payload))
+        use_case_catalog_payload = sample_use_case_catalog().to_dict()
+        self.assertEqual(set(use_case_catalog_payload), set(use_case_catalog_schema["properties"]))
+        self.assertLessEqual(set(use_case_catalog_schema["required"]), set(use_case_catalog_payload))
 
     def test_schemas_are_draft_2020_12_objects(self):
         for filename in (
@@ -118,6 +125,7 @@ class SchemaContractTests(unittest.TestCase):
             "capability-fingerprint.schema.json",
             "raw-entry.schema.json",
             "result-row.schema.json",
+            "use-case-catalog.schema.json",
             "problem.schema.json",
         ):
             schema = _schema(filename)
@@ -152,6 +160,10 @@ class SchemaContractTests(unittest.TestCase):
             RESULT_VERIFICATION_STATES,
             set(result_row_schema["properties"]["verification_state"]["enum"]),
         )
+        use_case_catalog_schema = _schema("use-case-catalog.schema.json")
+        use_case_schema = use_case_catalog_schema["$defs"]["UseCase"]
+        self.assertEqual(USE_CASE_ENTITY_KINDS, set(use_case_schema["properties"]["entity_kinds"]["items"]["enum"]))
+        self.assertEqual(USE_CASE_RANK_POLICIES, set(use_case_schema["properties"]["rank_policy"]["enum"]))
 
     def test_methodology_version_schema_pattern_matches_pinned_format(self):
         ranked_schema = _schema("ranked-entity.schema.json")
@@ -323,6 +335,40 @@ class SchemaContractTests(unittest.TestCase):
         provenance = stage_candidate_schema["properties"]["retrieval_provenance"]
         self.assertEqual({"arms", "use_case"}, set(provenance["required"]))
         self.assertTrue(provenance["properties"]["arms"]["uniqueItems"])
+
+    def test_use_case_catalog_schema_pins_public_taxonomy_shape(self):
+        catalog_schema = _schema("use-case-catalog.schema.json")
+        use_case_schema = catalog_schema["$defs"]["UseCase"]
+
+        self.assertEqual("use_case_catalog", catalog_schema["properties"]["object"]["const"])
+        self.assertEqual(
+            {"object", "methodology_version", "generated_at", "use_cases"},
+            set(catalog_schema["required"]),
+        )
+        self.assertEqual(1, catalog_schema["properties"]["use_cases"]["minItems"])
+        self.assertTrue(catalog_schema["properties"]["use_cases"]["uniqueItems"])
+        self.assertEqual("#/$defs/UseCase", catalog_schema["properties"]["use_cases"]["items"]["$ref"])
+        self.assertEqual("use_case", use_case_schema["properties"]["object"]["const"])
+        self.assertEqual(
+            {"object", "id", "name", "definition", "entity_kinds", "rank_policy", "is_overlay"},
+            set(use_case_schema["required"]),
+        )
+        self.assertFalse(use_case_schema["additionalProperties"])
+        self.assertTrue(use_case_schema["properties"]["entity_kinds"]["uniqueItems"])
+        self.assertEqual(1, use_case_schema["properties"]["entity_kinds"]["minItems"])
+        self.assertEqual(
+            [
+                {
+                    "if": {"properties": {"is_overlay": {"const": True}}, "required": ["is_overlay"]},
+                    "then": {"properties": {"rank_policy": {"const": "veto_overlay"}}},
+                },
+                {
+                    "if": {"properties": {"is_overlay": {"const": False}}, "required": ["is_overlay"]},
+                    "then": {"properties": {"rank_policy": {"const": "ranked"}}},
+                },
+            ],
+            use_case_schema["allOf"],
+        )
 
 
 def _schema(filename: str) -> dict:

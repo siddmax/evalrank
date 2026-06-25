@@ -18,6 +18,10 @@ from evalrank_core.contracts import (
     StageCandidate,
     THE_CALL_DECISIONS,
     TheCall,
+    USE_CASE_ENTITY_KINDS,
+    USE_CASE_RANK_POLICIES,
+    UseCase,
+    UseCaseCatalog,
 )
 from evalrank_core.fixtures import (
     sample_capability_fingerprint_input,
@@ -32,6 +36,7 @@ from evalrank_core.fixtures import (
     sample_recommendation,
     sample_result_row,
     sample_stage_candidate,
+    sample_use_case_catalog,
 )
 
 __version__ = "0.0.0"
@@ -56,6 +61,10 @@ __all__ = [
     "StageCandidate",
     "THE_CALL_DECISIONS",
     "TheCall",
+    "USE_CASE_ENTITY_KINDS",
+    "USE_CASE_RANK_POLICIES",
+    "UseCase",
+    "UseCaseCatalog",
     "sample_capability_fingerprint_input",
     "sample_candidate_set",
     "sample_entity_ref",
@@ -68,5 +77,6 @@ __all__ = [
     "sample_recommendation",
     "sample_result_row",
     "sample_stage_candidate",
+    "sample_use_case_catalog",
     "__version__",
 ]

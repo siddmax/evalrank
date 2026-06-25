@@ -14,6 +14,7 @@ evalrank fixture evidence
 evalrank fixture result-row
 evalrank fixture evidence-set
 evalrank fixture exclusion
+evalrank fixture use-cases
 evalrank fixture recommendation
 ```
 

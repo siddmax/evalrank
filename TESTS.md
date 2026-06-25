@@ -8,12 +8,12 @@ make check
 
 ## Test Map
 
-- `tests/test_core_contracts.py` checks public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, evidence set, exclusion, `the_call`, recommendation ID aliases, ranking, evidence, and methodology-version contract behavior.
-- `tests/test_core_fixtures.py` checks reusable public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, evidence set, exclusion, recommendation with `the_call`, and evidence fixture payloads.
+- `tests/test_core_contracts.py` checks public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, evidence set, exclusion, `the_call`, recommendation ID aliases, ranking, evidence, and methodology-version contract behavior.
+- `tests/test_core_fixtures.py` checks reusable public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, evidence set, exclusion, recommendation with `the_call`, and evidence fixture payloads.
 - `tests/test_examples.py` checks the runnable public fixture example output.
 - `tests/test_cli_fixture.py` checks deterministic public CLI fixture output and invalid input handling.
 - `tests/test_mcp_fixture.py` checks the public MCP fixture tool manifest and result shape.
-- `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys, raw-entry, candidate-set, stage-candidate, result-row, evidence-set, and exclusion schema shapes, RFC 9457 Problem Details plus public retry extensions, structured `the_call`, recommendation alias patterns, and pinned public patterns.
+- `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys, raw-entry, candidate-set, stage-candidate, result-row, use-case catalog, evidence-set, and exclusion schema shapes, RFC 9457 Problem Details plus public retry extensions, structured `the_call`, recommendation alias patterns, and pinned public patterns.
 - `tests/test_openapi_contract.py` checks the public OpenAPI route contract, reusable Problem Details responses, retry/rate-limit headers, schema refs, and storage-free boundary.
 - `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts.
 - `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces, including public Problem Details codes and types.

@@ -19,6 +19,7 @@ from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
 from evalrank_core.contracts import ResultRow as CoreResultRow  # noqa: E402
 from evalrank_core.contracts import StageCandidate as CoreStageCandidate  # noqa: E402
 from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
+from evalrank_core.contracts import UseCaseCatalog as CoreUseCaseCatalog  # noqa: E402
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
     CandidateSet,
@@ -30,6 +31,7 @@ from evalrank_sdk import (  # noqa: E402
     ResultRow,
     StageCandidate,
     TheCall,
+    UseCaseCatalog,
     sample_capability_fingerprint_input,
     sample_candidate_set,
     sample_exclusion,
@@ -39,6 +41,7 @@ from evalrank_sdk import (  # noqa: E402
     sample_raw_entry,
     sample_result_row,
     sample_stage_candidate,
+    sample_use_case_catalog,
 )
 
 
@@ -109,6 +112,14 @@ class PythonSdkTests(unittest.TestCase):
     def test_sdk_re_exports_core_the_call_contract(self):
         self.assertIs(TheCall, CoreTheCall)
         self.assertEqual("recommend", TheCall.recommend(confidence=0.86, reason="clear top set").decision)
+
+    def test_sdk_re_exports_core_use_case_catalog_contracts(self):
+        catalog = sample_use_case_catalog()
+
+        self.assertIs(UseCaseCatalog, CoreUseCaseCatalog)
+        self.assertIsInstance(catalog, CoreUseCaseCatalog)
+        self.assertEqual("use_case_catalog", catalog.to_dict()["object"])
+        self.assertEqual(22, len(catalog.to_dict()["use_cases"]))
 
 
 if __name__ == "__main__":

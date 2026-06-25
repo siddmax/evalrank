@@ -17,6 +17,8 @@ from evalrank_core.contracts import (  # noqa: E402
     RESULT_VERIFICATION_STATES,
     THE_CALL_DECISIONS,
     TRUST_TIERS,
+    USE_CASE_ENTITY_KINDS,
+    USE_CASE_RANK_POLICIES,
 )
 
 PROBLEM_CODES = {
@@ -57,6 +59,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             RESULT_VERIFICATION_STATES,
             _exported_string_array(source, "RESULT_VERIFICATION_STATES"),
         )
+        self.assertEqual(USE_CASE_ENTITY_KINDS, _exported_string_array(source, "USE_CASE_ENTITY_KINDS"))
+        self.assertEqual(USE_CASE_RANK_POLICIES, _exported_string_array(source, "USE_CASE_RANK_POLICIES"))
 
     def test_public_interfaces_cover_schema_payloads(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
@@ -76,6 +80,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "StageCandidate",
             "TheCall",
             "ProblemDetails",
+            "UseCase",
+            "UseCaseCatalog",
         ):
             self.assertIn(f"export interface {name}", source)
 
@@ -124,6 +130,10 @@ class TypeScriptSdkTests(unittest.TestCase):
             "retry_after",
             "request_id",
             "doc_url",
+            "entity_kinds",
+            "rank_policy",
+            "is_overlay",
+            "use_cases",
         ):
             self.assertRegex(source, rf"\b{field}\??:")
 
@@ -132,11 +142,15 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
         self.assertIn("export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];", source)
         self.assertIn("export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];", source)
+        self.assertIn("export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];", source)
+        self.assertIn("export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];", source)
         self.assertIn("code?: ProblemCode;", source)
         self.assertIn("retriable?: boolean;", source)
         self.assertIn("[key: string]: unknown;", source)
         self.assertIn("entity_kind: ResultEntityKind;", source)
         self.assertIn("verification_state: ResultVerificationState;", source)
+        self.assertIn("entity_kinds: UseCaseEntityKind[];", source)
+        self.assertIn("rank_policy: UseCaseRankPolicy;", source)
 
 
 def _exported_string_array(source: str, name: str) -> set[str]:

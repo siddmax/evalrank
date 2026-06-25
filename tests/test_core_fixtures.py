@@ -19,6 +19,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_recommendation,
     sample_result_row,
     sample_stage_candidate,
+    sample_use_case_catalog,
 )
 
 
@@ -132,6 +133,18 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("io.evalrank.public-search-demo", payload["canonical_id"])
         self.assertEqual(["display_name", "homepage"], sorted(payload["raw_metadata"]))
         self.assertEqual(64, len(payload["content_hash"]))
+
+    def test_sample_use_case_catalog_is_public_contract_payload(self):
+        catalog = sample_use_case_catalog()
+        payload = catalog.to_dict()
+
+        self.assertEqual("use_case_catalog", payload["object"])
+        self.assertEqual(PUBLIC_METHODOLOGY_VERSION, payload["methodology_version"])
+        self.assertEqual(22, len(payload["use_cases"]))
+        self.assertEqual(21, sum(1 for row in payload["use_cases"] if row["rank_policy"] == "ranked"))
+        self.assertEqual(["safety-robustness"], [row["id"] for row in payload["use_cases"] if row["is_overlay"]])
+        self.assertEqual("code-generation", payload["use_cases"][0]["id"])
+        self.assertEqual(["model", "tool", "agent"], payload["use_cases"][0]["entity_kinds"])
 
 
 if __name__ == "__main__":

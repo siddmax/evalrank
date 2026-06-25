@@ -47,6 +47,17 @@ export const THE_CALL_DECISIONS = [
   "recommend",
 ] as const;
 
+export const USE_CASE_ENTITY_KINDS = [
+  "agent",
+  "model",
+  "tool",
+] as const;
+
+export const USE_CASE_RANK_POLICIES = [
+  "ranked",
+  "veto_overlay",
+] as const;
+
 export const PROBLEM_CODES = [
   "rate_limited",
   "upstream_timeout",
@@ -65,6 +76,8 @@ export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];
 export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];
 export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];
 export type TheCallDecision = (typeof THE_CALL_DECISIONS)[number];
+export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];
+export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];
 export type ProblemCode = (typeof PROBLEM_CODES)[number];
 
 export interface Freshness {
@@ -182,6 +195,23 @@ export interface ResultRow {
     scaffold_nonstandard: boolean;
   };
   verification_state: ResultVerificationState;
+}
+
+export interface UseCase {
+  object: "use_case";
+  id: string;
+  name: string;
+  definition: string;
+  entity_kinds: UseCaseEntityKind[];
+  rank_policy: UseCaseRankPolicy;
+  is_overlay: boolean;
+}
+
+export interface UseCaseCatalog {
+  object: "use_case_catalog";
+  methodology_version: string;
+  generated_at: string;
+  use_cases: UseCase[];
 }
 
 export interface TheCall {
