@@ -8,4 +8,4 @@ Runnable public examples live here. Examples must use public fixtures only.
 python3 examples/public_fixture.py
 ```
 
-Prints a synthetic public recommendation and evidence item as JSON.
+Prints synthetic public request, candidate-set, stage-candidate, evidence, evidence-set, result-row, use-case catalog, exclusion, and recommendation fixtures as JSON.

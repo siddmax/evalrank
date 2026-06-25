@@ -21,7 +21,7 @@ Last updated: 2026-06-26
 - CLI package metadata and deterministic public fixture command, including `result-row`, `use-cases`, and `ranking-group`.
 - MCP package metadata and deterministic public fixture adapter, including `result-row`, `use-cases`, and `ranking-group`.
 - Public scoring-stage vocabulary, use-case taxonomy method, and method-boundary notes.
-- Runnable public fixture example.
+- Runnable public fixture bundle example.
 - Schema drift tests for core payload keys and public enum constants.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
 - Public progress tracker and repo structure map.
@@ -61,6 +61,7 @@ Last updated: 2026-06-26
 - Ranking group contract build log in `docs/build-log/2026-06-26-ranking-group-contract.md`.
 - Use-case taxonomy method build log in `docs/build-log/2026-06-26-use-case-taxonomy-method.md`.
 - Fixture use-case alignment build log in `docs/build-log/2026-06-26-fixture-use-case-alignment.md`.
+- Public fixture bundle example build log in `docs/build-log/2026-06-26-public-fixture-bundle-example.md`.
 
 ## Current Public Surface
 
@@ -73,7 +74,7 @@ Last updated: 2026-06-26
 | CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture result-row`, `fixture use-cases`, `fixture ranking-group`, `fixture evidence-set`, `fixture exclusion`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence`, `result-row`, `use-cases`, `ranking-group`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
 | Methods | Public scoring-stage vocabulary, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`; public use-case taxonomy method; and private-boundary notes. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
-| Examples | `examples/public_fixture.py` prints synthetic public recommendation and evidence JSON. | Non-fixture demos, live API examples, and private-data examples. |
+| Examples | `examples/public_fixture.py` prints the current synthetic public fixture bundle: request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, exclusion, and recommendation JSON. | Non-fixture demos, live API examples, and private-data examples. |
 | Docs | Status tracker, repo structure map, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
 
 ## In Progress

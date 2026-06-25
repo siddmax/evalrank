@@ -60,6 +60,8 @@ Runnable example:
 python3 examples/public_fixture.py
 ```
 
+The example prints the current synthetic public fixture bundle: request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, exclusion, and recommendation.
+
 CLI:
 
 ```sh

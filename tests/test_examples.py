@@ -9,7 +9,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 class PublicExampleTests(unittest.TestCase):
-    def test_public_fixture_example_prints_recommendation_and_evidence(self):
+    def test_public_fixture_example_prints_current_public_fixture_surface(self):
         result = subprocess.run(
             [sys.executable, str(REPO_ROOT / "examples" / "public_fixture.py")],
             cwd=REPO_ROOT,
@@ -19,7 +19,31 @@ class PublicExampleTests(unittest.TestCase):
         )
 
         payload = json.loads(result.stdout)
+        self.assertEqual(
+            [
+                "candidate_set",
+                "evidence",
+                "evidence_set",
+                "exclusion",
+                "raw_entry",
+                "recommendation",
+                "request",
+                "result_row",
+                "stage_candidate",
+                "use_cases",
+            ],
+            sorted(payload),
+        )
         self.assertEqual("recommendation", payload["recommendation"]["object"])
+        self.assertEqual("web-browsing", payload["request"]["use_case"])
+        self.assertEqual("web-browsing", payload["recommendation"]["use_case"])
+        self.assertEqual("candidate_set", payload["candidate_set"]["object"])
+        self.assertEqual("stage_candidate", payload["stage_candidate"]["object"])
+        self.assertEqual("evidence_set", payload["evidence_set"]["object"])
+        self.assertEqual("result_row", payload["result_row"]["object"])
+        self.assertEqual("raw_entry", payload["raw_entry"]["object"])
+        self.assertEqual("use_case_catalog", payload["use_cases"]["object"])
+        self.assertEqual("unknown_cost", payload["exclusion"]["reason"])
         self.assertEqual("ev_public_trace_01", payload["evidence"]["evidence_id"])
         self.assertEqual("tool:public-search-demo", payload["evidence"]["subject"]["id"])
 
