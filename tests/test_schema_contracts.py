@@ -20,7 +20,7 @@ from evalrank_core.contracts import (  # noqa: E402
     RankedEntity,
     TRUST_TIERS,
 )
-from evalrank_core.fixtures import sample_evidence_item, sample_evaluation_request  # noqa: E402
+from evalrank_core.fixtures import sample_evidence_item, sample_evaluation_request, sample_raw_entry  # noqa: E402
 
 
 METHODOLOGY_VERSION_PATTERN = r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$"
@@ -33,6 +33,7 @@ class SchemaContractTests(unittest.TestCase):
         evidence_schema = _schema("evidence-item.schema.json")
         request_schema = _schema("evaluation-request.schema.json")
         fingerprint_schema = _schema("capability-fingerprint.schema.json")
+        raw_entry_schema = _schema("raw-entry.schema.json")
 
         ranked_payload = _row().to_dict()
         recommendation_payload = Recommendation.single_scale(
@@ -57,6 +58,9 @@ class SchemaContractTests(unittest.TestCase):
         fingerprint_payload = _fingerprint_input().to_dict()
         self.assertEqual(set(fingerprint_payload), set(fingerprint_schema["properties"]))
         self.assertLessEqual(set(fingerprint_schema["required"]), set(fingerprint_payload))
+        raw_entry_payload = sample_raw_entry().to_dict()
+        self.assertEqual(set(raw_entry_payload), set(raw_entry_schema["properties"]))
+        self.assertLessEqual(set(raw_entry_schema["required"]), set(raw_entry_payload))
 
     def test_schemas_are_draft_2020_12_objects(self):
         for filename in (
@@ -65,6 +69,7 @@ class SchemaContractTests(unittest.TestCase):
             "evidence-item.schema.json",
             "evaluation-request.schema.json",
             "capability-fingerprint.schema.json",
+            "raw-entry.schema.json",
         ):
             schema = _schema(filename)
 
@@ -104,6 +109,11 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(rec_id_pattern, recommendation_schema["properties"]["search_run_id"]["pattern"])
         self.assertIn("recommend_id", recommendation_schema["required"])
         self.assertIn("search_run_id", recommendation_schema["required"])
+
+    def test_raw_entry_schema_requires_declared_capability_shape_content(self):
+        raw_entry_schema = _schema("raw-entry.schema.json")
+
+        self.assertEqual(1, raw_entry_schema["properties"]["declared_capability_shape"]["minProperties"])
 
 
 def _schema(filename: str) -> dict:

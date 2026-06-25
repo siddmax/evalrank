@@ -13,6 +13,7 @@ from evalrank_core.contracts import (  # noqa: E402
     EvidenceItem,
     EvaluationRequest,
     Freshness,
+    RawEntry,
     Recommendation,
     RankedEntity,
 )
@@ -77,6 +78,109 @@ class CoreContractTests(unittest.TestCase):
                 canonical_id="io.evalrank.public-search-demo",
                 entity_kind="mcp_server",
                 declared_capability_shape={"score": float("nan")},
+            )
+
+    def test_raw_entry_hash_is_stable_over_content_order_and_refetch_time(self):
+        entry = RawEntry(
+            source="public-fixture",
+            source_id="public-fixture:search-demo:2026-06-25",
+            entity_kind="mcp_server",
+            canonical_id="io.evalrank.public-search-demo",
+            raw_metadata={
+                "display_name": "Public Search Demo",
+                "homepage": "https://example.com/evalrank/public-search-demo",
+            },
+            declared_capability_shape={
+                "tool_names": ["search"],
+                "param_schemas": {"search": {"type": "object"}},
+            },
+            fetched_at="2026-06-25T00:00:00Z",
+        )
+        same_content_different_order = RawEntry(
+            source="public-fixture",
+            source_id="public-fixture:search-demo:2026-06-25",
+            entity_kind="mcp_server",
+            canonical_id="io.evalrank.public-search-demo",
+            raw_metadata={
+                "homepage": "https://example.com/evalrank/public-search-demo",
+                "display_name": "Public Search Demo",
+            },
+            declared_capability_shape={
+                "param_schemas": {"search": {"type": "object"}},
+                "tool_names": ["search"],
+            },
+            fetched_at="2026-06-25T00:00:00Z",
+        )
+        same_content_refetched_later = RawEntry(
+            source="public-fixture",
+            source_id="public-fixture:search-demo:2026-06-25",
+            entity_kind="mcp_server",
+            canonical_id="io.evalrank.public-search-demo",
+            raw_metadata={
+                "display_name": "Public Search Demo",
+                "homepage": "https://example.com/evalrank/public-search-demo",
+            },
+            declared_capability_shape={
+                "tool_names": ["search"],
+                "param_schemas": {"search": {"type": "object"}},
+            },
+            fetched_at="2026-06-26T00:00:00Z",
+        )
+
+        payload = entry.to_dict()
+
+        self.assertEqual("raw_entry", payload["object"])
+        self.assertEqual("public-fixture", payload["source"])
+        self.assertEqual("io.evalrank.public-search-demo", payload["canonical_id"])
+        self.assertEqual(64, len(payload["content_hash"]))
+        self.assertEqual(payload["content_hash"], same_content_different_order.content_hash)
+        self.assertEqual(payload["content_hash"], same_content_refetched_later.content_hash)
+        self.assertEqual("2026-06-25T00:00:00Z", payload["fetched_at"])
+        self.assertEqual(["display_name", "homepage"], sorted(payload["raw_metadata"]))
+
+    def test_raw_entry_rejects_missing_or_non_json_metadata(self):
+        with self.assertRaisesRegex(ValueError, "source_id"):
+            RawEntry(
+                source="public-fixture",
+                source_id="",
+                entity_kind="mcp_server",
+                canonical_id="io.evalrank.public-search-demo",
+                raw_metadata={"homepage": "https://example.com/evalrank/public-search-demo"},
+                declared_capability_shape={"tool_names": ["search"]},
+                fetched_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "raw_metadata"):
+            RawEntry(
+                source="public-fixture",
+                source_id="public-fixture:search-demo:2026-06-25",
+                entity_kind="mcp_server",
+                canonical_id="io.evalrank.public-search-demo",
+                raw_metadata={1: "not-public-json-key"},
+                declared_capability_shape={"tool_names": ["search"]},
+                fetched_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "declared_capability_shape"):
+            RawEntry(
+                source="public-fixture",
+                source_id="public-fixture:search-demo:2026-06-25",
+                entity_kind="mcp_server",
+                canonical_id="io.evalrank.public-search-demo",
+                raw_metadata={"homepage": "https://example.com/evalrank/public-search-demo"},
+                declared_capability_shape={"score": float("nan")},
+                fetched_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "declared_capability_shape"):
+            RawEntry(
+                source="public-fixture",
+                source_id="public-fixture:search-demo:2026-06-25",
+                entity_kind="mcp_server",
+                canonical_id="io.evalrank.public-search-demo",
+                raw_metadata={"homepage": "https://example.com/evalrank/public-search-demo"},
+                declared_capability_shape={},
+                fetched_at="2026-06-25T00:00:00Z",
             )
 
     def test_ranked_entity_requires_score_context(self):

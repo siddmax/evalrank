@@ -7,6 +7,7 @@ from evalrank_core.fixtures import (
     sample_capability_fingerprint_input,
     sample_evidence_item,
     sample_evaluation_request,
+    sample_raw_entry,
     sample_recommendation,
 )
 
@@ -27,7 +28,7 @@ def list_tools() -> list[dict[str, Any]]:
                 "properties": {
                     "kind": {
                         "type": "string",
-                        "enum": ["evidence", "fingerprint", "recommendation", "request"],
+                        "enum": ["evidence", "fingerprint", "raw-entry", "recommendation", "request"],
                     }
                 },
             },
@@ -57,11 +58,13 @@ def _fixture_payload(kind: Any) -> dict[str, Any]:
         return sample_evidence_item().to_dict()
     if kind == "fingerprint":
         return sample_capability_fingerprint_input().to_dict()
+    if kind == "raw-entry":
+        return sample_raw_entry().to_dict()
     if kind == "recommendation":
         return sample_recommendation().to_dict()
     if kind == "request":
         return sample_evaluation_request().to_dict()
-    raise ValueError("fixture kind must be 'evidence', 'fingerprint', 'recommendation', or 'request'")
+    raise ValueError("fixture kind must be 'evidence', 'fingerprint', 'raw-entry', 'recommendation', or 'request'")
 
 
 __all__ = ["FIXTURE_TOOL_NAME", "call_tool", "list_tools", "__version__"]

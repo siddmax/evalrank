@@ -5,6 +5,7 @@ from evalrank_core import (
     EvidenceItem,
     EvaluationRequest,
     Freshness,
+    RawEntry,
     Recommendation,
     RankedEntity,
     sample_capability_fingerprint_input,
@@ -12,6 +13,7 @@ from evalrank_core import (
     sample_evidence_item,
     sample_evaluation_request,
     sample_ranked_entity,
+    sample_raw_entry,
     sample_recommendation,
 )
 
@@ -24,6 +26,7 @@ __all__ = [
     "EvidenceItem",
     "EvaluationRequest",
     "Freshness",
+    "RawEntry",
     "Recommendation",
     "RankedEntity",
     "sample_capability_fingerprint_input",
@@ -31,6 +34,7 @@ __all__ = [
     "sample_evidence_item",
     "sample_evaluation_request",
     "sample_ranked_entity",
+    "sample_raw_entry",
     "sample_recommendation",
     "__version__",
 ]

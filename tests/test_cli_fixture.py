@@ -55,6 +55,16 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual("evaluation_request", payload["object"])
         self.assertEqual(["mcp_server"], payload["entity_types"])
 
+    def test_fixture_raw_entry_writes_public_json(self):
+        stdout = StringIO()
+
+        exit_code = main(["fixture", "raw-entry"], stdout=stdout, stderr=StringIO())
+
+        self.assertEqual(0, exit_code)
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual("raw_entry", payload["object"])
+        self.assertEqual("public-fixture:search-demo:2026-06-25", payload["source_id"])
+
     def test_invalid_fixture_exits_nonzero(self):
         stderr = StringIO()
 

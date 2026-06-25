@@ -35,7 +35,15 @@ class TypeScriptSdkTests(unittest.TestCase):
     def test_public_interfaces_cover_schema_payloads(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
 
-        for name in ("CapabilityFingerprint", "EntityRef", "EvaluationRequest", "EvidenceItem", "RankedEntity", "Recommendation"):
+        for name in (
+            "CapabilityFingerprint",
+            "EntityRef",
+            "EvaluationRequest",
+            "EvidenceItem",
+            "RankedEntity",
+            "RawEntry",
+            "Recommendation",
+        ):
             self.assertIn(f"export interface {name}", source)
 
         for field in (
@@ -43,6 +51,10 @@ class TypeScriptSdkTests(unittest.TestCase):
             "id_scheme",
             "canonical_id",
             "declared_capability_shape",
+            "raw_metadata",
+            "source_id",
+            "fetched_at",
+            "content_hash",
             "request_id",
             "entity_types",
             "requested_at",

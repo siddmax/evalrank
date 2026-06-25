@@ -6,6 +6,7 @@ Current command:
 
 ```sh
 evalrank fixture fingerprint
+evalrank fixture raw-entry
 evalrank fixture request
 evalrank fixture evidence
 evalrank fixture recommendation

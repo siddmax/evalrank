@@ -12,6 +12,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_evidence_item,
     sample_evaluation_request,
     sample_ranked_entity,
+    sample_raw_entry,
     sample_recommendation,
 )
 
@@ -64,6 +65,17 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("req_public_fixture_01", payload["request_id"])
         self.assertEqual("web-research:freshness-check", payload["use_case"])
         self.assertEqual(["mcp_server"], payload["entity_types"])
+
+    def test_sample_raw_entry_is_public_contract_payload(self):
+        entry = sample_raw_entry()
+        payload = entry.to_dict()
+
+        self.assertEqual("raw_entry", payload["object"])
+        self.assertEqual("public-fixture", payload["source"])
+        self.assertEqual("public-fixture:search-demo:2026-06-25", payload["source_id"])
+        self.assertEqual("io.evalrank.public-search-demo", payload["canonical_id"])
+        self.assertEqual(["display_name", "homepage"], sorted(payload["raw_metadata"]))
+        self.assertEqual(64, len(payload["content_hash"]))
 
 
 if __name__ == "__main__":

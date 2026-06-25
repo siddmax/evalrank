@@ -10,6 +10,7 @@ from evalrank_core.fixtures import (
     sample_capability_fingerprint_input,
     sample_evidence_item,
     sample_evaluation_request,
+    sample_raw_entry,
     sample_recommendation,
 )
 
@@ -39,7 +40,7 @@ def _parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     fixture = subparsers.add_parser("fixture", help="write a public fixture payload")
-    fixture.add_argument("kind", choices=("evidence", "fingerprint", "recommendation", "request"))
+    fixture.add_argument("kind", choices=("evidence", "fingerprint", "raw-entry", "recommendation", "request"))
 
     return parser
 
@@ -49,6 +50,8 @@ def _fixture_payload(kind: str) -> dict:
         return sample_evidence_item().to_dict()
     if kind == "fingerprint":
         return sample_capability_fingerprint_input().to_dict()
+    if kind == "raw-entry":
+        return sample_raw_entry().to_dict()
     if kind == "recommendation":
         return sample_recommendation().to_dict()
     if kind == "request":

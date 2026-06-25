@@ -7,6 +7,7 @@ from evalrank_core.contracts import (
     EvidenceItem,
     EvaluationRequest,
     Freshness,
+    RawEntry,
     RankedEntity,
     Recommendation,
 )
@@ -27,6 +28,24 @@ def sample_capability_fingerprint_input() -> CapabilityFingerprintInput:
             "declared_scopes": ["web.search"],
             "commit_sha": "abc123",
         },
+    )
+
+
+def sample_raw_entry() -> RawEntry:
+    return RawEntry(
+        source="public-fixture",
+        source_id="public-fixture:search-demo:2026-06-25",
+        entity_kind="mcp_server",
+        canonical_id="io.evalrank.public-search-demo",
+        raw_metadata={
+            "display_name": "Public Search Demo",
+            "homepage": "https://example.com/evalrank/public-search-demo",
+        },
+        declared_capability_shape={
+            "tool_names": ["search"],
+            "param_schemas": {"search": {"type": "object"}},
+        },
+        fetched_at=PUBLIC_GENERATED_AT,
     )
 
 

@@ -95,6 +95,66 @@ class CapabilityFingerprintInput:
 
 
 @dataclass(frozen=True)
+class RawEntry:
+    object: ClassVar[str] = "raw_entry"
+
+    source: str
+    source_id: str
+    entity_kind: str
+    canonical_id: str
+    raw_metadata: dict[str, Any]
+    declared_capability_shape: dict[str, Any]
+    fetched_at: str
+
+    def __post_init__(self) -> None:
+        for name in ("source", "source_id", "entity_kind", "canonical_id", "fetched_at"):
+            if not getattr(self, name):
+                raise ValueError(f"{name} is required")
+        if not self.declared_capability_shape:
+            raise ValueError("declared_capability_shape is required")
+        for name, value in (
+            ("raw_metadata", self.raw_metadata),
+            ("declared_capability_shape", self.declared_capability_shape),
+        ):
+            if not isinstance(value, dict):
+                raise ValueError(f"{name} must be a JSON object")
+            _require_string_keys(name, value)
+            _normalize_json_object(name, value)
+
+    @property
+    def content_hash(self) -> str:
+        encoded = json.dumps(self._hash_input(), sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "source": self.source,
+            "source_id": self.source_id,
+            "entity_kind": self.entity_kind,
+            "canonical_id": self.canonical_id,
+            "raw_metadata": _normalize_json_object("raw_metadata", self.raw_metadata),
+            "declared_capability_shape": _normalize_json_object(
+                "declared_capability_shape", self.declared_capability_shape
+            ),
+            "fetched_at": self.fetched_at,
+            "content_hash": self.content_hash,
+        }
+
+    def _hash_input(self) -> dict[str, Any]:
+        return {
+            "source": self.source,
+            "source_id": self.source_id,
+            "entity_kind": self.entity_kind,
+            "canonical_id": self.canonical_id,
+            "raw_metadata": _normalize_json_object("raw_metadata", self.raw_metadata),
+            "declared_capability_shape": _normalize_json_object(
+                "declared_capability_shape", self.declared_capability_shape
+            ),
+        }
+
+
+@dataclass(frozen=True)
 class EntityRef:
     entity_type: str
     entity_id: str

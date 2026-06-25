@@ -17,8 +17,8 @@ Last reviewed: 2026-06-25
 - Root and scoped `AGENTS.md`, plus `CLAUDE.md` shim.
 - Public progress docs: `docs/STATUS.md` and `docs/REPO_STRUCTURE.md`.
 - Public boundary checker and default unit tests.
-- Core Python capability fingerprint, evaluation request, recommendation, entity reference, and evidence item contracts.
-- Public JSON Schemas for capability fingerprints, evaluation requests, ranked entities, recommendations, and evidence items.
+- Core Python capability fingerprint, raw entry, evaluation request, recommendation, entity reference, and evidence item contracts.
+- Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, ranked entities, recommendations, and evidence items.
 - Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
 - Direct `main` push workflow for the scratch-build phase.
 - `make check` public local/CI gate.
@@ -32,14 +32,15 @@ Last reviewed: 2026-06-25
 - Public scoring-stage vocabulary and method-boundary note.
 - Public progress router for deciding which private EvalRank workstream owns each future port.
 - Public recommendation join aliases: `recommendation_id`, `recommend_id`, and `search_run_id`.
+- Public `RawEntry` contract and deterministic `raw-entry` fixture surfaces.
 
 ## Ported To Date
 
 | Workstream | Public artifact now in this repo | Private material intentionally excluded |
 | --- | --- | --- |
-| Public Contracts | `CapabilityFingerprintInput`, `EvaluationRequest`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics, hosted HMAC derivation. |
+| Public Contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Source adapters, storage tables, production entity rows, customer context, private score semantics, hosted HMAC derivation. |
 | Methods / Schemas | JSON Schemas for public payloads, the pinned public `methodology_version` format, and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
-| SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
+| SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter, including `raw-entry`. | Live service clients, auth, tenant/project operations, production evidence lookup, source adapters, and hosted-only workflows. |
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
 | Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
@@ -85,10 +86,10 @@ Use this table for the next port decision. The destination is this public repo o
 | Candidate change | Port decision | Workstream |
 | --- | --- | --- |
 | Public repo scaffold, package boundaries, license/notice files, CI, and deterministic public-boundary checks | Already ported; keep strengthening leak classes as they are discovered. | Open-Core Boundary / CI |
-| Storage-free public payloads and aliases currently represented by core dataclasses and JSON Schemas | Already ported for capability fingerprints, evaluation requests, ranked entities, recommendations, recommendation aliases, entity refs, and evidence items. | Public Contracts |
+| Storage-free public payloads and aliases currently represented by core dataclasses and JSON Schemas | Already ported for capability fingerprints, raw entries, evaluation requests, ranked entities, recommendations, recommendation aliases, entity refs, and evidence items. | Public Contracts |
 | Public fixture surfaces across core, SDKs, CLI, MCP, and examples | Already ported for deterministic synthetic fixtures only. | SDK / CLI / MCP, Examples |
 | Public scoring-stage vocabulary | Already ported as a method-boundary note, without formulas, thresholds, private eval data, or benchmarks. | Methods / Schemas |
-| `RawEntry` ingestion-normalization shape | Port next if implemented as a storage-free contract with synthetic fixtures and a deterministic content hash; do not port source adapters, production metadata, or live fetch behavior with it. | Public Contracts |
+| `RawEntry` ingestion-normalization shape | Ported as a storage-free contract with synthetic fixtures and deterministic content hash; source adapters, production metadata, and live fetch behavior stay private. | Public Contracts |
 | Public `the_call` / decision-confidence response shape | Port after its public semantics can be expressed without proprietary thresholds, held-out evidence floors, or private confidence tuning. | Public Contracts, Methods / Schemas |
 | REST/OpenAPI contract | Port only when a concrete public route exists; keep private auth, tenant logic, hosted receipt internals, and app DTOs out. | Public Surface Contracts |
 | Recommendation receipt route and HMAC-backed hosted ID derivation | Do not port yet. Public aliases are enough for open-core interoperability; secret-backed derivation belongs with hosted route design. | Public Surface Contracts, Hosted Ops / Deploy Ops |
@@ -103,7 +104,7 @@ Use this table for the next port decision. The destination is this public repo o
 
 | Artifact or workstream | Destination | Owner workstream | Status |
 | --- | --- | --- | --- |
-| Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Capability fingerprint, request, recommendation, entity, and evidence slices ported |
+| Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Capability fingerprint, raw entry, request, recommendation, entity, and evidence slices ported |
 | Recommendation join aliases | This repo | Public Contracts | Ported; hosted HMAC derivation stays private |
 | Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Ported |
 | Repo boundary checks, license hygiene, and CI gates | This repo | Open-Core Boundary / CI | Partly ported |
@@ -136,6 +137,7 @@ Use this table for the next port decision. The destination is this public repo o
 - REST/OpenAPI surfaces after a concrete route contract exists.
 - Recommendation receipt routes and HMAC-backed hosted identifiers after public route semantics and secret handling are designed.
 - Full REST/OpenAPI, CLI, SDK, and MCP behavior beyond public fixtures after concrete public contracts are pinned.
+- Source adapters and live fetch behavior after they can run without private service dependencies or production metadata.
 - Public scoring method details after proprietary thresholds, held-out eval details, and private ranking experiments are removed.
 - Deterministic scorer/materializer runtime after it is split from private evidence rows, hosted workers, and proprietary tuning.
 - Persistence migrations only after EvalRank owns its own deploy/release path or has its own Supabase project.

@@ -54,6 +54,7 @@ CLI:
 
 ```sh
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture fingerprint
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture raw-entry
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture request
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
@@ -62,9 +63,9 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_capability_fingerprint_input
+from evalrank_sdk import sample_raw_entry
 
-payload = sample_capability_fingerprint_input().to_dict()
+payload = sample_raw_entry().to_dict()
 ```
 
 MCP adapter:

@@ -58,6 +58,18 @@ export interface EvaluationRequest {
   constraints: Record<string, unknown>;
 }
 
+export interface RawEntry {
+  object: "raw_entry";
+  source: string;
+  source_id: string;
+  entity_kind: string;
+  canonical_id: string;
+  raw_metadata: Record<string, unknown>;
+  declared_capability_shape: Record<string, unknown>;
+  fetched_at: string;
+  content_hash: string;
+}
+
 export interface EvidenceItem {
   evidence_id: string;
   subject: EntityRef;
