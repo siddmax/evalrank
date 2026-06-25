@@ -18,9 +18,32 @@ RESULT_FLAG_KEYS = ("saturated", "contaminated", "judge_model_dependent", "scaff
 THE_CALL_DECISIONS = {"recommend", "abstain"}
 USE_CASE_ENTITY_KINDS = {"model", "tool", "agent"}
 USE_CASE_RANK_POLICIES = {"ranked", "veto_overlay"}
+PROBLEM_CODES = {
+    "rate_limited",
+    "upstream_timeout",
+    "validation",
+    "not_found",
+    "methodology_stale",
+    "internal",
+    "unauthorized",
+    "forbidden",
+}
 _FINGERPRINT_RE = re.compile(r"^[a-f0-9]{64}$")
 _METHODOLOGY_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$")
 _RRF_COMPONENT_KEYS = ("lexical_rank", "semantic_rank", "graph_rank")
+_PROBLEM_DETAIL_FIELDS = {
+    "type",
+    "title",
+    "status",
+    "detail",
+    "instance",
+    "code",
+    "retriable",
+    "retry_after",
+    "field",
+    "request_id",
+    "doc_url",
+}
 
 
 @dataclass(frozen=True)
@@ -730,6 +753,60 @@ class Abstention:
             "reason": self.reason,
             "detail": self.detail,
         }
+
+
+@dataclass(frozen=True)
+class ProblemDetails:
+    type: str
+    title: str
+    status: int
+    detail: str
+    instance: str | None = None
+    code: str | None = None
+    retriable: bool | None = None
+    retry_after: int | None = None
+    extensions: dict[str, Any] = field(default_factory=dict)
+    field: str | None = None
+    request_id: str | None = None
+    doc_url: str | None = None
+
+    def __post_init__(self) -> None:
+        for name in ("type", "title", "detail"):
+            _require_nonempty_string(name, getattr(self, name))
+        if not isinstance(self.status, int) or isinstance(self.status, bool) or not 400 <= self.status <= 599:
+            raise ValueError("status must be an integer from 400 to 599")
+        for name in ("instance", "field", "request_id", "doc_url"):
+            value = getattr(self, name)
+            if value is not None:
+                _require_nonempty_string(name, value)
+        if self.code is not None and self.code not in PROBLEM_CODES:
+            raise ValueError(f"code must be one of {sorted(PROBLEM_CODES)}")
+        if self.retriable is not None and not isinstance(self.retriable, bool):
+            raise ValueError("retriable must be a boolean")
+        if self.retry_after is not None and (
+            not isinstance(self.retry_after, int) or isinstance(self.retry_after, bool) or self.retry_after < 0
+        ):
+            raise ValueError("retry_after must be an integer >= 0")
+        if not isinstance(self.extensions, dict):
+            raise ValueError("extensions must be a JSON object")
+        if set(self.extensions) & _PROBLEM_DETAIL_FIELDS:
+            raise ValueError("extensions must not override Problem Details fields")
+        _require_string_keys("extensions", self.extensions)
+        _normalize_json_object("extensions", self.extensions)
+
+    def to_dict(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "type": self.type,
+            "title": self.title,
+            "status": self.status,
+            "detail": self.detail,
+        }
+        for name in ("instance", "code", "retriable", "retry_after", "field", "request_id", "doc_url"):
+            value = getattr(self, name)
+            if value is not None:
+                payload[name] = value
+        payload.update(_normalize_json_object("extensions", self.extensions))
+        return payload
 
 
 @dataclass(frozen=True)

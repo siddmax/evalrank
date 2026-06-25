@@ -16,6 +16,7 @@ from evalrank_core.contracts import (  # noqa: E402
     EVIDENCE_KINDS,
     FRESHNESS_STATUSES,
     Freshness,
+    PROBLEM_CODES,
     Recommendation,
     RankedEntity,
     RESULT_ENTITY_KINDS,
@@ -41,17 +42,6 @@ from evalrank_core.fixtures import (  # noqa: E402
 
 
 METHODOLOGY_VERSION_PATTERN = r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$"
-PROBLEM_CODES = [
-    "rate_limited",
-    "upstream_timeout",
-    "validation",
-    "not_found",
-    "methodology_stale",
-    "internal",
-    "unauthorized",
-    "forbidden",
-]
-
 
 class SchemaContractTests(unittest.TestCase):
     def test_schema_readme_lists_public_schema_files_and_string_guards(self):
@@ -316,7 +306,7 @@ class SchemaContractTests(unittest.TestCase):
         problem_schema = _schema("problem.schema.json")
         properties = problem_schema["properties"]
 
-        self.assertEqual(PROBLEM_CODES, properties["code"]["enum"])
+        self.assertEqual(PROBLEM_CODES, set(properties["code"]["enum"]))
         self.assertEqual("boolean", properties["retriable"]["type"])
         self.assertEqual("integer", properties["retry_after"]["type"])
         self.assertEqual(0, properties["retry_after"]["minimum"])

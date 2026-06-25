@@ -4,7 +4,7 @@ Reference Python package for public EvalRank evidence and scoring contracts.
 
 Use `evalrank_core.fixtures.sample_public_fixture(kind)` with `PUBLIC_FIXTURE_KINDS`, or the individual fixture helpers, for public examples and contract tests.
 
-Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `EntityRef`, and public vocabulary constants including `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, and `EVIDENCE_KINDS`.
+Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `ProblemDetails`, `EntityRef`, and public vocabulary constants including `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, `EVIDENCE_KINDS`, and `PROBLEM_CODES`.
 
 Candidate set payloads expose a storage-free list of public `EntityRef` candidates for a request; source adapters and graph lookup stay outside this package.
 
@@ -39,3 +39,5 @@ Ranked entity `score_components` values are a public explanation map: non-empty 
 Recommendation `the_call` payloads expose only `decision`, `confidence`, `reason`, and `abstention_reason`; scorer thresholds and private confidence tuning stay out of this package.
 
 Recommendation `abstention` payloads expose only a public `reason` and `detail` when no ranked answer should be returned. Evidence-floor thresholds, policy internals, and private reason taxonomies stay outside this package.
+
+Problem Details payloads expose the public RFC 9457 error shape plus retry-safe public extensions. Private problem types, tenant context, hosted internals, and production telemetry stay outside this package.

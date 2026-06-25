@@ -18,6 +18,8 @@ from evalrank_core.contracts import (  # noqa: E402
     EvidenceItem,
     EvaluationRequest,
     Freshness,
+    PROBLEM_CODES,
+    ProblemDetails,
     RawEntry,
     Recommendation,
     RankedEntity,
@@ -51,6 +53,8 @@ class CoreContractTests(unittest.TestCase):
             "EvidenceSet",
             "EVIDENCE_KINDS",
             "FRESHNESS_STATUSES",
+            "ProblemDetails",
+            "PROBLEM_CODES",
             "ResultRow",
             "UseCaseCatalog",
             "ScoringStage",
@@ -100,6 +104,68 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(PUBLIC_CAPABILITY_FINGERPRINT, payload["capability_fingerprint"])
         self.assertEqual(PUBLIC_CAPABILITY_FINGERPRINT, same_shape_different_order.fingerprint())
         self.assertEqual("mcp_server", payload["entity_kind"])
+
+    def test_problem_details_serializes_public_error_shape(self):
+        problem = ProblemDetails(
+            type="https://evalrank.ai/problems/rate-limited",
+            title="Rate limited",
+            status=429,
+            detail="retry after the advertised delay",
+            instance="/v1/recommendations/req_public_fixture_01",
+            code="rate_limited",
+            retriable=True,
+            retry_after=30,
+            field="request_id",
+            request_id="req_public_fixture_01",
+            doc_url="https://evalrank.ai/docs/errors#rate-limited",
+            extensions={"quota_bucket": "public-fixture"},
+        )
+
+        self.assertEqual(
+            {
+                "type": "https://evalrank.ai/problems/rate-limited",
+                "title": "Rate limited",
+                "status": 429,
+                "detail": "retry after the advertised delay",
+                "instance": "/v1/recommendations/req_public_fixture_01",
+                "code": "rate_limited",
+                "retriable": True,
+                "retry_after": 30,
+                "field": "request_id",
+                "request_id": "req_public_fixture_01",
+                "doc_url": "https://evalrank.ai/docs/errors#rate-limited",
+                "quota_bucket": "public-fixture",
+            },
+            problem.to_dict(),
+        )
+
+    def test_problem_details_rejects_schema_incompatible_values(self):
+        valid = {
+            "type": "about:blank",
+            "title": "Validation failed",
+            "status": 422,
+            "detail": "request_id is required",
+        }
+
+        for field, value in (
+            ("type", ""),
+            ("title", 123),
+            ("status", 200),
+            ("status", True),
+            ("detail", ""),
+            ("code", "private_code"),
+            ("retriable", "yes"),
+            ("retry_after", -1),
+            ("retry_after", True),
+            ("field", ""),
+            ("request_id", 123),
+            ("doc_url", ""),
+            ("extensions", {"status": "override"}),
+            ("extensions", {"bad": float("nan")}),
+        ):
+            with self.subTest(field=field):
+                with self.assertRaises((TypeError, ValueError)):
+                    ProblemDetails(**{**valid, field: value})
 
     def test_capability_fingerprint_rejects_missing_or_non_json_shape_keys(self):
         with self.assertRaisesRegex(ValueError, "canonical_id"):

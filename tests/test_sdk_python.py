@@ -16,6 +16,7 @@ from evalrank_core.contracts import Exclusion as CoreExclusion  # noqa: E402
 from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E402
 from evalrank_core.contracts import EvidenceSet as CoreEvidenceSet  # noqa: E402
 from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
+from evalrank_core.contracts import ProblemDetails as CoreProblemDetails  # noqa: E402
 from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
 from evalrank_core.contracts import RankingGroup as CoreRankingGroup  # noqa: E402
 from evalrank_core.contracts import ResultRow as CoreResultRow  # noqa: E402
@@ -33,6 +34,7 @@ from evalrank_sdk import (  # noqa: E402
     EvaluationRequest,
     EvidenceItem,
     EvidenceSet,
+    ProblemDetails,
     RawEntry,
     RankingGroup,
     ResultRow,
@@ -84,6 +86,8 @@ class PythonSdkTests(unittest.TestCase):
             "TRUST_TIERS",
             "RankedEntity",
             "Recommendation",
+            "ProblemDetails",
+            "PROBLEM_CODES",
             "EntityRef",
             "PUBLIC_FIXTURE_KINDS",
             "sample_public_fixture",
@@ -102,6 +106,7 @@ class PythonSdkTests(unittest.TestCase):
             "COMPARABILITY_MODES",
             "EVIDENCE_KINDS",
             "FRESHNESS_STATUSES",
+            "PROBLEM_CODES",
             "TRUST_TIERS",
         ):
             with self.subTest(name=name):
@@ -134,6 +139,18 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(EvaluationRequest, CoreEvaluationRequest)
         self.assertIsInstance(request, CoreEvaluationRequest)
         self.assertEqual("web-browsing", request.to_dict()["use_case"])
+
+    def test_sdk_re_exports_core_problem_details_contract(self):
+        problem = ProblemDetails(
+            type="about:blank",
+            title="Validation failed",
+            status=422,
+            detail="request_id is required",
+            code="validation",
+        )
+
+        self.assertIs(ProblemDetails, CoreProblemDetails)
+        self.assertEqual("validation", problem.to_dict()["code"])
 
     def test_sdk_re_exports_core_candidate_set_contracts(self):
         candidate_set = sample_candidate_set()

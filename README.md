@@ -84,7 +84,7 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_ranking_group, sample_recommendation, sample_result_row, sample_scoring_stage_catalog, sample_stage_candidate, sample_use_case_catalog
+from evalrank_sdk import ProblemDetails, sample_candidate_set, sample_evidence_set, sample_exclusion, sample_ranking_group, sample_recommendation, sample_result_row, sample_scoring_stage_catalog, sample_stage_candidate, sample_use_case_catalog
 
 use_cases = sample_use_case_catalog().to_dict()
 stages = sample_scoring_stage_catalog().to_dict()
@@ -97,6 +97,7 @@ exclusion = sample_exclusion().to_dict()
 payload = sample_recommendation().to_dict()
 call = payload["the_call"]
 abstention = payload["abstention"]
+problem = ProblemDetails(type="about:blank", title="Validation failed", status=422, detail="request_id is required").to_dict()
 ```
 
 MCP adapter:
