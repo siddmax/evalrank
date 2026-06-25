@@ -192,6 +192,17 @@ class CoreContractTests(unittest.TestCase):
                 fetched_at="2026-06-25T00:00:00Z",
             )
 
+    def test_entity_ref_rejects_schema_incompatible_values(self):
+        for kwargs in (
+            {"entity_type": 123, "entity_id": "tool:public-search-demo"},
+            {"entity_type": "mcp_server", "entity_id": 123},
+            {"entity_type": "", "entity_id": "tool:public-search-demo"},
+            {"entity_type": "mcp_server", "entity_id": ""},
+        ):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "entity_"):
+                    EntityRef(**kwargs)
+
     def test_use_case_catalog_serializes_public_taxonomy(self):
         use_case = UseCase(
             id="code-generation",
@@ -284,6 +295,17 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(PINNED_METHODOLOGY_VERSION, payload["methodology_version"])
         self.assertEqual("fresh", payload["freshness"]["status"])
 
+    def test_freshness_rejects_schema_incompatible_values(self):
+        for kwargs in (
+            {"status": "fresh", "last_eval": 123, "next_refresh": "2026-06-17"},
+            {"status": "fresh", "last_eval": "2026-06-10", "next_refresh": 123},
+            {"status": "fresh", "last_eval": "", "next_refresh": "2026-06-17"},
+            {"status": "fresh", "last_eval": "2026-06-10", "next_refresh": ""},
+        ):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "freshness"):
+                    Freshness(**kwargs)
+
     def test_ranked_entity_rejects_bare_or_invalid_scores(self):
         with self.assertRaisesRegex(ValueError, "capability_score"):
             RankedEntity(
@@ -315,6 +337,18 @@ class CoreContractTests(unittest.TestCase):
             with self.subTest(components=components):
                 with self.assertRaisesRegex(ValueError, "score_components"):
                     RankedEntity(**{**valid, "score_components": components})
+
+        for overrides in (
+            {"entity_type": 123},
+            {"entity_id": 123},
+            {"rank": True},
+            {"evidence_count": True},
+            {"caveats": "not-an-array"},
+            {"caveats": (123,)},
+        ):
+            with self.subTest(overrides=overrides):
+                with self.assertRaises(ValueError):
+                    RankedEntity(**{**valid, **overrides})
 
         with self.assertRaisesRegex(ValueError, "methodology_version"):
             RankedEntity(
@@ -971,6 +1005,16 @@ class CoreContractTests(unittest.TestCase):
                 entity_types=(),
                 requested_at="2026-06-25T00:00:00Z",
             )
+
+        for entity_types in ("mcp_server", (123,), ("",)):
+            with self.subTest(entity_types=entity_types):
+                with self.assertRaisesRegex(ValueError, "entity_types"):
+                    EvaluationRequest(
+                        request_id="req_public_fixture_01",
+                        use_case="web-browsing",
+                        entity_types=entity_types,
+                        requested_at="2026-06-25T00:00:00Z",
+                    )
 
         with self.assertRaisesRegex(ValueError, "constraints"):
             EvaluationRequest(

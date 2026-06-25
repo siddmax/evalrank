@@ -74,6 +74,7 @@ Last updated: 2026-06-26
 - Recommendation envelope validation hardening build log in `docs/build-log/2026-06-26-recommendation-envelope-contract-hardening.md`.
 - JSON-object metadata validation hardening build log in `docs/build-log/2026-06-26-json-object-contract-hardening.md`.
 - Public doc progress and porting audit in `docs/build-log/2026-06-26-public-doc-progress-porting-audit.md`.
+- Primitive and sequence field validation hardening build log in `docs/build-log/2026-06-26-primitive-sequence-contract-hardening.md`.
 
 ## Current Public Surface
 
@@ -110,6 +111,7 @@ Last updated: 2026-06-26
 | Ranked entity `score_components` now reject non-object maps, blank/non-string names, booleans, and out-of-range values before serialization. | Built here as public contract hardening; no private scorer formula was added. | Public Contracts, Methods / Schemas |
 | Recommendation envelopes now reject schema-incompatible metadata and duplicate ranked entities before serialization. | Built here as public contract hardening; no scorer/runtime, route implementation, hosted receipt, or private evidence behavior was added. | Public Contracts, Methods / Schemas |
 | Evidence item `metadata` and evaluation request `constraints` now reject non-object, non-string-key, and non-JSON values before serialization. | Built here as public contract hardening; no private evidence lookup, source adapter, or policy behavior was added. | Public Contracts, Methods / Schemas |
+| Entity references, freshness dates, request entity-type arrays, ranked-entity integer fields, and caveats now reject schema-incompatible Python values before serialization. | Built here as public contract hardening; no schema expansion, scorer behavior, or private runtime behavior was added. | Public Contracts, Methods / Schemas |
 | Private-side dirty worktree check found only Memphant spec edits, not EvalRank public-port candidates. | Documented here as a routing decision; no private Memphant planning text was copied into the public repo. | Docs / Public Planning, Open-Core Boundary / CI |
 | Non-fixture clients, live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
 

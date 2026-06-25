@@ -47,10 +47,8 @@ class Freshness:
     def __post_init__(self) -> None:
         if self.status not in FRESHNESS_STATUSES:
             raise ValueError(f"freshness.status must be one of {sorted(FRESHNESS_STATUSES)}")
-        if not self.last_eval:
-            raise ValueError("freshness.last_eval is required")
-        if not self.next_refresh:
-            raise ValueError("freshness.next_refresh is required")
+        _require_nonempty_string("freshness.last_eval", self.last_eval)
+        _require_nonempty_string("freshness.next_refresh", self.next_refresh)
 
     def to_dict(self) -> dict[str, str]:
         return {
@@ -169,10 +167,8 @@ class EntityRef:
     entity_id: str
 
     def __post_init__(self) -> None:
-        if not self.entity_type:
-            raise ValueError("entity_type is required")
-        if not self.entity_id:
-            raise ValueError("entity_id is required")
+        _require_nonempty_string("entity_type", self.entity_type)
+        _require_nonempty_string("entity_id", self.entity_id)
 
     def to_dict(self) -> dict[str, str]:
         return {
@@ -448,16 +444,13 @@ class EvaluationRequest:
     constraints: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if not self.request_id:
-            raise ValueError("request_id is required")
-        if not self.use_case:
-            raise ValueError("use_case is required")
-        if not self.entity_types:
+        _require_nonempty_string("request_id", self.request_id)
+        _require_nonempty_string("use_case", self.use_case)
+        if not isinstance(self.entity_types, tuple) or not self.entity_types:
             raise ValueError("entity_types is required")
-        if any(not entity_type for entity_type in self.entity_types):
-            raise ValueError("entity_types must not contain blank values")
-        if not self.requested_at:
-            raise ValueError("requested_at is required")
+        if any(not isinstance(entity_type, str) or not entity_type for entity_type in self.entity_types):
+            raise ValueError("entity_types must contain non-empty strings")
+        _require_nonempty_string("requested_at", self.requested_at)
         if not isinstance(self.constraints, dict):
             raise ValueError("constraints must be a JSON object")
         _require_string_keys("constraints", self.constraints)
@@ -575,19 +568,21 @@ class RankedEntity:
     score_components: dict[str, float] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if not self.entity_type:
-            raise ValueError("entity_type is required")
-        if not self.entity_id:
-            raise ValueError("entity_id is required")
-        if self.rank < 1:
-            raise ValueError("rank must be >= 1")
+        _require_nonempty_string("entity_type", self.entity_type)
+        _require_nonempty_string("entity_id", self.entity_id)
+        if not isinstance(self.rank, int) or isinstance(self.rank, bool) or self.rank < 1:
+            raise ValueError("rank must be an integer >= 1")
         _require_unit_interval("capability_score", self.capability_score)
         _require_unit_interval("confidence", self.confidence)
         _require_methodology_version(self.methodology_version)
         if self.trust_tier not in TRUST_TIERS:
             raise ValueError(f"trust_tier must be one of {sorted(TRUST_TIERS)}")
-        if self.evidence_count < 0:
-            raise ValueError("evidence_count must be >= 0")
+        if not isinstance(self.evidence_count, int) or isinstance(self.evidence_count, bool) or self.evidence_count < 0:
+            raise ValueError("evidence_count must be an integer >= 0")
+        if not isinstance(self.caveats, tuple):
+            raise ValueError("caveats must be an array")
+        if any(not isinstance(caveat, str) for caveat in self.caveats):
+            raise ValueError("caveats must contain strings")
         if not isinstance(self.score_components, dict):
             raise ValueError("score_components must be a JSON object")
         for name, value in self.score_components.items():
