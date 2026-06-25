@@ -20,7 +20,16 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual(["evalrank.fixture"], [tool["name"] for tool in tools])
         self.assertEqual(["kind"], tools[0]["inputSchema"]["required"])
         self.assertEqual(
-            ["candidate-set", "evidence", "evidence-set", "fingerprint", "raw-entry", "recommendation", "request"],
+            [
+                "candidate-set",
+                "evidence",
+                "evidence-set",
+                "exclusion",
+                "fingerprint",
+                "raw-entry",
+                "recommendation",
+                "request",
+            ],
             tools[0]["inputSchema"]["properties"]["kind"]["enum"],
         )
 
@@ -39,6 +48,14 @@ class McpFixtureTests(unittest.TestCase):
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
         self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+
+    def test_call_tool_returns_public_exclusion_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "exclusion"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertEqual("unknown_cost", payload["reason"])
 
     def test_call_tool_returns_public_request_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "request"})

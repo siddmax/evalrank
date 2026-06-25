@@ -23,6 +23,7 @@ from evalrank_core.contracts import (  # noqa: E402
 )
 from evalrank_core.fixtures import (  # noqa: E402
     sample_candidate_set,
+    sample_exclusion,
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
@@ -37,6 +38,7 @@ class SchemaContractTests(unittest.TestCase):
     def test_public_schema_files_cover_core_payload_keys(self):
         ranked_schema = _schema("ranked-entity.schema.json")
         recommendation_schema = _schema("recommendation.schema.json")
+        exclusion_schema = _schema("exclusion.schema.json")
         evidence_schema = _schema("evidence-item.schema.json")
         evidence_set_schema = _schema("evidence-set.schema.json")
         request_schema = _schema("evaluation-request.schema.json")
@@ -58,6 +60,9 @@ class SchemaContractTests(unittest.TestCase):
         self.assertLessEqual(set(ranked_schema["required"]), set(ranked_payload))
         self.assertEqual(set(recommendation_payload), set(recommendation_schema["properties"]))
         self.assertLessEqual(set(recommendation_schema["required"]), set(recommendation_payload))
+        exclusion_payload = sample_exclusion().to_dict()
+        self.assertEqual(set(exclusion_payload), set(exclusion_schema["properties"]))
+        self.assertLessEqual(set(exclusion_schema["required"]), set(exclusion_payload))
         evidence_payload = sample_evidence_item().to_dict()
         self.assertEqual(set(evidence_payload), set(evidence_schema["properties"]))
         self.assertLessEqual(set(evidence_schema["required"]), set(evidence_payload))
@@ -81,6 +86,7 @@ class SchemaContractTests(unittest.TestCase):
         for filename in (
             "ranked-entity.schema.json",
             "recommendation.schema.json",
+            "exclusion.schema.json",
             "evidence-item.schema.json",
             "evidence-set.schema.json",
             "evaluation-request.schema.json",
@@ -153,6 +159,25 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(["number", "null"], the_call["properties"]["confidence"]["type"])
         self.assertEqual(0, the_call["properties"]["confidence"]["minimum"])
         self.assertEqual(1, the_call["properties"]["confidence"]["maximum"])
+
+    def test_recommendation_schema_reuses_exclusion_schema(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+
+        self.assertEqual("exclusion.schema.json", recommendation_schema["properties"]["exclusions"]["items"]["$ref"])
+
+    def test_exclusion_schema_pins_public_reason_shape(self):
+        exclusion_schema = _schema("exclusion.schema.json")
+
+        self.assertEqual({"subject", "reason", "detail"}, set(exclusion_schema["required"]))
+        self.assertEqual(
+            {"entity_type", "id"},
+            set(exclusion_schema["properties"]["subject"]["required"]),
+        )
+        self.assertFalse(exclusion_schema["properties"]["subject"]["additionalProperties"])
+        self.assertEqual("string", exclusion_schema["properties"]["reason"]["type"])
+        self.assertEqual(1, exclusion_schema["properties"]["reason"]["minLength"])
+        self.assertEqual("string", exclusion_schema["properties"]["detail"]["type"])
+        self.assertEqual(1, exclusion_schema["properties"]["detail"]["minLength"])
 
     def test_problem_schema_pins_rfc_9457_shape(self):
         problem_schema = _schema("problem.schema.json")

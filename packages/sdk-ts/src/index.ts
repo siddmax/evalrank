@@ -46,6 +46,12 @@ export interface EntityRef {
   id: string;
 }
 
+export interface Exclusion {
+  subject: EntityRef;
+  reason: string;
+  detail: string;
+}
+
 export interface CapabilityFingerprint {
   object: "capability_fingerprint";
   id_scheme: string;
@@ -139,7 +145,7 @@ export interface Recommendation {
   ranked: RankedEntity[];
   groups: Record<string, unknown>[] | null;
   the_call: TheCall | null;
-  exclusions: Record<string, unknown>[];
+  exclusions: Exclusion[];
   recommendation_id: string;
   recommend_id: string;
   search_run_id: string;

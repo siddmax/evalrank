@@ -40,6 +40,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "CandidateSet",
             "CapabilityFingerprint",
             "EntityRef",
+            "Exclusion",
             "EvidenceSet",
             "EvaluationRequest",
             "EvidenceItem",
@@ -64,6 +65,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "requested_at",
             "constraints",
             "candidates",
+            "detail",
             "evidence_items",
             "generated_at",
             "evidence_id",
@@ -81,6 +83,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             self.assertRegex(source, rf"\b{field}\??:")
 
         self.assertIn("the_call: TheCall | null;", source)
+        self.assertIn("exclusions: Exclusion[];", source)
 
 
 def _exported_string_array(source: str, name: str) -> set[str]:

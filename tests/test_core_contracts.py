@@ -11,6 +11,7 @@ from evalrank_core.contracts import (  # noqa: E402
     CandidateSet,
     ConfidenceInterval,
     EntityRef,
+    Exclusion,
     EvidenceSet,
     EvidenceItem,
     EvaluationRequest,
@@ -395,6 +396,58 @@ class CoreContractTests(unittest.TestCase):
                 summary="invalid score",
                 score=1.2,
             )
+
+    def test_exclusion_serializes_public_subject_and_reason(self):
+        exclusion = Exclusion(
+            subject=EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),
+            reason="unknown_cost",
+            detail="cost is unknown for this public fixture",
+        )
+
+        self.assertEqual(
+            {
+                "subject": {"entity_type": "mcp_server", "id": "tool:public-search-demo"},
+                "reason": "unknown_cost",
+                "detail": "cost is unknown for this public fixture",
+            },
+            exclusion.to_dict(),
+        )
+
+    def test_exclusion_rejects_invalid_public_shape(self):
+        subject = EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo")
+
+        with self.assertRaisesRegex(TypeError, "subject"):
+            Exclusion(subject="tool:public-search-demo", reason="unknown_cost", detail="invalid subject")
+
+        with self.assertRaisesRegex(ValueError, "reason"):
+            Exclusion(subject=subject, reason="", detail="missing reason")
+
+        with self.assertRaisesRegex(ValueError, "reason"):
+            Exclusion(subject=subject, reason=42, detail="non-string reason")
+
+        with self.assertRaisesRegex(ValueError, "detail"):
+            Exclusion(subject=subject, reason="unknown_cost", detail="")
+
+        with self.assertRaisesRegex(ValueError, "detail"):
+            Exclusion(subject=subject, reason="unknown_cost", detail=42)
+
+    def test_recommendation_serializes_public_exclusions(self):
+        exclusion = Exclusion(
+            subject=EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),
+            reason="unknown_cost",
+            detail="cost is unknown for this public fixture",
+        )
+        rec = Recommendation.single_scale(
+            request_id="req_01",
+            use_case="function-calling",
+            methodology_version=PINNED_METHODOLOGY_VERSION,
+            ranked=[_row("tool:exa-search-mcp")],
+            generated_at="2026-06-25T00:00:00Z",
+            depth_rationale="one candidate clears the evidence floor",
+            exclusions=[exclusion],
+        )
+
+        self.assertEqual([exclusion.to_dict()], rec.to_dict()["exclusions"])
 
     def test_evidence_set_serializes_public_evidence_items(self):
         evidence = EvidenceItem(

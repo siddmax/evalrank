@@ -9,6 +9,7 @@ from typing import TextIO
 from evalrank_core.fixtures import (
     sample_capability_fingerprint_input,
     sample_candidate_set,
+    sample_exclusion,
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
@@ -48,6 +49,7 @@ def _parser() -> argparse.ArgumentParser:
             "candidate-set",
             "evidence",
             "evidence-set",
+            "exclusion",
             "fingerprint",
             "raw-entry",
             "recommendation",
@@ -63,6 +65,8 @@ def _fixture_payload(kind: str) -> dict:
         return sample_evidence_item().to_dict()
     if kind == "evidence-set":
         return sample_evidence_set().to_dict()
+    if kind == "exclusion":
+        return sample_exclusion().to_dict()
     if kind == "candidate-set":
         return sample_candidate_set().to_dict()
     if kind == "fingerprint":

@@ -11,6 +11,7 @@ evalrank fixture request
 evalrank fixture candidate-set
 evalrank fixture evidence
 evalrank fixture evidence-set
+evalrank fixture exclusion
 evalrank fixture recommendation
 ```
 

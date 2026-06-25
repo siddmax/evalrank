@@ -10,6 +10,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     PUBLIC_METHODOLOGY_VERSION,
     sample_capability_fingerprint_input,
     sample_candidate_set,
+    sample_exclusion,
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
@@ -60,6 +61,14 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("trace", payload["kind"])
         self.assertEqual("public-fixture", payload["source"])
         self.assertEqual(["latency_ms"], sorted(payload["metadata"]))
+
+    def test_sample_exclusion_is_public_contract_payload(self):
+        exclusion = sample_exclusion()
+        payload = exclusion.to_dict()
+
+        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertEqual("unknown_cost", payload["reason"])
+        self.assertEqual("cost is unknown for this public fixture", payload["detail"])
 
     def test_sample_evidence_set_is_public_contract_payload(self):
         evidence_set = sample_evidence_set()

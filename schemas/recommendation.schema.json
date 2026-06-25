@@ -126,8 +126,7 @@
     "exclusions": {
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": true
+        "$ref": "exclusion.schema.json"
       }
     },
     "recommendation_id": {

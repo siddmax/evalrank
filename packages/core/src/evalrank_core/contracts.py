@@ -174,6 +174,28 @@ class EntityRef:
 
 
 @dataclass(frozen=True)
+class Exclusion:
+    subject: EntityRef
+    reason: str
+    detail: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.subject, EntityRef):
+            raise TypeError("subject must be an EntityRef")
+        if not isinstance(self.reason, str) or not self.reason:
+            raise ValueError("reason is required")
+        if not isinstance(self.detail, str) or not self.detail:
+            raise ValueError("detail is required")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "subject": self.subject.to_dict(),
+            "reason": self.reason,
+            "detail": self.detail,
+        }
+
+
+@dataclass(frozen=True)
 class EvidenceItem:
     evidence_id: str
     subject: EntityRef
@@ -439,7 +461,7 @@ class Recommendation:
     served_from: str = "base"
     base_snapshot_lag_ms: int = 0
     the_call: TheCall | None = None
-    exclusions: list[dict[str, Any]] = field(default_factory=list)
+    exclusions: list[Exclusion] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if not self.request_id:
@@ -460,6 +482,9 @@ class Recommendation:
         for row in self.ranked:
             if row.methodology_version != self.methodology_version:
                 raise ValueError("ranked rows must carry the envelope methodology_version")
+        for exclusion in self.exclusions:
+            if not isinstance(exclusion, Exclusion):
+                raise TypeError("exclusions must contain Exclusion values")
 
     @classmethod
     def single_scale(
@@ -472,7 +497,7 @@ class Recommendation:
         generated_at: str,
         depth_rationale: str,
         the_call: TheCall | None = None,
-        exclusions: list[dict[str, Any]] | None = None,
+        exclusions: list[Exclusion] | None = None,
     ) -> "Recommendation":
         return cls(
             request_id=request_id,
@@ -545,7 +570,7 @@ class Recommendation:
             "ranked": [row.to_dict() for row in self.ranked],
             "groups": self.groups,
             "the_call": None if self.the_call is None else self.the_call.to_dict(),
-            "exclusions": self.exclusions,
+            "exclusions": [exclusion.to_dict() for exclusion in self.exclusions],
         }
 
     def _content_addressed_payload(self) -> dict[str, Any]:

@@ -11,6 +11,7 @@ sys.path.insert(0, str(SDK_SRC))
 
 from evalrank_core.contracts import CapabilityFingerprintInput as CoreCapabilityFingerprintInput  # noqa: E402
 from evalrank_core.contracts import CandidateSet as CoreCandidateSet  # noqa: E402
+from evalrank_core.contracts import Exclusion as CoreExclusion  # noqa: E402
 from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E402
 from evalrank_core.contracts import EvidenceSet as CoreEvidenceSet  # noqa: E402
 from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
@@ -19,6 +20,7 @@ from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
     CandidateSet,
+    Exclusion,
     EvaluationRequest,
     EvidenceItem,
     EvidenceSet,
@@ -26,6 +28,7 @@ from evalrank_sdk import (  # noqa: E402
     TheCall,
     sample_capability_fingerprint_input,
     sample_candidate_set,
+    sample_exclusion,
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
@@ -61,6 +64,13 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(CandidateSet, CoreCandidateSet)
         self.assertIsInstance(candidate_set, CoreCandidateSet)
         self.assertEqual("tool:public-search-demo", candidate_set.to_dict()["candidates"][0]["id"])
+
+    def test_sdk_re_exports_core_exclusion_contracts(self):
+        exclusion = sample_exclusion()
+
+        self.assertIs(Exclusion, CoreExclusion)
+        self.assertIsInstance(exclusion, CoreExclusion)
+        self.assertEqual("unknown_cost", exclusion.to_dict()["reason"])
 
     def test_sdk_re_exports_core_evidence_set_contracts(self):
         evidence_set = sample_evidence_set()

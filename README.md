@@ -66,16 +66,18 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture candidate-set
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
 ```
 
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_recommendation
+from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_recommendation
 
 candidate_set = sample_candidate_set().to_dict()
 evidence_set = sample_evidence_set().to_dict()
+exclusion = sample_exclusion().to_dict()
 payload = sample_recommendation().to_dict()
 call = payload["the_call"]
 ```
@@ -91,9 +93,10 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type CandidateSet, type EvidenceSet, type TheCall } from "@evalrank/sdk";
+import { type CandidateSet, type EvidenceSet, type Exclusion, type TheCall } from "@evalrank/sdk";
 
 const candidates: CandidateSet["candidates"] = [{ entity_type: "mcp_server", id: "tool:public-search-demo" }];
 const evidence: EvidenceSet["evidence_items"] = [];
+const exclusion: Exclusion["reason"] = "unknown_cost";
 const call: TheCall["decision"] = "recommend";
 ```

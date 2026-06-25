@@ -6,6 +6,7 @@ from typing import Any
 from evalrank_core.fixtures import (
     sample_capability_fingerprint_input,
     sample_candidate_set,
+    sample_exclusion,
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
@@ -34,6 +35,7 @@ def list_tools() -> list[dict[str, Any]]:
                             "candidate-set",
                             "evidence",
                             "evidence-set",
+                            "exclusion",
                             "fingerprint",
                             "raw-entry",
                             "recommendation",
@@ -68,6 +70,8 @@ def _fixture_payload(kind: Any) -> dict[str, Any]:
         return sample_evidence_item().to_dict()
     if kind == "evidence-set":
         return sample_evidence_set().to_dict()
+    if kind == "exclusion":
+        return sample_exclusion().to_dict()
     if kind == "candidate-set":
         return sample_candidate_set().to_dict()
     if kind == "fingerprint":
@@ -80,7 +84,7 @@ def _fixture_payload(kind: Any) -> dict[str, Any]:
         return sample_evaluation_request().to_dict()
     raise ValueError(
         "fixture kind must be 'candidate-set', 'evidence', 'evidence-set', "
-        "'fingerprint', 'raw-entry', 'recommendation', or 'request'"
+        "'exclusion', 'fingerprint', 'raw-entry', 'recommendation', or 'request'"
     )
 
 

@@ -5,6 +5,7 @@ from evalrank_core.contracts import (
     CandidateSet,
     ConfidenceInterval,
     EntityRef,
+    Exclusion,
     EvidenceItem,
     EvidenceSet,
     EvaluationRequest,
@@ -74,6 +75,14 @@ def sample_ranked_entity() -> RankedEntity:
 
 def sample_entity_ref() -> EntityRef:
     return EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo")
+
+
+def sample_exclusion() -> Exclusion:
+    return Exclusion(
+        subject=sample_entity_ref(),
+        reason="unknown_cost",
+        detail="cost is unknown for this public fixture",
+    )
 
 
 def sample_evidence_item() -> EvidenceItem:
