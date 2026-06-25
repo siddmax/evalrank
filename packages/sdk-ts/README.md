@@ -6,8 +6,8 @@ TypeScript SDK package boundary for public EvalRank APIs.
 
 - Public constants for trust tiers, freshness statuses, comparability modes, evidence kinds, result-row vocabulary, use-case vocabulary, `the_call` decisions, public Problem Details codes, and `PUBLIC_FIXTURE_KINDS`.
 - Public string-union type `PublicFixtureKind` mirrors the shared fixture kind list.
-- Public TypeScript interfaces for `CapabilityFingerprint`, `RawEntry`, `TheCall`, `ProblemDetails`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `Exclusion`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankedEntity`, `RankingGroup`, and `Recommendation`.
-- `Recommendation` includes `recommendation_id`, `recommend_id`, and `search_run_id` as public join aliases.
+- Public TypeScript interfaces for `CapabilityFingerprint`, `RawEntry`, `TheCall`, `Abstention`, `ProblemDetails`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `Exclusion`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankedEntity`, `RankingGroup`, and `Recommendation`.
+- `Recommendation` includes `abstention`, `recommendation_id`, `recommend_id`, and `search_run_id` as public response fields.
 - `ProblemDetails` mirrors the public RFC 9457 error contract plus optional retry extensions; it does not imply a hosted service client.
 - No service client, auth flow, hosted-product behavior, or private data access.
 - The npm package is marked private until a built JS distribution and publish flow exist.

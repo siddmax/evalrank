@@ -114,6 +114,11 @@ export interface Exclusion {
   detail: string;
 }
 
+export interface Abstention {
+  reason: string;
+  detail: string;
+}
+
 export interface CapabilityFingerprint {
   object: "capability_fingerprint";
   id_scheme: string;
@@ -307,6 +312,7 @@ export interface Recommendation {
   ranked: RankedEntity[];
   groups: RankingGroup[] | null;
   the_call: TheCall | null;
+  abstention: Abstention | null;
   exclusions: Exclusion[];
   recommendation_id: string;
   recommend_id: string;

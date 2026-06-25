@@ -39,6 +39,7 @@ class TypeScriptSdkTests(unittest.TestCase):
         text = (SDK_TS / "README.md").read_text(encoding="utf-8")
 
         for name in (
+            "Abstention",
             "CapabilityFingerprint",
             "RawEntry",
             "EntityRef",
@@ -96,6 +97,7 @@ class TypeScriptSdkTests(unittest.TestCase):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
 
         for name in (
+            "Abstention",
             "CandidateSet",
             "CapabilityFingerprint",
             "EntityRef",
@@ -161,6 +163,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "search_run_id",
             "rrf_components",
             "retrieval_provenance",
+            "abstention",
             "abstention_reason",
             "retry_after",
             "request_id",
@@ -177,6 +180,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             self.assertRegex(source, rf"\b{field}\??:")
 
         self.assertIn("the_call: TheCall | null;", source)
+        self.assertIn("abstention: Abstention | null;", source)
         self.assertIn("exclusions: Exclusion[];", source)
         self.assertIn("groups: RankingGroup[] | null;", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)

@@ -96,6 +96,7 @@ evidence_set = sample_evidence_set().to_dict()
 exclusion = sample_exclusion().to_dict()
 payload = sample_recommendation().to_dict()
 call = payload["the_call"]
+abstention = payload["abstention"]
 ```
 
 MCP adapter:
@@ -109,7 +110,7 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type RankingGroup, type ResultRow, type ScoringStageCatalog, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
+import { type Abstention, type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type RankingGroup, type ResultRow, type ScoringStageCatalog, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
 
 const useCases: UseCaseCatalog["use_cases"] = [];
 const stages: ScoringStageCatalog["stages"] = [];
@@ -120,5 +121,6 @@ const grouped: RankingGroup["ranked"] = [];
 const evidence: EvidenceSet["evidence_items"] = [];
 const exclusion: Exclusion["reason"] = "unknown_cost";
 const call: TheCall["decision"] = "recommend";
+const abstention: Abstention | null = null;
 const problem: ProblemDetails["code"] = "rate_limited";
 ```

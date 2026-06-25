@@ -9,6 +9,7 @@ SDK_SRC = REPO_ROOT / "packages" / "sdk-python" / "src"
 sys.path.insert(0, str(CORE_SRC))
 sys.path.insert(0, str(SDK_SRC))
 
+from evalrank_core import contracts as core_contracts  # noqa: E402
 from evalrank_core.contracts import CapabilityFingerprintInput as CoreCapabilityFingerprintInput  # noqa: E402
 from evalrank_core.contracts import CandidateSet as CoreCandidateSet  # noqa: E402
 from evalrank_core.contracts import Exclusion as CoreExclusion  # noqa: E402
@@ -62,6 +63,7 @@ class PythonSdkTests(unittest.TestCase):
         text = (REPO_ROOT / "packages" / "sdk-python" / "README.md").read_text(encoding="utf-8")
 
         for name in (
+            "Abstention",
             "CapabilityFingerprintInput",
             "RawEntry",
             "EvaluationRequest",
@@ -88,6 +90,13 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(PUBLIC_FIXTURE_KINDS, CorePublicFixtureKinds)
         self.assertIs(sample_public_fixture, core_sample_public_fixture)
         self.assertEqual("recommendation", sample_public_fixture("recommendation")["object"])
+
+    def test_sdk_re_exports_core_abstention_contract(self):
+        self.assertTrue(hasattr(core_contracts, "Abstention"))
+        import evalrank_sdk  # noqa: PLC0415
+
+        self.assertTrue(hasattr(evalrank_sdk, "Abstention"))
+        self.assertIs(evalrank_sdk.Abstention, core_contracts.Abstention)
 
     def test_sdk_re_exports_core_capability_fingerprint_contracts(self):
         fingerprint_input = sample_capability_fingerprint_input()

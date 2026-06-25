@@ -1,4 +1,5 @@
 from evalrank_core import (
+    Abstention,
     CapabilityFingerprintInput,
     CandidateSet,
     ConfidenceInterval,
@@ -48,6 +49,7 @@ __version__ = "0.0.0"
 
 __all__ = [
     "CapabilityFingerprintInput",
+    "Abstention",
     "CandidateSet",
     "ConfidenceInterval",
     "EntityRef",

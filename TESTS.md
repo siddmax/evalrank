@@ -8,16 +8,16 @@ make check
 
 ## Test Map
 
-- `tests/test_core_contracts.py` checks public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, scoring stage catalog, ranking group, evidence set, exclusion, `the_call`, recommendation ID aliases, recommendation envelope validation, ranking, public string-field validation, primitive/sequence field validation, score-component map validation, evidence metadata, request constraints, methodology-version contract behavior, and core README drift.
-- `tests/test_core_fixtures.py` checks reusable public fixture dispatch plus capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, recommendation with `the_call`, and evidence fixture payloads.
+- `tests/test_core_contracts.py` checks public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, scoring stage catalog, ranking group, evidence set, exclusion, `the_call`, abstention, recommendation ID aliases, recommendation envelope validation, ranking, public string-field validation, primitive/sequence field validation, score-component map validation, evidence metadata, request constraints, methodology-version contract behavior, and core README drift.
+- `tests/test_core_fixtures.py` checks reusable public fixture dispatch plus capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, recommendation with `the_call` and abstention fields, and evidence fixture payloads.
 - `tests/test_examples.py` checks the runnable public fixture example output and verifies `examples/README.md` lists every emitted JSON key.
 - `tests/test_cli_fixture.py` checks deterministic public CLI fixture output, README fixture-command coverage, and invalid input handling.
 - `tests/test_mcp_fixture.py` checks the public MCP fixture tool manifest, README fixture-kind coverage, and result shape.
-- `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys, raw-entry, candidate-set, stage-candidate, result-row, use-case catalog, scoring-stage catalog, ranking-group, evidence-set, exclusion, and score-component map shapes, RFC 9457 Problem Details plus public retry extensions, structured `the_call`, recommendation alias patterns, pinned public patterns, and schema README drift.
+- `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys, raw-entry, candidate-set, stage-candidate, result-row, use-case catalog, scoring-stage catalog, ranking-group, evidence-set, exclusion, abstention, and score-component map shapes, RFC 9457 Problem Details plus public retry extensions, structured `the_call`, recommendation alias patterns, pinned public patterns, and schema README drift.
 - `tests/test_openapi_contract.py` checks the public OpenAPI route contracts, reusable Problem Details responses, retry/rate-limit headers, schema refs, and storage-free boundary.
 - `tests/test_methods_docs.py` checks public method notes stay aligned with the use-case taxonomy and scoring-stage contracts plus private boundaries.
 - `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts and public fixture dispatch helpers.
-- `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces, including public fixture kinds, Problem Details codes, and types.
+- `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces, including public fixture kinds, Problem Details codes, abstention, and types.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.
 - `scripts/check_public_boundary.py` rejects private imports, disallowed coupling, excluded implementation markers, secret files, high-signal secret values, private data paths, and missing package license/notice files.
 

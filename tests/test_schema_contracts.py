@@ -229,6 +229,19 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(0, the_call["properties"]["confidence"]["minimum"])
         self.assertEqual(1, the_call["properties"]["confidence"]["maximum"])
 
+    def test_recommendation_schema_pins_abstention_shape(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+
+        self.assertIn("abstention", recommendation_schema["required"])
+        abstention = recommendation_schema["properties"]["abstention"]
+        self.assertEqual(["object", "null"], abstention["type"])
+        self.assertFalse(abstention["additionalProperties"])
+        self.assertEqual({"reason", "detail"}, set(abstention["required"]))
+        self.assertEqual("string", abstention["properties"]["reason"]["type"])
+        self.assertEqual(1, abstention["properties"]["reason"]["minLength"])
+        self.assertEqual("string", abstention["properties"]["detail"]["type"])
+        self.assertEqual(1, abstention["properties"]["detail"]["minLength"])
+
     def test_recommendation_schema_reuses_exclusion_schema(self):
         recommendation_schema = _schema("recommendation.schema.json")
 

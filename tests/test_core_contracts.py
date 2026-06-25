@@ -7,6 +7,7 @@ CORE_SRC = Path(__file__).resolve().parents[1] / "packages" / "core" / "src"
 sys.path.insert(0, str(CORE_SRC))
 CORE_README = CORE_SRC.parents[0] / "README.md"
 
+import evalrank_core.contracts as contracts  # noqa: E402
 from evalrank_core.contracts import (  # noqa: E402
     CapabilityFingerprintInput,
     CandidateSet,
@@ -517,6 +518,8 @@ class CoreContractTests(unittest.TestCase):
 
         self.assertEqual("recommendation", payload["object"])
         self.assertEqual("single-scale", payload["comparability"])
+        self.assertIn("abstention", payload)
+        self.assertIsNone(payload["abstention"])
         self.assertEqual([row.to_dict()], payload["ranked"])
         self.assertIsNone(payload["groups"])
         self.assertTrue(rec.result_usable)
@@ -696,6 +699,31 @@ class CoreContractTests(unittest.TestCase):
             abstain.to_dict(),
         )
 
+    def test_abstention_serializes_public_reason(self):
+        self.assertTrue(hasattr(contracts, "Abstention"))
+
+        abstention = contracts.Abstention(
+            reason="insufficient_evidence",
+            detail="no standardized-harness evidence; below ranking floor",
+        )
+
+        self.assertEqual(
+            {
+                "reason": "insufficient_evidence",
+                "detail": "no standardized-harness evidence; below ranking floor",
+            },
+            abstention.to_dict(),
+        )
+        for kwargs in (
+            {"reason": "", "detail": "below ranking floor"},
+            {"reason": "insufficient_evidence", "detail": ""},
+            {"reason": 123, "detail": "below ranking floor"},
+            {"reason": "insufficient_evidence", "detail": 123},
+        ):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "reason|detail"):
+                    contracts.Abstention(**kwargs)
+
     def test_the_call_rejects_private_or_incomplete_shapes(self):
         with self.assertRaisesRegex(ValueError, "decision"):
             TheCall(decision="maybe", confidence=0.5, reason="not a public decision")
@@ -729,12 +757,30 @@ class CoreContractTests(unittest.TestCase):
             methodology_version=PINNED_METHODOLOGY_VERSION,
             generated_at="2026-06-25T00:00:00Z",
             reason="insufficient_evidence",
+            detail="no standardized-harness evidence; below ranking floor",
         )
 
         self.assertFalse(rec.result_usable)
         self.assertEqual([], rec.ranked)
         self.assertEqual("abstain", rec.the_call.decision)
-        self.assertEqual("insufficient_evidence", rec.to_dict()["the_call"]["abstention_reason"])
+        payload = rec.to_dict()
+        self.assertEqual("insufficient_evidence", payload["the_call"]["abstention_reason"])
+        self.assertEqual(
+            {
+                "reason": "insufficient_evidence",
+                "detail": "no standardized-harness evidence; below ranking floor",
+            },
+            payload["abstention"],
+        )
+        with self.assertRaisesRegex(ValueError, "detail"):
+            Recommendation.abstain(
+                request_id="req_01",
+                use_case="mobile-codegen:flutter",
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                generated_at="2026-06-25T00:00:00Z",
+                reason="insufficient_evidence",
+                detail="",
+            )
 
     def test_methodology_version_rejects_unpinned_format(self):
         with self.assertRaisesRegex(ValueError, "methodology_version"):

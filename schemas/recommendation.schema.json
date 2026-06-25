@@ -18,6 +18,7 @@
     "ranked",
     "groups",
     "the_call",
+    "abstention",
     "exclusions",
     "recommendation_id",
     "recommend_id",
@@ -118,6 +119,27 @@
             "string",
             "null"
           ],
+          "minLength": 1
+        }
+      }
+    },
+    "abstention": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "detail"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "detail": {
+          "type": "string",
           "minLength": 1
         }
       }

@@ -717,6 +717,22 @@ class TheCall:
 
 
 @dataclass(frozen=True)
+class Abstention:
+    reason: str
+    detail: str
+
+    def __post_init__(self) -> None:
+        _require_nonempty_string("reason", self.reason)
+        _require_nonempty_string("detail", self.detail)
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "reason": self.reason,
+            "detail": self.detail,
+        }
+
+
+@dataclass(frozen=True)
 class RankingGroup:
     object: ClassVar[str] = "ranking_group"
 
@@ -768,6 +784,7 @@ class Recommendation:
     served_from: str = "base"
     base_snapshot_lag_ms: int = 0
     the_call: TheCall | None = None
+    abstention: Abstention | None = None
     exclusions: list[Exclusion] = field(default_factory=list)
 
     def __post_init__(self) -> None:
@@ -817,6 +834,8 @@ class Recommendation:
                     raise ValueError("group rows must carry the envelope methodology_version")
         if self.the_call is not None and not isinstance(self.the_call, TheCall):
             raise TypeError("the_call must be a TheCall")
+        if self.abstention is not None and not isinstance(self.abstention, Abstention):
+            raise TypeError("abstention must be an Abstention")
         if not isinstance(self.exclusions, list):
             raise ValueError("exclusions must be an array")
         for exclusion in self.exclusions:
@@ -886,6 +905,7 @@ class Recommendation:
         methodology_version: str,
         generated_at: str,
         reason: str,
+        detail: str | None = None,
     ) -> "Recommendation":
         return cls(
             request_id=request_id,
@@ -898,6 +918,7 @@ class Recommendation:
             shortlist_depth=0,
             depth_rationale=reason,
             the_call=TheCall.abstain(reason=reason),
+            abstention=Abstention(reason=reason, detail=reason if detail is None else detail),
         )
 
     @property
@@ -934,6 +955,7 @@ class Recommendation:
             "ranked": [row.to_dict() for row in self.ranked],
             "groups": None if self.groups is None else [group.to_dict() for group in self.groups],
             "the_call": None if self.the_call is None else self.the_call.to_dict(),
+            "abstention": None if self.abstention is None else self.abstention.to_dict(),
             "exclusions": [exclusion.to_dict() for exclusion in self.exclusions],
         }
 
