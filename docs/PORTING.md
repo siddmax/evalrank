@@ -78,6 +78,27 @@ Reviewed the private-side EvalRank planning and migration surface by category on
 
 Public docs may summarize private planning decisions, but must not copy raw private plans, live identifiers, customer examples, runbooks, production rows, or held-out evaluation details.
 
+## Current Port-Over Assessment
+
+Use this table for the next port decision. The destination is this public repo only when the artifact is portable without private data, secrets, live infrastructure, or proprietary hosted behavior.
+
+| Candidate change | Port decision | Workstream |
+| --- | --- | --- |
+| Public repo scaffold, package boundaries, license/notice files, CI, and deterministic public-boundary checks | Already ported; keep strengthening leak classes as they are discovered. | Open-Core Boundary / CI |
+| Storage-free public payloads and aliases currently represented by core dataclasses and JSON Schemas | Already ported for capability fingerprints, evaluation requests, ranked entities, recommendations, recommendation aliases, entity refs, and evidence items. | Public Contracts |
+| Public fixture surfaces across core, SDKs, CLI, MCP, and examples | Already ported for deterministic synthetic fixtures only. | SDK / CLI / MCP, Examples |
+| Public scoring-stage vocabulary | Already ported as a method-boundary note, without formulas, thresholds, private eval data, or benchmarks. | Methods / Schemas |
+| `RawEntry` ingestion-normalization shape | Port next if implemented as a storage-free contract with synthetic fixtures and a deterministic content hash; do not port source adapters, production metadata, or live fetch behavior with it. | Public Contracts |
+| Public `the_call` / decision-confidence response shape | Port after its public semantics can be expressed without proprietary thresholds, held-out evidence floors, or private confidence tuning. | Public Contracts, Methods / Schemas |
+| REST/OpenAPI contract | Port only when a concrete public route exists; keep private auth, tenant logic, hosted receipt internals, and app DTOs out. | Public Surface Contracts |
+| Recommendation receipt route and HMAC-backed hosted ID derivation | Do not port yet. Public aliases are enough for open-core interoperability; secret-backed derivation belongs with hosted route design. | Public Surface Contracts, Hosted Ops / Deploy Ops |
+| Entity graph tables, evidence ledger storage, methodology table, migrations, grants, RLS, and live DB checks | Keep in Syndai/private systems until EvalRank owns persistence or its own Supabase project. | DB Bootstrap / Syndai Ops |
+| Deterministic scorer and materializer runtime | Incubate privately first, then split only public-input-only pieces that do not depend on production rows, private workers, or proprietary tuning. | Scoring / Materializer Runtime |
+| SDK/CLI/MCP behavior beyond fixtures | Port one public contract at a time after the corresponding contract and schema are pinned. | SDK / CLI / MCP |
+| UI routes, API-route navigation docs, deeplinks, and `NAVIGATION.md` | Wait until navigable public surfaces exist. | Public Surface Contracts, Docs / Public Planning |
+| Hosted ops, telemetry, billing/admin/GTM, vendor intent, credentials, deploy files, live project refs, private integrations, and account operations | Keep private unless later rewritten as product-neutral public docs with all operational detail removed. | Hosted Ops / GTM, Secrets / Deploy Ops |
+| Held-out suites, graders, answer keys, traces, judge calibration, private benchmark results, and proprietary ranking experiments | Never port. Publish only synthetic or public reproducible fixtures. | Evaluation Integrity |
+
 ## Porting Decisions
 
 | Artifact or workstream | Destination | Owner workstream | Status |
