@@ -4,7 +4,7 @@
 
 | Route | Source | Status |
 | --- | --- | --- |
-| `POST /v1/recommendations` | `schemas/openapi.json` | Public contract only; no live server is declared here. |
+| `POST /v1/recommendations` | `schemas/openapi.json` | Public contract only; returns `Recommendation` on `200` and reusable RFC 9457 Problem Details responses for `400`, `422`, `429`, `503`, and `504`; no live server is declared here. |
 
 ## Update Rules
 

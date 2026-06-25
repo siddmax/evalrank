@@ -43,9 +43,9 @@ The boundary gate rejects private imports, Smithery coupling, Min-K% implementat
 
 ## Public API Contract
 
-The first route contract is `POST /v1/recommendations` in `schemas/openapi.json`. It accepts `EvaluationRequest` JSON, returns `Recommendation` JSON, and uses RFC 9457 `application/problem+json` for invalid request payloads.
+The first route contract is `POST /v1/recommendations` in `schemas/openapi.json`. It accepts `EvaluationRequest` JSON, returns `Recommendation` JSON, and uses RFC 9457 `application/problem+json` for malformed payloads, validation errors, rate limits, temporary unavailability, and upstream timeouts.
 
-This is a contract only. Hosted auth, scorer runtime, persistence, receipt IDs, private problem types, and deployment wiring stay outside this public repo.
+The public error contract includes optional retry fields and reusable `Retry-After`, `RateLimit`, and `RateLimit-Policy` header definitions. This is a contract only. Hosted auth, scorer runtime, rate-limit enforcement, persistence, receipt IDs, private problem types, and deployment wiring stay outside this public repo.
 
 ## Public Fixture Surfaces
 
@@ -95,11 +95,12 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type CandidateSet, type EvidenceSet, type Exclusion, type StageCandidate, type TheCall } from "@evalrank/sdk";
+import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type StageCandidate, type TheCall } from "@evalrank/sdk";
 
 const candidates: CandidateSet["candidates"] = [{ entity_type: "mcp_server", id: "tool:public-search-demo" }];
 const arms: StageCandidate["retrieval_provenance"]["arms"] = ["lexical", "semantic"];
 const evidence: EvidenceSet["evidence_items"] = [];
 const exclusion: Exclusion["reason"] = "unknown_cost";
 const call: TheCall["decision"] = "recommend";
+const problem: ProblemDetails["code"] = "rate_limited";
 ```

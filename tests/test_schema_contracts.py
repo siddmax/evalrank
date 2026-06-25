@@ -33,6 +33,16 @@ from evalrank_core.fixtures import (  # noqa: E402
 
 
 METHODOLOGY_VERSION_PATTERN = r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$"
+PROBLEM_CODES = [
+    "rate_limited",
+    "upstream_timeout",
+    "validation",
+    "not_found",
+    "methodology_stale",
+    "internal",
+    "unauthorized",
+    "forbidden",
+]
 
 
 class SchemaContractTests(unittest.TestCase):
@@ -198,6 +208,22 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(599, problem_schema["properties"]["status"]["maximum"])
         self.assertEqual("string", problem_schema["properties"]["detail"]["type"])
         self.assertEqual("uri-reference", problem_schema["properties"]["instance"]["format"])
+
+    def test_problem_schema_pins_evalrank_error_extensions(self):
+        problem_schema = _schema("problem.schema.json")
+        properties = problem_schema["properties"]
+
+        self.assertEqual(PROBLEM_CODES, properties["code"]["enum"])
+        self.assertEqual("boolean", properties["retriable"]["type"])
+        self.assertEqual("integer", properties["retry_after"]["type"])
+        self.assertEqual(0, properties["retry_after"]["minimum"])
+        self.assertEqual("string", properties["field"]["type"])
+        self.assertEqual(1, properties["field"]["minLength"])
+        self.assertEqual("string", properties["request_id"]["type"])
+        self.assertEqual(1, properties["request_id"]["minLength"])
+        self.assertEqual("string", properties["doc_url"]["type"])
+        self.assertEqual("uri-reference", properties["doc_url"]["format"])
+        self.assertEqual(1, properties["doc_url"]["minLength"])
 
     def test_candidate_set_schema_pins_public_candidate_refs(self):
         candidate_set_schema = _schema("candidate-set.schema.json")

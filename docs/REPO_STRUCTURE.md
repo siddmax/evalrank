@@ -24,7 +24,7 @@ Package directories should keep their own `README.md`, `LICENSE`, `NOTICE`, and 
 
 ## Public Contracts
 
-- `schemas/` owns public JSON Schema contracts and the public OpenAPI route contract.
+- `schemas/` owns public JSON Schema contracts and the public OpenAPI route/error contract.
 - `methods/` owns public methodology notes and exclusion boundaries.
 - `examples/` owns public runnable examples.
 

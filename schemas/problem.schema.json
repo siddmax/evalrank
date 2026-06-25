@@ -33,6 +33,39 @@
       "type": "string",
       "format": "uri-reference",
       "minLength": 1
+    },
+    "code": {
+      "type": "string",
+      "enum": [
+        "rate_limited",
+        "upstream_timeout",
+        "validation",
+        "not_found",
+        "methodology_stale",
+        "internal",
+        "unauthorized",
+        "forbidden"
+      ]
+    },
+    "retriable": {
+      "type": "boolean"
+    },
+    "retry_after": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "field": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "doc_url": {
+      "type": "string",
+      "format": "uri-reference",
+      "minLength": 1
     }
   }
 }

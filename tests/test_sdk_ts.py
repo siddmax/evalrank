@@ -12,6 +12,17 @@ sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import EVIDENCE_KINDS, THE_CALL_DECISIONS, TRUST_TIERS  # noqa: E402
 
+PROBLEM_CODES = {
+    "rate_limited",
+    "upstream_timeout",
+    "validation",
+    "not_found",
+    "methodology_stale",
+    "internal",
+    "unauthorized",
+    "forbidden",
+}
+
 
 class TypeScriptSdkTests(unittest.TestCase):
     def test_package_metadata_exposes_public_typescript_entrypoint(self):
@@ -32,6 +43,7 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertEqual(TRUST_TIERS, _exported_string_array(source, "TRUST_TIERS"))
         self.assertEqual(EVIDENCE_KINDS, _exported_string_array(source, "EVIDENCE_KINDS"))
         self.assertEqual(THE_CALL_DECISIONS, _exported_string_array(source, "THE_CALL_DECISIONS"))
+        self.assertEqual(PROBLEM_CODES, _exported_string_array(source, "PROBLEM_CODES"))
 
     def test_public_interfaces_cover_schema_payloads(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
@@ -49,6 +61,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "Recommendation",
             "StageCandidate",
             "TheCall",
+            "ProblemDetails",
         ):
             self.assertIn(f"export interface {name}", source)
 
@@ -82,11 +95,18 @@ class TypeScriptSdkTests(unittest.TestCase):
             "rrf_components",
             "retrieval_provenance",
             "abstention_reason",
+            "retry_after",
+            "request_id",
+            "doc_url",
         ):
             self.assertRegex(source, rf"\b{field}\??:")
 
         self.assertIn("the_call: TheCall | null;", source)
         self.assertIn("exclusions: Exclusion[];", source)
+        self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
+        self.assertIn("code?: ProblemCode;", source)
+        self.assertIn("retriable?: boolean;", source)
+        self.assertIn("[key: string]: unknown;", source)
 
 
 def _exported_string_array(source: str, name: str) -> set[str]:

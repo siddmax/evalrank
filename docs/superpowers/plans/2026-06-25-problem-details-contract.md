@@ -4,6 +4,8 @@
 
 **Goal:** Pin the public error response shape for EvalRank route contracts using RFC 9457 Problem Details.
 
+**Supersession note:** `docs/superpowers/plans/2026-06-26-problem-details-retry-contract.md` later ports product-neutral optional retry/error extensions. The base RFC 9457 shape from this plan remains the foundation.
+
 **Architecture:** Add `schemas/problem.schema.json` as a small public wire contract and reference it from the existing `POST /v1/recommendations` OpenAPI route for invalid request payloads. Use `application/problem+json` and the standard members instead of inventing a custom EvalRank error envelope. Do not add a server runtime, auth, private error taxonomy, persistence, telemetry, or hosted receipt behavior.
 
 **Tech Stack:** RFC 9457 Problem Details, OpenAPI 3.1.1 JSON, JSON Schema 2020-12, Python stdlib `unittest`.

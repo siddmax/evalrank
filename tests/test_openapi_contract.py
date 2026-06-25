@@ -48,12 +48,75 @@ class OpenApiContractTests(unittest.TestCase):
 
     def test_public_openapi_contract_pins_problem_details_errors(self):
         spec = _openapi()
-        response = spec["paths"]["/v1/recommendations"]["post"]["responses"]["400"]
+        responses = spec["paths"]["/v1/recommendations"]["post"]["responses"]
 
         self.assertEqual(
-            "#/components/schemas/ProblemDetails",
-            response["content"]["application/problem+json"]["schema"]["$ref"],
+            "#/components/responses/BadRequest",
+            responses["400"]["$ref"],
         )
+        self.assertEqual(
+            "#/components/responses/ValidationError",
+            responses["422"]["$ref"],
+        )
+        self.assertEqual(
+            "#/components/responses/RateLimited",
+            responses["429"]["$ref"],
+        )
+        self.assertEqual(
+            "#/components/responses/ServiceUnavailable",
+            responses["503"]["$ref"],
+        )
+        self.assertEqual(
+            "#/components/responses/UpstreamTimeout",
+            responses["504"]["$ref"],
+        )
+
+        for response_name in (
+            "BadRequest",
+            "ValidationError",
+            "RateLimited",
+            "ServiceUnavailable",
+            "UpstreamTimeout",
+        ):
+            response = spec["components"]["responses"][response_name]
+            self.assertEqual(
+                "#/components/headers/RequestId",
+                response["headers"]["X-Request-Id"]["$ref"],
+            )
+            self.assertEqual(
+                "#/components/schemas/ProblemDetails",
+                response["content"]["application/problem+json"]["schema"]["$ref"],
+            )
+
+    def test_public_openapi_contract_pins_retry_headers(self):
+        spec = _openapi()
+        rate_limited = spec["components"]["responses"]["RateLimited"]
+        unavailable = spec["components"]["responses"]["ServiceUnavailable"]
+        timeout = spec["components"]["responses"]["UpstreamTimeout"]
+
+        self.assertEqual(
+            "#/components/headers/RetryAfter",
+            rate_limited["headers"]["Retry-After"]["$ref"],
+        )
+        self.assertEqual(
+            "#/components/headers/RateLimit",
+            rate_limited["headers"]["RateLimit"]["$ref"],
+        )
+        self.assertEqual(
+            "#/components/headers/RateLimitPolicy",
+            rate_limited["headers"]["RateLimit-Policy"]["$ref"],
+        )
+        self.assertEqual(
+            "#/components/headers/RetryAfter",
+            unavailable["headers"]["Retry-After"]["$ref"],
+        )
+        self.assertEqual(
+            "#/components/headers/RetryAfter",
+            timeout["headers"]["Retry-After"]["$ref"],
+        )
+        self.assertEqual("integer", spec["components"]["headers"]["RetryAfter"]["schema"]["type"])
+        self.assertEqual("string", spec["components"]["headers"]["RateLimit"]["schema"]["type"])
+        self.assertEqual("string", spec["components"]["headers"]["RateLimitPolicy"]["schema"]["type"])
 
     def test_openapi_contract_stays_storage_free(self):
         spec = _openapi()

@@ -29,11 +29,23 @@ export const THE_CALL_DECISIONS = [
   "recommend",
 ] as const;
 
+export const PROBLEM_CODES = [
+  "rate_limited",
+  "upstream_timeout",
+  "validation",
+  "not_found",
+  "methodology_stale",
+  "internal",
+  "unauthorized",
+  "forbidden",
+] as const;
+
 export type TrustTier = (typeof TRUST_TIERS)[number];
 export type FreshnessStatus = (typeof FRESHNESS_STATUSES)[number];
 export type ComparabilityMode = (typeof COMPARABILITY_MODES)[number];
 export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];
 export type TheCallDecision = (typeof THE_CALL_DECISIONS)[number];
+export type ProblemCode = (typeof PROBLEM_CODES)[number];
 
 export interface Freshness {
   last_eval: string;
@@ -130,6 +142,21 @@ export interface TheCall {
   confidence: number | null;
   reason: string;
   abstention_reason: string | null;
+}
+
+export interface ProblemDetails {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  instance?: string;
+  code?: ProblemCode;
+  retriable?: boolean;
+  retry_after?: number;
+  field?: string;
+  request_id?: string;
+  doc_url?: string;
+  [key: string]: unknown;
 }
 
 export interface RankedEntity {
