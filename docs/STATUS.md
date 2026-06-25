@@ -18,6 +18,7 @@ Last updated: 2026-06-25
 - CLI package metadata and deterministic public fixture command.
 - MCP package metadata and deterministic public fixture adapter.
 - Public scoring-stage vocabulary and method-boundary note.
+- Runnable public fixture example.
 - Schema drift tests for core payload keys and public enum constants.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
 - Public progress tracker and repo structure map.
@@ -34,6 +35,7 @@ Last updated: 2026-06-25
 - Public scoring-stage build log in `docs/build-log/2026-06-25-scoring-stages.md`.
 - Public progress and porting audit in `docs/build-log/2026-06-25-public-progress-and-porting-audit.md`.
 - TypeScript SDK public type surface build log in `docs/build-log/2026-06-25-typescript-sdk-types.md`.
+- Runnable public fixture example build log in `docs/build-log/2026-06-25-public-fixture-example.md`.
 
 ## Current Public Surface
 
@@ -46,6 +48,7 @@ Last updated: 2026-06-25
 | CLI | Deterministic `fixture evidence` and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
 | Methods | Public scoring-stage vocabulary and private-boundary note. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
+| Examples | `examples/public_fixture.py` prints synthetic public recommendation and evidence JSON. | Non-fixture demos, live API examples, and private-data examples. |
 | Docs | Status tracker, repo structure map, porting map, package READMEs, and build logs. | `NAVIGATION.md`; add it only when UI/API routes or deeplinks exist. |
 
 ## In Progress
@@ -64,7 +67,7 @@ Last updated: 2026-06-25
 | 1 | Public Contracts | This repo | First recommendation and entity/evidence slices ported; extend only for new public payload contracts. |
 | 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary ported; add details only after private material is removed. |
 | 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK types, CLI fixture, and MCP fixture slices ported; extend after concrete non-fixture contracts are pinned. |
-| 4 | Docs / Public Planning | This repo | Current status, repo structure, and porting docs are public-safe; keep updating them with each port. |
+| 4 | Docs / Public Planning | This repo | Current status, repo structure, porting docs, and first runnable example are public-safe; keep updating them with each port. |
 | 5 | DB Bootstrap / Syndai Ops | Syndai repo | Keep Supabase migrations, live bootstrap, and operational checks private during incubation. |
 | 6 | Evaluation Integrity | Private eval systems | Keep held-out tasks, graders, answers, traces, and benchmark results private. |
 | 7 | Hosted Ops / GTM | Private hosted systems | Keep billing, admin, telemetry, vendor intent, and account operations out of this repo. |

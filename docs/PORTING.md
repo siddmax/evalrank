@@ -27,6 +27,7 @@ Last reviewed: 2026-06-25
 - TypeScript SDK package metadata and mirrored public contract types/constants.
 - CLI package metadata and deterministic public fixture command.
 - MCP package metadata and deterministic public fixture adapter.
+- Runnable public fixture example.
 - Public scoring-stage vocabulary and method-boundary note.
 
 ## Ported To Date
@@ -36,6 +37,7 @@ Last reviewed: 2026-06-25
 | Public Contracts | `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
 | Methods / Schemas | JSON Schemas for public payloads and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
 | SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
+| Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
 | Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
 
@@ -62,6 +64,7 @@ Last reviewed: 2026-06-25
 
 - Additional storage-free Python contracts and JSON Schemas when a new public payload is pinned.
 - Synthetic public fixtures that prove contract shape without using production data.
+- Public runnable examples that consume only synthetic fixtures.
 - Deterministic checks that prevent private imports, secrets, private data paths, and missing package hygiene.
 - Public build logs that summarize decisions without exposing private projects, credentials, customers, held-out tasks, or live telemetry.
 - Package README and agent guidance needed for contributors to work inside the public repo.

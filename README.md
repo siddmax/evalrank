@@ -44,6 +44,12 @@ The boundary gate rejects private imports, Smithery coupling, Min-K% implementat
 
 These examples use local checkout paths until the packages are published.
 
+Runnable example:
+
+```sh
+python3 examples/public_fixture.py
+```
+
 CLI:
 
 ```sh

@@ -10,6 +10,7 @@ make check
 
 - `tests/test_core_contracts.py` checks public recommendation, ranking, and evidence contract behavior.
 - `tests/test_core_fixtures.py` checks reusable public recommendation and evidence fixture payloads.
+- `tests/test_examples.py` checks the runnable public fixture example output.
 - `tests/test_cli_fixture.py` checks deterministic public CLI fixture output and invalid input handling.
 - `tests/test_mcp_fixture.py` checks the public MCP fixture tool manifest and result shape.
 - `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys.
@@ -21,6 +22,7 @@ make check
 ## Package Checks
 
 - TypeScript SDK syntax check: `npm run check --prefix packages/sdk-ts`
+- Public fixture example smoke check: `python3 examples/public_fixture.py`
 
 ## Update Rules
 
