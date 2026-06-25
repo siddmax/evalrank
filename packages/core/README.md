@@ -4,6 +4,8 @@ Reference Python package for public EvalRank evidence and scoring contracts.
 
 Use `evalrank_core.fixtures.sample_public_fixture(kind)` with `PUBLIC_FIXTURE_KINDS`, or the individual fixture helpers, for public examples and contract tests.
 
+Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, and `EntityRef`.
+
 Candidate set payloads expose a storage-free list of public `EntityRef` candidates for a request; source adapters and graph lookup stay outside this package.
 
 Stage candidate payloads expose one storage-free Stage-1 candidate row with RRF ranks and retrieval provenance; scorer stages, graph lookup, trust policy, and private tuning stay outside this package.
@@ -13,6 +15,8 @@ Evidence set payloads expose storage-free public `EvidenceItem` rows for a reque
 Evidence item `metadata` and evaluation request `constraints` are public JSON objects. Non-object values, non-string keys, and non-JSON values are rejected before serialization.
 
 Entity references, freshness dates, request entity types, ranked-entity ranks, evidence counts, and caveats reject schema-incompatible Python values before serialization.
+
+Capability fingerprint, raw entry, evidence item, evidence set, candidate set, and `the_call` public string fields must be actual non-empty strings.
 
 Result row payloads expose storage-free benchmark/result provenance. Source adapters, production rows, private benchmark material, scorer fitting, and storage tables stay outside this package.
 

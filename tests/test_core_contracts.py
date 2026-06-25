@@ -5,6 +5,7 @@ from pathlib import Path
 
 CORE_SRC = Path(__file__).resolve().parents[1] / "packages" / "core" / "src"
 sys.path.insert(0, str(CORE_SRC))
+CORE_README = CORE_SRC.parents[0] / "README.md"
 
 from evalrank_core.contracts import (  # noqa: E402
     CapabilityFingerprintInput,
@@ -33,6 +34,33 @@ PUBLIC_CAPABILITY_FINGERPRINT = "da617b2b113a59a734acb6166c305086d9a850bac2a40c8
 
 
 class CoreContractTests(unittest.TestCase):
+    def test_core_readme_lists_public_contract_surface(self):
+        text = CORE_README.read_text(encoding="utf-8")
+
+        for name in (
+            "CapabilityFingerprintInput",
+            "RawEntry",
+            "EvaluationRequest",
+            "CandidateSet",
+            "StageCandidate",
+            "EvidenceItem",
+            "EvidenceSet",
+            "ResultRow",
+            "UseCaseCatalog",
+            "RankingGroup",
+            "Exclusion",
+            "TheCall",
+            "RankedEntity",
+            "Recommendation",
+            "EntityRef",
+            "PUBLIC_FIXTURE_KINDS",
+            "sample_public_fixture",
+        ):
+            with self.subTest(name=name):
+                self.assertIn(name, text)
+        self.assertIn("public string fields", text)
+        self.assertIn("actual non-empty strings", text)
+
     def test_capability_fingerprint_is_stable_over_shape_key_order(self):
         first = CapabilityFingerprintInput(
             id_scheme="reverse_dns",

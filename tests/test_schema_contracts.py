@@ -53,6 +53,15 @@ PROBLEM_CODES = [
 
 
 class SchemaContractTests(unittest.TestCase):
+    def test_schema_readme_lists_public_schema_files_and_string_guards(self):
+        text = (SCHEMAS / "README.md").read_text(encoding="utf-8")
+
+        for filename in sorted(path.name for path in SCHEMAS.glob("*.schema.json")):
+            with self.subTest(filename=filename):
+                self.assertIn(filename, text)
+        self.assertIn("public string fields", text)
+        self.assertIn("actual non-empty strings", text)
+
     def test_public_schema_files_cover_core_payload_keys(self):
         ranked_schema = _schema("ranked-entity.schema.json")
         recommendation_schema = _schema("recommendation.schema.json")

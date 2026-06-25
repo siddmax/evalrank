@@ -68,6 +68,7 @@ Last updated: 2026-06-26
 - Fixture use-case alignment build log in `docs/build-log/2026-06-26-fixture-use-case-alignment.md`.
 - Public fixture bundle example build log in `docs/build-log/2026-06-26-public-fixture-bundle-example.md`.
 - SDK README drift-check build log in `docs/build-log/2026-06-26-sdk-readme-drift-checks.md`.
+- Core and schema README drift-check build log in `docs/build-log/2026-06-26-core-schema-readme-drift-checks.md`.
 - Progress and porting routing refresh in `docs/build-log/2026-06-26-progress-porting-routing.md`.
 - Public fixture dispatch build log in `docs/build-log/2026-06-26-public-fixture-dispatch.md`.
 - TypeScript fixture-kind parity build log in `docs/build-log/2026-06-26-typescript-fixture-kind-parity.md`.
@@ -111,7 +112,7 @@ Last updated: 2026-06-26
 | --- | --- | --- |
 | Public fixture outputs were aligned to the public use-case catalog and expanded to include raw entry, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, and recommendation payloads. | Built here with synthetic fixtures only. | Public Contracts, Examples |
 | CLI, MCP, Python SDK, and TypeScript SDK fixture-kind surfaces now share the core public fixture-kind dispatch. | Built here as local deterministic fixture behavior. | SDK / CLI / MCP, Open-Core Boundary / CI |
-| Package and example README drift checks now guard public fixture and SDK surfaces. | Built here with stdlib tests. | Open-Core Boundary / CI, Docs / Public Planning |
+| Package and example README drift checks now guard public fixture, SDK, core, and schema surfaces. | Built here with stdlib tests. | Open-Core Boundary / CI, Docs / Public Planning |
 | Ranked entity `score_components` now reject non-object maps, blank/non-string names, booleans, and out-of-range values before serialization. | Built here as public contract hardening; no private scorer formula was added. | Public Contracts, Methods / Schemas |
 | Recommendation envelopes now reject schema-incompatible metadata and duplicate ranked entities before serialization. | Built here as public contract hardening; no scorer/runtime, route implementation, hosted receipt, or private evidence behavior was added. | Public Contracts, Methods / Schemas |
 | Evidence item `metadata` and evaluation request `constraints` now reject non-object, non-string-key, and non-JSON values before serialization. | Built here as public contract hardening; no private evidence lookup, source adapter, or policy behavior was added. | Public Contracts, Methods / Schemas |

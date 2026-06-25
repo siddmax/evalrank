@@ -32,6 +32,7 @@ Last reviewed: 2026-06-26
 - MCP package metadata and deterministic public fixture adapter.
 - Runnable public fixture example.
 - Example README drift guard for the public fixture bundle output keys.
+- Core and schema README drift guards for the public contract and schema docs.
 - Public scoring-stage vocabulary, use-case taxonomy method note, and method-boundary notes.
 - Public progress router for deciding which private EvalRank workstream owns each future port.
 - Public recommendation join aliases: `recommendation_id`, `recommend_id`, and `search_run_id`.
@@ -113,7 +114,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | --- | --- | --- |
 | Public fixture bundle now includes raw entry, request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, exclusion, and recommendation outputs. | Already ported as synthetic public examples only; no customer, production, or held-out rows moved. | Public Contracts, Examples |
 | Shared public fixture-kind dispatch now drives CLI, MCP, Python SDK, and TypeScript SDK fixture lists. | Already ported because it reduces public contract drift without adding live service behavior. | SDK / CLI / MCP, Open-Core Boundary / CI |
-| README drift checks for SDK and example surfaces. | Already ported because they are deterministic public-boundary checks. | Open-Core Boundary / CI, Docs / Public Planning |
+| README drift checks for SDK, example, core, and schema surfaces. | Already ported because they are deterministic public-boundary checks. | Open-Core Boundary / CI, Docs / Public Planning |
 | Ranked entity score-component map hardening. | Already ported because it closes an existing public payload shape without exposing formulas, weights, or scorer calibration. | Public Contracts, Methods / Schemas |
 | Recommendation envelope validation hardening. | Already ported because it aligns the public Python contract with the public schema and blocks duplicate ranked rows without exposing scorer/runtime behavior. | Public Contracts, Methods / Schemas |
 | Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |
