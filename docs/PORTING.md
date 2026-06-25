@@ -53,6 +53,7 @@ Last reviewed: 2026-06-26
 - Public recommendation envelope validation hardened for schema-compatible metadata: non-empty rationale/source fields, boolean degradation state, non-negative snapshot lag, and no duplicate ranked entities.
 - Public JSON-object fields hardened for evidence item `metadata` and evaluation request `constraints`: object values only, string keys only, and JSON-serializable values only.
 - Public primitive and sequence fields hardened for entity refs, freshness dates, request entity-type arrays, ranked-entity integer fields, and caveats arrays.
+- Evaluation request `entity_types` are pinned as unique public request metadata in Python and JSON Schema.
 - Public string fields hardened for capability fingerprints, raw entries, evidence items, evidence sets, candidate sets, `the_call`, and abstention: actual non-empty strings only.
 - Shared public fixture-kind dispatch reused by CLI, MCP, Python SDK, and TypeScript SDK types.
 - Public `NAVIGATION.md` route map for the first API contract.
@@ -128,6 +129,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Recommendation envelope validation hardening. | Already ported because it aligns the public Python contract with the public schema and blocks duplicate ranked rows without exposing scorer/runtime behavior. | Public Contracts, Methods / Schemas |
 | Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |
 | Primitive and sequence field hardening for existing public payloads. | Already ported because it aligns existing Python contracts with existing schemas without adding new public surface or private runtime behavior. | Public Contracts, Methods / Schemas |
+| Evaluation request entity-type uniqueness. | Already ported as public request-shape hardening; duplicate target types are rejected without adding candidate resolution, scorer behavior, route implementation, DB work, or private source adapters. | Public Contracts, Methods / Schemas |
 | Public string-field hardening for existing public payloads. | Already ported because it aligns the Python contracts with existing string schemas and blocks truthy non-string DTO values without adding source adapters, scorer/runtime behavior, private evidence lookup, DB work, or hosted operations. | Public Contracts, Methods / Schemas |
 | Public `Abstention` reason/detail object in recommendation responses. | Already ported because it is a storage-free response shape; evidence-floor thresholds, private confidence policy, private reason taxonomy, scorer/runtime behavior, DB work, and hosted operations stay private. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | `Abstention` output in the public scoring-stage catalog. | Already ported as a storage-free contract reference for `ranking-or-abstention`; thresholds, policy, runtime, and DB behavior stay private. | Methods / Schemas, Public Contracts |

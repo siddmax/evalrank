@@ -1296,7 +1296,7 @@ class CoreContractTests(unittest.TestCase):
                 requested_at="2026-06-25T00:00:00Z",
             )
 
-        for entity_types in ("mcp_server", (123,), ("",)):
+        for entity_types in ("mcp_server", (123,), ("",), ("mcp_server", "mcp_server")):
             with self.subTest(entity_types=entity_types):
                 with self.assertRaisesRegex(ValueError, "entity_types"):
                     EvaluationRequest(

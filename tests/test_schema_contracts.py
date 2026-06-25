@@ -334,6 +334,15 @@ class SchemaContractTests(unittest.TestCase):
         self.assertFalse(candidate["additionalProperties"])
         self.assertEqual({"entity_type", "id"}, set(candidate["required"]))
 
+    def test_evaluation_request_schema_pins_unique_entity_types(self):
+        request_schema = _schema("evaluation-request.schema.json")
+        entity_types = request_schema["properties"]["entity_types"]
+
+        self.assertEqual("array", entity_types["type"])
+        self.assertEqual(1, entity_types["minItems"])
+        self.assertTrue(entity_types["uniqueItems"])
+        self.assertEqual({"type": "string", "minLength": 1}, entity_types["items"])
+
     def test_evidence_set_schema_reuses_evidence_item_schema(self):
         evidence_set_schema = _schema("evidence-set.schema.json")
 

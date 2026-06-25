@@ -14,7 +14,7 @@ Evidence set payloads expose storage-free public `EvidenceItem` rows for a reque
 
 Evidence item `metadata` and evaluation request `constraints` are public JSON objects. Non-object values, non-string keys, and non-JSON values are rejected before serialization.
 
-Entity references, freshness dates, request entity types, ranked-entity ranks, evidence counts, and caveats reject schema-incompatible Python values before serialization.
+Entity references, freshness dates, request entity types, ranked-entity ranks, evidence counts, and caveats reject schema-incompatible Python values before serialization. Request entity types must be unique.
 
 Capability fingerprint, raw entry, evidence item, evidence set, candidate set, `the_call`, and abstention public string fields must be actual non-empty strings.
 

@@ -535,6 +535,8 @@ class EvaluationRequest:
             raise ValueError("entity_types is required")
         if any(not isinstance(entity_type, str) or not entity_type for entity_type in self.entity_types):
             raise ValueError("entity_types must contain non-empty strings")
+        if len(set(self.entity_types)) != len(self.entity_types):
+            raise ValueError("entity_types must be unique")
         _require_nonempty_string("requested_at", self.requested_at)
         if not isinstance(self.constraints, dict):
             raise ValueError("constraints must be a JSON object")
