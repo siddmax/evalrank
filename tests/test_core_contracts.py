@@ -89,6 +89,17 @@ class CoreContractTests(unittest.TestCase):
                 declared_capability_shape={"score": float("nan")},
             )
 
+        valid = {
+            "id_scheme": "reverse_dns",
+            "canonical_id": "io.evalrank.public-search-demo",
+            "entity_kind": "mcp_server",
+            "declared_capability_shape": {"tool_names": ["search"]},
+        }
+        for field in ("id_scheme", "canonical_id", "entity_kind"):
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(ValueError, field):
+                    CapabilityFingerprintInput(**{**valid, field: 123})
+
     def test_raw_entry_hash_is_stable_over_content_order_and_refetch_time(self):
         entry = RawEntry(
             source="public-fixture",
@@ -180,6 +191,20 @@ class CoreContractTests(unittest.TestCase):
                 declared_capability_shape={"score": float("nan")},
                 fetched_at="2026-06-25T00:00:00Z",
             )
+
+        valid = {
+            "source": "public-fixture",
+            "source_id": "public-fixture:search-demo:2026-06-25",
+            "entity_kind": "mcp_server",
+            "canonical_id": "io.evalrank.public-search-demo",
+            "raw_metadata": {"homepage": "https://example.com/evalrank/public-search-demo"},
+            "declared_capability_shape": {"tool_names": ["search"]},
+            "fetched_at": "2026-06-25T00:00:00Z",
+        }
+        for field in ("source", "source_id", "entity_kind", "canonical_id", "fetched_at"):
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(ValueError, field):
+                    RawEntry(**{**valid, field: 123})
 
         with self.assertRaisesRegex(ValueError, "declared_capability_shape"):
             RawEntry(
@@ -572,6 +597,19 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "reason"):
             TheCall.recommend(confidence=0.5, reason="")
 
+        for kwargs in (
+            {"decision": "recommend", "confidence": 0.5, "reason": 123},
+            {
+                "decision": "abstain",
+                "confidence": None,
+                "reason": "insufficient_evidence",
+                "abstention_reason": 123,
+            },
+        ):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "reason"):
+                    TheCall(**kwargs)
+
     def test_abstention_is_not_value_bearing(self):
         rec = Recommendation.abstain(
             request_id="req_01",
@@ -656,6 +694,19 @@ class CoreContractTests(unittest.TestCase):
                         summary="invalid metadata",
                         metadata=metadata,
                     )
+
+        valid = {
+            "evidence_id": "ev_public_trace_01",
+            "subject": subject,
+            "kind": "trace",
+            "source": "public-fixture",
+            "observed_at": "2026-06-25T00:00:00Z",
+            "summary": "public search demo returned a fresh cited result",
+        }
+        for field in ("evidence_id", "source", "observed_at", "summary"):
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(ValueError, field):
+                    EvidenceItem(**{**valid, field: 123})
 
     def test_result_row_serializes_public_provenance_envelope(self):
         row = ResultRow(
@@ -900,6 +951,17 @@ class CoreContractTests(unittest.TestCase):
                 generated_at="",
             )
 
+        valid = {
+            "request_id": "req_public_fixture_01",
+            "use_case": "web-browsing",
+            "evidence_items": (evidence,),
+            "generated_at": "2026-06-25T00:00:00Z",
+        }
+        for field in ("request_id", "use_case", "generated_at"):
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(ValueError, field):
+                    EvidenceSet(**{**valid, field: 123})
+
     def test_stage_candidate_serializes_public_stage_one_boundary(self):
         candidate = StageCandidate(
             candidate_id=PUBLIC_CAPABILITY_FINGERPRINT,
@@ -1105,6 +1167,17 @@ class CoreContractTests(unittest.TestCase):
                 candidates=(candidate,),
                 generated_at="",
             )
+
+        valid = {
+            "request_id": "req_public_fixture_01",
+            "use_case": "web-browsing",
+            "candidates": (candidate,),
+            "generated_at": "2026-06-25T00:00:00Z",
+        }
+        for field in ("request_id", "use_case", "generated_at"):
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(ValueError, field):
+                    CandidateSet(**{**valid, field: 123})
 
 
 def _row(

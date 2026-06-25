@@ -68,12 +68,9 @@ class CapabilityFingerprintInput:
     declared_capability_shape: dict[str, Any]
 
     def __post_init__(self) -> None:
-        if not self.id_scheme:
-            raise ValueError("id_scheme is required")
-        if not self.canonical_id:
-            raise ValueError("canonical_id is required")
-        if not self.entity_kind:
-            raise ValueError("entity_kind is required")
+        _require_nonempty_string("id_scheme", self.id_scheme)
+        _require_nonempty_string("canonical_id", self.canonical_id)
+        _require_nonempty_string("entity_kind", self.entity_kind)
         if not isinstance(self.declared_capability_shape, dict) or not self.declared_capability_shape:
             raise ValueError("declared_capability_shape is required")
         _require_string_keys("declared_capability_shape", self.declared_capability_shape)
@@ -115,8 +112,7 @@ class RawEntry:
 
     def __post_init__(self) -> None:
         for name in ("source", "source_id", "entity_kind", "canonical_id", "fetched_at"):
-            if not getattr(self, name):
-                raise ValueError(f"{name} is required")
+            _require_nonempty_string(name, getattr(self, name))
         if not self.declared_capability_shape:
             raise ValueError("declared_capability_shape is required")
         for name, value in (
@@ -283,18 +279,14 @@ class EvidenceItem:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if not self.evidence_id:
-            raise ValueError("evidence_id is required")
+        _require_nonempty_string("evidence_id", self.evidence_id)
         if not isinstance(self.subject, EntityRef):
             raise TypeError("subject must be an EntityRef")
         if self.kind not in EVIDENCE_KINDS:
             raise ValueError(f"kind must be one of {sorted(EVIDENCE_KINDS)}")
-        if not self.source:
-            raise ValueError("source is required")
-        if not self.observed_at:
-            raise ValueError("observed_at is required")
-        if not self.summary:
-            raise ValueError("summary is required")
+        _require_nonempty_string("source", self.source)
+        _require_nonempty_string("observed_at", self.observed_at)
+        _require_nonempty_string("summary", self.summary)
         if self.score is not None:
             _require_unit_interval("score", self.score)
         if not isinstance(self.metadata, dict):
@@ -409,12 +401,9 @@ class EvidenceSet:
     generated_at: str
 
     def __post_init__(self) -> None:
-        if not self.request_id:
-            raise ValueError("request_id is required")
-        if not self.use_case:
-            raise ValueError("use_case is required")
-        if not self.generated_at:
-            raise ValueError("generated_at is required")
+        _require_nonempty_string("request_id", self.request_id)
+        _require_nonempty_string("use_case", self.use_case)
+        _require_nonempty_string("generated_at", self.generated_at)
         seen: set[str] = set()
         for item in self.evidence_items:
             if not isinstance(item, EvidenceItem):
@@ -477,14 +466,11 @@ class CandidateSet:
     generated_at: str
 
     def __post_init__(self) -> None:
-        if not self.request_id:
-            raise ValueError("request_id is required")
-        if not self.use_case:
-            raise ValueError("use_case is required")
+        _require_nonempty_string("request_id", self.request_id)
+        _require_nonempty_string("use_case", self.use_case)
         if not self.candidates:
             raise ValueError("candidates is required")
-        if not self.generated_at:
-            raise ValueError("generated_at is required")
+        _require_nonempty_string("generated_at", self.generated_at)
         seen: set[tuple[str, str]] = set()
         for candidate in self.candidates:
             if not isinstance(candidate, EntityRef):
@@ -622,8 +608,7 @@ class TheCall:
     def __post_init__(self) -> None:
         if self.decision not in THE_CALL_DECISIONS:
             raise ValueError(f"decision must be one of {sorted(THE_CALL_DECISIONS)}")
-        if not self.reason:
-            raise ValueError("reason is required")
+        _require_nonempty_string("reason", self.reason)
         if self.decision == "recommend":
             if self.confidence is None:
                 raise ValueError("confidence is required for recommend")
@@ -632,8 +617,7 @@ class TheCall:
         if self.decision == "abstain":
             if self.confidence is not None:
                 raise ValueError("confidence must be null for abstain")
-            if not self.abstention_reason:
-                raise ValueError("abstention_reason is required for abstain")
+            _require_nonempty_string("abstention_reason", self.abstention_reason)
         if self.confidence is not None:
             _require_unit_interval("confidence", self.confidence)
 

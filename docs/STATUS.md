@@ -77,6 +77,7 @@ Last updated: 2026-06-26
 - JSON-object metadata validation hardening build log in `docs/build-log/2026-06-26-json-object-contract-hardening.md`.
 - Public doc progress and porting audit in `docs/build-log/2026-06-26-public-doc-progress-porting-audit.md`.
 - Primitive and sequence field validation hardening build log in `docs/build-log/2026-06-26-primitive-sequence-contract-hardening.md`.
+- Public string-field validation hardening build log in `docs/build-log/2026-06-26-public-string-field-contract-hardening.md`.
 - Private source port-routing build log in `docs/build-log/2026-06-26-private-source-port-routing.md`.
 
 ## Current Public Surface
@@ -115,6 +116,7 @@ Last updated: 2026-06-26
 | Recommendation envelopes now reject schema-incompatible metadata and duplicate ranked entities before serialization. | Built here as public contract hardening; no scorer/runtime, route implementation, hosted receipt, or private evidence behavior was added. | Public Contracts, Methods / Schemas |
 | Evidence item `metadata` and evaluation request `constraints` now reject non-object, non-string-key, and non-JSON values before serialization. | Built here as public contract hardening; no private evidence lookup, source adapter, or policy behavior was added. | Public Contracts, Methods / Schemas |
 | Entity references, freshness dates, request entity-type arrays, ranked-entity integer fields, and caveats now reject schema-incompatible Python values before serialization. | Built here as public contract hardening; no schema expansion, scorer behavior, or private runtime behavior was added. | Public Contracts, Methods / Schemas |
+| Capability fingerprint, raw entry, evidence item, evidence set, candidate set, and `the_call` public string fields now reject truthy non-strings before serialization. | Built here as public contract hardening against existing schemas; no source adapter, scorer/runtime behavior, private evidence lookup, DB work, or hosted operation moved. | Public Contracts, Methods / Schemas |
 | Private-side dirty worktree check found only Memphant spec edits, not EvalRank public-port candidates. | Documented here as a routing decision; no private Memphant planning text was copied into the public repo. | Docs / Public Planning, Open-Core Boundary / CI |
 | Current private-side EvalRank source scan classified private specs, build-readiness plans, migration bootstrap, migration guards, doc validators, and UI proof assets. | Documented here as a public-safe routing decision; raw private docs, proof assets, operations scripts, and private migrations were not copied. | Docs / Public Planning, Public Surface Contracts, DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
 | GitHub repo security metadata was checked for the public repo. | Public visibility, secret scanning, push protection, and Dependabot security updates are enabled; the local boundary scanner remains the required gate because platform scanning is only a backstop. | Open-Core Boundary / CI, Secrets / Deploy Ops |
