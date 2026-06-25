@@ -2,7 +2,7 @@
 
 Reference Python package for public EvalRank evidence and scoring contracts.
 
-Use `evalrank_core.fixtures.sample_capability_fingerprint_input()`, `sample_raw_entry()`, `sample_evaluation_request()`, `sample_candidate_set()`, `sample_stage_candidate()`, `sample_evidence_item()`, `sample_result_row()`, `sample_use_case_catalog()`, `sample_ranking_group()`, `sample_evidence_set()`, `sample_exclusion()`, and `sample_recommendation()` for public examples and contract tests.
+Use `evalrank_core.fixtures.sample_public_fixture(kind)` with `PUBLIC_FIXTURE_KINDS`, or the individual fixture helpers, for public examples and contract tests.
 
 Candidate set payloads expose a storage-free list of public `EntityRef` candidates for a request; source adapters and graph lookup stay outside this package.
 

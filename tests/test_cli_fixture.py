@@ -11,10 +11,18 @@ CLI_SRC = REPO_ROOT / "packages" / "cli" / "src"
 sys.path.insert(0, str(CORE_SRC))
 sys.path.insert(0, str(CLI_SRC))
 
+from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
 from evalrank_cli import main  # noqa: E402
 
 
 class CliFixtureTests(unittest.TestCase):
+    def test_cli_readme_lists_all_public_fixture_commands(self):
+        text = (REPO_ROOT / "packages" / "cli" / "README.md").read_text(encoding="utf-8")
+
+        for kind in PUBLIC_FIXTURE_KINDS:
+            with self.subTest(kind=kind):
+                self.assertIn(f"evalrank fixture {kind}", text)
+
     def test_fixture_fingerprint_writes_public_json(self):
         stdout = StringIO()
 

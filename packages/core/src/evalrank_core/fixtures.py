@@ -25,6 +25,20 @@ from evalrank_core.contracts import (
 PUBLIC_METHODOLOGY_VERSION = "2026-06-25.1.public-fixture-v1"
 PUBLIC_GENERATED_AT = "2026-06-25T00:00:00Z"
 PUBLIC_USE_CASE_ID = "web-browsing"
+PUBLIC_FIXTURE_KINDS = (
+    "candidate-set",
+    "evidence",
+    "evidence-set",
+    "exclusion",
+    "fingerprint",
+    "raw-entry",
+    "recommendation",
+    "ranking-group",
+    "result-row",
+    "request",
+    "stage-candidate",
+    "use-cases",
+)
 
 
 _USE_CASE_ROWS = (
@@ -246,3 +260,31 @@ def sample_recommendation() -> Recommendation:
             reason="one public demo candidate clears the evidence floor",
         ),
     )
+
+
+def sample_public_fixture(kind: str) -> dict:
+    if kind == "candidate-set":
+        return sample_candidate_set().to_dict()
+    if kind == "evidence":
+        return sample_evidence_item().to_dict()
+    if kind == "evidence-set":
+        return sample_evidence_set().to_dict()
+    if kind == "exclusion":
+        return sample_exclusion().to_dict()
+    if kind == "fingerprint":
+        return sample_capability_fingerprint_input().to_dict()
+    if kind == "raw-entry":
+        return sample_raw_entry().to_dict()
+    if kind == "recommendation":
+        return sample_recommendation().to_dict()
+    if kind == "ranking-group":
+        return sample_ranking_group().to_dict()
+    if kind == "result-row":
+        return sample_result_row().to_dict()
+    if kind == "request":
+        return sample_evaluation_request().to_dict()
+    if kind == "stage-candidate":
+        return sample_stage_candidate().to_dict()
+    if kind == "use-cases":
+        return sample_use_case_catalog().to_dict()
+    raise ValueError(f"fixture kind must be one of: {', '.join(PUBLIC_FIXTURE_KINDS)}")

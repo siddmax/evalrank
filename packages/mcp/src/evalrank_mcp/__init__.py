@@ -4,18 +4,8 @@ import json
 from typing import Any
 
 from evalrank_core.fixtures import (
-    sample_capability_fingerprint_input,
-    sample_candidate_set,
-    sample_exclusion,
-    sample_evidence_item,
-    sample_evidence_set,
-    sample_evaluation_request,
-    sample_raw_entry,
-    sample_recommendation,
-    sample_ranking_group,
-    sample_result_row,
-    sample_stage_candidate,
-    sample_use_case_catalog,
+    PUBLIC_FIXTURE_KINDS,
+    sample_public_fixture,
 )
 
 
@@ -35,20 +25,7 @@ def list_tools() -> list[dict[str, Any]]:
                 "properties": {
                     "kind": {
                         "type": "string",
-                        "enum": [
-                            "candidate-set",
-                            "evidence",
-                            "evidence-set",
-                            "exclusion",
-                            "fingerprint",
-                            "raw-entry",
-                            "recommendation",
-                            "ranking-group",
-                            "result-row",
-                            "request",
-                            "stage-candidate",
-                            "use-cases",
-                        ],
+                        "enum": list(PUBLIC_FIXTURE_KINDS),
                     }
                 },
             },
@@ -61,7 +38,7 @@ def call_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, A
         raise ValueError(f"unknown tool: {name}")
 
     arguments = arguments or {}
-    payload = _fixture_payload(arguments.get("kind"))
+    payload = sample_public_fixture(arguments.get("kind"))
     return {
         "isError": False,
         "content": [
@@ -71,38 +48,6 @@ def call_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, A
             }
         ],
     }
-
-
-def _fixture_payload(kind: Any) -> dict[str, Any]:
-    if kind == "evidence":
-        return sample_evidence_item().to_dict()
-    if kind == "evidence-set":
-        return sample_evidence_set().to_dict()
-    if kind == "exclusion":
-        return sample_exclusion().to_dict()
-    if kind == "candidate-set":
-        return sample_candidate_set().to_dict()
-    if kind == "fingerprint":
-        return sample_capability_fingerprint_input().to_dict()
-    if kind == "raw-entry":
-        return sample_raw_entry().to_dict()
-    if kind == "recommendation":
-        return sample_recommendation().to_dict()
-    if kind == "ranking-group":
-        return sample_ranking_group().to_dict()
-    if kind == "result-row":
-        return sample_result_row().to_dict()
-    if kind == "request":
-        return sample_evaluation_request().to_dict()
-    if kind == "stage-candidate":
-        return sample_stage_candidate().to_dict()
-    if kind == "use-cases":
-        return sample_use_case_catalog().to_dict()
-    raise ValueError(
-        "fixture kind must be 'candidate-set', 'evidence', 'evidence-set', "
-        "'exclusion', 'fingerprint', 'raw-entry', 'recommendation', 'ranking-group', "
-        "'request', 'result-row', 'stage-candidate', or 'use-cases'"
-    )
 
 
 __all__ = ["FIXTURE_TOOL_NAME", "call_tool", "list_tools", "__version__"]

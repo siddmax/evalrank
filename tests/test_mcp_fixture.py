@@ -10,32 +10,24 @@ MCP_SRC = REPO_ROOT / "packages" / "mcp" / "src"
 sys.path.insert(0, str(CORE_SRC))
 sys.path.insert(0, str(MCP_SRC))
 
+from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
 from evalrank_mcp import call_tool, list_tools  # noqa: E402
 
 
 class McpFixtureTests(unittest.TestCase):
+    def test_mcp_readme_lists_all_public_fixture_kinds(self):
+        text = (REPO_ROOT / "packages" / "mcp" / "README.md").read_text(encoding="utf-8")
+
+        for kind in PUBLIC_FIXTURE_KINDS:
+            with self.subTest(kind=kind):
+                self.assertIn(f'"kind": "{kind}"', text)
+
     def test_list_tools_exposes_public_fixture_tool(self):
         tools = list_tools()
 
         self.assertEqual(["evalrank.fixture"], [tool["name"] for tool in tools])
         self.assertEqual(["kind"], tools[0]["inputSchema"]["required"])
-        self.assertEqual(
-            [
-                "candidate-set",
-                "evidence",
-                "evidence-set",
-                "exclusion",
-                "fingerprint",
-                "raw-entry",
-                "recommendation",
-                "ranking-group",
-                "result-row",
-                "request",
-                "stage-candidate",
-                "use-cases",
-            ],
-            tools[0]["inputSchema"]["properties"]["kind"]["enum"],
-        )
+        self.assertEqual(list(PUBLIC_FIXTURE_KINDS), tools[0]["inputSchema"]["properties"]["kind"]["enum"])
 
     def test_call_tool_returns_public_fingerprint_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "fingerprint"})

@@ -12,6 +12,7 @@ Last updated: 2026-06-26
 - Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
 - Core Python capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, and recommendation contracts in `packages/core`.
 - Public core fixture factory for canonical capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, and recommendation payloads, with synthetic request use cases aligned to the public catalog.
+- Shared public fixture-kind dispatch in core, reused by CLI and MCP fixture adapters.
 - Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, use-case catalogs, evidence sets, exclusions, ranked entities, recommendations with closed ranking groups, evidence items, and retry-aware RFC 9457 Problem Details.
 - Public OpenAPI 3.1.1 contract for `GET /v1/use-cases` and `POST /v1/recommendations`, including reusable Problem Details responses for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts.
 - Public retry-aware Problem Details extensions: `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url`.
@@ -65,14 +66,15 @@ Last updated: 2026-06-26
 - Public fixture bundle example build log in `docs/build-log/2026-06-26-public-fixture-bundle-example.md`.
 - SDK README drift-check build log in `docs/build-log/2026-06-26-sdk-readme-drift-checks.md`.
 - Progress and porting routing refresh in `docs/build-log/2026-06-26-progress-porting-routing.md`.
+- Public fixture dispatch build log in `docs/build-log/2026-06-26-public-fixture-dispatch.md`.
 
 ## Current Public Surface
 
 | Surface | Built | Not built yet |
 | --- | --- | --- |
-| Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, public constants, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, benchmark weights, IRT clusters, Stage-2+ scorer rows, trust/security policy runtime. |
+| Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, public constants, shared fixture-kind dispatch, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, benchmark weights, IRT clusters, Stage-2+ scorer rows, trust/security policy runtime. |
 | Schemas | JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, use-case catalogs, evidence sets, exclusions, ranked entities, recommendations with closed ranking groups, evidence items, and retry-aware RFC 9457 Problem Details, plus OpenAPI 3.1.1 for `GET /v1/use-cases` and `POST /v1/recommendations`, with drift tests against public contracts and pinned public patterns. | Persistence schemas, scorer-runtime schemas, benchmark-weight schemas, and additional route-specific problem types beyond the current public error vocabulary. |
-| Python SDK | Package metadata and public re-exports from `evalrank_core`. | Installed package release flow and non-fixture client behavior. |
+| Python SDK | Package metadata and public re-exports from `evalrank_core`, including public fixture dispatch helpers. | Installed package release flow and non-fixture client behavior. |
 | TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry`, `CandidateSet`, `StageCandidate`, `ResultRow`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, and `ProblemDetails`. | Built JS distribution, published package release flow, and non-fixture client behavior. |
 | CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture result-row`, `fixture use-cases`, `fixture ranking-group`, `fixture evidence-set`, `fixture exclusion`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence`, `result-row`, `use-cases`, `ranking-group`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |

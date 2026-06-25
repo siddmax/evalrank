@@ -21,6 +21,8 @@ from evalrank_core.contracts import ResultRow as CoreResultRow  # noqa: E402
 from evalrank_core.contracts import StageCandidate as CoreStageCandidate  # noqa: E402
 from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
 from evalrank_core.contracts import UseCaseCatalog as CoreUseCaseCatalog  # noqa: E402
+from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS as CorePublicFixtureKinds  # noqa: E402
+from evalrank_core.fixtures import sample_public_fixture as core_sample_public_fixture  # noqa: E402
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
     CandidateSet,
@@ -34,12 +36,14 @@ from evalrank_sdk import (  # noqa: E402
     StageCandidate,
     TheCall,
     UseCaseCatalog,
+    PUBLIC_FIXTURE_KINDS,
     sample_capability_fingerprint_input,
     sample_candidate_set,
     sample_exclusion,
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
+    sample_public_fixture,
     sample_raw_entry,
     sample_ranking_group,
     sample_result_row,
@@ -68,8 +72,15 @@ class PythonSdkTests(unittest.TestCase):
             "RankedEntity",
             "Recommendation",
             "EntityRef",
+            "PUBLIC_FIXTURE_KINDS",
+            "sample_public_fixture",
         ):
             self.assertIn(name, text)
+
+    def test_sdk_re_exports_public_fixture_dispatch(self):
+        self.assertIs(PUBLIC_FIXTURE_KINDS, CorePublicFixtureKinds)
+        self.assertIs(sample_public_fixture, core_sample_public_fixture)
+        self.assertEqual("recommendation", sample_public_fixture("recommendation")["object"])
 
     def test_sdk_re_exports_core_capability_fingerprint_contracts(self):
         fingerprint_input = sample_capability_fingerprint_input()

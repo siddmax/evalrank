@@ -8,12 +8,14 @@ sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.fixtures import (  # noqa: E402
     PUBLIC_METHODOLOGY_VERSION,
+    PUBLIC_FIXTURE_KINDS,
     sample_capability_fingerprint_input,
     sample_candidate_set,
     sample_exclusion,
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
+    sample_public_fixture,
     sample_ranked_entity,
     sample_ranking_group,
     sample_raw_entry,
@@ -25,6 +27,33 @@ from evalrank_core.fixtures import (  # noqa: E402
 
 
 class CoreFixtureTests(unittest.TestCase):
+    def test_public_fixture_kind_dispatch_covers_current_surface(self):
+        self.assertEqual(
+            (
+                "candidate-set",
+                "evidence",
+                "evidence-set",
+                "exclusion",
+                "fingerprint",
+                "raw-entry",
+                "recommendation",
+                "ranking-group",
+                "result-row",
+                "request",
+                "stage-candidate",
+                "use-cases",
+            ),
+            PUBLIC_FIXTURE_KINDS,
+        )
+
+        for kind in PUBLIC_FIXTURE_KINDS:
+            with self.subTest(kind=kind):
+                self.assertIsInstance(sample_public_fixture(kind), dict)
+                self.assertTrue(sample_public_fixture(kind))
+
+        with self.assertRaisesRegex(ValueError, "fixture kind"):
+            sample_public_fixture("private-kind")
+
     def test_sample_capability_fingerprint_input_is_public_contract_payload(self):
         payload = sample_capability_fingerprint_input().to_dict()
 

@@ -42,6 +42,7 @@ Last reviewed: 2026-06-26
 - Public `EvidenceSet` contract and deterministic `evidence-set` fixture surfaces.
 - Public `Exclusion` contract and deterministic `exclusion` fixture surfaces.
 - Public structured `the_call` contract embedded in recommendation fixtures.
+- Shared public fixture-kind dispatch reused by CLI, MCP, and the Python SDK.
 - Public `NAVIGATION.md` route map for the first API contract.
 
 ## Ported To Date
@@ -50,7 +51,7 @@ Last reviewed: 2026-06-26
 | --- | --- | --- |
 | Public Contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, constants, and synthetic fixture factories. | Source adapters, graph lookup, storage tables, production entity rows, production result rows, customer context, private score semantics, cross-kind score normalization, benchmark weights, IRT clusters, scorer thresholds, Stage-2+ scorer rows, gate policy, private reason taxonomy, hosted HMAC derivation. |
 | Methods / Schemas | JSON Schemas for public payloads, the pinned public `methodology_version` format, the public scoring-stage vocabulary including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`, and the public use-case taxonomy method note. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, confidence policy, synthesis rules, private exclusion policy, private ranking experiments, and private scorer-stage internals. |
-| SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter, including `raw-entry`, `candidate-set`, `stage-candidate`, `result-row`, `use-cases`, `ranking-group`, `evidence-set`, and `exclusion`. | Live service clients, auth, tenant/project operations, production evidence lookup, source adapters, gate policy, and hosted-only workflows. |
+| SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, shared public fixture-kind dispatch, deterministic CLI fixture command, and deterministic MCP fixture adapter, including `raw-entry`, `candidate-set`, `stage-candidate`, `result-row`, `use-cases`, `ranking-group`, `evidence-set`, and `exclusion`. | Live service clients, auth, tenant/project operations, production evidence lookup, source adapters, gate policy, and hosted-only workflows. |
 | Public Surface Contracts | OpenAPI 3.1.1 contract for `GET /v1/use-cases` and `POST /v1/recommendations` over existing public schemas and reusable RFC 9457 Problem Details responses for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts. | Hosted auth, tenant logic, receipt storage, HMAC-backed IDs, private DTOs, private problem types, live rate-limit enforcement, live routing, and deployment wiring. |
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |

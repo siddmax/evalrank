@@ -25,6 +25,7 @@ from evalrank_core.contracts import (
     UseCaseCatalog,
 )
 from evalrank_core.fixtures import (
+    PUBLIC_FIXTURE_KINDS,
     sample_capability_fingerprint_input,
     sample_candidate_set,
     sample_entity_ref,
@@ -32,6 +33,7 @@ from evalrank_core.fixtures import (
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
+    sample_public_fixture,
     sample_ranked_entity,
     sample_ranking_group,
     sample_raw_entry,
@@ -68,6 +70,7 @@ __all__ = [
     "USE_CASE_RANK_POLICIES",
     "UseCase",
     "UseCaseCatalog",
+    "PUBLIC_FIXTURE_KINDS",
     "sample_capability_fingerprint_input",
     "sample_candidate_set",
     "sample_entity_ref",
@@ -75,6 +78,7 @@ __all__ = [
     "sample_evidence_item",
     "sample_evidence_set",
     "sample_evaluation_request",
+    "sample_public_fixture",
     "sample_ranked_entity",
     "sample_ranking_group",
     "sample_raw_entry",
