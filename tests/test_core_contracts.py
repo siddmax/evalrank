@@ -724,7 +724,7 @@ class CoreContractTests(unittest.TestCase):
         )
         evidence_set = EvidenceSet(
             request_id="req_public_fixture_01",
-            use_case="web-research:freshness-check",
+            use_case="web-browsing",
             evidence_items=(evidence,),
             generated_at="2026-06-25T00:00:00Z",
         )
@@ -733,14 +733,14 @@ class CoreContractTests(unittest.TestCase):
 
         self.assertEqual("evidence_set", payload["object"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
-        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("web-browsing", payload["use_case"])
         self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
         self.assertEqual([evidence.to_dict()], payload["evidence_items"])
 
     def test_evidence_set_allows_empty_and_rejects_invalid_items(self):
         empty = EvidenceSet(
             request_id="req_public_fixture_01",
-            use_case="web-research:freshness-check",
+            use_case="web-browsing",
             evidence_items=(),
             generated_at="2026-06-25T00:00:00Z",
         )
@@ -759,7 +759,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "request_id"):
             EvidenceSet(
                 request_id="",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 evidence_items=(evidence,),
                 generated_at="2026-06-25T00:00:00Z",
             )
@@ -775,7 +775,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "evidence_items"):
             EvidenceSet(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 evidence_items=("ev_public_trace_01",),
                 generated_at="2026-06-25T00:00:00Z",
             )
@@ -783,7 +783,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "duplicate"):
             EvidenceSet(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 evidence_items=(evidence, evidence),
                 generated_at="2026-06-25T00:00:00Z",
             )
@@ -791,7 +791,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "generated_at"):
             EvidenceSet(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 evidence_items=(evidence,),
                 generated_at="",
             )
@@ -803,7 +803,7 @@ class CoreContractTests(unittest.TestCase):
             fused_score=0.0327864,
             rrf_components={"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
             retrieval_arms=("semantic", "lexical"),
-            use_case="web-research:freshness-check",
+            use_case="web-browsing",
         )
 
         self.assertEqual(
@@ -815,7 +815,7 @@ class CoreContractTests(unittest.TestCase):
                 "rrf_components": {"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
                 "retrieval_provenance": {
                     "arms": ["lexical", "semantic"],
-                    "use_case": "web-research:freshness-check",
+                    "use_case": "web-browsing",
                 },
             },
             candidate.to_dict(),
@@ -829,7 +829,7 @@ class CoreContractTests(unittest.TestCase):
             "fused_score": 0.032786,
             "rrf_components": {"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
             "retrieval_arms": ("lexical", "semantic"),
-            "use_case": "web-research:freshness-check",
+            "use_case": "web-browsing",
         }
 
         with self.assertRaisesRegex(ValueError, "candidate_id"):
@@ -870,7 +870,7 @@ class CoreContractTests(unittest.TestCase):
     def test_evaluation_request_serializes_public_input_context(self):
         request = EvaluationRequest(
             request_id="req_public_fixture_01",
-            use_case="web-research:freshness-check",
+            use_case="web-browsing",
             entity_types=("mcp_server",),
             requested_at="2026-06-25T00:00:00Z",
             constraints={"region": "public", "requires_citations": True},
@@ -880,7 +880,7 @@ class CoreContractTests(unittest.TestCase):
 
         self.assertEqual("evaluation_request", payload["object"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
-        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("web-browsing", payload["use_case"])
         self.assertEqual(["mcp_server"], payload["entity_types"])
         self.assertEqual("2026-06-25T00:00:00Z", payload["requested_at"])
         self.assertEqual(["region", "requires_citations"], sorted(payload["constraints"]))
@@ -889,7 +889,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "request_id"):
             EvaluationRequest(
                 request_id="",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 entity_types=("mcp_server",),
                 requested_at="2026-06-25T00:00:00Z",
             )
@@ -897,7 +897,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "entity_types"):
             EvaluationRequest(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 entity_types=(),
                 requested_at="2026-06-25T00:00:00Z",
             )
@@ -905,7 +905,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "constraints"):
             EvaluationRequest(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 entity_types=("mcp_server",),
                 requested_at="2026-06-25T00:00:00Z",
                 constraints={1: "not-public-json-key"},
@@ -914,7 +914,7 @@ class CoreContractTests(unittest.TestCase):
     def test_candidate_set_serializes_public_candidate_refs(self):
         candidate_set = CandidateSet(
             request_id="req_public_fixture_01",
-            use_case="web-research:freshness-check",
+            use_case="web-browsing",
             candidates=(EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),),
             generated_at="2026-06-25T00:00:00Z",
         )
@@ -923,7 +923,7 @@ class CoreContractTests(unittest.TestCase):
 
         self.assertEqual("candidate_set", payload["object"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
-        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("web-browsing", payload["use_case"])
         self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
         self.assertEqual(
             [{"entity_type": "mcp_server", "id": "tool:public-search-demo"}],
@@ -936,7 +936,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "request_id"):
             CandidateSet(
                 request_id="",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 candidates=(candidate,),
                 generated_at="2026-06-25T00:00:00Z",
             )
@@ -952,7 +952,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "candidates"):
             CandidateSet(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 candidates=(),
                 generated_at="2026-06-25T00:00:00Z",
             )
@@ -960,7 +960,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(TypeError, "candidates"):
             CandidateSet(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 candidates=("tool:public-search-demo",),
                 generated_at="2026-06-25T00:00:00Z",
             )
@@ -968,7 +968,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "duplicate"):
             CandidateSet(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 candidates=(candidate, candidate),
                 generated_at="2026-06-25T00:00:00Z",
             )
@@ -976,7 +976,7 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "generated_at"):
             CandidateSet(
                 request_id="req_public_fixture_01",
-                use_case="web-research:freshness-check",
+                use_case="web-browsing",
                 candidates=(candidate,),
                 generated_at="",
             )

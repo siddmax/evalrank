@@ -100,7 +100,7 @@ class CoreFixtureTests(unittest.TestCase):
 
         self.assertEqual("evidence_set", payload["object"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
-        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("web-browsing", payload["use_case"])
         self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
         self.assertEqual("ev_public_trace_01", payload["evidence_items"][0]["evidence_id"])
 
@@ -110,8 +110,13 @@ class CoreFixtureTests(unittest.TestCase):
 
         self.assertEqual("evaluation_request", payload["object"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
-        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("web-browsing", payload["use_case"])
         self.assertEqual(["mcp_server"], payload["entity_types"])
+
+    def test_sample_request_use_case_is_in_public_catalog(self):
+        catalog_ids = {row["id"] for row in sample_use_case_catalog().to_dict()["use_cases"]}
+
+        self.assertIn(sample_evaluation_request().to_dict()["use_case"], catalog_ids)
 
     def test_sample_candidate_set_is_public_contract_payload(self):
         candidate_set = sample_candidate_set()
@@ -119,7 +124,7 @@ class CoreFixtureTests(unittest.TestCase):
 
         self.assertEqual("candidate_set", payload["object"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
-        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("web-browsing", payload["use_case"])
         self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
         self.assertEqual([{"entity_type": "mcp_server", "id": "tool:public-search-demo"}], payload["candidates"])
 

@@ -166,7 +166,7 @@ Use this table for the next port decision. The destination is this public repo o
 - Additional OpenAPI routes only when a concrete public route contract exists.
 - Public Problem Details extensions only when they are product-neutral and do not expose hosted internals. Shared `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url` are now ported.
 - Public identifier aliases that are deterministic, non-secret, and useful for interoperability.
-- Synthetic public fixtures that prove contract shape without using production data.
+- Synthetic public fixtures that prove contract shape without using production data and use only public catalog slugs.
 - Public runnable examples that consume only synthetic fixtures.
 - Deterministic checks that prevent private imports, secrets, private data paths, and missing package hygiene.
 - Public build logs that summarize decisions without exposing private projects, credentials, customers, held-out tasks, or live telemetry.

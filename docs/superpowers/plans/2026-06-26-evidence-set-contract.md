@@ -21,7 +21,7 @@
 
 - [x] **Step 1: Write failing core and fixture tests**
 
-Add tests that construct `EvidenceSet(request_id="req_public_fixture_01", use_case="web-research:freshness-check", evidence_items=(EvidenceItem(...),), generated_at="2026-06-25T00:00:00Z")`, assert `to_dict()` emits `object`, `request_id`, `use_case`, `generated_at`, and `evidence_items`, and assert blank request/use case, non-`EvidenceItem` rows, duplicate `evidence_id`, and blank generated time are rejected. Also assert an empty evidence set is allowed to represent abstention/no-evidence paths.
+Add tests that construct `EvidenceSet(request_id="req_public_fixture_01", use_case="web-browsing", evidence_items=(EvidenceItem(...),), generated_at="2026-06-25T00:00:00Z")`, assert `to_dict()` emits `object`, `request_id`, `use_case`, `generated_at`, and `evidence_items`, and assert blank request/use case, non-`EvidenceItem` rows, duplicate `evidence_id`, and blank generated time are rejected. Also assert an empty evidence set is allowed to represent abstention/no-evidence paths.
 
 - [x] **Step 2: Run red core tests**
 

@@ -11,7 +11,7 @@ Last updated: 2026-06-26
 - Public boundary checker for private imports, disallowed coupling, excluded method markers, and missing package license/notice files.
 - Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
 - Core Python capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, and recommendation contracts in `packages/core`.
-- Public core fixture factory for canonical capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, and recommendation payloads.
+- Public core fixture factory for canonical capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, and recommendation payloads, with synthetic request use cases aligned to the public catalog.
 - Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, use-case catalogs, evidence sets, exclusions, ranked entities, recommendations with closed ranking groups, evidence items, and retry-aware RFC 9457 Problem Details.
 - Public OpenAPI 3.1.1 contract for `GET /v1/use-cases` and `POST /v1/recommendations`, including reusable Problem Details responses for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts.
 - Public retry-aware Problem Details extensions: `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url`.
@@ -60,6 +60,7 @@ Last updated: 2026-06-26
 - Use-case catalog contract build log in `docs/build-log/2026-06-26-use-case-catalog-contract.md`.
 - Ranking group contract build log in `docs/build-log/2026-06-26-ranking-group-contract.md`.
 - Use-case taxonomy method build log in `docs/build-log/2026-06-26-use-case-taxonomy-method.md`.
+- Fixture use-case alignment build log in `docs/build-log/2026-06-26-fixture-use-case-alignment.md`.
 
 ## Current Public Surface
 

@@ -68,7 +68,7 @@ class PythonSdkTests(unittest.TestCase):
 
         self.assertIs(EvaluationRequest, CoreEvaluationRequest)
         self.assertIsInstance(request, CoreEvaluationRequest)
-        self.assertEqual("web-research:freshness-check", request.to_dict()["use_case"])
+        self.assertEqual("web-browsing", request.to_dict()["use_case"])
 
     def test_sdk_re_exports_core_candidate_set_contracts(self):
         candidate_set = sample_candidate_set()

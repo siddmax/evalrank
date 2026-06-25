@@ -30,7 +30,7 @@ StageCandidate(
     fused_score=0.032786,
     rrf_components={"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
     retrieval_arms=("lexical", "semantic"),
-    use_case="web-research:freshness-check",
+    use_case="web-browsing",
 )
 ```
 

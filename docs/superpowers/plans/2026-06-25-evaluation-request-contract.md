@@ -24,7 +24,7 @@
 
 - [x] **Step 1: Write failing core and schema tests**
 
-Add tests that construct `EvaluationRequest(request_id="req_public_fixture_01", use_case="web-research:freshness-check", entity_types=("mcp_server",), requested_at="2026-06-25T00:00:00Z", constraints={"region": "public"})`, assert `to_dict()` emits `object`, `request_id`, `use_case`, `entity_types`, `requested_at`, and sorted `constraints`, and assert blank `request_id`, blank `use_case`, empty `entity_types`, or non-string constraint keys are rejected.
+Add tests that construct `EvaluationRequest(request_id="req_public_fixture_01", use_case="web-browsing", entity_types=("mcp_server",), requested_at="2026-06-25T00:00:00Z", constraints={"region": "public"})`, assert `to_dict()` emits `object`, `request_id`, `use_case`, `entity_types`, `requested_at`, and sorted `constraints`, and assert blank `request_id`, blank `use_case`, empty `entity_types`, or non-string constraint keys are rejected.
 
 Add schema drift checks for `evaluation-request.schema.json` and enum/key parity.
 

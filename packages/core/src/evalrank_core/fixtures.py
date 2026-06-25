@@ -24,6 +24,7 @@ from evalrank_core.contracts import (
 
 PUBLIC_METHODOLOGY_VERSION = "2026-06-25.1.public-fixture-v1"
 PUBLIC_GENERATED_AT = "2026-06-25T00:00:00Z"
+PUBLIC_USE_CASE_ID = "web-browsing"
 
 
 _USE_CASE_ROWS = (
@@ -196,7 +197,7 @@ def sample_result_row() -> ResultRow:
 def sample_evidence_set() -> EvidenceSet:
     return EvidenceSet(
         request_id="req_public_fixture_01",
-        use_case="web-research:freshness-check",
+        use_case=PUBLIC_USE_CASE_ID,
         evidence_items=(sample_evidence_item(),),
         generated_at=PUBLIC_GENERATED_AT,
     )
@@ -205,7 +206,7 @@ def sample_evidence_set() -> EvidenceSet:
 def sample_evaluation_request() -> EvaluationRequest:
     return EvaluationRequest(
         request_id="req_public_fixture_01",
-        use_case="web-research:freshness-check",
+        use_case=PUBLIC_USE_CASE_ID,
         entity_types=("mcp_server",),
         requested_at=PUBLIC_GENERATED_AT,
         constraints={"requires_citations": True},
@@ -215,7 +216,7 @@ def sample_evaluation_request() -> EvaluationRequest:
 def sample_candidate_set() -> CandidateSet:
     return CandidateSet(
         request_id="req_public_fixture_01",
-        use_case="web-research:freshness-check",
+        use_case=PUBLIC_USE_CASE_ID,
         candidates=(sample_entity_ref(),),
         generated_at=PUBLIC_GENERATED_AT,
     )
@@ -228,14 +229,14 @@ def sample_stage_candidate() -> StageCandidate:
         fused_score=0.0327864,
         rrf_components={"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
         retrieval_arms=("lexical", "semantic"),
-        use_case="web-research:freshness-check",
+        use_case=PUBLIC_USE_CASE_ID,
     )
 
 
 def sample_recommendation() -> Recommendation:
     return Recommendation.single_scale(
         request_id="req_public_fixture_01",
-        use_case="web-research:freshness-check",
+        use_case=PUBLIC_USE_CASE_ID,
         methodology_version=PUBLIC_METHODOLOGY_VERSION,
         ranked=[sample_ranked_entity()],
         generated_at=PUBLIC_GENERATED_AT,

@@ -21,7 +21,7 @@
 
 - [x] **Step 1: Write failing core and fixture tests**
 
-Add tests that construct `CandidateSet(request_id="req_public_fixture_01", use_case="web-research:freshness-check", candidates=(EntityRef(...),), generated_at="2026-06-25T00:00:00Z")`, assert `to_dict()` emits `object`, `request_id`, `use_case`, `generated_at`, and `candidates`, and assert blank request/use case, empty candidates, non-`EntityRef` candidates, duplicate candidate refs, and blank generated time are rejected.
+Add tests that construct `CandidateSet(request_id="req_public_fixture_01", use_case="web-browsing", candidates=(EntityRef(...),), generated_at="2026-06-25T00:00:00Z")`, assert `to_dict()` emits `object`, `request_id`, `use_case`, `generated_at`, and `candidates`, and assert blank request/use case, empty candidates, non-`EntityRef` candidates, duplicate candidate refs, and blank generated time are rejected.
 
 - [x] **Step 2: Run red core tests**
 
