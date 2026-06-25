@@ -11,6 +11,7 @@ Last reviewed: 2026-06-26
 - When unsure, keep the source private and port a short public summary instead.
 - Do not copy raw private planning docs into this repo. Rewrite as public-safe summaries with synthetic examples.
 - Do not rely on platform secret scanning as the only guard. Run the repo boundary check before every port, and treat anything sensitive that reaches Git history as compromised.
+- Public reports, docs, examples, and build logs must not include secrets, exploit details, private benchmark fixtures, customer data, live project refs, or account-operation traces.
 
 ## Already Public
 
@@ -65,6 +66,7 @@ Last reviewed: 2026-06-26
 - Public/private source inventory refresh covering current private EvalRank specs, build plans, proof assets, backend migration assets, repo security settings, and dirty-worktree routing without copying private source text.
 - Public/private dirty-worktree recheck confirming the current uncommitted private-side changes still route to Memphant/memory work, not EvalRank public core.
 - GitHub public-repo security metadata snapshot showing secret scanning, push protection, and Dependabot security updates enabled.
+- Public `SECURITY.md` guidance for private vulnerability reporting, no public sensitive reports, immediate rotation if secrets are exposed, and coordinated remediation when sensitive data reaches Git history.
 
 ## Ported To Date
 
@@ -144,6 +146,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Private Syndai dirty worktree contained Memphant spec edits plus two Memphant validation/lifecycle plan files during the latest check. | Do not port into EvalRank. Keep out of this public repo unless a future task extracts a concrete EvalRank storage-free contract and strips private context. | Memphant / memory-system workstream, Docs / Public Planning |
 | Private Syndai dirty worktree recheck still showed only the Memphant dirty set and no uncommitted EvalRank-specific public-port candidate. | No public port now. Keep the category/path summary only and continue public work on schema/core parity, fixtures, route contracts, and sanitized method notes. | Memphant / memory-system workstream, Public Contracts, Docs / Public Planning |
 | Private EvalRank source scan found spec docs, build-readiness plans, migration bootstrap, migration guards, doc validators, and UI proof assets. | Document as routing input only; do not copy raw private docs, proof assets, migration scripts, or private plan text into the public repo. | Docs / Public Planning, Public Surface Contracts, DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
+| Public security-reporting and porting-safety docs were refreshed. | Already ported as docs-only guidance; public reports must not include secrets/private fixtures/customer data, exposed secrets are treated as compromised, and the local boundary scanner remains the required gate. | Docs / Public Planning, Open-Core Boundary / CI, Secrets / Deploy Ops |
 | GitHub repository security metadata check. | Public visibility, secret scanning, push protection, and Dependabot security updates are enabled; local public-boundary checks remain required before porting or pushing. | Open-Core Boundary / CI, Secrets / Deploy Ops |
 | Next non-fixture recommendation client behavior. | Port later only after client semantics are pinned against `POST /v1/recommendations`; keep auth, tenant context, hosted receipts, private DTOs, and service dependencies private. | SDK / CLI / MCP, Public Surface Contracts |
 | Runtime scorer/materializer and graph/evidence lookup. | Keep private during incubation; split only public-input-only code later. | Scoring / Materializer Runtime |
@@ -191,6 +194,18 @@ Reviewed on 2026-06-26 from the private Syndai checkout. This is an inventory an
 | 6 | Public-facing doc-drift checks distilled from private validators. | This repo only when public docs carry the matching claim. | Do not copy private spec names, private plan paths, or private-only assertions. |
 
 Do not start public DB migrations, source adapters, graph/evidence lookup, runtime scorer/materializer, UI proof asset ports, hosted ops, GTM, telemetry, or eval-integrity material until the owning private workstream produces a separable public contract.
+
+## Current Port Decision
+
+Rechecked on 2026-06-26 after the latest public schema hardening and private-side worktree scan.
+
+| Decision | Workstream | Public handling |
+| --- | --- | --- |
+| Continue porting schema/core parity hardening for already-public payloads. | Public Contracts, Methods / Schemas | Safe for this repo when covered by focused tests and no private source adapter or scorer policy is added. |
+| Continue adding deterministic docs, README, schema, fixture, and public-boundary drift checks. | Open-Core Boundary / CI, Docs / Public Planning | Safe for this repo when checks run locally and use only public docs/contracts. |
+| Prepare non-fixture `POST /v1/recommendations` client behavior only after the request/response/client error semantics are pinned. | SDK / CLI / MCP, Public Surface Contracts | Public later; exclude auth, tenant context, hosted receipts, private DTOs, service URLs, and production evidence lookup. |
+| Keep the current Syndai dirty worktree out of EvalRank. | Memphant / memory-system | Dirty files are Memphant specs/plans, not EvalRank public core. Port only a future explicit storage-free EvalRank contract extracted from that work. |
+| Keep persistence, source adapters, scorer runtime, UI proof assets, hosted ops, GTM, telemetry, and eval-integrity material private. | DB Bootstrap / Syndai Ops, Scoring / Materializer Runtime, Hosted Ops / GTM, Evaluation Integrity, Secrets / Deploy Ops | Do not port until a public contract is separable from private data, secrets, live infrastructure, and proprietary tuning. |
 
 ## Latest Dirty-Worktree Check
 
@@ -346,7 +361,7 @@ Before moving anything into this repo, verify:
 
 - GitHub push protection can block supported secrets before they enter a repository: https://docs.github.com/en/code-security/concepts/secret-security/push-protection
 - GitHub secret scanning runs automatically for public repositories and can detect hardcoded credentials in repository history, but prevention is cheaper than cleanup: https://docs.github.com/en/code-security/concepts/secret-security/secret-scanning
-- If sensitive data reaches Git history, treat it as compromised, rotate credentials, and follow a coordinated removal process.
+- If sensitive data reaches Git history, treat it as compromised, rotate credentials, and follow a coordinated removal process: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository
 - Supabase custom schemas must be deliberately exposed and granted for API access; EvalRank incubation uses private schema bootstrap outside this public repo: https://supabase.com/docs/guides/api/using-custom-schemas
 - For public API design, prefer a dedicated exposed API schema and keep internal tables/helpers in non-exposed schemas; grants and RLS together decide what API roles can touch: https://supabase.com/docs/guides/api/securing-your-api
 

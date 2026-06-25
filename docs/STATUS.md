@@ -33,6 +33,7 @@ Last updated: 2026-06-26
 - Public/private source scan classifying the current Syndai EvalRank spec, build-readiness, migration, and doc-validation surfaces without copying raw private text.
 - Public/private source inventory refresh documenting current private EvalRank specs, build plans, proof assets, backend migration assets, GitHub security settings, and next public port slices without copying raw private text.
 - GitHub public repo security metadata snapshot confirming public visibility, secret scanning, push protection, and Dependabot security updates are enabled.
+- Public-repo safety guidance in `SECURITY.md` for private disclosure, no public secret reports, immediate rotation on exposure, and coordinated remediation if sensitive data reaches Git history.
 - Direct `main` push workflow during scratch-build phase; branch protection is currently removed.
 - `make check` local gate shared with CI.
 - W0 public exit packet in `docs/build-log/2026-06-25-w0-public-exit.md`.
@@ -97,6 +98,7 @@ Last updated: 2026-06-26
 - Public progress and port-over routing refresh in `docs/build-log/2026-06-26-progress-portover-refresh.md`.
 - Port-over inventory refresh build log in `docs/build-log/2026-06-26-port-over-inventory-refresh.md`.
 - Public progress and private-side porting recheck build log in `docs/build-log/2026-06-26-public-progress-porting-recheck.md`.
+- Public progress, porting, and public-repo safety refresh in `docs/build-log/2026-06-26-public-repo-porting-safety-refresh.md`.
 
 ## Current Public Surface
 
@@ -152,6 +154,7 @@ Last updated: 2026-06-26
 | Current private-side EvalRank source scan classified private specs, build-readiness plans, migration bootstrap, migration guards, doc validators, and UI proof assets. | Documented here as a public-safe routing decision; raw private docs, proof assets, operations scripts, and private migrations were not copied. | Docs / Public Planning, Public Surface Contracts, DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
 | Current private-source inventory counted private EvalRank specs, build plans, proof assets, and backend migration assets, then routed the next port slices. | Documented as categories and owners only. Public work stays on storage-free contracts, deterministic fixtures/checks, route contracts, and sanitized method notes; DB, runtime, UI proofs, hosted ops, and eval-integrity material stay private. | Docs / Public Planning, Public Contracts, Public Surface Contracts, Open-Core Boundary / CI, DB Bootstrap / Syndai Ops, Scoring / Materializer Runtime, Evaluation Integrity |
 | GitHub repo security metadata was checked for the public repo. | Public visibility, secret scanning, push protection, and Dependabot security updates are enabled; the local boundary scanner remains the required gate because platform scanning is only a backstop. | Open-Core Boundary / CI, Secrets / Deploy Ops |
+| Public security reporting and porting safety docs were refreshed after rechecking the public repo metadata and private-side dirty worktree. | Built here as docs-only guidance: public reports must not include secrets/private fixtures/customer data, exposed secrets must be treated as compromised, and next ports stay on public contracts/checks rather than private Memphant planning. | Docs / Public Planning, Open-Core Boundary / CI, Secrets / Deploy Ops |
 | Non-fixture clients, live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
 
 ## In Progress
@@ -164,6 +167,7 @@ Last updated: 2026-06-26
 - Private Syndai build-readiness docs and operational plans, summarized here only when public-safe.
 - Latest private-side dirty check and recheck: Syndai had uncommitted `docs/superpowers/specs/memphant/` edits plus untracked `docs/superpowers/plans/2026-06-26-memphant-gapcheck-validation.md` and `docs/superpowers/plans/2026-06-26-memphant-lifecycle-validation.md`. Treat those as adjacent memory-system planning, not EvalRank public-port material, unless a later task extracts an explicit EvalRank storage-free contract from them.
 - Latest private-source inventory: the Syndai checkout contains 25 private EvalRank spec docs, 6 private EvalRank build-plan docs, 18 private UI/proof assets, and 5 backend migration/guard/test assets. These are routing inputs only. Public ports should continue as explicit storage-free contracts, schemas, synthetic fixtures, deterministic checks, public route contracts, or sanitized method notes.
+- Latest public-repo safety review: `siddmax/evalrank` is public with GitHub secret scanning, push protection, and Dependabot security updates enabled; local public-boundary checks remain mandatory because platform scanning is only a backstop.
 - Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, deterministic public-boundary checks, and sanitized method notes can move here. Public recommendation identifier aliases, storage-free `RawEntry`, public `CandidateSet`, public `StageCandidate`, public `EvidenceItem`, public `ResultRow`, public `UseCaseCatalog`, public `ScoringStageCatalog`, public `RankingGroup`, public `EvidenceSet`, public `Exclusion`, structured public `the_call`, public `Abstention`, the first storage-free OpenAPI route contracts, and retry-aware public Problem Details error shape have moved. The private-side planning scan is summarized in `docs/PORTING.md` by workstream, not copied. Private EvalRank specs, build-readiness plans, UI proof assets, doc validators, DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, graph lookup, live evidence lookup, evidence ledger runtime, cross-kind score normalization, benchmark weights, IRT fit clusters, thin-coverage/synthesis policy details, Stage-2+ scorer rows, gate policy, private reason taxonomy, scorer thresholds, private problem types, and held-out evaluation material stay private unless a later task extracts a concrete public contract.
 
 ## Current Port-Over Snapshot
@@ -217,6 +221,7 @@ Last updated: 2026-06-26
 - Public Surface Contracts workstream: extend OpenAPI only for concrete public routes or route-specific problem types beyond the current shared retry vocabulary.
 - Scoring / Materializer Runtime workstream: keep runtime and private evidence material in incubation until the deterministic, storage-free public core is separable.
 - Docs / Public Planning workstream: keep `docs/STATUS.md`, `docs/PORTING.md`, `docs/REPO_STRUCTURE.md`, package READMEs, and build logs aligned in the same change.
+- Secrets / Deploy Ops workstream: keep relying on GitHub push protection and secret scanning as backstops, but block leaks earlier with local boundary checks and private review before every public port.
 - Update `NAVIGATION.md` when EvalRank adds or changes public API routes, UI routes, deeplinks, or navigation-critical docs.
 
 ## Left
