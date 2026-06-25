@@ -4,7 +4,7 @@ Reference Python package for public EvalRank evidence and scoring contracts.
 
 Use `evalrank_core.fixtures.sample_public_fixture(kind)` with `PUBLIC_FIXTURE_KINDS`, or the individual fixture helpers, for public examples and contract tests.
 
-Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, and `EntityRef`.
+Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, and `EntityRef`.
 
 Candidate set payloads expose a storage-free list of public `EntityRef` candidates for a request; source adapters and graph lookup stay outside this package.
 
@@ -21,6 +21,8 @@ Capability fingerprint, raw entry, evidence item, evidence set, candidate set, a
 Result row payloads expose storage-free benchmark/result provenance. Source adapters, production rows, private benchmark material, scorer fitting, and storage tables stay outside this package.
 
 Use case catalog payloads expose public taxonomy metadata only. Benchmark weights, IRT clusters, confidence policy, synthesis rules, and storage tables stay outside this package.
+
+Scoring stage catalog payloads expose public stage order, contract refs, and boundary notes only. Formulas, thresholds, graders, telemetry, and runtime scorer behavior stay outside this package.
 
 Ranking group payloads expose within-kind ranking rows for `kind-grouped` recommendations only. Cross-kind score normalization and scorer internals stay outside this package.
 

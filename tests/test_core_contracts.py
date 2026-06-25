@@ -22,6 +22,8 @@ from evalrank_core.contracts import (  # noqa: E402
     RankedEntity,
     RankingGroup,
     ResultRow,
+    ScoringStage,
+    ScoringStageCatalog,
     StageCandidate,
     TheCall,
     UseCase,
@@ -47,6 +49,8 @@ class CoreContractTests(unittest.TestCase):
             "EvidenceSet",
             "ResultRow",
             "UseCaseCatalog",
+            "ScoringStage",
+            "ScoringStageCatalog",
             "RankingGroup",
             "Exclusion",
             "TheCall",
@@ -290,6 +294,86 @@ class CoreContractTests(unittest.TestCase):
             },
             catalog.to_dict(),
         )
+
+    def test_scoring_stage_catalog_serializes_public_stage_vocabulary(self):
+        stage = ScoringStage(
+            id="candidate-resolution",
+            ordinal=2,
+            name="Candidate resolution",
+            description="Identify public candidates for a request",
+            input_contracts=("EvaluationRequest",),
+            output_contracts=("CandidateSet", "StageCandidate", "Exclusion"),
+            public_boundary="storage-free contract refs only",
+        )
+        catalog = ScoringStageCatalog(
+            methodology_version=PINNED_METHODOLOGY_VERSION,
+            generated_at="2026-06-25T00:00:00Z",
+            stages=(stage,),
+        )
+
+        self.assertEqual(
+            {
+                "object": "scoring_stage_catalog",
+                "methodology_version": PINNED_METHODOLOGY_VERSION,
+                "generated_at": "2026-06-25T00:00:00Z",
+                "stages": [
+                    {
+                        "id": "candidate-resolution",
+                        "ordinal": 2,
+                        "name": "Candidate resolution",
+                        "description": "Identify public candidates for a request",
+                        "input_contracts": ["EvaluationRequest"],
+                        "output_contracts": ["CandidateSet", "StageCandidate", "Exclusion"],
+                        "public_boundary": "storage-free contract refs only",
+                    }
+                ],
+            },
+            catalog.to_dict(),
+        )
+
+    def test_scoring_stage_catalog_rejects_invalid_public_shape(self):
+        valid_stage = ScoringStage(
+            id="candidate-resolution",
+            ordinal=2,
+            name="Candidate resolution",
+            description="Identify public candidates for a request",
+            input_contracts=("EvaluationRequest",),
+            output_contracts=("CandidateSet",),
+            public_boundary="storage-free contract refs only",
+        )
+
+        with self.assertRaisesRegex(ValueError, "ordinal"):
+            ScoringStage(
+                id="bad-stage",
+                ordinal=0,
+                name="Bad stage",
+                description="Bad ordinal",
+                input_contracts=("EvaluationRequest",),
+                output_contracts=("CandidateSet",),
+                public_boundary="storage-free contract refs only",
+            )
+        with self.assertRaisesRegex(ValueError, "input_contracts"):
+            ScoringStage(
+                id="bad-stage",
+                ordinal=1,
+                name="Bad stage",
+                description="Bad contracts",
+                input_contracts=(),
+                output_contracts=("CandidateSet",),
+                public_boundary="storage-free contract refs only",
+            )
+        with self.assertRaisesRegex(TypeError, "stages"):
+            ScoringStageCatalog(
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                generated_at="2026-06-25T00:00:00Z",
+                stages=("not-stage",),
+            )
+        with self.assertRaisesRegex(ValueError, "duplicate stage id"):
+            ScoringStageCatalog(
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                generated_at="2026-06-25T00:00:00Z",
+                stages=(valid_stage, valid_stage),
+            )
 
     def test_use_case_rejects_invalid_public_shape(self):
         with self.assertRaisesRegex(ValueError, "entity_kinds"):

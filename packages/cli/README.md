@@ -16,6 +16,7 @@ evalrank fixture ranking-group
 evalrank fixture evidence-set
 evalrank fixture exclusion
 evalrank fixture use-cases
+evalrank fixture scoring-stages
 evalrank fixture recommendation
 ```
 

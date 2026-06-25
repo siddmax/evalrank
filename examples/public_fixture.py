@@ -18,6 +18,7 @@ from evalrank_sdk import (  # noqa: E402
     sample_raw_entry,
     sample_recommendation,
     sample_result_row,
+    sample_scoring_stage_catalog,
     sample_stage_candidate,
     sample_use_case_catalog,
 )
@@ -35,6 +36,7 @@ def main() -> int:
                 "recommendation": sample_recommendation().to_dict(),
                 "request": sample_evaluation_request().to_dict(),
                 "result_row": sample_result_row().to_dict(),
+                "scoring_stages": sample_scoring_stage_catalog().to_dict(),
                 "stage_candidate": sample_stage_candidate().to_dict(),
                 "use_cases": sample_use_case_catalog().to_dict(),
             },

@@ -80,6 +80,7 @@ export const PUBLIC_FIXTURE_KINDS = [
   "ranking-group",
   "result-row",
   "request",
+  "scoring-stages",
   "stage-candidate",
   "use-cases",
 ] as const;
@@ -228,6 +229,23 @@ export interface UseCaseCatalog {
   methodology_version: string;
   generated_at: string;
   use_cases: UseCase[];
+}
+
+export interface ScoringStage {
+  id: string;
+  ordinal: number;
+  name: string;
+  description: string;
+  input_contracts: string[];
+  output_contracts: string[];
+  public_boundary: string;
+}
+
+export interface ScoringStageCatalog {
+  object: "scoring_stage_catalog";
+  methodology_version: string;
+  generated_at: string;
+  stages: ScoringStage[];
 }
 
 export interface TheCall {

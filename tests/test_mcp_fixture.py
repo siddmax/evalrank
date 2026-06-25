@@ -119,6 +119,14 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual("ranking_group", payload["object"])
         self.assertEqual("mcp_server", payload["group_key"])
 
+    def test_call_tool_returns_public_scoring_stages_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "scoring-stages"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("scoring_stage_catalog", payload["object"])
+        self.assertEqual("freshness-trust-labeling", payload["stages"][-1]["id"])
+
     def test_call_tool_rejects_unknown_tool(self):
         with self.assertRaisesRegex(ValueError, "unknown tool"):
             call_tool("evalrank.unknown", {"kind": "evidence"})

@@ -246,6 +246,79 @@ class UseCaseCatalog:
 
 
 @dataclass(frozen=True)
+class ScoringStage:
+    id: str
+    ordinal: int
+    name: str
+    description: str
+    input_contracts: tuple[str, ...]
+    output_contracts: tuple[str, ...]
+    public_boundary: str
+
+    def __post_init__(self) -> None:
+        _require_nonempty_string("id", self.id)
+        if not isinstance(self.ordinal, int) or isinstance(self.ordinal, bool) or self.ordinal < 1:
+            raise ValueError("ordinal must be an integer >= 1")
+        for name in ("name", "description", "public_boundary"):
+            _require_nonempty_string(name, getattr(self, name))
+        for name, values in (
+            ("input_contracts", self.input_contracts),
+            ("output_contracts", self.output_contracts),
+        ):
+            if not isinstance(values, tuple) or not values:
+                raise ValueError(f"{name} is required")
+            if any(not isinstance(value, str) or not value for value in values):
+                raise ValueError(f"{name} must contain non-empty strings")
+            if len(set(values)) != len(values):
+                raise ValueError(f"{name} must be unique")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "id": self.id,
+            "ordinal": self.ordinal,
+            "name": self.name,
+            "description": self.description,
+            "input_contracts": list(self.input_contracts),
+            "output_contracts": list(self.output_contracts),
+            "public_boundary": self.public_boundary,
+        }
+
+
+@dataclass(frozen=True)
+class ScoringStageCatalog:
+    object: ClassVar[str] = "scoring_stage_catalog"
+
+    methodology_version: str
+    generated_at: str
+    stages: tuple[ScoringStage, ...]
+
+    def __post_init__(self) -> None:
+        _require_methodology_version(self.methodology_version)
+        _require_nonempty_string("generated_at", self.generated_at)
+        if not isinstance(self.stages, tuple) or not self.stages:
+            raise ValueError("stages is required")
+        seen_ids: set[str] = set()
+        seen_ordinals: set[int] = set()
+        for stage in self.stages:
+            if not isinstance(stage, ScoringStage):
+                raise TypeError("stages must contain ScoringStage values")
+            if stage.id in seen_ids:
+                raise ValueError("duplicate stage id")
+            if stage.ordinal in seen_ordinals:
+                raise ValueError("duplicate stage ordinal")
+            seen_ids.add(stage.id)
+            seen_ordinals.add(stage.ordinal)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "methodology_version": self.methodology_version,
+            "generated_at": self.generated_at,
+            "stages": [stage.to_dict() for stage in sorted(self.stages, key=lambda stage: stage.ordinal)],
+        }
+
+
+@dataclass(frozen=True)
 class Exclusion:
     subject: EntityRef
     reason: str

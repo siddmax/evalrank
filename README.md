@@ -60,7 +60,7 @@ Runnable example:
 python3 examples/public_fixture.py
 ```
 
-The example prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, exclusion, and recommendation.
+The example prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, scoring stage catalog, exclusion, and recommendation.
 
 CLI:
 
@@ -76,15 +76,17 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture ra
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture use-cases
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture scoring-stages
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
 ```
 
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_ranking_group, sample_recommendation, sample_result_row, sample_stage_candidate, sample_use_case_catalog
+from evalrank_sdk import sample_candidate_set, sample_evidence_set, sample_exclusion, sample_ranking_group, sample_recommendation, sample_result_row, sample_scoring_stage_catalog, sample_stage_candidate, sample_use_case_catalog
 
 use_cases = sample_use_case_catalog().to_dict()
+stages = sample_scoring_stage_catalog().to_dict()
 candidate_set = sample_candidate_set().to_dict()
 stage_candidate = sample_stage_candidate().to_dict()
 result_row = sample_result_row().to_dict()
@@ -106,9 +108,10 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type RankingGroup, type ResultRow, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
+import { type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type RankingGroup, type ResultRow, type ScoringStageCatalog, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
 
 const useCases: UseCaseCatalog["use_cases"] = [];
+const stages: ScoringStageCatalog["stages"] = [];
 const candidates: CandidateSet["candidates"] = [{ entity_type: "mcp_server", id: "tool:public-search-demo" }];
 const arms: StageCandidate["retrieval_provenance"]["arms"] = ["lexical", "semantic"];
 const verification: ResultRow["verification_state"] = "verified";

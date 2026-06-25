@@ -48,6 +48,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "EvidenceItem",
             "EvidenceSet",
             "ResultRow",
+            "ScoringStage",
+            "ScoringStageCatalog",
             "UseCase",
             "UseCaseCatalog",
             "RankingGroup",
@@ -106,6 +108,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "RawEntry",
             "Recommendation",
             "ResultRow",
+            "ScoringStage",
+            "ScoringStageCatalog",
             "StageCandidate",
             "TheCall",
             "ProblemDetails",
@@ -165,6 +169,10 @@ class TypeScriptSdkTests(unittest.TestCase):
             "rank_policy",
             "is_overlay",
             "use_cases",
+            "input_contracts",
+            "output_contracts",
+            "public_boundary",
+            "stages",
         ):
             self.assertRegex(source, rf"\b{field}\??:")
 

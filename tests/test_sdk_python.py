@@ -18,6 +18,8 @@ from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  
 from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
 from evalrank_core.contracts import RankingGroup as CoreRankingGroup  # noqa: E402
 from evalrank_core.contracts import ResultRow as CoreResultRow  # noqa: E402
+from evalrank_core.contracts import ScoringStage as CoreScoringStage  # noqa: E402
+from evalrank_core.contracts import ScoringStageCatalog as CoreScoringStageCatalog  # noqa: E402
 from evalrank_core.contracts import StageCandidate as CoreStageCandidate  # noqa: E402
 from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
 from evalrank_core.contracts import UseCaseCatalog as CoreUseCaseCatalog  # noqa: E402
@@ -33,6 +35,8 @@ from evalrank_sdk import (  # noqa: E402
     RawEntry,
     RankingGroup,
     ResultRow,
+    ScoringStage,
+    ScoringStageCatalog,
     StageCandidate,
     TheCall,
     UseCaseCatalog,
@@ -47,6 +51,7 @@ from evalrank_sdk import (  # noqa: E402
     sample_raw_entry,
     sample_ranking_group,
     sample_result_row,
+    sample_scoring_stage_catalog,
     sample_stage_candidate,
     sample_use_case_catalog,
 )
@@ -66,6 +71,8 @@ class PythonSdkTests(unittest.TestCase):
             "EvidenceSet",
             "ResultRow",
             "UseCaseCatalog",
+            "ScoringStage",
+            "ScoringStageCatalog",
             "RankingGroup",
             "Exclusion",
             "TheCall",
@@ -144,6 +151,15 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(RankingGroup, CoreRankingGroup)
         self.assertIsInstance(group, CoreRankingGroup)
         self.assertEqual("ranking_group", group.to_dict()["object"])
+
+    def test_sdk_re_exports_core_scoring_stage_catalog_contracts(self):
+        catalog = sample_scoring_stage_catalog()
+
+        self.assertIs(ScoringStage, CoreScoringStage)
+        self.assertIs(ScoringStageCatalog, CoreScoringStageCatalog)
+        self.assertIsInstance(catalog, CoreScoringStageCatalog)
+        self.assertEqual("scoring_stage_catalog", catalog.to_dict()["object"])
+        self.assertEqual(6, len(catalog.to_dict()["stages"]))
 
     def test_sdk_re_exports_core_stage_candidate_contracts(self):
         candidate = sample_stage_candidate()

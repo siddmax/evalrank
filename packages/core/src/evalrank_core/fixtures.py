@@ -15,6 +15,8 @@ from evalrank_core.contracts import (
     Recommendation,
     RankingGroup,
     ResultRow,
+    ScoringStage,
+    ScoringStageCatalog,
     StageCandidate,
     TheCall,
     UseCase,
@@ -36,6 +38,7 @@ PUBLIC_FIXTURE_KINDS = (
     "ranking-group",
     "result-row",
     "request",
+    "scoring-stages",
     "stage-candidate",
     "use-cases",
 )
@@ -120,6 +123,83 @@ def sample_use_case_catalog() -> UseCaseCatalog:
         methodology_version=PUBLIC_METHODOLOGY_VERSION,
         generated_at=PUBLIC_GENERATED_AT,
         use_cases=(*use_cases, safety_overlay),
+    )
+
+
+_SCORING_STAGE_ROWS = (
+    (
+        "request-normalization",
+        1,
+        "Request normalization",
+        "Convert a public use case into comparable entity types and constraints",
+        ("EvaluationRequest",),
+        ("EvaluationRequest",),
+        "normalization rules only; no customer context or hosted policy",
+    ),
+    (
+        "candidate-resolution",
+        2,
+        "Candidate resolution",
+        "Identify public candidates that can be evaluated for the request",
+        ("EvaluationRequest",),
+        ("CandidateSet", "StageCandidate", "Exclusion"),
+        "storage-free candidate refs only; source adapters and graph lookup stay private",
+    ),
+    (
+        "evidence-attachment",
+        3,
+        "Evidence attachment",
+        "Attach public evidence and ingested result provenance to candidates",
+        ("CandidateSet", "StageCandidate"),
+        ("EvidenceSet", "EvidenceItem", "ResultRow"),
+        "public evidence rows only; live evidence lookup and ledgers stay private",
+    ),
+    (
+        "component-scoring",
+        4,
+        "Component scoring",
+        "Expose named public score components on a 0-1 scale",
+        ("EvidenceSet", "ResultRow"),
+        ("RankedEntity",),
+        "component names and ranges only; weights, formulas, and calibration stay private",
+    ),
+    (
+        "ranking-or-abstention",
+        5,
+        "Ranking or abstention",
+        "Return ranked entities when evidence is sufficient or an abstention when it is not",
+        ("RankedEntity", "Exclusion"),
+        ("Recommendation", "TheCall"),
+        "public decision shape only; thresholds and private confidence policy stay private",
+    ),
+    (
+        "freshness-trust-labeling",
+        6,
+        "Freshness and trust labeling",
+        "Attach public freshness, trust tier, caveats, and evidence counts",
+        ("RankedEntity", "Recommendation"),
+        ("RankedEntity", "Recommendation"),
+        "labels and counts only; production telemetry and private trust policy stay private",
+    ),
+)
+
+
+def sample_scoring_stage_catalog() -> ScoringStageCatalog:
+    return ScoringStageCatalog(
+        methodology_version=PUBLIC_METHODOLOGY_VERSION,
+        generated_at=PUBLIC_GENERATED_AT,
+        stages=tuple(
+            ScoringStage(
+                id=stage_id,
+                ordinal=ordinal,
+                name=name,
+                description=description,
+                input_contracts=input_contracts,
+                output_contracts=output_contracts,
+                public_boundary=public_boundary,
+            )
+            for stage_id, ordinal, name, description, input_contracts, output_contracts, public_boundary in _SCORING_STAGE_ROWS
+        ),
     )
 
 
@@ -283,6 +363,8 @@ def sample_public_fixture(kind: str) -> dict:
         return sample_result_row().to_dict()
     if kind == "request":
         return sample_evaluation_request().to_dict()
+    if kind == "scoring-stages":
+        return sample_scoring_stage_catalog().to_dict()
     if kind == "stage-candidate":
         return sample_stage_candidate().to_dict()
     if kind == "use-cases":

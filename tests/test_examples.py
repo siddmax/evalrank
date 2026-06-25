@@ -29,6 +29,7 @@ class PublicExampleTests(unittest.TestCase):
                 "recommendation",
                 "request",
                 "result_row",
+                "scoring_stages",
                 "stage_candidate",
                 "use_cases",
             ],
@@ -41,6 +42,7 @@ class PublicExampleTests(unittest.TestCase):
         self.assertEqual("stage_candidate", payload["stage_candidate"]["object"])
         self.assertEqual("evidence_set", payload["evidence_set"]["object"])
         self.assertEqual("result_row", payload["result_row"]["object"])
+        self.assertEqual("scoring_stage_catalog", payload["scoring_stages"]["object"])
         self.assertEqual("raw_entry", payload["raw_entry"]["object"])
         self.assertEqual("use_case_catalog", payload["use_cases"]["object"])
         self.assertEqual("unknown_cost", payload["exclusion"]["reason"])

@@ -34,6 +34,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_evaluation_request,
     sample_raw_entry,
     sample_result_row,
+    sample_scoring_stage_catalog,
     sample_stage_candidate,
     sample_use_case_catalog,
 )
@@ -74,6 +75,7 @@ class SchemaContractTests(unittest.TestCase):
         fingerprint_schema = _schema("capability-fingerprint.schema.json")
         raw_entry_schema = _schema("raw-entry.schema.json")
         result_row_schema = _schema("result-row.schema.json")
+        scoring_stage_catalog_schema = _schema("scoring-stage-catalog.schema.json")
         use_case_catalog_schema = _schema("use-case-catalog.schema.json")
 
         ranked_payload = _row().to_dict()
@@ -117,6 +119,9 @@ class SchemaContractTests(unittest.TestCase):
         result_row_payload = sample_result_row().to_dict()
         self.assertEqual(set(result_row_payload), set(result_row_schema["properties"]))
         self.assertLessEqual(set(result_row_schema["required"]), set(result_row_payload))
+        scoring_stage_catalog_payload = sample_scoring_stage_catalog().to_dict()
+        self.assertEqual(set(scoring_stage_catalog_payload), set(scoring_stage_catalog_schema["properties"]))
+        self.assertLessEqual(set(scoring_stage_catalog_schema["required"]), set(scoring_stage_catalog_payload))
         use_case_catalog_payload = sample_use_case_catalog().to_dict()
         self.assertEqual(set(use_case_catalog_payload), set(use_case_catalog_schema["properties"]))
         self.assertLessEqual(set(use_case_catalog_schema["required"]), set(use_case_catalog_payload))
@@ -134,6 +139,7 @@ class SchemaContractTests(unittest.TestCase):
             "capability-fingerprint.schema.json",
             "raw-entry.schema.json",
             "result-row.schema.json",
+            "scoring-stage-catalog.schema.json",
             "use-case-catalog.schema.json",
             "problem.schema.json",
         ):
@@ -255,6 +261,29 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(1, exclusion_schema["properties"]["reason"]["minLength"])
         self.assertEqual("string", exclusion_schema["properties"]["detail"]["type"])
         self.assertEqual(1, exclusion_schema["properties"]["detail"]["minLength"])
+
+    def test_scoring_stage_catalog_schema_pins_stage_shape(self):
+        schema = _schema("scoring-stage-catalog.schema.json")
+        stage_schema = schema["$defs"]["ScoringStage"]
+
+        self.assertEqual("scoring_stage_catalog", schema["properties"]["object"]["const"])
+        self.assertEqual("ScoringStage", stage_schema["title"])
+        self.assertFalse(stage_schema["additionalProperties"])
+        self.assertEqual(
+            {
+                "id",
+                "ordinal",
+                "name",
+                "description",
+                "input_contracts",
+                "output_contracts",
+                "public_boundary",
+            },
+            set(stage_schema["required"]),
+        )
+        self.assertEqual(1, stage_schema["properties"]["ordinal"]["minimum"])
+        self.assertEqual(1, stage_schema["properties"]["input_contracts"]["minItems"])
+        self.assertEqual(1, stage_schema["properties"]["output_contracts"]["minItems"])
 
     def test_problem_schema_pins_rfc_9457_shape(self):
         problem_schema = _schema("problem.schema.json")
