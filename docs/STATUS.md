@@ -20,18 +20,34 @@ Last updated: 2026-06-25
 - Direct `main` push workflow during scratch-build phase; branch protection is currently removed.
 - `make check` local gate shared with CI.
 - W0 public exit packet in `docs/build-log/2026-06-25-w0-public-exit.md`.
+- Public W1 entity/evidence contract plan in `docs/superpowers/plans/2026-06-25-entity-evidence-contracts.md`.
+- Public porting workstream sync in `docs/build-log/2026-06-25-porting-workstream-sync.md`.
 
 ## In Progress
 
 - Public/private porting triage.
+- W1 public contract buildout for storage-free entity references, evidence items, and public evidence schemas.
 - Current source of truth is split between:
   - Python contracts in `packages/core/src/evalrank_core/contracts.py`
   - Public JSON Schemas in `schemas/`
   - Public porting decisions in `docs/PORTING.md`
   - Build-readiness docs in Syndai under `docs/superpowers/plans/evalrank/`
 
+## Porting Queue
+
+| Priority | Workstream | Destination | Public handling |
+| --- | --- | --- | --- |
+| 1 | Public Contracts | This repo | Port storage-free entity/evidence contracts, schemas, fixtures, and drift tests. |
+| 2 | Methods / Schemas | This repo | Port sanitized method boundaries and public scoring-stage vocabulary only. |
+| 3 | SDK / CLI / MCP | This repo | Implement after contracts are pinned and keep examples synthetic. |
+| 4 | Docs / Public Planning | This repo | Keep sanitized build logs and status docs current; do not copy private planning text verbatim. |
+| 5 | DB Bootstrap / Syndai Ops | Syndai repo | Keep Supabase migrations, live bootstrap, and operational checks private during incubation. |
+| 6 | Evaluation Integrity | Private eval systems | Keep held-out tasks, graders, answers, traces, and benchmark results private. |
+| 7 | Hosted Ops / GTM | Private hosted systems | Keep billing, admin, telemetry, vendor intent, and account operations out of this repo. |
+
 ## Next
 
+- Implement the W1 entity/evidence contracts from `docs/superpowers/plans/2026-06-25-entity-evidence-contracts.md`.
 - Add an OpenAPI skeleton only when the first REST surface exists or a concrete route contract is ready.
 - Add package-level implementation for the next public surface only after its contract is pinned.
 - Add `NAVIGATION.md` when EvalRank has UI routes, API routes, deeplinks, or navigation-critical docs.

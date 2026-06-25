@@ -2,11 +2,14 @@
 
 This repo is public. Port only artifacts that are portable, sanitized, and useful without private Syndai/Finn/Savida context.
 
+Last reviewed: 2026-06-25
+
 ## Default Rule
 
 - Public by default: contracts, schemas, SDK boundaries, CLI/MCP interfaces, examples, public method notes, repo hygiene, and deterministic boundary checks.
 - Private by default: secrets, live DB operations, customer data, production telemetry, private evidence rows, held-out benchmark tasks or answers, billing/admin internals, vendor intent data, hosted-product-only workflows, and private Syndai/Finn/Savida integration code.
 - When unsure, keep the source private and port a short public summary instead.
+- Do not copy raw private planning docs into this repo. Rewrite as public-safe summaries with synthetic examples.
 
 ## Already Public
 
@@ -17,14 +20,19 @@ This repo is public. Port only artifacts that are portable, sanitized, and usefu
 - Core Python recommendation contracts.
 - Public JSON Schemas for ranked entities and recommendations.
 - Direct `main` push workflow for the scratch-build phase.
+- `make check` public local/CI gate.
+- W0 public exit packet and W1 entity/evidence contract plan.
 
 ## Porting Decisions
 
 | Artifact or workstream | Destination | Owner workstream | Status |
 | --- | --- | --- | --- |
 | Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Partly ported |
+| Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Planned next |
 | Repo boundary checks, license hygiene, and CI gates | This repo | Open-Core Boundary / CI | Partly ported |
 | Sanitized build-readiness summaries from Syndai planning docs | This repo | Docs / Public Planning | In progress |
+| Public build-order and wave status | This repo | Docs / Public Planning | In progress |
+| Public scoring-stage vocabulary and method boundaries | This repo | Methods / Schemas | Port sanitized public boundaries only |
 | REST/OpenAPI contracts | This repo | Public Surface Contracts | Wait until the first concrete route contract exists |
 | SDK, CLI, and MCP implementations | This repo | SDK / CLI / MCP | Wait until contracts are pinned |
 | Public methodology notes | This repo | Methods / Schemas | Port only after removing held-out and proprietary details |
@@ -33,6 +41,28 @@ This repo is public. Port only artifacts that are portable, sanitized, and usefu
 | Production evidence graph rows, telemetry, and customer traces | Private hosted systems | Hosted Ops | Never port |
 | Held-out fixtures, graders, answers, traces, and benchmark results | Private eval systems | Evaluation Integrity | Never port |
 | Billing, admin, GTM, vendor intent, and account-operation flows | Private hosted systems | Hosted Ops / GTM | Keep private unless sanitized as public docs |
+
+## Port Now
+
+- Storage-free Python contracts and JSON Schemas that define public payloads.
+- Synthetic public fixtures that prove contract shape without using production data.
+- Deterministic checks that prevent private imports, secrets, private data paths, and missing package hygiene.
+- Public build logs that summarize decisions without exposing private projects, credentials, customers, held-out tasks, or live telemetry.
+- Package README and agent guidance needed for contributors to work inside the public repo.
+
+## Port Later
+
+- REST/OpenAPI surfaces after a concrete route contract exists.
+- CLI, MCP, and SDK behavior after the core payload contracts are pinned.
+- Public scoring method notes after proprietary thresholds, held-out eval details, and private ranking experiments are removed.
+- Persistence migrations only after EvalRank owns its own deploy/release path or has its own Supabase project.
+
+## Never Port
+
+- Secrets, tokens, Doppler config, environment files, live project refs, and deployment credentials.
+- Customer data, production evidence rows, production telemetry, or account-operation traces.
+- Held-out benchmark tasks, answers, graders, traces, and private result tables.
+- Private Syndai/Finn/Savida integration code, internal billing/admin flows, and hosted-only vendor intent operations.
 
 ## Porting Checklist
 
@@ -45,6 +75,7 @@ Before moving anything into this repo, verify:
 - It does not require live database access or private Supabase privileges to understand or test.
 - It does not expose proprietary hosted-product workflows that are not part of the open core.
 - Its license is compatible with Apache-2.0 public distribution.
+- It can pass review as if the full Git history were public forever.
 - `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, `TESTS.md`, and the nearest `AGENTS.md` stay current when the port changes scope or checks.
 - `python3 scripts/check_public_boundary.py --root .` and `python3 -m unittest discover tests` pass.
 
@@ -62,5 +93,6 @@ Before moving anything into this repo, verify:
 ## External Guardrails
 
 - GitHub push protection can block supported secrets before they enter a repository.
+- GitHub secret scanning can detect hardcoded credentials in repository history, but prevention is cheaper than cleanup.
 - If sensitive data reaches Git history, treat it as compromised, rotate credentials, and follow a coordinated removal process.
 - Supabase custom schemas must be deliberately exposed and granted for API access; EvalRank incubation uses private schema bootstrap outside this public repo.

@@ -35,6 +35,7 @@ Schemas define interoperability payloads, not private storage tables.
 - `docs/REPO_STRUCTURE.md` is this directory ownership map.
 - `docs/PORTING.md` maps what should be ported from private workstreams and what must stay private.
 - `docs/build-log/` stores dated progress snapshots.
+- `docs/superpowers/plans/` stores public-safe implementation plans for agentic work.
 - `docs/AGENTS.md` gives scoped doc-editing rules.
 
 ## Tests And Scripts

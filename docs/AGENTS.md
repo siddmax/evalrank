@@ -11,6 +11,7 @@
 - Keep `REPO_STRUCTURE.md` current as the directory ownership map.
 - Keep `PORTING.md` current when work moves between Syndai/private systems and this public repo.
 - Mark private implementation ownership clearly when public docs mention Syndai or Finn.
+- Summarize private planning context; do not paste raw private docs, customer examples, held-out tasks, or live operational details.
 - Do not publish secrets, private fixtures, customer data, or proprietary ranking experiment details.
 
 ## Checks
