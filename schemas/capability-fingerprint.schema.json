@@ -30,6 +30,7 @@
     },
     "declared_capability_shape": {
       "type": "object",
+      "minProperties": 1,
       "additionalProperties": true
     },
     "capability_fingerprint": {

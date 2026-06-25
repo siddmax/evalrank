@@ -80,6 +80,7 @@ Last updated: 2026-06-26
 - Python SDK vocabulary export build log in `docs/build-log/2026-06-26-python-sdk-vocabulary-exports.md`.
 - Python Problem Details contract build log in `docs/build-log/2026-06-26-python-problem-details-contract.md`.
 - Public Problem Details fixture build log in `docs/build-log/2026-06-26-problem-details-fixture.md`.
+- Capability fingerprint declared-shape schema hardening build log in `docs/build-log/2026-06-26-capability-fingerprint-shape-schema-hardening.md`.
 - Score-component map hardening build log in `docs/build-log/2026-06-26-score-components-contract-hardening.md`.
 - Recommendation envelope validation hardening build log in `docs/build-log/2026-06-26-recommendation-envelope-contract-hardening.md`.
 - JSON-object metadata validation hardening build log in `docs/build-log/2026-06-26-json-object-contract-hardening.md`.
@@ -131,6 +132,7 @@ Last updated: 2026-06-26
 | Python SDK now re-exports public vocabulary constants from the core source of truth. | Built here as SDK parity with existing schema/core/TypeScript vocabulary; no scorer policy or private runtime behavior moved. | SDK / CLI / MCP, Public Contracts |
 | Python core and SDK now expose the public `ProblemDetails` error contract and `PROBLEM_CODES`. | Built here as storage-free public error payload parity with OpenAPI/schema/TypeScript; no hosted auth, tenant context, telemetry, private problem types, or runtime behavior moved. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
 | Shared public fixtures now include a deterministic `problem` / `sample_problem_details()` payload. | Built here as synthetic RFC 9457 Problem Details fixture parity for core, Python SDK, TypeScript fixture kinds, CLI, MCP, and the runnable example; no hosted error telemetry, tenant context, private problem types, or live service behavior moved. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP, Examples |
+| Capability fingerprint schemas now reject empty `declared_capability_shape` objects, matching core behavior. | Built here as schema/core parity hardening for the existing public fingerprint payload; no source adapter, live fetch behavior, private runtime, or DB work moved. | Public Contracts, Methods / Schemas |
 | Ranked entity `score_components` now reject non-object maps, blank/non-string names, booleans, and out-of-range values before serialization. | Built here as public contract hardening; no private scorer formula was added. | Public Contracts, Methods / Schemas |
 | Recommendation envelopes now reject schema-incompatible metadata and duplicate ranked entities before serialization. | Built here as public contract hardening; no scorer/runtime, route implementation, hosted receipt, or private evidence behavior was added. | Public Contracts, Methods / Schemas |
 | Evidence item `metadata` and evaluation request `constraints` now reject non-object, non-string-key, and non-JSON values before serialization. | Built here as public contract hardening; no private evidence lookup, source adapter, or policy behavior was added. | Public Contracts, Methods / Schemas |

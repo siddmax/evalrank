@@ -51,6 +51,7 @@ Last reviewed: 2026-06-26
 - Public structured `the_call` and abstention contracts embedded in recommendation fixtures.
 - Public `score_components` map shape hardened for ranked entities: non-empty public names and 0-1 numeric values only.
 - Public recommendation envelope validation hardened for schema-compatible metadata: non-empty rationale/source fields, boolean degradation state, non-negative snapshot lag, and no duplicate ranked entities.
+- Public capability fingerprint declared-shape schema hardened to require at least one property, matching the existing core contract.
 - Public JSON-object fields hardened for evidence item `metadata` and evaluation request `constraints`: object values only, string keys only, and JSON-serializable values only.
 - Public primitive and sequence fields hardened for entity refs, freshness dates, request entity-type arrays, ranked-entity integer fields, and non-empty caveat strings.
 - Evaluation request `entity_types` are pinned as unique public request metadata in Python and JSON Schema.
@@ -126,6 +127,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Python SDK public vocabulary constant re-exports. | Already ported because they mirror existing public schema/core/TypeScript vocabulary without exposing scorer thresholds, private trust policy, or runtime behavior. | SDK / CLI / MCP, Public Contracts |
 | Python `ProblemDetails` contract and public problem-code enum. | Already ported because it mirrors existing OpenAPI/schema/TypeScript public error contracts without exposing hosted auth, tenant context, private problem types, telemetry, or runtime behavior. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
 | Public Problem Details fixture. | Already ported as a synthetic `problem` fixture so examples, CLI, MCP, Python SDK, and TypeScript fixture kinds can demonstrate the public RFC 9457 shape without hosted error telemetry, tenant context, or private problem types. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP, Examples |
+| Capability fingerprint declared-shape schema hardening. | Already ported because it aligns the public schema with the existing core requirement without adding source adapters, live fetch behavior, private runtime, or DB work. | Public Contracts, Methods / Schemas |
 | Ranked entity score-component map hardening. | Already ported because it closes an existing public payload shape without exposing formulas, weights, or scorer calibration. | Public Contracts, Methods / Schemas |
 | Recommendation envelope validation hardening. | Already ported because it aligns the public Python contract with the public schema and blocks duplicate ranked rows without exposing scorer/runtime behavior. | Public Contracts, Methods / Schemas |
 | Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |

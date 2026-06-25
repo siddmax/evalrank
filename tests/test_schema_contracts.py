@@ -210,6 +210,11 @@ class SchemaContractTests(unittest.TestCase):
 
         self.assertEqual(1, raw_entry_schema["properties"]["declared_capability_shape"]["minProperties"])
 
+    def test_capability_fingerprint_schema_requires_declared_capability_shape_content(self):
+        fingerprint_schema = _schema("capability-fingerprint.schema.json")
+
+        self.assertEqual(1, fingerprint_schema["properties"]["declared_capability_shape"]["minProperties"])
+
     def test_recommendation_schema_pins_the_call_shape(self):
         recommendation_schema = _schema("recommendation.schema.json")
         the_call = recommendation_schema["properties"]["the_call"]
