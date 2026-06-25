@@ -68,6 +68,7 @@ Last updated: 2026-06-26
 - Progress and porting routing refresh in `docs/build-log/2026-06-26-progress-porting-routing.md`.
 - Public fixture dispatch build log in `docs/build-log/2026-06-26-public-fixture-dispatch.md`.
 - TypeScript fixture-kind parity build log in `docs/build-log/2026-06-26-typescript-fixture-kind-parity.md`.
+- Public fixture example README drift-check build log in `docs/build-log/2026-06-26-example-readme-drift-check.md`.
 
 ## Current Public Surface
 
@@ -80,7 +81,7 @@ Last updated: 2026-06-26
 | CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture result-row`, `fixture use-cases`, `fixture ranking-group`, `fixture evidence-set`, `fixture exclusion`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence`, `result-row`, `use-cases`, `ranking-group`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
 | Methods | Public scoring-stage vocabulary, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`; public use-case taxonomy method; and private-boundary notes. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
-| Examples | `examples/public_fixture.py` prints the current synthetic public fixture bundle: request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, exclusion, and recommendation JSON. | Non-fixture demos, live API examples, and private-data examples. |
+| Examples | `examples/public_fixture.py` prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, exclusion, and recommendation JSON; its README is drift-checked against the emitted JSON keys. | Non-fixture demos, live API examples, and private-data examples. |
 | Docs | Status tracker, repo structure map, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
 
 ## Progress Snapshot
@@ -90,9 +91,18 @@ Last updated: 2026-06-26
 | Repo foundation | Built: public scaffold, package boundaries, license/notice hygiene, root/scoped agent docs, CI, `make check`, and deterministic public-boundary scanner. | Open-Core Boundary / CI keeps leak and drift checks current. |
 | Public contracts | Built through the current storage-free payload set: fingerprints, raw entries, requests, candidate sets, stage candidates, result rows, use-case catalogs, ranking groups, evidence sets, exclusions, `the_call`, recommendations, public aliases, entity refs, and evidence items. | Public Contracts pins the next standalone payload before SDK/CLI/MCP behavior grows. |
 | Schemas and methods | Built: JSON Schemas, OpenAPI route contract for `GET /v1/use-cases` and `POST /v1/recommendations`, retry-aware Problem Details, public scoring-stage vocabulary, and sanitized use-case taxonomy method note. | Methods / Schemas and Public Surface Contracts add only public, product-neutral semantics. |
-| Interfaces | Built as fixture-only surfaces: Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture commands, MCP fixture adapter, and runnable public example. | SDK / CLI / MCP promotes non-fixture behavior only after a public route/client contract is pinned. |
+| Interfaces | Built as fixture-only surfaces: Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture commands, MCP fixture adapter, runnable public example, and README drift guards. | SDK / CLI / MCP promotes non-fixture behavior only after a public route/client contract is pinned. |
 | Persistence and hosted ops | Not public: DB bootstrap, Supabase migrations, grants/RLS, live workers, telemetry, auth, billing/admin, deploy config, and credentials. | DB Bootstrap / Syndai Ops, Hosted Ops / GTM, and Secrets / Deploy Ops keep this private until an explicit public cutover exists. |
 | Scoring runtime and eval integrity | Not public: deterministic scorer/materializer runtime, graph persistence, source adapters, private weights, IRT clusters, held-out tasks, graders, traces, answers, and benchmark outputs. | Scoring / Materializer Runtime incubates separable public-input-only code privately; Evaluation Integrity keeps held-out material private. |
+
+## Recent Public Delta
+
+| Change | Status | Workstream |
+| --- | --- | --- |
+| Public fixture outputs were aligned to the public use-case catalog and expanded to include raw entry, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, and recommendation payloads. | Built here with synthetic fixtures only. | Public Contracts, Examples |
+| CLI, MCP, Python SDK, and TypeScript SDK fixture-kind surfaces now share the core public fixture-kind dispatch. | Built here as local deterministic fixture behavior. | SDK / CLI / MCP, Open-Core Boundary / CI |
+| Package and example README drift checks now guard public fixture and SDK surfaces. | Built here with stdlib tests. | Open-Core Boundary / CI, Docs / Public Planning |
+| Non-fixture clients, live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
 
 ## In Progress
 
@@ -111,7 +121,7 @@ Last updated: 2026-06-26
 | Public repository scaffold, package boundaries, CI, license/notice hygiene, and boundary scanner | Ported here | Open-Core Boundary / CI |
 | Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, ranked entity, recommendation, recommendation aliases, and entity reference | Ported here | Public Contracts |
 | Public JSON Schemas and schema drift tests for current payloads | Ported here, including retry-aware Problem Details extensions | Methods / Schemas, Public Contracts, Public Surface Contracts |
-| Synthetic fixtures, runnable public example, CLI fixture command, MCP fixture adapter, Python SDK re-exports, and TypeScript public types | Ported here, including candidate-set, stage-candidate, result-row, use-cases, ranking-group, evidence-set, and exclusion fixture surfaces | SDK / CLI / MCP, Examples |
+| Synthetic fixtures, runnable public example, CLI fixture command, MCP fixture adapter, Python SDK re-exports, and TypeScript public types | Ported here, including raw-entry, candidate-set, stage-candidate, result-row, use-cases, ranking-group, evidence-set, and exclusion fixture surfaces plus README drift guards | SDK / CLI / MCP, Examples, Open-Core Boundary / CI |
 | Public scoring-stage vocabulary and private-boundary notes | Ported here, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, and the use-case taxonomy method | Methods / Schemas |
 | `RawEntry` ingestion-normalization contract | Ported here as a storage-free synthetic fixture contract | Public Contracts |
 | `CandidateSet` candidate-resolution contract | Ported here as a storage-free list of public `EntityRef` candidates | Public Contracts, Methods / Schemas |

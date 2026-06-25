@@ -8,4 +8,4 @@ Runnable public examples live here. Examples must use public fixtures only.
 python3 examples/public_fixture.py
 ```
 
-Prints synthetic public request, candidate-set, stage-candidate, evidence, evidence-set, result-row, use-case catalog, exclusion, and recommendation fixtures as JSON.
+Prints one JSON object with synthetic public fixtures under these keys: `candidate_set`, `evidence`, `evidence_set`, `exclusion`, `raw_entry`, `recommendation`, `request`, `result_row`, `stage_candidate`, and `use_cases`.

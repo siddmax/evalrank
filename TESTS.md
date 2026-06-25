@@ -10,7 +10,7 @@ make check
 
 - `tests/test_core_contracts.py` checks public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, recommendation ID aliases, ranking, evidence, and methodology-version contract behavior.
 - `tests/test_core_fixtures.py` checks reusable public fixture dispatch plus capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, recommendation with `the_call`, and evidence fixture payloads.
-- `tests/test_examples.py` checks the runnable public fixture example output.
+- `tests/test_examples.py` checks the runnable public fixture example output and verifies `examples/README.md` lists every emitted JSON key.
 - `tests/test_cli_fixture.py` checks deterministic public CLI fixture output, README fixture-command coverage, and invalid input handling.
 - `tests/test_mcp_fixture.py` checks the public MCP fixture tool manifest, README fixture-kind coverage, and result shape.
 - `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys, raw-entry, candidate-set, stage-candidate, result-row, use-case catalog, ranking-group, evidence-set, and exclusion schema shapes, RFC 9457 Problem Details plus public retry extensions, structured `the_call`, recommendation alias patterns, and pinned public patterns.

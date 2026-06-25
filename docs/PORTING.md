@@ -30,6 +30,7 @@ Last reviewed: 2026-06-26
 - CLI package metadata and deterministic public fixture command.
 - MCP package metadata and deterministic public fixture adapter.
 - Runnable public fixture example.
+- Example README drift guard for the public fixture bundle output keys.
 - Public scoring-stage vocabulary, use-case taxonomy method note, and method-boundary notes.
 - Public progress router for deciding which private EvalRank workstream owns each future port.
 - Public recommendation join aliases: `recommendation_id`, `recommend_id`, and `search_run_id`.
@@ -53,7 +54,7 @@ Last reviewed: 2026-06-26
 | Methods / Schemas | JSON Schemas for public payloads, the pinned public `methodology_version` format, the public scoring-stage vocabulary including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`, and the public use-case taxonomy method note. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, confidence policy, synthesis rules, private exclusion policy, private ranking experiments, and private scorer-stage internals. |
 | SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants including fixture kinds, shared public fixture-kind dispatch, deterministic CLI fixture command, and deterministic MCP fixture adapter, including `raw-entry`, `candidate-set`, `stage-candidate`, `result-row`, `use-cases`, `ranking-group`, `evidence-set`, and `exclusion`. | Live service clients, auth, tenant/project operations, production evidence lookup, source adapters, gate policy, and hosted-only workflows. |
 | Public Surface Contracts | OpenAPI 3.1.1 contract for `GET /v1/use-cases` and `POST /v1/recommendations` over existing public schemas and reusable RFC 9457 Problem Details responses for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts. | Hosted auth, tenant logic, receipt storage, HMAC-backed IDs, private DTOs, private problem types, live rate-limit enforcement, live routing, and deployment wiring. |
-| Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
+| Examples | `examples/public_fixture.py` runnable synthetic fixture output plus README coverage for each emitted JSON key. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
 | Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
 
@@ -94,6 +95,18 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | Syndai/private systems until an explicit EvalRank persistence cutover exists | DB Bootstrap / Syndai Ops | Keep private. If EvalRank later owns persistence, design the migration ownership and public exposure model before adding migrations here. |
 | Hosted auth, telemetry, billing/admin, GTM, vendor intent, deploy config, credentials, and live project refs | Private hosted systems | Hosted Ops / GTM, Secrets / Deploy Ops | Keep private unless rewritten later as product-neutral public docs with all operational identifiers removed. |
 | Held-out tasks, graders, answer keys, traces, judge calibration, private benchmark results, and proprietary ranking experiments | Private eval systems only | Evaluation Integrity | Never port. Publish only synthetic or public reproducible fixtures. |
+
+## Recent Public Delta Routing
+
+| Recent change | Port decision | Workstream |
+| --- | --- | --- |
+| Public fixture bundle now includes raw entry, request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, exclusion, and recommendation outputs. | Already ported as synthetic public examples only; no customer, production, or held-out rows moved. | Public Contracts, Examples |
+| Shared public fixture-kind dispatch now drives CLI, MCP, Python SDK, and TypeScript SDK fixture lists. | Already ported because it reduces public contract drift without adding live service behavior. | SDK / CLI / MCP, Open-Core Boundary / CI |
+| README drift checks for SDK and example surfaces. | Already ported because they are deterministic public-boundary checks. | Open-Core Boundary / CI, Docs / Public Planning |
+| Next non-fixture recommendation client behavior. | Port later only after client semantics are pinned against `POST /v1/recommendations`; keep auth, tenant context, hosted receipts, private DTOs, and service dependencies private. | SDK / CLI / MCP, Public Surface Contracts |
+| Runtime scorer/materializer and graph/evidence lookup. | Keep private during incubation; split only public-input-only code later. | Scoring / Materializer Runtime |
+| DB migrations, Supabase bootstrap, grants/RLS, live checks, and deploy wiring. | Keep in Syndai/private systems until an explicit EvalRank persistence cutover exists. | DB Bootstrap / Syndai Ops, Hosted Ops / Deploy Ops |
+| Held-out tasks, graders, answer keys, traces, judge calibration, and benchmark outputs. | Never port. | Evaluation Integrity |
 
 ## Latest Port Review
 
