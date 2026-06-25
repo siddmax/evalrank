@@ -8,6 +8,7 @@ EvalRank is the public core for evidence-ranked evaluation primitives. This repo
 - `TESTS.md` - Current test commands and test map.
 - `docs/STATUS.md` - Living build progress tracker.
 - `docs/REPO_STRUCTURE.md` - Directory ownership map.
+- `docs/PORTING.md` - Public/private porting decisions and workstream ownership.
 - `packages/core` - Python reference package for evidence objects and scoring contracts.
 - `packages/mcp` - MCP server boundary for evaluation and evidence lookup tools.
 - `packages/cli` - Command-line entrypoints that call the public APIs.
@@ -20,6 +21,8 @@ EvalRank is the public core for evidence-ranked evaluation primitives. This repo
 ## What Is Not Open
 
 The hosted product, private Syndai application integrations, private benchmark fixtures, held-out eval data, production telemetry, customer data, and proprietary ranking experiments are not part of this repository. Public packages must not import private Syndai namespaces or depend on private services.
+
+Use `docs/PORTING.md` before moving any private work into this repo.
 
 ## Database Boundary
 

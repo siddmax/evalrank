@@ -37,4 +37,5 @@ See `TESTS.md` for the current test map.
 - Root docs are cross-repo guidance only. Put package-specific rules in the nearest package `AGENTS.md`.
 - When a new top-level code area is added, add a scoped `AGENTS.md` if agents need different commands, boundaries, or ownership rules there.
 - When build progress changes, update `docs/STATUS.md`; when directory ownership changes, update `docs/REPO_STRUCTURE.md`.
+- When porting work from Syndai/private systems, update `docs/PORTING.md` and run the public boundary check before committing.
 - When tests or navigable surfaces change, update `TESTS.md` or create/update `NAVIGATION.md` in the same change.

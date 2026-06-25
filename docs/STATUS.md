@@ -12,20 +12,25 @@ Last updated: 2026-06-25
 - Core Python recommendation contracts in `packages/core`.
 - Public JSON Schemas for ranked entities and recommendations.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
+- Public progress tracker and repo structure map.
+- Public porting map for deciding what moves from Syndai/private workstreams into this repo.
 - Direct `main` push workflow during scratch-build phase; branch protection is currently removed.
 
 ## In Progress
 
 - W0 public contract freeze.
+- Public/private porting triage.
 - Current source of truth is split between:
   - Python contracts in `packages/core/src/evalrank_core/contracts.py`
   - Public JSON Schemas in `schemas/`
+  - Public porting decisions in `docs/PORTING.md`
   - Build-readiness docs in Syndai under `docs/superpowers/plans/evalrank/`
 
 ## Next
 
 - Add an OpenAPI skeleton only when the first REST surface exists or a concrete route contract is ready.
 - Add package-level implementation for the next public surface only after its contract is pinned.
+- Expand public boundary checks with deterministic secret, fixture, and held-out-data guards before larger ports from Syndai.
 - Add `NAVIGATION.md` when EvalRank has UI routes, API routes, deeplinks, or navigation-critical docs.
 
 ## Left

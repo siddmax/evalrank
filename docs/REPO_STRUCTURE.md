@@ -32,6 +32,7 @@ Schemas define interoperability payloads, not private storage tables.
 
 - `docs/STATUS.md` is the living progress tracker.
 - `docs/REPO_STRUCTURE.md` is this directory ownership map.
+- `docs/PORTING.md` maps what should be ported from private workstreams and what must stay private.
 - `docs/build-log/` stores dated progress snapshots.
 - `docs/AGENTS.md` gives scoped doc-editing rules.
 
@@ -45,5 +46,6 @@ Schemas define interoperability payloads, not private storage tables.
 
 - Add a scoped `AGENTS.md` when a directory has local ownership rules or commands.
 - Add or update `TESTS.md` when checks change.
+- Update `docs/PORTING.md` before moving private Syndai/Finn/Savida work into this repo.
 - Add `NAVIGATION.md` when UI routes, API routes, deeplinks, or navigation-critical docs come online.
 - Do not add private data, secrets, private fixtures, or production evidence rows anywhere in this repo.
