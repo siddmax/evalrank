@@ -353,6 +353,46 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(payload["recommendation_id"], payload["recommend_id"])
         self.assertEqual(payload["recommendation_id"], payload["search_run_id"])
 
+    def test_recommendation_rejects_schema_incompatible_envelope_fields(self):
+        valid = {
+            "request_id": "req_01",
+            "use_case": "web-browsing:fresh-news",
+            "methodology_version": PINNED_METHODOLOGY_VERSION,
+            "generated_at": "2026-06-25T00:00:00Z",
+            "comparability": "single-scale",
+            "ranked": [_row("tool:exa-search-mcp")],
+            "groups": None,
+            "shortlist_depth": 1,
+            "depth_rationale": "one candidate clears the evidence floor",
+        }
+
+        invalid_values = (
+            ("shortlist_depth", True),
+            ("depth_rationale", ""),
+            ("degraded", "false"),
+            ("served_from", ""),
+            ("base_snapshot_lag_ms", True),
+            ("base_snapshot_lag_ms", -1),
+            ("base_snapshot_lag_ms", 1.5),
+        )
+        for field, value in invalid_values:
+            with self.subTest(field=field, value=value):
+                with self.assertRaisesRegex(ValueError, field):
+                    Recommendation(**{**valid, field: value})
+
+    def test_recommendation_rejects_duplicate_ranked_entities(self):
+        row = _row("tool:exa-search-mcp")
+
+        with self.assertRaisesRegex(ValueError, "duplicate ranked entity"):
+            Recommendation.single_scale(
+                request_id="req_01",
+                use_case="web-browsing:fresh-news",
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                ranked=[row, row],
+                generated_at="2026-06-25T00:00:00Z",
+                depth_rationale="one candidate clears the evidence floor",
+            )
+
     def test_ranking_group_serializes_within_kind_rows(self):
         row = _row("tool:exa-search-mcp")
         group = RankingGroup(

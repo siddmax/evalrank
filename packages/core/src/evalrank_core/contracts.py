@@ -715,32 +715,54 @@ class Recommendation:
     exclusions: list[Exclusion] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        if not self.request_id:
-            raise ValueError("request_id is required")
-        if not self.use_case:
-            raise ValueError("use_case is required")
+        _require_nonempty_string("request_id", self.request_id)
+        _require_nonempty_string("use_case", self.use_case)
         _require_methodology_version(self.methodology_version)
-        if not self.generated_at:
-            raise ValueError("generated_at is required")
+        _require_nonempty_string("generated_at", self.generated_at)
         if self.comparability not in COMPARABILITY_MODES:
             raise ValueError("comparability must be 'single-scale' or 'kind-grouped'")
+        if not isinstance(self.ranked, list):
+            raise ValueError("ranked must be an array")
+        if self.groups is not None and not isinstance(self.groups, list):
+            raise ValueError("groups must be an array or null")
         if self.comparability == "single-scale" and self.groups is not None:
             raise ValueError("single-scale recommendations must not include groups")
         if self.comparability == "kind-grouped" and self.ranked:
             raise ValueError("kind-grouped recommendations must not include ranked rows")
         if self.comparability == "kind-grouped" and not self.groups:
             raise ValueError("kind-grouped recommendations require groups")
-        if self.shortlist_depth < 0:
-            raise ValueError("shortlist_depth must be >= 0")
+        if not isinstance(self.shortlist_depth, int) or isinstance(self.shortlist_depth, bool) or self.shortlist_depth < 0:
+            raise ValueError("shortlist_depth must be an integer >= 0")
+        _require_nonempty_string("depth_rationale", self.depth_rationale)
+        if not isinstance(self.degraded, bool):
+            raise ValueError("degraded must be a boolean")
+        _require_nonempty_string("served_from", self.served_from)
+        if (
+            not isinstance(self.base_snapshot_lag_ms, int)
+            or isinstance(self.base_snapshot_lag_ms, bool)
+            or self.base_snapshot_lag_ms < 0
+        ):
+            raise ValueError("base_snapshot_lag_ms must be an integer >= 0")
+        seen_ranked: set[tuple[str, str]] = set()
         for row in self.ranked:
+            if not isinstance(row, RankedEntity):
+                raise TypeError("ranked must contain RankedEntity values")
             if row.methodology_version != self.methodology_version:
                 raise ValueError("ranked rows must carry the envelope methodology_version")
+            key = (row.entity_type, row.entity_id)
+            if key in seen_ranked:
+                raise ValueError("duplicate ranked entity")
+            seen_ranked.add(key)
         for group in self.groups or []:
             if not isinstance(group, RankingGroup):
                 raise TypeError("groups must contain RankingGroup values")
             for row in group.ranked:
                 if row.methodology_version != self.methodology_version:
                     raise ValueError("group rows must carry the envelope methodology_version")
+        if self.the_call is not None and not isinstance(self.the_call, TheCall):
+            raise TypeError("the_call must be a TheCall")
+        if not isinstance(self.exclusions, list):
+            raise ValueError("exclusions must be an array")
         for exclusion in self.exclusions:
             if not isinstance(exclusion, Exclusion):
                 raise TypeError("exclusions must contain Exclusion values")

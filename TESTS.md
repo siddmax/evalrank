@@ -8,7 +8,7 @@ make check
 
 ## Test Map
 
-- `tests/test_core_contracts.py` checks public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, recommendation ID aliases, ranking, score-component map validation, evidence, and methodology-version contract behavior.
+- `tests/test_core_contracts.py` checks public capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, recommendation ID aliases, recommendation envelope validation, ranking, score-component map validation, evidence, and methodology-version contract behavior.
 - `tests/test_core_fixtures.py` checks reusable public fixture dispatch plus capability fingerprint, raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, recommendation with `the_call`, and evidence fixture payloads.
 - `tests/test_examples.py` checks the runnable public fixture example output and verifies `examples/README.md` lists every emitted JSON key.
 - `tests/test_cli_fixture.py` checks deterministic public CLI fixture output, README fixture-command coverage, and invalid input handling.

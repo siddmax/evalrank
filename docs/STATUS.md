@@ -70,12 +70,13 @@ Last updated: 2026-06-26
 - TypeScript fixture-kind parity build log in `docs/build-log/2026-06-26-typescript-fixture-kind-parity.md`.
 - Public fixture example README drift-check build log in `docs/build-log/2026-06-26-example-readme-drift-check.md`.
 - Score-component map hardening build log in `docs/build-log/2026-06-26-score-components-contract-hardening.md`.
+- Recommendation envelope validation hardening build log in `docs/build-log/2026-06-26-recommendation-envelope-contract-hardening.md`.
 
 ## Current Public Surface
 
 | Surface | Built | Not built yet |
 | --- | --- | --- |
-| Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, public constants, shared fixture-kind dispatch, strict public score-component maps, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, benchmark weights, IRT clusters, Stage-2+ scorer rows, trust/security policy runtime. |
+| Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, public constants, shared fixture-kind dispatch, strict public score-component maps, strict recommendation envelope validation, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, benchmark weights, IRT clusters, Stage-2+ scorer rows, trust/security policy runtime. |
 | Schemas | JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, use-case catalogs, evidence sets, exclusions, ranked entities with strict public score-component maps, recommendations with closed ranking groups, evidence items, and retry-aware RFC 9457 Problem Details, plus OpenAPI 3.1.1 for `GET /v1/use-cases` and `POST /v1/recommendations`, with drift tests against public contracts and pinned public patterns. | Persistence schemas, scorer-runtime schemas, benchmark-weight schemas, and additional route-specific problem types beyond the current public error vocabulary. |
 | Python SDK | Package metadata and public re-exports from `evalrank_core`, including public fixture dispatch helpers. | Installed package release flow and non-fixture client behavior. |
 | TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry`, `CandidateSet`, `StageCandidate`, `ResultRow`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, `ProblemDetails`, and public fixture kinds. | Built JS distribution, published package release flow, and non-fixture client behavior. |
@@ -104,6 +105,7 @@ Last updated: 2026-06-26
 | CLI, MCP, Python SDK, and TypeScript SDK fixture-kind surfaces now share the core public fixture-kind dispatch. | Built here as local deterministic fixture behavior. | SDK / CLI / MCP, Open-Core Boundary / CI |
 | Package and example README drift checks now guard public fixture and SDK surfaces. | Built here with stdlib tests. | Open-Core Boundary / CI, Docs / Public Planning |
 | Ranked entity `score_components` now reject non-object maps, blank/non-string names, booleans, and out-of-range values before serialization. | Built here as public contract hardening; no private scorer formula was added. | Public Contracts, Methods / Schemas |
+| Recommendation envelopes now reject schema-incompatible metadata and duplicate ranked entities before serialization. | Built here as public contract hardening; no scorer/runtime, route implementation, hosted receipt, or private evidence behavior was added. | Public Contracts, Methods / Schemas |
 | Non-fixture clients, live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
 
 ## In Progress
@@ -121,7 +123,7 @@ Last updated: 2026-06-26
 | Change or source area | Public status | Owning workstream |
 | --- | --- | --- |
 | Public repository scaffold, package boundaries, CI, license/notice hygiene, and boundary scanner | Ported here | Open-Core Boundary / CI |
-| Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, ranked entity, recommendation, recommendation aliases, and entity reference | Ported here | Public Contracts |
+| Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, ranked entity, recommendation, recommendation aliases, strict recommendation envelope validation, and entity reference | Ported here | Public Contracts |
 | Public JSON Schemas and schema drift tests for current payloads | Ported here, including retry-aware Problem Details extensions | Methods / Schemas, Public Contracts, Public Surface Contracts |
 | Synthetic fixtures, runnable public example, CLI fixture command, MCP fixture adapter, Python SDK re-exports, and TypeScript public types | Ported here, including raw-entry, candidate-set, stage-candidate, result-row, use-cases, ranking-group, evidence-set, and exclusion fixture surfaces plus README drift guards | SDK / CLI / MCP, Examples, Open-Core Boundary / CI |
 | Public scoring-stage vocabulary and private-boundary notes | Ported here, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, and the use-case taxonomy method | Methods / Schemas |
@@ -158,7 +160,7 @@ Last updated: 2026-06-26
 
 ## Next
 
-- Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior.
+- Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior; keep hardening existing public envelopes when schema/core drift is found.
 - SDK / CLI / MCP workstream: promote fixture-only adapters toward `POST /v1/recommendations` only after the non-fixture client contract is pinned.
 - Public Surface Contracts workstream: extend OpenAPI only for concrete public routes or route-specific problem types beyond the current shared retry vocabulary.
 - Scoring / Materializer Runtime workstream: keep runtime and private evidence material in incubation until the deterministic, storage-free public core is separable.
