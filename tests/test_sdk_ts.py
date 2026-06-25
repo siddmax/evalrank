@@ -37,6 +37,7 @@ class TypeScriptSdkTests(unittest.TestCase):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
 
         for name in (
+            "CandidateSet",
             "CapabilityFingerprint",
             "EntityRef",
             "EvaluationRequest",
@@ -61,6 +62,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "entity_types",
             "requested_at",
             "constraints",
+            "candidates",
+            "generated_at",
             "evidence_id",
             "subject",
             "kind",

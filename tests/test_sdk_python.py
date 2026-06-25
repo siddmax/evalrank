@@ -10,17 +10,20 @@ sys.path.insert(0, str(CORE_SRC))
 sys.path.insert(0, str(SDK_SRC))
 
 from evalrank_core.contracts import CapabilityFingerprintInput as CoreCapabilityFingerprintInput  # noqa: E402
+from evalrank_core.contracts import CandidateSet as CoreCandidateSet  # noqa: E402
 from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E402
 from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
 from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
 from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
+    CandidateSet,
     EvaluationRequest,
     EvidenceItem,
     RawEntry,
     TheCall,
     sample_capability_fingerprint_input,
+    sample_candidate_set,
     sample_evidence_item,
     sample_evaluation_request,
     sample_raw_entry,
@@ -48,6 +51,13 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(EvaluationRequest, CoreEvaluationRequest)
         self.assertIsInstance(request, CoreEvaluationRequest)
         self.assertEqual("web-research:freshness-check", request.to_dict()["use_case"])
+
+    def test_sdk_re_exports_core_candidate_set_contracts(self):
+        candidate_set = sample_candidate_set()
+
+        self.assertIs(CandidateSet, CoreCandidateSet)
+        self.assertIsInstance(candidate_set, CoreCandidateSet)
+        self.assertEqual("tool:public-search-demo", candidate_set.to_dict()["candidates"][0]["id"])
 
     def test_sdk_re_exports_core_raw_entry_contracts(self):
         entry = sample_raw_entry()

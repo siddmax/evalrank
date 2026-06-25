@@ -9,6 +9,7 @@ sys.path.insert(0, str(CORE_SRC))
 from evalrank_core.fixtures import (  # noqa: E402
     PUBLIC_METHODOLOGY_VERSION,
     sample_capability_fingerprint_input,
+    sample_candidate_set,
     sample_evidence_item,
     sample_evaluation_request,
     sample_ranked_entity,
@@ -67,6 +68,16 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("req_public_fixture_01", payload["request_id"])
         self.assertEqual("web-research:freshness-check", payload["use_case"])
         self.assertEqual(["mcp_server"], payload["entity_types"])
+
+    def test_sample_candidate_set_is_public_contract_payload(self):
+        candidate_set = sample_candidate_set()
+        payload = candidate_set.to_dict()
+
+        self.assertEqual("candidate_set", payload["object"])
+        self.assertEqual("req_public_fixture_01", payload["request_id"])
+        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
+        self.assertEqual([{"entity_type": "mcp_server", "id": "tool:public-search-demo"}], payload["candidates"])
 
     def test_sample_raw_entry_is_public_contract_payload(self):
         entry = sample_raw_entry()

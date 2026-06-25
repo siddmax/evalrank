@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from evalrank_core.contracts import (
     CapabilityFingerprintInput,
+    CandidateSet,
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
@@ -94,6 +95,15 @@ def sample_evaluation_request() -> EvaluationRequest:
         entity_types=("mcp_server",),
         requested_at=PUBLIC_GENERATED_AT,
         constraints={"requires_citations": True},
+    )
+
+
+def sample_candidate_set() -> CandidateSet:
+    return CandidateSet(
+        request_id="req_public_fixture_01",
+        use_case="web-research:freshness-check",
+        candidates=(sample_entity_ref(),),
+        generated_at=PUBLIC_GENERATED_AT,
     )
 
 

@@ -8,6 +8,7 @@ from typing import TextIO
 
 from evalrank_core.fixtures import (
     sample_capability_fingerprint_input,
+    sample_candidate_set,
     sample_evidence_item,
     sample_evaluation_request,
     sample_raw_entry,
@@ -40,7 +41,10 @@ def _parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     fixture = subparsers.add_parser("fixture", help="write a public fixture payload")
-    fixture.add_argument("kind", choices=("evidence", "fingerprint", "raw-entry", "recommendation", "request"))
+    fixture.add_argument(
+        "kind",
+        choices=("candidate-set", "evidence", "fingerprint", "raw-entry", "recommendation", "request"),
+    )
 
     return parser
 
@@ -48,6 +52,8 @@ def _parser() -> argparse.ArgumentParser:
 def _fixture_payload(kind: str) -> dict:
     if kind == "evidence":
         return sample_evidence_item().to_dict()
+    if kind == "candidate-set":
+        return sample_candidate_set().to_dict()
     if kind == "fingerprint":
         return sample_capability_fingerprint_input().to_dict()
     if kind == "raw-entry":

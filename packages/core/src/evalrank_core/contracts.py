@@ -251,6 +251,43 @@ class EvaluationRequest:
 
 
 @dataclass(frozen=True)
+class CandidateSet:
+    object: ClassVar[str] = "candidate_set"
+
+    request_id: str
+    use_case: str
+    candidates: tuple[EntityRef, ...]
+    generated_at: str
+
+    def __post_init__(self) -> None:
+        if not self.request_id:
+            raise ValueError("request_id is required")
+        if not self.use_case:
+            raise ValueError("use_case is required")
+        if not self.candidates:
+            raise ValueError("candidates is required")
+        if not self.generated_at:
+            raise ValueError("generated_at is required")
+        seen: set[tuple[str, str]] = set()
+        for candidate in self.candidates:
+            if not isinstance(candidate, EntityRef):
+                raise TypeError("candidates must contain EntityRef values")
+            key = (candidate.entity_type, candidate.entity_id)
+            if key in seen:
+                raise ValueError("duplicate candidate")
+            seen.add(key)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "request_id": self.request_id,
+            "use_case": self.use_case,
+            "candidates": [candidate.to_dict() for candidate in self.candidates],
+            "generated_at": self.generated_at,
+        }
+
+
+@dataclass(frozen=True)
 class RankedEntity:
     entity_type: str
     entity_id: str

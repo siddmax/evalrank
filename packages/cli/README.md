@@ -8,6 +8,7 @@ Current command:
 evalrank fixture fingerprint
 evalrank fixture raw-entry
 evalrank fixture request
+evalrank fixture candidate-set
 evalrank fixture evidence
 evalrank fixture recommendation
 ```

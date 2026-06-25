@@ -10,7 +10,7 @@ EvalRank is the public core for evidence-ranked evaluation primitives. This repo
 - `docs/REPO_STRUCTURE.md` - Directory ownership map.
 - `docs/PORTING.md` - Public/private porting decisions and workstream ownership.
 - `NAVIGATION.md` - Public route contract entrypoints.
-- `packages/core` - Python reference package for evidence objects and scoring contracts.
+- `packages/core` - Python reference package for evidence, candidate, and scoring contracts.
 - `packages/mcp` - MCP server boundary for evaluation and evidence lookup tools.
 - `packages/cli` - Command-line entrypoints that call the public APIs.
 - `packages/sdk-python` - Python SDK packaging boundary.
@@ -63,6 +63,7 @@ CLI:
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture fingerprint
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture raw-entry
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture request
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture candidate-set
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
 ```
@@ -70,8 +71,9 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_recommendation
+from evalrank_sdk import sample_candidate_set, sample_recommendation
 
+candidate_set = sample_candidate_set().to_dict()
 payload = sample_recommendation().to_dict()
 call = payload["the_call"]
 ```
@@ -87,7 +89,8 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type TheCall } from "@evalrank/sdk";
+import { type CandidateSet, type TheCall } from "@evalrank/sdk";
 
+const candidates: CandidateSet["candidates"] = [{ entity_type: "mcp_server", id: "tool:public-search-demo" }];
 const call: TheCall["decision"] = "recommend";
 ```

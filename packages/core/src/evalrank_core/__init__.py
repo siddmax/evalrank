@@ -1,5 +1,6 @@
 from evalrank_core.contracts import (
     CapabilityFingerprintInput,
+    CandidateSet,
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
@@ -13,6 +14,7 @@ from evalrank_core.contracts import (
 )
 from evalrank_core.fixtures import (
     sample_capability_fingerprint_input,
+    sample_candidate_set,
     sample_entity_ref,
     sample_evidence_item,
     sample_evaluation_request,
@@ -25,6 +27,7 @@ __version__ = "0.0.0"
 
 __all__ = [
     "CapabilityFingerprintInput",
+    "CandidateSet",
     "ConfidenceInterval",
     "EntityRef",
     "EvidenceItem",
@@ -36,6 +39,7 @@ __all__ = [
     "THE_CALL_DECISIONS",
     "TheCall",
     "sample_capability_fingerprint_input",
+    "sample_candidate_set",
     "sample_entity_ref",
     "sample_evidence_item",
     "sample_evaluation_request",

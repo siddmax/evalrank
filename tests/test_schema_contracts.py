@@ -21,7 +21,12 @@ from evalrank_core.contracts import (  # noqa: E402
     THE_CALL_DECISIONS,
     TRUST_TIERS,
 )
-from evalrank_core.fixtures import sample_evidence_item, sample_evaluation_request, sample_raw_entry  # noqa: E402
+from evalrank_core.fixtures import (  # noqa: E402
+    sample_candidate_set,
+    sample_evidence_item,
+    sample_evaluation_request,
+    sample_raw_entry,
+)
 
 
 METHODOLOGY_VERSION_PATTERN = r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$"
@@ -33,6 +38,7 @@ class SchemaContractTests(unittest.TestCase):
         recommendation_schema = _schema("recommendation.schema.json")
         evidence_schema = _schema("evidence-item.schema.json")
         request_schema = _schema("evaluation-request.schema.json")
+        candidate_set_schema = _schema("candidate-set.schema.json")
         fingerprint_schema = _schema("capability-fingerprint.schema.json")
         raw_entry_schema = _schema("raw-entry.schema.json")
 
@@ -56,6 +62,9 @@ class SchemaContractTests(unittest.TestCase):
         request_payload = sample_evaluation_request().to_dict()
         self.assertEqual(set(request_payload), set(request_schema["properties"]))
         self.assertLessEqual(set(request_schema["required"]), set(request_payload))
+        candidate_set_payload = sample_candidate_set().to_dict()
+        self.assertEqual(set(candidate_set_payload), set(candidate_set_schema["properties"]))
+        self.assertLessEqual(set(candidate_set_schema["required"]), set(candidate_set_payload))
         fingerprint_payload = _fingerprint_input().to_dict()
         self.assertEqual(set(fingerprint_payload), set(fingerprint_schema["properties"]))
         self.assertLessEqual(set(fingerprint_schema["required"]), set(fingerprint_payload))
@@ -69,6 +78,7 @@ class SchemaContractTests(unittest.TestCase):
             "recommendation.schema.json",
             "evidence-item.schema.json",
             "evaluation-request.schema.json",
+            "candidate-set.schema.json",
             "capability-fingerprint.schema.json",
             "raw-entry.schema.json",
             "problem.schema.json",
@@ -151,6 +161,22 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(599, problem_schema["properties"]["status"]["maximum"])
         self.assertEqual("string", problem_schema["properties"]["detail"]["type"])
         self.assertEqual("uri-reference", problem_schema["properties"]["instance"]["format"])
+
+    def test_candidate_set_schema_pins_public_candidate_refs(self):
+        candidate_set_schema = _schema("candidate-set.schema.json")
+
+        self.assertEqual(
+            {"object", "request_id", "use_case", "candidates", "generated_at"},
+            set(candidate_set_schema["required"]),
+        )
+        self.assertEqual("candidate_set", candidate_set_schema["properties"]["object"]["const"])
+        candidates = candidate_set_schema["properties"]["candidates"]
+        self.assertEqual("array", candidates["type"])
+        self.assertEqual(1, candidates["minItems"])
+        self.assertTrue(candidates["uniqueItems"])
+        candidate = candidates["items"]
+        self.assertFalse(candidate["additionalProperties"])
+        self.assertEqual({"entity_type", "id"}, set(candidate["required"]))
 
 
 def _schema(filename: str) -> dict:

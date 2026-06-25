@@ -8,6 +8,7 @@ sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import (  # noqa: E402
     CapabilityFingerprintInput,
+    CandidateSet,
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
@@ -436,6 +437,76 @@ class CoreContractTests(unittest.TestCase):
                 entity_types=("mcp_server",),
                 requested_at="2026-06-25T00:00:00Z",
                 constraints={1: "not-public-json-key"},
+            )
+
+    def test_candidate_set_serializes_public_candidate_refs(self):
+        candidate_set = CandidateSet(
+            request_id="req_public_fixture_01",
+            use_case="web-research:freshness-check",
+            candidates=(EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),),
+            generated_at="2026-06-25T00:00:00Z",
+        )
+
+        payload = candidate_set.to_dict()
+
+        self.assertEqual("candidate_set", payload["object"])
+        self.assertEqual("req_public_fixture_01", payload["request_id"])
+        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
+        self.assertEqual(
+            [{"entity_type": "mcp_server", "id": "tool:public-search-demo"}],
+            payload["candidates"],
+        )
+
+    def test_candidate_set_rejects_invalid_or_duplicate_candidates(self):
+        candidate = EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo")
+
+        with self.assertRaisesRegex(ValueError, "request_id"):
+            CandidateSet(
+                request_id="",
+                use_case="web-research:freshness-check",
+                candidates=(candidate,),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "use_case"):
+            CandidateSet(
+                request_id="req_public_fixture_01",
+                use_case="",
+                candidates=(candidate,),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "candidates"):
+            CandidateSet(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                candidates=(),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(TypeError, "candidates"):
+            CandidateSet(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                candidates=("tool:public-search-demo",),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            CandidateSet(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                candidates=(candidate, candidate),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "generated_at"):
+            CandidateSet(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                candidates=(candidate,),
+                generated_at="",
             )
 
 

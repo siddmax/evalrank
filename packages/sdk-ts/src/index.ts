@@ -64,6 +64,14 @@ export interface EvaluationRequest {
   constraints: Record<string, unknown>;
 }
 
+export interface CandidateSet {
+  object: "candidate_set";
+  request_id: string;
+  use_case: string;
+  candidates: EntityRef[];
+  generated_at: string;
+}
+
 export interface RawEntry {
   object: "raw_entry";
   source: string;

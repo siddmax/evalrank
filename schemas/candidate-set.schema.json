@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/candidate-set.schema.json",
+  "title": "EvalRank Candidate Set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "request_id",
+    "use_case",
+    "candidates",
+    "generated_at"
+  ],
+  "properties": {
+    "object": {
+      "const": "candidate_set"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "use_case": {
+      "type": "string",
+      "minLength": 1
+    },
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entity_type",
+          "id"
+        ],
+        "properties": {
+          "entity_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
