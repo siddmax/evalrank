@@ -301,8 +301,10 @@ class EvidenceItem:
             raise ValueError("summary is required")
         if self.score is not None:
             _require_unit_interval("score", self.score)
-        if any(not isinstance(key, str) for key in self.metadata):
-            raise ValueError("metadata keys must be strings")
+        if not isinstance(self.metadata, dict):
+            raise ValueError("metadata must be a JSON object")
+        _require_string_keys("metadata", self.metadata)
+        _normalize_json_object("metadata", self.metadata)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -313,7 +315,7 @@ class EvidenceItem:
             "observed_at": self.observed_at,
             "summary": self.summary,
             "score": None if self.score is None else _round_score(self.score),
-            "metadata": {key: self.metadata[key] for key in sorted(self.metadata)},
+            "metadata": _normalize_json_object("metadata", self.metadata),
         }
 
 
@@ -456,8 +458,10 @@ class EvaluationRequest:
             raise ValueError("entity_types must not contain blank values")
         if not self.requested_at:
             raise ValueError("requested_at is required")
-        if any(not isinstance(key, str) for key in self.constraints):
-            raise ValueError("constraints keys must be strings")
+        if not isinstance(self.constraints, dict):
+            raise ValueError("constraints must be a JSON object")
+        _require_string_keys("constraints", self.constraints)
+        _normalize_json_object("constraints", self.constraints)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -466,7 +470,7 @@ class EvaluationRequest:
             "use_case": self.use_case,
             "entity_types": list(self.entity_types),
             "requested_at": self.requested_at,
-            "constraints": {key: self.constraints[key] for key in sorted(self.constraints)},
+            "constraints": _normalize_json_object("constraints", self.constraints),
         }
 
 

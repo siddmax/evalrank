@@ -610,6 +610,19 @@ class CoreContractTests(unittest.TestCase):
                 score=1.2,
             )
 
+        for metadata in ("not-a-map", {"nested": {1: "not-public-json-key"}}, {"value": float("nan")}):
+            with self.subTest(metadata=metadata):
+                with self.assertRaisesRegex(ValueError, "metadata"):
+                    EvidenceItem(
+                        evidence_id="ev_bad_metadata",
+                        subject=subject,
+                        kind="trace",
+                        source="public-fixture",
+                        observed_at="2026-06-25T00:00:00Z",
+                        summary="invalid metadata",
+                        metadata=metadata,
+                    )
+
     def test_result_row_serializes_public_provenance_envelope(self):
         row = ResultRow(
             entity_id="tool:public-search-demo",
@@ -967,6 +980,17 @@ class CoreContractTests(unittest.TestCase):
                 requested_at="2026-06-25T00:00:00Z",
                 constraints={1: "not-public-json-key"},
             )
+
+        for constraints in ("not-a-map", {"nested": {1: "not-public-json-key"}}, {"value": float("nan")}):
+            with self.subTest(constraints=constraints):
+                with self.assertRaisesRegex(ValueError, "constraints"):
+                    EvaluationRequest(
+                        request_id="req_public_fixture_01",
+                        use_case="web-browsing",
+                        entity_types=("mcp_server",),
+                        requested_at="2026-06-25T00:00:00Z",
+                        constraints=constraints,
+                    )
 
     def test_candidate_set_serializes_public_candidate_refs(self):
         candidate_set = CandidateSet(

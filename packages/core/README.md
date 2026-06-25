@@ -10,6 +10,8 @@ Stage candidate payloads expose one storage-free Stage-1 candidate row with RRF 
 
 Evidence set payloads expose storage-free public `EvidenceItem` rows for a request; live evidence lookup and evidence ledger persistence stay outside this package.
 
+Evidence item `metadata` and evaluation request `constraints` are public JSON objects. Non-object values, non-string keys, and non-JSON values are rejected before serialization.
+
 Result row payloads expose storage-free benchmark/result provenance. Source adapters, production rows, private benchmark material, scorer fitting, and storage tables stay outside this package.
 
 Use case catalog payloads expose public taxonomy metadata only. Benchmark weights, IRT clusters, confidence policy, synthesis rules, and storage tables stay outside this package.

@@ -45,6 +45,7 @@ Last reviewed: 2026-06-26
 - Public structured `the_call` contract embedded in recommendation fixtures.
 - Public `score_components` map shape hardened for ranked entities: non-empty public names and 0-1 numeric values only.
 - Public recommendation envelope validation hardened for schema-compatible metadata: non-empty rationale/source fields, boolean degradation state, non-negative snapshot lag, and no duplicate ranked entities.
+- Public JSON-object fields hardened for evidence item `metadata` and evaluation request `constraints`: object values only, string keys only, and JSON-serializable values only.
 - Shared public fixture-kind dispatch reused by CLI, MCP, Python SDK, and TypeScript SDK types.
 - Public `NAVIGATION.md` route map for the first API contract.
 
@@ -107,6 +108,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | README drift checks for SDK and example surfaces. | Already ported because they are deterministic public-boundary checks. | Open-Core Boundary / CI, Docs / Public Planning |
 | Ranked entity score-component map hardening. | Already ported because it closes an existing public payload shape without exposing formulas, weights, or scorer calibration. | Public Contracts, Methods / Schemas |
 | Recommendation envelope validation hardening. | Already ported because it aligns the public Python contract with the public schema and blocks duplicate ranked rows without exposing scorer/runtime behavior. | Public Contracts, Methods / Schemas |
+| Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |
 | Next non-fixture recommendation client behavior. | Port later only after client semantics are pinned against `POST /v1/recommendations`; keep auth, tenant context, hosted receipts, private DTOs, and service dependencies private. | SDK / CLI / MCP, Public Surface Contracts |
 | Runtime scorer/materializer and graph/evidence lookup. | Keep private during incubation; split only public-input-only code later. | Scoring / Materializer Runtime |
 | DB migrations, Supabase bootstrap, grants/RLS, live checks, and deploy wiring. | Keep in Syndai/private systems until an explicit EvalRank persistence cutover exists. | DB Bootstrap / Syndai Ops, Hosted Ops / Deploy Ops |
