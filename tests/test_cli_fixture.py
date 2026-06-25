@@ -43,6 +43,17 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
         self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
 
+    def test_fixture_problem_writes_public_json(self):
+        stdout = StringIO()
+
+        exit_code = main(["fixture", "problem"], stdout=stdout, stderr=StringIO())
+
+        self.assertEqual(0, exit_code)
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual("https://evalrank.ai/problems/validation", payload["type"])
+        self.assertEqual(422, payload["status"])
+        self.assertEqual("validation", payload["code"])
+
     def test_fixture_result_row_writes_public_json(self):
         stdout = StringIO()
 

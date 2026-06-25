@@ -75,6 +75,7 @@ export const PUBLIC_FIXTURE_KINDS = [
   "evidence-set",
   "exclusion",
   "fingerprint",
+  "problem",
   "raw-entry",
   "recommendation",
   "ranking-group",

@@ -45,6 +45,15 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
         self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
 
+    def test_call_tool_returns_public_problem_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "problem"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("https://evalrank.ai/problems/validation", payload["type"])
+        self.assertEqual(422, payload["status"])
+        self.assertEqual("validation", payload["code"])
+
     def test_call_tool_returns_public_result_row_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "result-row"})
 

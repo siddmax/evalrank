@@ -10,6 +10,7 @@ from evalrank_core.contracts import (
     EvidenceSet,
     EvaluationRequest,
     Freshness,
+    ProblemDetails,
     RawEntry,
     RankedEntity,
     Recommendation,
@@ -33,6 +34,7 @@ PUBLIC_FIXTURE_KINDS = (
     "evidence-set",
     "exclusion",
     "fingerprint",
+    "problem",
     "raw-entry",
     "recommendation",
     "ranking-group",
@@ -257,6 +259,20 @@ def sample_evidence_item() -> EvidenceItem:
     )
 
 
+def sample_problem_details() -> ProblemDetails:
+    return ProblemDetails(
+        type="https://evalrank.ai/problems/validation",
+        title="Validation failed",
+        status=422,
+        detail="request_id is required",
+        code="validation",
+        retriable=False,
+        field="request_id",
+        request_id="req_public_fixture_01",
+        doc_url="https://evalrank.ai/docs/errors#validation",
+    )
+
+
 def sample_result_row() -> ResultRow:
     return ResultRow(
         entity_id="tool:public-search-demo",
@@ -353,6 +369,8 @@ def sample_public_fixture(kind: str) -> dict:
         return sample_exclusion().to_dict()
     if kind == "fingerprint":
         return sample_capability_fingerprint_input().to_dict()
+    if kind == "problem":
+        return sample_problem_details().to_dict()
     if kind == "raw-entry":
         return sample_raw_entry().to_dict()
     if kind == "recommendation":

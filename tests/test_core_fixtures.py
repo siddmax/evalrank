@@ -16,6 +16,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_evidence_set,
     sample_evaluation_request,
     sample_public_fixture,
+    sample_problem_details,
     sample_ranked_entity,
     sample_ranking_group,
     sample_raw_entry,
@@ -36,6 +37,7 @@ class CoreFixtureTests(unittest.TestCase):
                 "evidence-set",
                 "exclusion",
                 "fingerprint",
+                "problem",
                 "raw-entry",
                 "recommendation",
                 "ranking-group",
@@ -105,6 +107,18 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("trace", payload["kind"])
         self.assertEqual("public-fixture", payload["source"])
         self.assertEqual(["latency_ms"], sorted(payload["metadata"]))
+
+    def test_sample_problem_details_is_public_contract_payload(self):
+        payload = sample_problem_details().to_dict()
+
+        self.assertEqual("https://evalrank.ai/problems/validation", payload["type"])
+        self.assertEqual("Validation failed", payload["title"])
+        self.assertEqual(422, payload["status"])
+        self.assertEqual("request_id is required", payload["detail"])
+        self.assertEqual("validation", payload["code"])
+        self.assertFalse(payload["retriable"])
+        self.assertEqual("request_id", payload["field"])
+        self.assertEqual("req_public_fixture_01", payload["request_id"])
 
     def test_sample_result_row_is_public_contract_payload(self):
         row = sample_result_row()

@@ -25,6 +25,7 @@ class PublicExampleTests(unittest.TestCase):
                 "evidence",
                 "evidence_set",
                 "exclusion",
+                "problem",
                 "raw_entry",
                 "recommendation",
                 "request",
@@ -48,6 +49,7 @@ class PublicExampleTests(unittest.TestCase):
         self.assertEqual("unknown_cost", payload["exclusion"]["reason"])
         self.assertEqual("ev_public_trace_01", payload["evidence"]["evidence_id"])
         self.assertEqual("tool:public-search-demo", payload["evidence"]["subject"]["id"])
+        self.assertEqual("validation", payload["problem"]["code"])
 
     def test_public_fixture_readme_lists_current_output_keys(self):
         result = subprocess.run(

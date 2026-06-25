@@ -11,6 +11,7 @@ evalrank fixture request
 evalrank fixture candidate-set
 evalrank fixture stage-candidate
 evalrank fixture evidence
+evalrank fixture problem
 evalrank fixture result-row
 evalrank fixture ranking-group
 evalrank fixture evidence-set

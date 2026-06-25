@@ -27,6 +27,7 @@ from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
 from evalrank_core.contracts import UseCaseCatalog as CoreUseCaseCatalog  # noqa: E402
 from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS as CorePublicFixtureKinds  # noqa: E402
 from evalrank_core.fixtures import sample_public_fixture as core_sample_public_fixture  # noqa: E402
+from evalrank_core.fixtures import sample_problem_details as core_sample_problem_details  # noqa: E402
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
     CandidateSet,
@@ -51,6 +52,7 @@ from evalrank_sdk import (  # noqa: E402
     sample_evidence_set,
     sample_evaluation_request,
     sample_public_fixture,
+    sample_problem_details,
     sample_raw_entry,
     sample_ranking_group,
     sample_result_row,
@@ -98,6 +100,10 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(PUBLIC_FIXTURE_KINDS, CorePublicFixtureKinds)
         self.assertIs(sample_public_fixture, core_sample_public_fixture)
         self.assertEqual("recommendation", sample_public_fixture("recommendation")["object"])
+
+    def test_sdk_re_exports_public_problem_fixture(self):
+        self.assertIs(sample_problem_details, core_sample_problem_details)
+        self.assertEqual("validation", sample_problem_details().to_dict()["code"])
 
     def test_sdk_re_exports_public_vocabulary_constants(self):
         import evalrank_sdk  # noqa: PLC0415
