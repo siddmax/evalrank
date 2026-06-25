@@ -1,0 +1,6 @@
+[project]
+name = "evalrank-core"
+version = "0.0.0"
+description = "Public EvalRank core contracts"
+requires-python = ">=3.11"
+license = "Apache-2.0"

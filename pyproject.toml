@@ -1,0 +1,9 @@
+[project]
+name = "evalrank-workspace"
+version = "0.0.0"
+description = "Open-source EvalRank core workspace"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+
+[tool.evalrank]
+public_boundary_script = "scripts/check_public_boundary.py"

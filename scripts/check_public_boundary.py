@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+"""Guard the public EvalRank repo boundary."""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable
+
+
+PRIVATE_IMPORT_PREFIXES = (
+    "apps",
+    "backend",
+    "mobile",
+    "syndai",
+    "web",
+)
+DISALLOWED_IMPORT_PREFIXES = {
+    "smithery": "smithery-import",
+}
+MIN_K_MARKERS = (
+    "min_k",
+    "min-k",
+    "mink",
+    "min_k_percent",
+    "min-k-percent",
+)
+IGNORED_DIRS = {".git", ".venv", "__pycache__", "node_modules", "dist", "build"}
+
+
+@dataclass(frozen=True)
+class Violation:
+    code: str
+    path: str
+    message: str
+
+
+def check_repository(root: Path | str) -> Iterable[Violation]:
+    root = Path(root).resolve()
+    yield from _check_root_contract(root)
+    yield from _check_package_contract(root)
+    for path in _iter_source_files(root):
+        yield from _check_python_imports(root, path)
+        if _is_implementation_file(root, path):
+            yield from _check_disallowed_markers(root, path)
+
+
+def _check_root_contract(root: Path) -> Iterable[Violation]:
+    for filename, code in (("LICENSE", "missing-root-license"), ("NOTICE", "missing-root-notice")):
+        if not (root / filename).is_file():
+            yield Violation(code, filename, f"Repository root must include {filename}.")
+
+
+def _check_package_contract(root: Path) -> Iterable[Violation]:
+    packages_root = root / "packages"
+    if not packages_root.is_dir():
+        return
+
+    for package in sorted(path for path in packages_root.iterdir() if path.is_dir()):
+        if not _has_package_content(package):
+            continue
+        for filename, code in (("LICENSE", "missing-package-license"), ("NOTICE", "missing-package-notice")):
+            if not (package / filename).is_file():
+                rel = _relative_to(root, package / filename)
+                yield Violation(code, rel, f"Public package {package.name} must include {filename}.")
+
+
+def _has_package_content(package: Path) -> bool:
+    for path in package.rglob("*"):
+        if _is_ignored(path):
+            continue
+        if path.is_file() and path.name not in {"LICENSE", "NOTICE"}:
+            return True
+    return False
+
+
+def _iter_source_files(root: Path) -> Iterable[Path]:
+    for path in sorted(root.rglob("*")):
+        if _is_ignored(path):
+            continue
+        if path.is_file() and path.suffix in {".py", ".ts", ".tsx", ".js", ".jsx", ".md", ".yml", ".yaml"}:
+            yield path
+
+
+def _is_implementation_file(root: Path, path: Path) -> bool:
+    rel_parts = path.relative_to(root).parts
+    if path.suffix not in {".py", ".ts", ".tsx", ".js", ".jsx"}:
+        return False
+    return len(rel_parts) >= 4 and rel_parts[0] == "packages" and rel_parts[2] == "src"
+
+
+def _check_python_imports(root: Path, path: Path) -> Iterable[Violation]:
+    if path.suffix != ".py":
+        return
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    except SyntaxError as exc:
+        yield Violation("python-syntax-error", _relative_to(root, path), str(exc))
+        return
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                yield from _classify_import(root, path, alias.name)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            yield from _classify_import(root, path, node.module)
+
+
+def _classify_import(root: Path, path: Path, module: str) -> Iterable[Violation]:
+    top_level = module.split(".", 1)[0]
+    rel = _relative_to(root, path)
+    if top_level in PRIVATE_IMPORT_PREFIXES:
+        yield Violation("private-import", rel, f"Public code imports private namespace '{module}'.")
+    disallowed = DISALLOWED_IMPORT_PREFIXES.get(top_level)
+    if disallowed:
+        yield Violation(disallowed, rel, f"Public code imports disallowed dependency '{module}'.")
+
+
+def _check_disallowed_markers(root: Path, path: Path) -> Iterable[Violation]:
+    rel = _relative_to(root, path)
+    haystack = f"{rel}\n{path.read_text(encoding='utf-8', errors='ignore')}".lower()
+    if any(marker in haystack for marker in MIN_K_MARKERS):
+        yield Violation(
+            "min-k-percent",
+            rel,
+            "Min-K% is excluded from the public EvalRank core boundary.",
+        )
+
+
+def _is_ignored(path: Path) -> bool:
+    return any(part in IGNORED_DIRS for part in path.parts)
+
+
+def _relative_to(root: Path, path: Path) -> str:
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=Path.cwd())
+    args = parser.parse_args(argv)
+
+    violations = list(check_repository(args.root))
+    for violation in violations:
+        print(f"{violation.code}\t{violation.path}\t{violation.message}")
+    return 1 if violations else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
