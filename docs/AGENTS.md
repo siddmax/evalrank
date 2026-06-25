@@ -7,6 +7,8 @@
 ## Rules
 
 - Keep docs aligned with `README.md`, `TESTS.md`, and root `AGENTS.md`.
+- Keep `STATUS.md` current as the living progress tracker.
+- Keep `REPO_STRUCTURE.md` current as the directory ownership map.
 - Mark private implementation ownership clearly when public docs mention Syndai or Finn.
 - Do not publish secrets, private fixtures, customer data, or proprietary ranking experiment details.
 

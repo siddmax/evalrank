@@ -6,6 +6,8 @@ EvalRank is the public core for evidence-ranked evaluation primitives. This repo
 
 - `AGENTS.md` - Root agent guide and evolution rules.
 - `TESTS.md` - Current test commands and test map.
+- `docs/STATUS.md` - Living build progress tracker.
+- `docs/REPO_STRUCTURE.md` - Directory ownership map.
 - `packages/core` - Python reference package for evidence objects and scoring contracts.
 - `packages/mcp` - MCP server boundary for evaluation and evidence lookup tools.
 - `packages/cli` - Command-line entrypoints that call the public APIs.
