@@ -6,6 +6,7 @@ from evalrank_core.contracts import (
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
+    EvidenceSet,
     EvaluationRequest,
     Freshness,
     RawEntry,
@@ -85,6 +86,15 @@ def sample_evidence_item() -> EvidenceItem:
         summary="public search demo returned a fresh cited result",
         score=0.8754321,
         metadata={"latency_ms": 1200},
+    )
+
+
+def sample_evidence_set() -> EvidenceSet:
+    return EvidenceSet(
+        request_id="req_public_fixture_01",
+        use_case="web-research:freshness-check",
+        evidence_items=(sample_evidence_item(),),
+        generated_at=PUBLIC_GENERATED_AT,
     )
 
 

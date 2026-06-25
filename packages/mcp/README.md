@@ -10,6 +10,7 @@ Current adapter:
 - `call_tool("evalrank.fixture", {"kind": "request"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "candidate-set"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "evidence"})` returns deterministic public fixture JSON text.
+- `call_tool("evalrank.fixture", {"kind": "evidence-set"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "recommendation"})` returns deterministic public fixture JSON text.
 
 This package does not start a server or call private services yet.

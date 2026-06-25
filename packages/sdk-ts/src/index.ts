@@ -72,6 +72,14 @@ export interface CandidateSet {
   generated_at: string;
 }
 
+export interface EvidenceSet {
+  object: "evidence_set";
+  request_id: string;
+  use_case: string;
+  evidence_items: EvidenceItem[];
+  generated_at: string;
+}
+
 export interface RawEntry {
   object: "raw_entry";
   source: string;

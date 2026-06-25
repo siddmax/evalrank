@@ -11,6 +11,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_capability_fingerprint_input,
     sample_candidate_set,
     sample_evidence_item,
+    sample_evidence_set,
     sample_evaluation_request,
     sample_ranked_entity,
     sample_raw_entry,
@@ -59,6 +60,16 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("trace", payload["kind"])
         self.assertEqual("public-fixture", payload["source"])
         self.assertEqual(["latency_ms"], sorted(payload["metadata"]))
+
+    def test_sample_evidence_set_is_public_contract_payload(self):
+        evidence_set = sample_evidence_set()
+        payload = evidence_set.to_dict()
+
+        self.assertEqual("evidence_set", payload["object"])
+        self.assertEqual("req_public_fixture_01", payload["request_id"])
+        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
+        self.assertEqual("ev_public_trace_01", payload["evidence_items"][0]["evidence_id"])
 
     def test_sample_evaluation_request_is_public_contract_payload(self):
         request = sample_evaluation_request()

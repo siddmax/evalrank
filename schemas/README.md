@@ -7,6 +7,7 @@ Public EvalRank JSON Schema contracts live here.
 - `ranked-entity.schema.json` mirrors `RankedEntity.to_dict()` and core enum constants.
 - `recommendation.schema.json` mirrors `Recommendation.to_dict()` and core enum constants.
 - `evidence-item.schema.json` mirrors `EvidenceItem.to_dict()` and core enum constants.
+- `evidence-set.schema.json` mirrors `EvidenceSet.to_dict()` and reuses `evidence-item.schema.json`.
 - `evaluation-request.schema.json` mirrors `EvaluationRequest.to_dict()`.
 - `candidate-set.schema.json` mirrors `CandidateSet.to_dict()`.
 - `capability-fingerprint.schema.json` mirrors `CapabilityFingerprintInput.to_dict()`.
@@ -18,6 +19,8 @@ Schemas that expose `methodology_version` require `YYYY-MM-DD.SEQ.slug`.
 Recommendation schemas require `recommendation_id`, `recommend_id`, and `search_run_id` to share the public `rec_` ID shape. They also pin the nested public `the_call` shape to `decision`, `confidence`, `reason`, and `abstention_reason`.
 
 Candidate set schemas require at least one unique public `EntityRef`; source adapters and graph lookup stay outside this repo.
+
+Evidence set schemas allow an empty `evidence_items` array for abstention or no-evidence paths. Live evidence lookup, evidence ledger persistence, and private source rows stay outside this repo.
 
 Problem Details schemas intentionally allow extension members, but this repo does not publish private problem types or hosted error internals.
 

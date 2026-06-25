@@ -24,6 +24,7 @@ from evalrank_core.contracts import (  # noqa: E402
 from evalrank_core.fixtures import (  # noqa: E402
     sample_candidate_set,
     sample_evidence_item,
+    sample_evidence_set,
     sample_evaluation_request,
     sample_raw_entry,
 )
@@ -37,6 +38,7 @@ class SchemaContractTests(unittest.TestCase):
         ranked_schema = _schema("ranked-entity.schema.json")
         recommendation_schema = _schema("recommendation.schema.json")
         evidence_schema = _schema("evidence-item.schema.json")
+        evidence_set_schema = _schema("evidence-set.schema.json")
         request_schema = _schema("evaluation-request.schema.json")
         candidate_set_schema = _schema("candidate-set.schema.json")
         fingerprint_schema = _schema("capability-fingerprint.schema.json")
@@ -59,6 +61,9 @@ class SchemaContractTests(unittest.TestCase):
         evidence_payload = sample_evidence_item().to_dict()
         self.assertEqual(set(evidence_payload), set(evidence_schema["properties"]))
         self.assertLessEqual(set(evidence_schema["required"]), set(evidence_payload))
+        evidence_set_payload = sample_evidence_set().to_dict()
+        self.assertEqual(set(evidence_set_payload), set(evidence_set_schema["properties"]))
+        self.assertLessEqual(set(evidence_set_schema["required"]), set(evidence_set_payload))
         request_payload = sample_evaluation_request().to_dict()
         self.assertEqual(set(request_payload), set(request_schema["properties"]))
         self.assertLessEqual(set(request_schema["required"]), set(request_payload))
@@ -77,6 +82,7 @@ class SchemaContractTests(unittest.TestCase):
             "ranked-entity.schema.json",
             "recommendation.schema.json",
             "evidence-item.schema.json",
+            "evidence-set.schema.json",
             "evaluation-request.schema.json",
             "candidate-set.schema.json",
             "capability-fingerprint.schema.json",
@@ -177,6 +183,20 @@ class SchemaContractTests(unittest.TestCase):
         candidate = candidates["items"]
         self.assertFalse(candidate["additionalProperties"])
         self.assertEqual({"entity_type", "id"}, set(candidate["required"]))
+
+    def test_evidence_set_schema_reuses_evidence_item_schema(self):
+        evidence_set_schema = _schema("evidence-set.schema.json")
+
+        self.assertEqual(
+            {"object", "request_id", "use_case", "evidence_items", "generated_at"},
+            set(evidence_set_schema["required"]),
+        )
+        self.assertEqual("evidence_set", evidence_set_schema["properties"]["object"]["const"])
+        evidence_items = evidence_set_schema["properties"]["evidence_items"]
+        self.assertEqual("array", evidence_items["type"])
+        self.assertTrue(evidence_items["uniqueItems"])
+        self.assertNotIn("minItems", evidence_items)
+        self.assertEqual("evidence-item.schema.json", evidence_items["items"]["$ref"])
 
 
 def _schema(filename: str) -> dict:

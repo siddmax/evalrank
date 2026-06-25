@@ -12,6 +12,7 @@ sys.path.insert(0, str(SDK_SRC))
 from evalrank_core.contracts import CapabilityFingerprintInput as CoreCapabilityFingerprintInput  # noqa: E402
 from evalrank_core.contracts import CandidateSet as CoreCandidateSet  # noqa: E402
 from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E402
+from evalrank_core.contracts import EvidenceSet as CoreEvidenceSet  # noqa: E402
 from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
 from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
 from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
@@ -20,11 +21,13 @@ from evalrank_sdk import (  # noqa: E402
     CandidateSet,
     EvaluationRequest,
     EvidenceItem,
+    EvidenceSet,
     RawEntry,
     TheCall,
     sample_capability_fingerprint_input,
     sample_candidate_set,
     sample_evidence_item,
+    sample_evidence_set,
     sample_evaluation_request,
     sample_raw_entry,
 )
@@ -58,6 +61,13 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(CandidateSet, CoreCandidateSet)
         self.assertIsInstance(candidate_set, CoreCandidateSet)
         self.assertEqual("tool:public-search-demo", candidate_set.to_dict()["candidates"][0]["id"])
+
+    def test_sdk_re_exports_core_evidence_set_contracts(self):
+        evidence_set = sample_evidence_set()
+
+        self.assertIs(EvidenceSet, CoreEvidenceSet)
+        self.assertIsInstance(evidence_set, CoreEvidenceSet)
+        self.assertEqual("ev_public_trace_01", evidence_set.to_dict()["evidence_items"][0]["evidence_id"])
 
     def test_sdk_re_exports_core_raw_entry_contracts(self):
         entry = sample_raw_entry()

@@ -11,6 +11,7 @@ from evalrank_core.contracts import (  # noqa: E402
     CandidateSet,
     ConfidenceInterval,
     EntityRef,
+    EvidenceSet,
     EvidenceItem,
     EvaluationRequest,
     Freshness,
@@ -393,6 +394,91 @@ class CoreContractTests(unittest.TestCase):
                 observed_at="2026-06-25T00:00:00Z",
                 summary="invalid score",
                 score=1.2,
+            )
+
+    def test_evidence_set_serializes_public_evidence_items(self):
+        evidence = EvidenceItem(
+            evidence_id="ev_public_trace_01",
+            subject=EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),
+            kind="trace",
+            source="public-fixture",
+            observed_at="2026-06-25T00:00:00Z",
+            summary="public search demo returned a fresh cited result",
+            score=0.8754321,
+            metadata={"latency_ms": 1200},
+        )
+        evidence_set = EvidenceSet(
+            request_id="req_public_fixture_01",
+            use_case="web-research:freshness-check",
+            evidence_items=(evidence,),
+            generated_at="2026-06-25T00:00:00Z",
+        )
+
+        payload = evidence_set.to_dict()
+
+        self.assertEqual("evidence_set", payload["object"])
+        self.assertEqual("req_public_fixture_01", payload["request_id"])
+        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
+        self.assertEqual([evidence.to_dict()], payload["evidence_items"])
+
+    def test_evidence_set_allows_empty_and_rejects_invalid_items(self):
+        empty = EvidenceSet(
+            request_id="req_public_fixture_01",
+            use_case="web-research:freshness-check",
+            evidence_items=(),
+            generated_at="2026-06-25T00:00:00Z",
+        )
+
+        self.assertEqual([], empty.to_dict()["evidence_items"])
+
+        evidence = EvidenceItem(
+            evidence_id="ev_public_trace_01",
+            subject=EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),
+            kind="trace",
+            source="public-fixture",
+            observed_at="2026-06-25T00:00:00Z",
+            summary="public search demo returned a fresh cited result",
+        )
+
+        with self.assertRaisesRegex(ValueError, "request_id"):
+            EvidenceSet(
+                request_id="",
+                use_case="web-research:freshness-check",
+                evidence_items=(evidence,),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "use_case"):
+            EvidenceSet(
+                request_id="req_public_fixture_01",
+                use_case="",
+                evidence_items=(evidence,),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(TypeError, "evidence_items"):
+            EvidenceSet(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                evidence_items=("ev_public_trace_01",),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            EvidenceSet(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                evidence_items=(evidence, evidence),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "generated_at"):
+            EvidenceSet(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                evidence_items=(evidence,),
+                generated_at="",
             )
 
     def test_evaluation_request_serializes_public_input_context(self):

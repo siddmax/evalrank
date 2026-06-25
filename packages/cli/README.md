@@ -10,6 +10,7 @@ evalrank fixture raw-entry
 evalrank fixture request
 evalrank fixture candidate-set
 evalrank fixture evidence
+evalrank fixture evidence-set
 evalrank fixture recommendation
 ```
 

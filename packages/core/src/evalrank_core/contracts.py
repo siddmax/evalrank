@@ -216,6 +216,40 @@ class EvidenceItem:
 
 
 @dataclass(frozen=True)
+class EvidenceSet:
+    object: ClassVar[str] = "evidence_set"
+
+    request_id: str
+    use_case: str
+    evidence_items: tuple[EvidenceItem, ...]
+    generated_at: str
+
+    def __post_init__(self) -> None:
+        if not self.request_id:
+            raise ValueError("request_id is required")
+        if not self.use_case:
+            raise ValueError("use_case is required")
+        if not self.generated_at:
+            raise ValueError("generated_at is required")
+        seen: set[str] = set()
+        for item in self.evidence_items:
+            if not isinstance(item, EvidenceItem):
+                raise TypeError("evidence_items must contain EvidenceItem values")
+            if item.evidence_id in seen:
+                raise ValueError("duplicate evidence_id")
+            seen.add(item.evidence_id)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "request_id": self.request_id,
+            "use_case": self.use_case,
+            "evidence_items": [item.to_dict() for item in self.evidence_items],
+            "generated_at": self.generated_at,
+        }
+
+
+@dataclass(frozen=True)
 class EvaluationRequest:
     object: ClassVar[str] = "evaluation_request"
 
