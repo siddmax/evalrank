@@ -13,6 +13,7 @@ Last updated: 2026-06-25
 - Core Python recommendation contracts in `packages/core`.
 - Public core fixture factory for canonical example recommendation payloads.
 - Public JSON Schemas for ranked entities and recommendations.
+- Schema drift tests for core payload keys and public enum constants.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
 - Public progress tracker and repo structure map.
 - Public porting map for deciding what moves from Syndai/private workstreams into this repo.

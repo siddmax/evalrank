@@ -10,10 +10,13 @@ SCHEMAS = REPO_ROOT / "schemas"
 sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import (  # noqa: E402
+    COMPARABILITY_MODES,
     ConfidenceInterval,
+    FRESHNESS_STATUSES,
     Freshness,
     Recommendation,
     RankedEntity,
+    TRUST_TIERS,
 )
 
 
@@ -45,6 +48,17 @@ class SchemaContractTests(unittest.TestCase):
             self.assertTrue(schema["$id"].endswith(filename))
             self.assertEqual("object", schema["type"])
             self.assertFalse(schema["additionalProperties"])
+
+    def test_schema_enums_match_core_constants(self):
+        ranked_schema = _schema("ranked-entity.schema.json")
+        recommendation_schema = _schema("recommendation.schema.json")
+
+        self.assertEqual(TRUST_TIERS, set(ranked_schema["properties"]["trust_tier"]["enum"]))
+        self.assertEqual(
+            FRESHNESS_STATUSES,
+            set(ranked_schema["properties"]["freshness"]["properties"]["status"]["enum"]),
+        )
+        self.assertEqual(COMPARABILITY_MODES, set(recommendation_schema["properties"]["comparability"]["enum"]))
 
 
 def _schema(filename: str) -> dict:

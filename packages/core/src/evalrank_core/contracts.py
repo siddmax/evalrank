@@ -8,6 +8,7 @@ from typing import Any, ClassVar
 
 TRUST_TIERS = {"verified", "standardized", "self-reported", "tracking-only"}
 FRESHNESS_STATUSES = {"fresh", "stale", "recalibrating"}
+COMPARABILITY_MODES = {"single-scale", "kind-grouped"}
 
 
 @dataclass(frozen=True)
@@ -130,7 +131,7 @@ class Recommendation:
             raise ValueError("methodology_version is required")
         if not self.generated_at:
             raise ValueError("generated_at is required")
-        if self.comparability not in {"single-scale", "kind-grouped"}:
+        if self.comparability not in COMPARABILITY_MODES:
             raise ValueError("comparability must be 'single-scale' or 'kind-grouped'")
         if self.comparability == "single-scale" and self.groups is not None:
             raise ValueError("single-scale recommendations must not include groups")
