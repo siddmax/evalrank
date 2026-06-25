@@ -31,6 +31,19 @@ Last updated: 2026-06-25
 - CLI fixture command build log in `docs/build-log/2026-06-25-cli-fixtures.md`.
 - MCP fixture adapter build log in `docs/build-log/2026-06-25-mcp-fixtures.md`.
 - Public scoring-stage build log in `docs/build-log/2026-06-25-scoring-stages.md`.
+- Public progress and porting audit in `docs/build-log/2026-06-25-public-progress-and-porting-audit.md`.
+
+## Current Public Surface
+
+| Surface | Built | Not built yet |
+| --- | --- | --- |
+| Core contracts | `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, public constants, and synthetic fixture factories. | Storage models, graph persistence, scorer engine, trust/security policy runtime. |
+| Schemas | JSON Schemas for ranked entities, recommendations, and evidence items, with drift tests against Python contracts. | OpenAPI route schemas and persistence schemas. |
+| Python SDK | Package metadata and public re-exports from `evalrank_core`. | Installed package release flow and non-fixture client behavior. |
+| CLI | Deterministic `fixture evidence` and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
+| MCP | Deterministic `evalrank.fixture` adapter and public tool manifest. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
+| Methods | Public scoring-stage vocabulary and private-boundary note. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
+| Docs | Status tracker, repo structure map, porting map, package READMEs, and build logs. | `NAVIGATION.md`; add it only when UI/API routes or deeplinks exist. |
 
 ## In Progress
 
@@ -45,23 +58,27 @@ Last updated: 2026-06-25
 
 | Priority | Workstream | Destination | Public handling |
 | --- | --- | --- | --- |
-| 1 | Public Contracts | This repo | First entity/evidence slice ported; extend only for new public payload contracts. |
+| 1 | Public Contracts | This repo | First recommendation and entity/evidence slices ported; extend only for new public payload contracts. |
 | 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary ported; add details only after private material is removed. |
 | 3 | SDK / CLI / MCP | This repo | First public fixture slices ported; extend after concrete non-fixture contracts are pinned. |
-| 4 | Docs / Public Planning | This repo | Keep sanitized build logs and status docs current; do not copy private planning text verbatim. |
+| 4 | Docs / Public Planning | This repo | Current status, repo structure, and porting docs are public-safe; keep updating them with each port. |
 | 5 | DB Bootstrap / Syndai Ops | Syndai repo | Keep Supabase migrations, live bootstrap, and operational checks private during incubation. |
 | 6 | Evaluation Integrity | Private eval systems | Keep held-out tasks, graders, answers, traces, and benchmark results private. |
 | 7 | Hosted Ops / GTM | Private hosted systems | Keep billing, admin, telemetry, vendor intent, and account operations out of this repo. |
 
 ## Next
 
-- Add an OpenAPI skeleton only when the first REST surface exists or a concrete route contract is ready.
-- Add package-level implementation for the next public surface only after its contract is pinned.
-- Add `NAVIGATION.md` when EvalRank has UI routes, API routes, deeplinks, or navigation-critical docs.
+- Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior.
+- SDK / CLI / MCP workstream: promote fixture-only adapters to real commands/tools only after the target public contract exists.
+- Public Surface Contracts workstream: add an OpenAPI skeleton only when the first REST route exists or a concrete route contract is ready.
+- Docs / Public Planning workstream: keep `docs/STATUS.md`, `docs/PORTING.md`, `docs/REPO_STRUCTURE.md`, package READMEs, and build logs aligned in the same change.
+- Add `NAVIGATION.md` only when EvalRank has UI routes, API routes, deeplinks, or navigation-critical docs.
 
 ## Left
 
-- W1+: data-plane tables, entity graph, evidence ledger, trust/security primitives, scorer stages, engine materializer, public surfaces, web, telemetry, governance, and GTM fleet.
+- Public repo: additional contracts, schemas, SDK/CLI/MCP behavior, public examples, route contracts, UI/navigation docs, and reproducible public evaluation fixtures.
+- Private/Syndai or hosted systems: data-plane tables, Supabase migrations, entity graph persistence, evidence ledger, private trust/security policy runtime, engine materializer, production telemetry, governance operations, billing/admin, and GTM fleet.
+- Private evaluation systems: held-out tasks, graders, answers, traces, benchmark outputs, and proprietary ranking experiments.
 
 ## Update Rules
 

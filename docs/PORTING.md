@@ -17,8 +17,8 @@ Last reviewed: 2026-06-25
 - Root and scoped `AGENTS.md`, plus `CLAUDE.md` shim.
 - Public progress docs: `docs/STATUS.md` and `docs/REPO_STRUCTURE.md`.
 - Public boundary checker and default unit tests.
-- Core Python recommendation contracts.
-- Public JSON Schemas for ranked entities and recommendations.
+- Core Python recommendation, entity reference, and evidence item contracts.
+- Public JSON Schemas for ranked entities, recommendations, and evidence items.
 - Direct `main` push workflow for the scratch-build phase.
 - `make check` public local/CI gate.
 - W0 public exit packet and W1 entity/evidence contract plan.
@@ -27,6 +27,16 @@ Last reviewed: 2026-06-25
 - CLI package metadata and deterministic public fixture command.
 - MCP package metadata and deterministic public fixture adapter.
 - Public scoring-stage vocabulary and method-boundary note.
+
+## Ported To Date
+
+| Workstream | Public artifact now in this repo | Private material intentionally excluded |
+| --- | --- | --- |
+| Public Contracts | `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
+| Methods / Schemas | JSON Schemas for public payloads and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
+| SDK / CLI / MCP | Python SDK re-exports, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
+| Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
+| Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
 
 ## Porting Decisions
 
@@ -54,6 +64,7 @@ Last reviewed: 2026-06-25
 - Deterministic checks that prevent private imports, secrets, private data paths, and missing package hygiene.
 - Public build logs that summarize decisions without exposing private projects, credentials, customers, held-out tasks, or live telemetry.
 - Package README and agent guidance needed for contributors to work inside the public repo.
+- Public TypeScript SDK metadata and source only after the TypeScript package has a runnable public check.
 
 ## Port Later
 
@@ -61,6 +72,7 @@ Last reviewed: 2026-06-25
 - Full REST/OpenAPI, CLI, SDK, and MCP behavior beyond public fixtures after concrete public contracts are pinned.
 - Public scoring method details after proprietary thresholds, held-out eval details, and private ranking experiments are removed.
 - Persistence migrations only after EvalRank owns its own deploy/release path or has its own Supabase project.
+- UI route docs and `NAVIGATION.md` after routes, deeplinks, or navigation-critical API docs exist.
 
 ## Never Port
 
@@ -97,7 +109,8 @@ Before moving anything into this repo, verify:
 
 ## External Guardrails
 
-- GitHub push protection can block supported secrets before they enter a repository.
-- GitHub secret scanning can detect hardcoded credentials in repository history, but prevention is cheaper than cleanup.
+- GitHub push protection can block supported secrets before they enter a repository: https://docs.github.com/en/code-security/concepts/secret-security/push-protection
+- GitHub secret scanning can detect hardcoded credentials in repository history, but prevention is cheaper than cleanup: https://docs.github.com/en/code-security/reference/secret-security/supported-secret-scanning-patterns
 - If sensitive data reaches Git history, treat it as compromised, rotate credentials, and follow a coordinated removal process.
-- Supabase custom schemas must be deliberately exposed and granted for API access; EvalRank incubation uses private schema bootstrap outside this public repo.
+- Supabase custom schemas must be deliberately exposed and granted for API access; EvalRank incubation uses private schema bootstrap outside this public repo: https://supabase.com/docs/guides/api/using-custom-schemas
+- For public API design, prefer a dedicated exposed API schema and keep internal tables/helpers in non-exposed schemas: https://supabase.com/docs/guides/api/securing-your-api
