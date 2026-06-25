@@ -98,6 +98,8 @@ The latest private-side scan found EvalRank planning material in private spec, A
 | --- | --- | --- |
 | Storage-free contract vocabulary from API and build-readiness planning | Port one pinned payload at a time with core dataclasses, JSON Schemas, fixtures, SDK types, CLI output, MCP output, and drift tests. `StageCandidate` is now ported as the Stage-1 retrieval row; `ResultRow` is now ported as the public ingested-result provenance envelope. | Public Contracts, SDK / CLI / MCP |
 | Public API route shapes and Problem Details error semantics | Shared retry-aware Problem Details semantics are ported; port only concrete public route contracts after that, and keep hosted auth, tenant logic, receipt storage, private DTOs, live throttling, and private problem types out. | Public Surface Contracts |
+| Public use-case taxonomy names, definitions, entity-kind spans, and safety-overlay policy | Port next as a storage-free `UseCaseCatalog` contract, synthetic fixture, schema, SDK/CLI/MCP parity surface, and `GET /v1/use-cases` OpenAPI route contract. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
+| Use-case benchmark weights, IRT fit clusters, benchmark crosswalk, confidence policies, and thin-coverage/synthesis details | Keep private during incubation; later publish only sanitized method explanations that omit weights, held-out tasks, private corpora, proprietary thresholds, and benchmark outputs. | Methods / Schemas, Scoring / Materializer Runtime, Evaluation Integrity |
 | Public scoring-stage names, trust/freshness vocabulary, and method-boundary explanations | Rewrite as public method notes without formulas, thresholds, held-out eval details, private benchmark outputs, or production traces. | Methods / Schemas |
 | Boundary checks, license/notice hygiene, schema drift tests, and secret/private-data guards | Port aggressively when they reduce public leak risk or contract drift. | Open-Core Boundary / CI |
 | Supabase schema, migrations, grants/RLS, workload isolation, live DB checks, and shared Finn deployment details | Keep private until EvalRank owns persistence or its own Supabase project; then design a public migration ownership plan. | DB Bootstrap / Syndai Ops |
@@ -123,6 +125,8 @@ Use this table for the next port decision. The destination is this public repo o
 | `Exclusion` exclusions-with-reasons shape | Ported as a storage-free subject plus public reason/detail row; Stage-0 gate policy, private safety taxonomy, constraint evaluation, and production traces stay private. | Public Contracts, Methods / Schemas |
 | Public `the_call` / decision-confidence response shape | Ported as a nested recommendation contract with no proprietary thresholds, held-out evidence floors, or private confidence tuning. | Public Contracts, Methods / Schemas |
 | REST/OpenAPI contract | First concrete route contract ported for `POST /v1/recommendations`; public errors use reusable Problem Details responses plus retry/rate-limit headers; keep private auth, tenant logic, hosted receipt internals, private problem types, live throttling, and app DTOs out. | Public Surface Contracts |
+| Use-case taxonomy and `/v1/use-cases` route contract | Port next as a finite public catalog. Include slugs, display names, one-line definitions, entity-kind spans, ranked-vs-overlay policy, and safety overlay; exclude benchmark weights, IRT clusters, confidence policy, synthesis/coverage rules, and live table/storage semantics. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
+| Recommendation comparability and ranking groups | Review after use-case taxonomy. Port only if the response discriminator can be expressed without private scorer internals or false cross-kind score semantics. | Public Contracts, Methods / Schemas |
 | Recommendation receipt route and HMAC-backed hosted ID derivation | Do not port yet. Public aliases are enough for open-core interoperability; secret-backed derivation belongs with hosted route design. | Public Surface Contracts, Hosted Ops / Deploy Ops |
 | Entity graph tables, evidence ledger storage, methodology table, migrations, grants, RLS, and live DB checks | Keep in Syndai/private systems until EvalRank owns persistence or its own Supabase project. | DB Bootstrap / Syndai Ops |
 | Deterministic scorer and materializer runtime | Incubate privately first, then split only public-input-only pieces that do not depend on production rows, private workers, or proprietary tuning. | Scoring / Materializer Runtime |
@@ -136,6 +140,7 @@ Use this table for the next port decision. The destination is this public repo o
 | Artifact or workstream | Destination | Owner workstream | Status |
 | --- | --- | --- | --- |
 | Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Capability fingerprint, raw entry, request, candidate set, stage candidate, result row, evidence set, exclusion, `the_call`, recommendation, entity, and evidence slices ported |
+| Use-case taxonomy catalog | This repo | Public Contracts, Public Surface Contracts | Next public-safe port; only taxonomy contract, fixture, schema, SDK/CLI/MCP surfaces, and `GET /v1/use-cases` route contract |
 | Recommendation join aliases | This repo | Public Contracts | Ported; hosted HMAC derivation stays private |
 | Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Ported |
 | Repo boundary checks, license hygiene, and CI gates | This repo | Open-Core Boundary / CI | Partly ported |
@@ -155,6 +160,7 @@ Use this table for the next port decision. The destination is this public repo o
 ## Port Now
 
 - Additional storage-free Python contracts and JSON Schemas when a new public payload is pinned.
+- Use-case taxonomy catalog as the next pinned payload: public slugs, names, one-line definitions, entity-kind spans, and safety-overlay policy only.
 - Additional OpenAPI routes only when a concrete public route contract exists.
 - Public Problem Details extensions only when they are product-neutral and do not expose hosted internals. Shared `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url` are now ported.
 - Public identifier aliases that are deterministic, non-secret, and useful for interoperability.
@@ -168,6 +174,8 @@ Use this table for the next port decision. The destination is this public repo o
 ## Port Later
 
 - Additional REST/OpenAPI surfaces after concrete route contracts exist.
+- Recommendation comparability/ranking-group response shape after the public contract is pinned and it does not reveal private scorer behavior.
+- Public method notes for the use-case taxonomy after benchmark weights, IRT crosswalk, held-out material, and synthesis policy details are stripped.
 - Route-specific public problem types after their public semantics are stable and separable from hosted internals.
 - Recommendation receipt routes and HMAC-backed hosted identifiers after public route semantics and secret handling are designed.
 - Full REST/OpenAPI, CLI, SDK, and MCP behavior beyond public fixtures after concrete public contracts are pinned.

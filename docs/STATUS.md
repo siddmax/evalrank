@@ -56,6 +56,7 @@ Last updated: 2026-06-26
 - Stage candidate contract build log in `docs/build-log/2026-06-26-stage-candidate-contract.md`.
 - Retry-aware Problem Details contract build log in `docs/build-log/2026-06-26-problem-details-retry-contract.md`.
 - Result row contract build log in `docs/build-log/2026-06-26-result-row-contract.md`.
+- Public porting assessment refresh in `docs/build-log/2026-06-26-public-porting-assessment.md`.
 
 ## Current Public Surface
 
@@ -79,7 +80,7 @@ Last updated: 2026-06-26
   - Public JSON Schemas in `schemas/`
   - Public porting decisions in `docs/PORTING.md`
 - Private Syndai build-readiness docs and operational plans, summarized here only when public-safe.
-- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. Public recommendation identifier aliases, storage-free `RawEntry`, public `CandidateSet`, public `StageCandidate`, public `EvidenceItem`, public `ResultRow`, public `EvidenceSet`, public `Exclusion`, structured public `the_call`, the first storage-free OpenAPI route contract, and retry-aware public Problem Details error shape have moved. The private-side planning scan is summarized in `docs/PORTING.md` by workstream, not copied. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, graph lookup, live evidence lookup, evidence ledger runtime, Stage-2+ scorer rows, gate policy, private reason taxonomy, scorer thresholds, private problem types, and held-out evaluation material stay private.
+- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. Public recommendation identifier aliases, storage-free `RawEntry`, public `CandidateSet`, public `StageCandidate`, public `EvidenceItem`, public `ResultRow`, public `EvidenceSet`, public `Exclusion`, structured public `the_call`, the first storage-free OpenAPI route contract, and retry-aware public Problem Details error shape have moved. The next public-safe candidate is a storage-free `UseCaseCatalog` contract plus `GET /v1/use-cases` route contract because names, one-line definitions, entity-kind spans, and safety-overlay semantics are portable public taxonomy. The private-side planning scan is summarized in `docs/PORTING.md` by workstream, not copied. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, graph lookup, live evidence lookup, evidence ledger runtime, benchmark weights, IRT fit clusters, thin-coverage/synthesis policy details, Stage-2+ scorer rows, gate policy, private reason taxonomy, scorer thresholds, private problem types, and held-out evaluation material stay private.
 
 ## Current Port-Over Snapshot
 
@@ -98,6 +99,8 @@ Last updated: 2026-06-26
 | `Exclusion` exclusions-with-reasons contract | Ported here as a storage-free subject plus public reason/detail row | Public Contracts, Methods / Schemas |
 | Structured public `the_call` / decision-confidence shape | Ported here as a storage-free nested recommendation contract | Public Contracts, Methods / Schemas |
 | REST/OpenAPI source of truth | First route contract ported for `POST /v1/recommendations`; public errors use reusable RFC 9457 Problem Details responses plus retry and rate-limit headers | Public Surface Contracts |
+| Use-case taxonomy and `/v1/use-cases` route shape | Port next as storage-free public taxonomy only: id/slug, name, one-line definition, entity-kind spans, ranked-vs-overlay policy, fixture, schema, SDK/CLI/MCP parity, and OpenAPI route contract | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
+| Use-case benchmark weights, IRT cluster crosswalk, confidence policies, and synthesis/coverage rules | Keep private for now; later publish only sanitized method notes that omit weights, held-out tasks, proprietary tuning, and private benchmark outputs | Methods / Schemas, Scoring / Materializer Runtime, Evaluation Integrity |
 | Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | Keep private | DB Bootstrap / Syndai Ops |
 | Deterministic scorer, materializer, entity graph persistence, and evidence-ledger runtime | Incubate private until separable from production data and proprietary tuning | Scoring / Materializer Runtime |
 | Hosted receipts, HMAC-backed IDs, auth, billing/admin/GTM, telemetry, deploy config, and credentials | Keep private | Hosted Ops / GTM, Secrets / Deploy Ops |
@@ -107,7 +110,7 @@ Last updated: 2026-06-26
 
 | Priority | Workstream | Destination | Public handling |
 | --- | --- | --- | --- |
-| 1 | Public Contracts | This repo | First raw entry, request, candidate set, stage candidate, result row, evidence set, exclusion, `the_call`, recommendation, recommendation alias, and entity/evidence slices ported; extend only for new public payload contracts. |
+| 1 | Public Contracts | This repo | First raw entry, request, candidate set, stage candidate, result row, evidence set, exclusion, `the_call`, recommendation, recommendation alias, and entity/evidence slices ported; next pinned candidate is `UseCaseCatalog`. |
 | 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary ported; add details only after private material is removed. |
 | 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK types, CLI fixture, and MCP fixture slices ported; extend after concrete non-fixture contracts are pinned. |
 | 4 | Docs / Public Planning | This repo | Current status, repo structure, porting docs, and first runnable example are public-safe; keep updating them with each port. |
@@ -120,16 +123,16 @@ Last updated: 2026-06-26
 
 ## Next
 
-- Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior.
+- Public Contracts workstream: pin the storage-free `UseCaseCatalog` contract before adding use-case SDK/CLI/MCP behavior.
 - SDK / CLI / MCP workstream: promote fixture-only adapters toward `POST /v1/recommendations` only after the non-fixture client contract is pinned.
-- Public Surface Contracts workstream: extend OpenAPI only for concrete public routes or route-specific problem types beyond the current shared retry vocabulary.
+- Public Surface Contracts workstream: add `GET /v1/use-cases` only as a concrete public taxonomy route; do not add hosted auth, pagination/runtime behavior, or private DTOs in that slice.
 - Scoring / Materializer Runtime workstream: keep runtime and private evidence material in incubation until the deterministic, storage-free public core is separable.
 - Docs / Public Planning workstream: keep `docs/STATUS.md`, `docs/PORTING.md`, `docs/REPO_STRUCTURE.md`, package READMEs, and build logs aligned in the same change.
 - Update `NAVIGATION.md` when EvalRank adds or changes public API routes, UI routes, deeplinks, or navigation-critical docs.
 
 ## Left
 
-- Public repo: additional storage-free contracts, schemas, SDK/CLI/MCP behavior, public examples, additional routes/problem types, UI navigation docs, and reproducible public evaluation fixtures.
+- Public repo: `UseCaseCatalog`, additional storage-free contracts, schemas, SDK/CLI/MCP behavior, public examples, additional routes/problem types, UI navigation docs, and reproducible public evaluation fixtures.
 - Private/Syndai or hosted systems: data-plane tables, Supabase migrations, entity graph persistence, evidence ledger, Stage-2+ scorer/materializer rows, private trust/security policy runtime, engine materializer, production telemetry, governance operations, billing/admin, and GTM fleet.
 - Private evaluation systems: held-out tasks, graders, answers, traces, benchmark outputs, and proprietary ranking experiments.
 
