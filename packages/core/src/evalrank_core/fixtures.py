@@ -169,7 +169,7 @@ _SCORING_STAGE_ROWS = (
         "Ranking or abstention",
         "Return ranked entities when evidence is sufficient or an abstention when it is not",
         ("RankedEntity", "Exclusion"),
-        ("Recommendation", "TheCall"),
+        ("Recommendation", "TheCall", "Abstention"),
         "public decision shape only; thresholds and private confidence policy stay private",
     ),
     (

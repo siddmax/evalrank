@@ -203,6 +203,7 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("freshness-trust-labeling", payload["stages"][-1]["id"])
         self.assertIn("EvaluationRequest", payload["stages"][1]["input_contracts"])
         self.assertIn("Recommendation", payload["stages"][4]["output_contracts"])
+        self.assertIn("Abstention", payload["stages"][4]["output_contracts"])
 
 
 if __name__ == "__main__":
