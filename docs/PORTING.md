@@ -52,6 +52,7 @@ Last reviewed: 2026-06-26
 - Public `score_components` map shape hardened for ranked entities: non-empty public names and 0-1 numeric values only.
 - Public recommendation envelope validation hardened for schema-compatible metadata: non-empty rationale/source fields, boolean degradation state, non-negative snapshot lag, and no duplicate ranked entities.
 - Public capability fingerprint declared-shape schema hardened to require at least one property, matching the existing core contract.
+- Public recommendation comparability schema hardened to pin `single-scale` and `kind-grouped` envelope branches, matching the existing core contract.
 - Public JSON-object fields hardened for evidence item `metadata` and evaluation request `constraints`: object values only, string keys only, and JSON-serializable values only.
 - Public primitive and sequence fields hardened for entity refs, freshness dates, request entity-type arrays, ranked-entity integer fields, and non-empty caveat strings.
 - Evaluation request `entity_types` are pinned as unique public request metadata in Python and JSON Schema.
@@ -61,6 +62,7 @@ Last reviewed: 2026-06-26
 - Public/private porting audit confirming that the current private Syndai dirty worktree contains Memphant spec edits and two Memphant plan files, with no EvalRank public-port candidate.
 - Public/private source routing snapshot for the current Syndai EvalRank specs, build-readiness plans, migration bootstrap, doc validators, and UI proof assets.
 - Public/private source inventory refresh covering current private EvalRank specs, build plans, proof assets, backend migration assets, repo security settings, and dirty-worktree routing without copying private source text.
+- Public/private dirty-worktree recheck confirming the current uncommitted private-side changes still route to Memphant/memory work, not EvalRank public core.
 - GitHub public-repo security metadata snapshot showing secret scanning, push protection, and Dependabot security updates enabled.
 
 ## Ported To Date
@@ -128,6 +130,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Python `ProblemDetails` contract and public problem-code enum. | Already ported because it mirrors existing OpenAPI/schema/TypeScript public error contracts without exposing hosted auth, tenant context, private problem types, telemetry, or runtime behavior. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
 | Public Problem Details fixture. | Already ported as a synthetic `problem` fixture so examples, CLI, MCP, Python SDK, and TypeScript fixture kinds can demonstrate the public RFC 9457 shape without hosted error telemetry, tenant context, or private problem types. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP, Examples |
 | Capability fingerprint declared-shape schema hardening. | Already ported because it aligns the public schema with the existing core requirement without adding source adapters, live fetch behavior, private runtime, or DB work. | Public Contracts, Methods / Schemas |
+| Recommendation comparability schema hardening. | Already ported because it aligns the public schema with the existing core branch rules without exposing cross-kind normalization, scorer internals, hosted receipts, private runtime, or DB work. | Public Contracts, Methods / Schemas |
 | Ranked entity score-component map hardening. | Already ported because it closes an existing public payload shape without exposing formulas, weights, or scorer calibration. | Public Contracts, Methods / Schemas |
 | Recommendation envelope validation hardening. | Already ported because it aligns the public Python contract with the public schema and blocks duplicate ranked rows without exposing scorer/runtime behavior. | Public Contracts, Methods / Schemas |
 | Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |
@@ -137,6 +140,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Public `Abstention` reason/detail object in recommendation responses. | Already ported because it is a storage-free response shape; evidence-floor thresholds, private confidence policy, private reason taxonomy, scorer/runtime behavior, DB work, and hosted operations stay private. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | `Abstention` output in the public scoring-stage catalog. | Already ported as a storage-free contract reference for `ranking-or-abstention`; thresholds, policy, runtime, and DB behavior stay private. | Methods / Schemas, Public Contracts |
 | Private Syndai dirty worktree contained Memphant spec edits plus two Memphant validation/lifecycle plan files during the latest check. | Do not port into EvalRank. Keep out of this public repo unless a future task extracts a concrete EvalRank storage-free contract and strips private context. | Memphant / memory-system workstream, Docs / Public Planning |
+| Private Syndai dirty worktree recheck still showed only the Memphant dirty set and no uncommitted EvalRank-specific public-port candidate. | No public port now. Keep the category/path summary only and continue public work on schema/core parity, fixtures, route contracts, and sanitized method notes. | Memphant / memory-system workstream, Public Contracts, Docs / Public Planning |
 | Private EvalRank source scan found spec docs, build-readiness plans, migration bootstrap, migration guards, doc validators, and UI proof assets. | Document as routing input only; do not copy raw private docs, proof assets, migration scripts, or private plan text into the public repo. | Docs / Public Planning, Public Surface Contracts, DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
 | GitHub repository security metadata check. | Public visibility, secret scanning, push protection, and Dependabot security updates are enabled; local public-boundary checks remain required before porting or pushing. | Open-Core Boundary / CI, Secrets / Deploy Ops |
 | Next non-fixture recommendation client behavior. | Port later only after client semantics are pinned against `POST /v1/recommendations`; keep auth, tenant context, hosted receipts, private DTOs, and service dependencies private. | SDK / CLI / MCP, Public Surface Contracts |
@@ -188,7 +192,7 @@ Do not start public DB migrations, source adapters, graph/evidence lookup, runti
 
 ## Latest Dirty-Worktree Check
 
-Checked the private Syndai worktree on 2026-06-26 before this public doc sync.
+Checked and rechecked the private Syndai worktree on 2026-06-26 before this public doc sync.
 
 | Private-side state | Port decision | Workstream |
 | --- | --- | --- |

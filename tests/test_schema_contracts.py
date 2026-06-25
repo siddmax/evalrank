@@ -261,6 +261,29 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual("ranked-entity.schema.json", group_schema["properties"]["ranked"]["items"]["$ref"])
         self.assertEqual(1, group_schema["properties"]["ranked"]["minItems"])
 
+    def test_recommendation_schema_pins_comparability_branch_shapes(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+
+        self.assertIn(
+            {
+                "if": {"properties": {"comparability": {"const": "single-scale"}}, "required": ["comparability"]},
+                "then": {"properties": {"groups": {"const": None}}},
+            },
+            recommendation_schema["allOf"],
+        )
+        self.assertIn(
+            {
+                "if": {"properties": {"comparability": {"const": "kind-grouped"}}, "required": ["comparability"]},
+                "then": {
+                    "properties": {
+                        "ranked": {"maxItems": 0},
+                        "groups": {"type": "array", "minItems": 1},
+                    }
+                },
+            },
+            recommendation_schema["allOf"],
+        )
+
     def test_exclusion_schema_pins_public_reason_shape(self):
         exclusion_schema = _schema("exclusion.schema.json")
 
