@@ -77,6 +77,23 @@ Use this table before copying anything from private EvalRank planning into this 
 | Auth, billing, admin, onboarding, tiering, account ops, GTM/vendor intent | Private hosted systems | Hosted Ops / GTM | Keep private unless converted into product-neutral public docs with no customer or operational data. |
 | Held-out suites, graders, answer keys, model traces, judge calibration, private benchmark results | Private eval systems | Evaluation Integrity | Never port; publish only synthetic or public reproducible fixtures. |
 
+## Immediate Port Routing
+
+Use this queue for the next public-repo decisions. Each row is intentionally phrased as a public artifact or private workstream, not as a raw copy instruction from private docs.
+
+| Candidate change | Destination | Workstream | Handling |
+| --- | --- | --- | --- |
+| Package README drift guards for CLI, MCP, core, schemas, examples, and future SDK surfaces | This repo | Open-Core Boundary / CI, Docs / Public Planning | Port now when a README can drift from a public contract or command list; keep tests deterministic and local. |
+| Additional schema or fixture drift checks for already-public payloads | This repo | Open-Core Boundary / CI, Public Contracts | Port now when the check prevents public contract skew or private leakage. |
+| Next storage-free payload contract | This repo | Public Contracts, Methods / Schemas | Port only after the shape stands alone with synthetic fixtures, JSON Schema, SDK type/re-export coverage, and no private source adapter dependency. |
+| Non-fixture SDK/CLI/MCP behavior for `POST /v1/recommendations` | This repo after client semantics are pinned | SDK / CLI / MCP, Public Surface Contracts | Port later as product-neutral request/response behavior; exclude auth, tenant context, live hosted receipts, private DTOs, and production service dependencies. |
+| Additional public API routes or route-specific Problem Details | This repo | Public Surface Contracts | Port later only for concrete public routes; shared retry/rate-limit vocabulary is already public. |
+| Sanitized scoring and use-case method notes | This repo | Methods / Schemas | Port selectively after removing weights, thresholds, held-out task references, private benchmark outputs, private corpora, and production traces. |
+| Deterministic scorer/materializer components | Private incubation first | Scoring / Materializer Runtime | Split only public-input-only components later; keep proprietary tuning, live workers, private evidence rows, source adapters, and graph persistence out. |
+| Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | Syndai/private systems until an explicit EvalRank persistence cutover exists | DB Bootstrap / Syndai Ops | Keep private. If EvalRank later owns persistence, design the migration ownership and public exposure model before adding migrations here. |
+| Hosted auth, telemetry, billing/admin, GTM, vendor intent, deploy config, credentials, and live project refs | Private hosted systems | Hosted Ops / GTM, Secrets / Deploy Ops | Keep private unless rewritten later as product-neutral public docs with all operational identifiers removed. |
+| Held-out tasks, graders, answer keys, traces, judge calibration, private benchmark results, and proprietary ranking experiments | Private eval systems only | Evaluation Integrity | Never port. Publish only synthetic or public reproducible fixtures. |
+
 ## Latest Port Review
 
 Reviewed the private-side EvalRank planning and migration surface by category on 2026-06-26. The public repo should keep accepting only artifacts that stand alone without private infrastructure or data.

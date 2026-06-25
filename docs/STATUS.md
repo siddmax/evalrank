@@ -64,6 +64,7 @@ Last updated: 2026-06-26
 - Fixture use-case alignment build log in `docs/build-log/2026-06-26-fixture-use-case-alignment.md`.
 - Public fixture bundle example build log in `docs/build-log/2026-06-26-public-fixture-bundle-example.md`.
 - SDK README drift-check build log in `docs/build-log/2026-06-26-sdk-readme-drift-checks.md`.
+- Progress and porting routing refresh in `docs/build-log/2026-06-26-progress-porting-routing.md`.
 
 ## Current Public Surface
 
@@ -78,6 +79,17 @@ Last updated: 2026-06-26
 | Methods | Public scoring-stage vocabulary, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`; public use-case taxonomy method; and private-boundary notes. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
 | Examples | `examples/public_fixture.py` prints the current synthetic public fixture bundle: request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, exclusion, and recommendation JSON. | Non-fixture demos, live API examples, and private-data examples. |
 | Docs | Status tracker, repo structure map, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
+
+## Progress Snapshot
+
+| Area | State | Next owner |
+| --- | --- | --- |
+| Repo foundation | Built: public scaffold, package boundaries, license/notice hygiene, root/scoped agent docs, CI, `make check`, and deterministic public-boundary scanner. | Open-Core Boundary / CI keeps leak and drift checks current. |
+| Public contracts | Built through the current storage-free payload set: fingerprints, raw entries, requests, candidate sets, stage candidates, result rows, use-case catalogs, ranking groups, evidence sets, exclusions, `the_call`, recommendations, public aliases, entity refs, and evidence items. | Public Contracts pins the next standalone payload before SDK/CLI/MCP behavior grows. |
+| Schemas and methods | Built: JSON Schemas, OpenAPI route contract for `GET /v1/use-cases` and `POST /v1/recommendations`, retry-aware Problem Details, public scoring-stage vocabulary, and sanitized use-case taxonomy method note. | Methods / Schemas and Public Surface Contracts add only public, product-neutral semantics. |
+| Interfaces | Built as fixture-only surfaces: Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture commands, MCP fixture adapter, and runnable public example. | SDK / CLI / MCP promotes non-fixture behavior only after a public route/client contract is pinned. |
+| Persistence and hosted ops | Not public: DB bootstrap, Supabase migrations, grants/RLS, live workers, telemetry, auth, billing/admin, deploy config, and credentials. | DB Bootstrap / Syndai Ops, Hosted Ops / GTM, and Secrets / Deploy Ops keep this private until an explicit public cutover exists. |
+| Scoring runtime and eval integrity | Not public: deterministic scorer/materializer runtime, graph persistence, source adapters, private weights, IRT clusters, held-out tasks, graders, traces, answers, and benchmark outputs. | Scoring / Materializer Runtime incubates separable public-input-only code privately; Evaluation Integrity keeps held-out material private. |
 
 ## In Progress
 
