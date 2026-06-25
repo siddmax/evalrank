@@ -10,6 +10,7 @@ python3 -m unittest discover tests
 ## Test Map
 
 - `tests/test_core_contracts.py` checks public recommendation and ranking contract behavior.
+- `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.
 - `scripts/check_public_boundary.py` rejects private imports, disallowed coupling, excluded implementation markers, and missing package license/notice files.
 

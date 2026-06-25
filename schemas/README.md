@@ -1,3 +1,12 @@
 # Schemas
 
-Public EvalRank JSON schema contracts live here.
+Public EvalRank JSON Schema contracts live here.
+
+- `ranked-entity.schema.json` mirrors `RankedEntity.to_dict()`.
+- `recommendation.schema.json` mirrors `Recommendation.to_dict()`.
+
+Run:
+
+```sh
+python3 -m unittest tests.test_schema_contracts
+```

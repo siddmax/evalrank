@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/recommendation.schema.json",
+  "title": "EvalRank Recommendation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "use_case",
+    "shortlist_depth",
+    "depth_rationale",
+    "degraded",
+    "served_from",
+    "base_snapshot_lag_ms",
+    "methodology_version",
+    "generated_at",
+    "comparability",
+    "ranked",
+    "groups",
+    "the_call",
+    "exclusions",
+    "recommendation_id",
+    "request_id"
+  ],
+  "properties": {
+    "object": {
+      "const": "recommendation"
+    },
+    "use_case": {
+      "type": "string",
+      "minLength": 1
+    },
+    "shortlist_depth": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "depth_rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "degraded": {
+      "type": "boolean"
+    },
+    "served_from": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_snapshot_lag_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "methodology_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "comparability": {
+      "type": "string",
+      "enum": [
+        "single-scale",
+        "kind-grouped"
+      ]
+    },
+    "ranked": {
+      "type": "array",
+      "items": {
+        "$ref": "ranked-entity.schema.json"
+      }
+    },
+    "groups": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "the_call": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": true
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "recommendation_id": {
+      "type": "string",
+      "pattern": "^rec_[0-9a-f]{24}$"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}
