@@ -342,7 +342,10 @@ class Recommendation:
 
     def to_dict(self) -> dict[str, Any]:
         payload = self._payload()
-        payload["recommendation_id"] = self.recommendation_id
+        recommendation_id = self.recommendation_id
+        payload["recommendation_id"] = recommendation_id
+        payload["recommend_id"] = recommendation_id
+        payload["search_run_id"] = recommendation_id
         payload["request_id"] = self.request_id
         return payload
 

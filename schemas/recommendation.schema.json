@@ -20,6 +20,8 @@
     "the_call",
     "exclusions",
     "recommendation_id",
+    "recommend_id",
+    "search_run_id",
     "request_id"
   ],
   "properties": {
@@ -95,6 +97,14 @@
       }
     },
     "recommendation_id": {
+      "type": "string",
+      "pattern": "^rec_[0-9a-f]{24}$"
+    },
+    "recommend_id": {
+      "type": "string",
+      "pattern": "^rec_[0-9a-f]{24}$"
+    },
+    "search_run_id": {
       "type": "string",
       "pattern": "^rec_[0-9a-f]{24}$"
     },

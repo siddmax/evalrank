@@ -96,6 +96,15 @@ class SchemaContractTests(unittest.TestCase):
             recommendation_schema["properties"]["methodology_version"]["pattern"],
         )
 
+    def test_recommendation_join_aliases_share_id_pattern(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+        rec_id_pattern = recommendation_schema["properties"]["recommendation_id"]["pattern"]
+
+        self.assertEqual(rec_id_pattern, recommendation_schema["properties"]["recommend_id"]["pattern"])
+        self.assertEqual(rec_id_pattern, recommendation_schema["properties"]["search_run_id"]["pattern"])
+        self.assertIn("recommend_id", recommendation_schema["required"])
+        self.assertIn("search_run_id", recommendation_schema["required"])
+
 
 def _schema(filename: str) -> dict:
     return json.loads((SCHEMAS / filename).read_text(encoding="utf-8"))

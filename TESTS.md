@@ -8,12 +8,12 @@ make check
 
 ## Test Map
 
-- `tests/test_core_contracts.py` checks public capability fingerprint, request, recommendation, ranking, evidence, and methodology-version contract behavior.
+- `tests/test_core_contracts.py` checks public capability fingerprint, request, recommendation ID aliases, ranking, evidence, and methodology-version contract behavior.
 - `tests/test_core_fixtures.py` checks reusable public capability fingerprint, request, recommendation, and evidence fixture payloads.
 - `tests/test_examples.py` checks the runnable public fixture example output.
 - `tests/test_cli_fixture.py` checks deterministic public CLI fixture output and invalid input handling.
 - `tests/test_mcp_fixture.py` checks the public MCP fixture tool manifest and result shape.
-- `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys and pinned public patterns.
+- `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys, recommendation alias patterns, and pinned public patterns.
 - `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts.
 - `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.

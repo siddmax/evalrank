@@ -31,12 +31,13 @@ Last reviewed: 2026-06-25
 - Runnable public fixture example.
 - Public scoring-stage vocabulary and method-boundary note.
 - Public progress router for deciding which private EvalRank workstream owns each future port.
+- Public recommendation join aliases: `recommendation_id`, `recommend_id`, and `search_run_id`.
 
 ## Ported To Date
 
 | Workstream | Public artifact now in this repo | Private material intentionally excluded |
 | --- | --- | --- |
-| Public Contracts | `CapabilityFingerprintInput`, `EvaluationRequest`, `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
+| Public Contracts | `CapabilityFingerprintInput`, `EvaluationRequest`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics, hosted HMAC derivation. |
 | Methods / Schemas | JSON Schemas for public payloads, the pinned public `methodology_version` format, and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
 | SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
@@ -82,7 +83,7 @@ Public docs may summarize private planning decisions, but must not copy raw priv
 | Artifact or workstream | Destination | Owner workstream | Status |
 | --- | --- | --- | --- |
 | Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Capability fingerprint, request, recommendation, entity, and evidence slices ported |
-| Recommendation join aliases | This repo | Public Contracts | Next public-safe slice; aliases can port, hosted HMAC derivation stays private |
+| Recommendation join aliases | This repo | Public Contracts | Ported; hosted HMAC derivation stays private |
 | Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Ported |
 | Repo boundary checks, license hygiene, and CI gates | This repo | Open-Core Boundary / CI | Partly ported |
 | Sanitized build-readiness summaries from Syndai planning docs | This repo | Docs / Public Planning | In progress |

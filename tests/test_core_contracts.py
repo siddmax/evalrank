@@ -149,6 +149,8 @@ class CoreContractTests(unittest.TestCase):
         self.assertIsNone(payload["groups"])
         self.assertTrue(rec.result_usable)
         self.assertTrue(payload["recommendation_id"].startswith("rec_"))
+        self.assertEqual(payload["recommendation_id"], payload["recommend_id"])
+        self.assertEqual(payload["recommendation_id"], payload["search_run_id"])
 
     def test_recommendation_id_is_content_addressed(self):
         base = Recommendation.single_scale(

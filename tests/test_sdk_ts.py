@@ -38,7 +38,26 @@ class TypeScriptSdkTests(unittest.TestCase):
         for name in ("CapabilityFingerprint", "EntityRef", "EvaluationRequest", "EvidenceItem", "RankedEntity", "Recommendation"):
             self.assertIn(f"export interface {name}", source)
 
-        for field in ("capability_fingerprint", "id_scheme", "canonical_id", "declared_capability_shape", "request_id", "entity_types", "requested_at", "constraints", "evidence_id", "subject", "kind", "source", "observed_at", "summary", "metadata"):
+        for field in (
+            "capability_fingerprint",
+            "id_scheme",
+            "canonical_id",
+            "declared_capability_shape",
+            "request_id",
+            "entity_types",
+            "requested_at",
+            "constraints",
+            "evidence_id",
+            "subject",
+            "kind",
+            "source",
+            "observed_at",
+            "summary",
+            "metadata",
+            "recommendation_id",
+            "recommend_id",
+            "search_run_id",
+        ):
             self.assertRegex(source, rf"\b{field}\??:")
 
 

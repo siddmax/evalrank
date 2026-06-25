@@ -100,5 +100,7 @@ export interface Recommendation {
   the_call: Record<string, unknown> | null;
   exclusions: Record<string, unknown>[];
   recommendation_id: string;
+  recommend_id: string;
+  search_run_id: string;
   request_id: string;
 }

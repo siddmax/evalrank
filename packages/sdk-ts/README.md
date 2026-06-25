@@ -6,6 +6,7 @@ TypeScript SDK package boundary for public EvalRank APIs.
 
 - Public constants for trust tiers, freshness statuses, comparability modes, and evidence kinds.
 - Public TypeScript interfaces for `CapabilityFingerprint`, `EntityRef`, `EvaluationRequest`, `EvidenceItem`, `RankedEntity`, and `Recommendation`.
+- `Recommendation` includes `recommendation_id`, `recommend_id`, and `search_run_id` as public join aliases.
 - No service client, auth flow, hosted-product behavior, or private data access.
 - The npm package is marked private until a built JS distribution and publish flow exist.
 
