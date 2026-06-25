@@ -17,12 +17,12 @@ Last reviewed: 2026-06-25
 - Root and scoped `AGENTS.md`, plus `CLAUDE.md` shim.
 - Public progress docs: `docs/STATUS.md` and `docs/REPO_STRUCTURE.md`.
 - Public boundary checker and default unit tests.
-- Core Python recommendation, entity reference, and evidence item contracts.
-- Public JSON Schemas for ranked entities, recommendations, and evidence items.
+- Core Python evaluation request, recommendation, entity reference, and evidence item contracts.
+- Public JSON Schemas for evaluation requests, ranked entities, recommendations, and evidence items.
 - Direct `main` push workflow for the scratch-build phase.
 - `make check` public local/CI gate.
 - W0 public exit packet and W1 entity/evidence contract plan.
-- Storage-free entity references, evidence items, public fixtures, and evidence-item schema.
+- Storage-free evaluation requests, entity references, evidence items, public fixtures, and schemas.
 - Python SDK package metadata and public core contract re-exports.
 - TypeScript SDK package metadata and mirrored public contract types/constants.
 - CLI package metadata and deterministic public fixture command.
@@ -34,18 +34,32 @@ Last reviewed: 2026-06-25
 
 | Workstream | Public artifact now in this repo | Private material intentionally excluded |
 | --- | --- | --- |
-| Public Contracts | `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
+| Public Contracts | `EvaluationRequest`, `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
 | Methods / Schemas | JSON Schemas for public payloads and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
 | SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
 | Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
 
+## Latest Port Review
+
+Reviewed the private-side EvalRank planning and migration surface by category on 2026-06-25. The public repo should keep accepting only artifacts that stand alone without private infrastructure or data.
+
+| Decision | Workstream |
+| --- | --- |
+| Port storage-free payload contracts, JSON Schemas, synthetic fixtures, package boundaries, public examples, and deterministic boundary checks here. | Public Contracts, Methods / Schemas, SDK / CLI / MCP, Open-Core Boundary / CI, Docs / Public Planning |
+| Port REST/OpenAPI contracts here only after a concrete public route contract exists. | Public Surface Contracts |
+| Keep Supabase schema bootstrap, migration runners, roles, workload isolation, live deployment wiring, and operational checks private during incubation. | DB Bootstrap / Syndai Ops |
+| Keep held-out tasks, graders, answers, traces, private benchmark results, and judge-calibration material private. | Evaluation Integrity |
+| Keep telemetry operations, billing/admin, vendor intent, account operations, private integrations, credentials, and live project refs out of this repo. | Hosted Ops / GTM, Secrets / Deploy Ops |
+
+Public docs may summarize private planning decisions, but must not copy raw private plans, live identifiers, customer examples, runbooks, production rows, or held-out evaluation details.
+
 ## Porting Decisions
 
 | Artifact or workstream | Destination | Owner workstream | Status |
 | --- | --- | --- | --- |
-| Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Partly ported |
+| Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Request, recommendation, entity, and evidence slices ported |
 | Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Ported |
 | Repo boundary checks, license hygiene, and CI gates | This repo | Open-Core Boundary / CI | Partly ported |
 | Sanitized build-readiness summaries from Syndai planning docs | This repo | Docs / Public Planning | In progress |
@@ -109,6 +123,7 @@ Before moving anything into this repo, verify:
 - SDK / CLI / MCP: implement public clients once contracts stabilize.
 - Hosted Ops / GTM: keep private operational workflows outside this repo.
 - Evaluation Integrity: keep held-out materials private and publish only reproducible public fixtures.
+- Secrets / Deploy Ops: keep credentials, live project refs, deployment environment files, and private service config out of Git history.
 - Docs / Public Planning: keep this file, `docs/STATUS.md`, and `docs/REPO_STRUCTURE.md` aligned.
 
 ## External Guardrails

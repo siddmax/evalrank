@@ -110,6 +110,41 @@ class EvidenceItem:
 
 
 @dataclass(frozen=True)
+class EvaluationRequest:
+    object: ClassVar[str] = "evaluation_request"
+
+    request_id: str
+    use_case: str
+    entity_types: tuple[str, ...]
+    requested_at: str
+    constraints: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if not self.request_id:
+            raise ValueError("request_id is required")
+        if not self.use_case:
+            raise ValueError("use_case is required")
+        if not self.entity_types:
+            raise ValueError("entity_types is required")
+        if any(not entity_type for entity_type in self.entity_types):
+            raise ValueError("entity_types must not contain blank values")
+        if not self.requested_at:
+            raise ValueError("requested_at is required")
+        if any(not isinstance(key, str) for key in self.constraints):
+            raise ValueError("constraints keys must be strings")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "request_id": self.request_id,
+            "use_case": self.use_case,
+            "entity_types": list(self.entity_types),
+            "requested_at": self.requested_at,
+            "constraints": {key: self.constraints[key] for key in sorted(self.constraints)},
+        }
+
+
+@dataclass(frozen=True)
 class RankedEntity:
     entity_type: str
     entity_id: str

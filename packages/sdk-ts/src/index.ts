@@ -40,6 +40,15 @@ export interface EntityRef {
   id: string;
 }
 
+export interface EvaluationRequest {
+  object: "evaluation_request";
+  request_id: string;
+  use_case: string;
+  entity_types: string[];
+  requested_at: string;
+  constraints: Record<string, unknown>;
+}
+
 export interface EvidenceItem {
   evidence_id: string;
   subject: EntityRef;

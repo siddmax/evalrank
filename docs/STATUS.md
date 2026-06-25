@@ -10,9 +10,9 @@ Last updated: 2026-06-25
 - `CLAUDE.md` shim to `@AGENTS.md`.
 - Public boundary checker for private imports, disallowed coupling, excluded method markers, and missing package license/notice files.
 - Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
-- Core Python recommendation and evidence contracts in `packages/core`.
-- Public core fixture factory for canonical example recommendation and evidence payloads.
-- Public JSON Schemas for ranked entities, recommendations, and evidence items.
+- Core Python request, recommendation, and evidence contracts in `packages/core`.
+- Public core fixture factory for canonical example request, recommendation, and evidence payloads.
+- Public JSON Schemas for evaluation requests, ranked entities, recommendations, and evidence items.
 - Python SDK package metadata and public core contract re-exports.
 - TypeScript SDK package metadata and mirrored public contract types/constants.
 - CLI package metadata and deterministic public fixture command.
@@ -36,16 +36,17 @@ Last updated: 2026-06-25
 - Public progress and porting audit in `docs/build-log/2026-06-25-public-progress-and-porting-audit.md`.
 - TypeScript SDK public type surface build log in `docs/build-log/2026-06-25-typescript-sdk-types.md`.
 - Runnable public fixture example build log in `docs/build-log/2026-06-25-public-fixture-example.md`.
+- Evaluation request contract build log in `docs/build-log/2026-06-25-evaluation-request-contract.md`.
 
 ## Current Public Surface
 
 | Surface | Built | Not built yet |
 | --- | --- | --- |
-| Core contracts | `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, public constants, and synthetic fixture factories. | Storage models, graph persistence, scorer engine, trust/security policy runtime. |
-| Schemas | JSON Schemas for ranked entities, recommendations, and evidence items, with drift tests against Python contracts. | OpenAPI route schemas and persistence schemas. |
+| Core contracts | `EvaluationRequest`, `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, public constants, and synthetic fixture factories. | Storage models, graph persistence, scorer engine, trust/security policy runtime. |
+| Schemas | JSON Schemas for evaluation requests, ranked entities, recommendations, and evidence items, with drift tests against Python contracts. | OpenAPI route schemas and persistence schemas. |
 | Python SDK | Package metadata and public re-exports from `evalrank_core`. | Installed package release flow and non-fixture client behavior. |
 | TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts. | Built JS distribution, published package release flow, and non-fixture client behavior. |
-| CLI | Deterministic `fixture evidence` and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
+| CLI | Deterministic `fixture request`, `fixture evidence`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
 | Methods | Public scoring-stage vocabulary and private-boundary note. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
 | Examples | `examples/public_fixture.py` prints synthetic public recommendation and evidence JSON. | Non-fixture demos, live API examples, and private-data examples. |
@@ -58,19 +59,21 @@ Last updated: 2026-06-25
   - Python contracts in `packages/core/src/evalrank_core/contracts.py`
   - Public JSON Schemas in `schemas/`
   - Public porting decisions in `docs/PORTING.md`
-  - Build-readiness docs in Syndai under `docs/superpowers/plans/evalrank/`
+- Private Syndai build-readiness docs and operational plans, summarized here only when public-safe.
+- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, and held-out evaluation material stay private.
 
 ## Porting Queue
 
 | Priority | Workstream | Destination | Public handling |
 | --- | --- | --- | --- |
-| 1 | Public Contracts | This repo | First recommendation and entity/evidence slices ported; extend only for new public payload contracts. |
+| 1 | Public Contracts | This repo | First request, recommendation, and entity/evidence slices ported; extend only for new public payload contracts. |
 | 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary ported; add details only after private material is removed. |
 | 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK types, CLI fixture, and MCP fixture slices ported; extend after concrete non-fixture contracts are pinned. |
 | 4 | Docs / Public Planning | This repo | Current status, repo structure, porting docs, and first runnable example are public-safe; keep updating them with each port. |
 | 5 | DB Bootstrap / Syndai Ops | Syndai repo | Keep Supabase migrations, live bootstrap, and operational checks private during incubation. |
 | 6 | Evaluation Integrity | Private eval systems | Keep held-out tasks, graders, answers, traces, and benchmark results private. |
 | 7 | Hosted Ops / GTM | Private hosted systems | Keep billing, admin, telemetry, vendor intent, and account operations out of this repo. |
+| 8 | Secrets / Deploy Ops | Private ops only | Keep credentials, Doppler config, live project refs, and deploy environment files out of Git history. |
 
 ## Next
 

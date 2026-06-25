@@ -8,8 +8,8 @@ make check
 
 ## Test Map
 
-- `tests/test_core_contracts.py` checks public recommendation, ranking, and evidence contract behavior.
-- `tests/test_core_fixtures.py` checks reusable public recommendation and evidence fixture payloads.
+- `tests/test_core_contracts.py` checks public request, recommendation, ranking, and evidence contract behavior.
+- `tests/test_core_fixtures.py` checks reusable public request, recommendation, and evidence fixture payloads.
 - `tests/test_examples.py` checks the runnable public fixture example output.
 - `tests/test_cli_fixture.py` checks deterministic public CLI fixture output and invalid input handling.
 - `tests/test_mcp_fixture.py` checks the public MCP fixture tool manifest and result shape.

@@ -53,6 +53,7 @@ python3 examples/public_fixture.py
 CLI:
 
 ```sh
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture request
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
 ```
@@ -60,9 +61,9 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_evidence_item
+from evalrank_sdk import sample_evaluation_request
 
-payload = sample_evidence_item().to_dict()
+payload = sample_evaluation_request().to_dict()
 ```
 
 MCP adapter:
@@ -70,13 +71,13 @@ MCP adapter:
 ```python
 from evalrank_mcp import call_tool
 
-result = call_tool("evalrank.fixture", {"kind": "evidence"})
+result = call_tool("evalrank.fixture", {"kind": "request"})
 ```
 
 TypeScript SDK:
 
 ```ts
-import { EVIDENCE_KINDS, type EvidenceItem } from "@evalrank/sdk";
+import { type EvaluationRequest } from "@evalrank/sdk";
 
-const kind: EvidenceItem["kind"] = EVIDENCE_KINDS[0];
+const request: EvaluationRequest["object"] = "evaluation_request";
 ```

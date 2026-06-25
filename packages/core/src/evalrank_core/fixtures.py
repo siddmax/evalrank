@@ -4,6 +4,7 @@ from evalrank_core.contracts import (
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
+    EvaluationRequest,
     Freshness,
     RankedEntity,
     Recommendation,
@@ -48,6 +49,16 @@ def sample_evidence_item() -> EvidenceItem:
         summary="public search demo returned a fresh cited result",
         score=0.8754321,
         metadata={"latency_ms": 1200},
+    )
+
+
+def sample_evaluation_request() -> EvaluationRequest:
+    return EvaluationRequest(
+        request_id="req_public_fixture_01",
+        use_case="web-research:freshness-check",
+        entity_types=("mcp_server",),
+        requested_at=PUBLIC_GENERATED_AT,
+        constraints={"requires_citations": True},
     )
 
 

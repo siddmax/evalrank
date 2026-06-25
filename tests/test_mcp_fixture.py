@@ -19,6 +19,7 @@ class McpFixtureTests(unittest.TestCase):
 
         self.assertEqual(["evalrank.fixture"], [tool["name"] for tool in tools])
         self.assertEqual(["kind"], tools[0]["inputSchema"]["required"])
+        self.assertEqual(["evidence", "recommendation", "request"], tools[0]["inputSchema"]["properties"]["kind"]["enum"])
 
     def test_call_tool_returns_public_evidence_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "evidence"})
@@ -27,6 +28,14 @@ class McpFixtureTests(unittest.TestCase):
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
         self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+
+    def test_call_tool_returns_public_request_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "request"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("evaluation_request", payload["object"])
+        self.assertEqual("req_public_fixture_01", payload["request_id"])
 
     def test_call_tool_rejects_unknown_tool(self):
         with self.assertRaisesRegex(ValueError, "unknown tool"):

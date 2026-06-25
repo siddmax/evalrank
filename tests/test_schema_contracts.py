@@ -19,7 +19,7 @@ from evalrank_core.contracts import (  # noqa: E402
     RankedEntity,
     TRUST_TIERS,
 )
-from evalrank_core.fixtures import sample_evidence_item  # noqa: E402
+from evalrank_core.fixtures import sample_evidence_item, sample_evaluation_request  # noqa: E402
 
 
 class SchemaContractTests(unittest.TestCase):
@@ -27,6 +27,7 @@ class SchemaContractTests(unittest.TestCase):
         ranked_schema = _schema("ranked-entity.schema.json")
         recommendation_schema = _schema("recommendation.schema.json")
         evidence_schema = _schema("evidence-item.schema.json")
+        request_schema = _schema("evaluation-request.schema.json")
 
         ranked_payload = _row().to_dict()
         recommendation_payload = Recommendation.single_scale(
@@ -45,9 +46,17 @@ class SchemaContractTests(unittest.TestCase):
         evidence_payload = sample_evidence_item().to_dict()
         self.assertEqual(set(evidence_payload), set(evidence_schema["properties"]))
         self.assertLessEqual(set(evidence_schema["required"]), set(evidence_payload))
+        request_payload = sample_evaluation_request().to_dict()
+        self.assertEqual(set(request_payload), set(request_schema["properties"]))
+        self.assertLessEqual(set(request_schema["required"]), set(request_payload))
 
     def test_schemas_are_draft_2020_12_objects(self):
-        for filename in ("ranked-entity.schema.json", "recommendation.schema.json", "evidence-item.schema.json"):
+        for filename in (
+            "ranked-entity.schema.json",
+            "recommendation.schema.json",
+            "evidence-item.schema.json",
+            "evaluation-request.schema.json",
+        ):
             schema = _schema(filename)
 
             self.assertEqual("https://json-schema.org/draft/2020-12/schema", schema["$schema"])

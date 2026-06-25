@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from evalrank_core.fixtures import sample_evidence_item, sample_recommendation
+from evalrank_core.fixtures import sample_evidence_item, sample_evaluation_request, sample_recommendation
 
 
 __version__ = "0.0.0"
@@ -22,7 +22,7 @@ def list_tools() -> list[dict[str, Any]]:
                 "properties": {
                     "kind": {
                         "type": "string",
-                        "enum": ["evidence", "recommendation"],
+                        "enum": ["evidence", "recommendation", "request"],
                     }
                 },
             },
@@ -52,7 +52,9 @@ def _fixture_payload(kind: Any) -> dict[str, Any]:
         return sample_evidence_item().to_dict()
     if kind == "recommendation":
         return sample_recommendation().to_dict()
-    raise ValueError("fixture kind must be 'evidence' or 'recommendation'")
+    if kind == "request":
+        return sample_evaluation_request().to_dict()
+    raise ValueError("fixture kind must be 'evidence', 'recommendation', or 'request'")
 
 
 __all__ = ["FIXTURE_TOOL_NAME", "call_tool", "list_tools", "__version__"]

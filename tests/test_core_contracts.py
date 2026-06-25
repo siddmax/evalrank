@@ -10,6 +10,7 @@ from evalrank_core.contracts import (  # noqa: E402
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
+    EvaluationRequest,
     Freshness,
     Recommendation,
     RankedEntity,
@@ -172,6 +173,50 @@ class CoreContractTests(unittest.TestCase):
                 observed_at="2026-06-25T00:00:00Z",
                 summary="invalid score",
                 score=1.2,
+            )
+
+    def test_evaluation_request_serializes_public_input_context(self):
+        request = EvaluationRequest(
+            request_id="req_public_fixture_01",
+            use_case="web-research:freshness-check",
+            entity_types=("mcp_server",),
+            requested_at="2026-06-25T00:00:00Z",
+            constraints={"region": "public", "requires_citations": True},
+        )
+
+        payload = request.to_dict()
+
+        self.assertEqual("evaluation_request", payload["object"])
+        self.assertEqual("req_public_fixture_01", payload["request_id"])
+        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual(["mcp_server"], payload["entity_types"])
+        self.assertEqual("2026-06-25T00:00:00Z", payload["requested_at"])
+        self.assertEqual(["region", "requires_citations"], sorted(payload["constraints"]))
+
+    def test_evaluation_request_rejects_missing_required_context(self):
+        with self.assertRaisesRegex(ValueError, "request_id"):
+            EvaluationRequest(
+                request_id="",
+                use_case="web-research:freshness-check",
+                entity_types=("mcp_server",),
+                requested_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "entity_types"):
+            EvaluationRequest(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                entity_types=(),
+                requested_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "constraints"):
+            EvaluationRequest(
+                request_id="req_public_fixture_01",
+                use_case="web-research:freshness-check",
+                entity_types=("mcp_server",),
+                requested_at="2026-06-25T00:00:00Z",
+                constraints={1: "not-public-json-key"},
             )
 
 

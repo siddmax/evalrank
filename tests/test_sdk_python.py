@@ -10,7 +10,8 @@ sys.path.insert(0, str(CORE_SRC))
 sys.path.insert(0, str(SDK_SRC))
 
 from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E402
-from evalrank_sdk import EvidenceItem, sample_evidence_item  # noqa: E402
+from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
+from evalrank_sdk import EvaluationRequest, EvidenceItem, sample_evidence_item, sample_evaluation_request  # noqa: E402
 
 
 class PythonSdkTests(unittest.TestCase):
@@ -20,6 +21,13 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(EvidenceItem, CoreEvidenceItem)
         self.assertIsInstance(evidence, CoreEvidenceItem)
         self.assertEqual("tool:public-search-demo", evidence.to_dict()["subject"]["id"])
+
+    def test_sdk_re_exports_core_request_contracts(self):
+        request = sample_evaluation_request()
+
+        self.assertIs(EvaluationRequest, CoreEvaluationRequest)
+        self.assertIsInstance(request, CoreEvaluationRequest)
+        self.assertEqual("web-research:freshness-check", request.to_dict()["use_case"])
 
 
 if __name__ == "__main__":

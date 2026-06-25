@@ -9,6 +9,7 @@ sys.path.insert(0, str(CORE_SRC))
 from evalrank_core.fixtures import (  # noqa: E402
     PUBLIC_METHODOLOGY_VERSION,
     sample_evidence_item,
+    sample_evaluation_request,
     sample_ranked_entity,
     sample_recommendation,
 )
@@ -42,6 +43,15 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("trace", payload["kind"])
         self.assertEqual("public-fixture", payload["source"])
         self.assertEqual(["latency_ms"], sorted(payload["metadata"]))
+
+    def test_sample_evaluation_request_is_public_contract_payload(self):
+        request = sample_evaluation_request()
+        payload = request.to_dict()
+
+        self.assertEqual("evaluation_request", payload["object"])
+        self.assertEqual("req_public_fixture_01", payload["request_id"])
+        self.assertEqual("web-research:freshness-check", payload["use_case"])
+        self.assertEqual(["mcp_server"], payload["entity_types"])
 
 
 if __name__ == "__main__":
