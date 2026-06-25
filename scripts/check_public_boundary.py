@@ -46,6 +46,7 @@ SECRET_VALUE_PATTERNS = (
     re.compile(r"\bsk-[A-Za-z0-9_-]{32,}\b"),
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"),
 )
+SCANNED_FILENAMES = {"Makefile"}
 PRIVATE_DATA_PATH_MARKERS = (
     "customer-data",
     "customer_data",
@@ -121,7 +122,7 @@ def _iter_files(root: Path) -> Iterable[Path]:
 
 
 def _should_scan_content(path: Path) -> bool:
-    return path.suffix.lower() in SCANNED_SUFFIXES or _is_secret_file(path)
+    return path.name in SCANNED_FILENAMES or path.suffix.lower() in SCANNED_SUFFIXES or _is_secret_file(path)
 
 
 def _check_public_path(root: Path, path: Path) -> Iterable[Violation]:

@@ -35,8 +35,7 @@ Move database migrations into this repo only when EvalRank owns its own deploy/r
 Run:
 
 ```sh
-python3 scripts/check_public_boundary.py --root .
-python3 -m unittest discover tests
+make check
 ```
 
-The boundary gate rejects private imports, Smithery coupling, Min-K% implementation markers, and public packages missing license or notice files.
+The boundary gate rejects private imports, Smithery coupling, Min-K% implementation markers, secret files, high-signal secret values, private data paths, and public packages missing license or notice files.

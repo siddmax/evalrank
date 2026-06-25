@@ -18,7 +18,7 @@
 
 - Boundary check: `python3 scripts/check_public_boundary.py --root .`
 - Tests: `python3 -m unittest discover tests`
-- Full local check: run both commands above.
+- Full local check: `make check`
 
 See `TESTS.md` for the current test map.
 

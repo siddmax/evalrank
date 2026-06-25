@@ -3,8 +3,7 @@
 ## Default Check
 
 ```sh
-python3 scripts/check_public_boundary.py --root .
-python3 -m unittest discover tests
+make check
 ```
 
 ## Test Map

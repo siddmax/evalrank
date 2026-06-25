@@ -117,6 +117,7 @@ class PublicBoundaryTests(unittest.TestCase):
             write(root / "tests/fixtures/held-out/cases.json", "[]\n")
             fake_secret = "sk-" + ("a" * 48)
             write(root / "README.md", f"OPENAI_API_KEY={fake_secret}\n")
+            write(root / "Makefile", f"check:\n\tOPENAI_API_KEY={fake_secret} python3 -m unittest\n")
 
             violations = list(checker.check_repository(root))
             codes = {violation.code for violation in violations}

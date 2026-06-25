@@ -17,6 +17,7 @@ Last updated: 2026-06-25
 - Public progress tracker and repo structure map.
 - Public porting map for deciding what moves from Syndai/private workstreams into this repo.
 - Direct `main` push workflow during scratch-build phase; branch protection is currently removed.
+- `make check` local gate shared with CI.
 
 ## In Progress
 
@@ -36,7 +37,7 @@ Last updated: 2026-06-25
 
 ## Left
 
-- W0: finish source-of-truth wiring, CI gate expansion, local dev stack, and W0 exit packet.
+- W0: finish source-of-truth wiring, CI gate expansion, and W0 exit packet.
 - W1+: data-plane tables, entity graph, evidence ledger, trust/security primitives, scorer stages, engine materializer, public surfaces, web, telemetry, governance, and GTM fleet.
 
 ## Update Rules

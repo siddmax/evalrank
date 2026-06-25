@@ -8,6 +8,7 @@ This repo is the public core. Private hosted operations, production evidence dat
 - `AGENTS.md` is the root agent contract.
 - `CLAUDE.md` stays a one-line shim to `@AGENTS.md`.
 - `TESTS.md` maps runnable checks.
+- `Makefile` owns the default local `make check` gate.
 - `LICENSE`, `NOTICE`, `CONTRIBUTING.md`, and `SECURITY.md` are public-repo hygiene files.
 
 ## Code And Packages
