@@ -4,7 +4,7 @@ Reference Python package for public EvalRank evidence and scoring contracts.
 
 Use `evalrank_core.fixtures.sample_public_fixture(kind)` with `PUBLIC_FIXTURE_KINDS`, or the individual fixture helpers, for public examples and contract tests.
 
-Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, and `EntityRef`.
+Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `EntityRef`, and public vocabulary constants including `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, and `EVIDENCE_KINDS`.
 
 Candidate set payloads expose a storage-free list of public `EntityRef` candidates for a request; source adapters and graph lookup stay outside this package.
 

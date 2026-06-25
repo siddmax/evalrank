@@ -64,6 +64,9 @@ class PythonSdkTests(unittest.TestCase):
 
         for name in (
             "Abstention",
+            "COMPARABILITY_MODES",
+            "EVIDENCE_KINDS",
+            "FRESHNESS_STATUSES",
             "CapabilityFingerprintInput",
             "RawEntry",
             "EvaluationRequest",
@@ -78,6 +81,7 @@ class PythonSdkTests(unittest.TestCase):
             "RankingGroup",
             "Exclusion",
             "TheCall",
+            "TRUST_TIERS",
             "RankedEntity",
             "Recommendation",
             "EntityRef",
@@ -90,6 +94,18 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(PUBLIC_FIXTURE_KINDS, CorePublicFixtureKinds)
         self.assertIs(sample_public_fixture, core_sample_public_fixture)
         self.assertEqual("recommendation", sample_public_fixture("recommendation")["object"])
+
+    def test_sdk_re_exports_public_vocabulary_constants(self):
+        import evalrank_sdk  # noqa: PLC0415
+
+        for name in (
+            "COMPARABILITY_MODES",
+            "EVIDENCE_KINDS",
+            "FRESHNESS_STATUSES",
+            "TRUST_TIERS",
+        ):
+            with self.subTest(name=name):
+                self.assertIs(getattr(evalrank_sdk, name), getattr(core_contracts, name))
 
     def test_sdk_re_exports_core_abstention_contract(self):
         self.assertTrue(hasattr(core_contracts, "Abstention"))
