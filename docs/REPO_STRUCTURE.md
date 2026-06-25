@@ -34,6 +34,7 @@ Schemas define interoperability payloads, not private storage tables.
 - `docs/STATUS.md` is the living progress tracker.
 - `docs/REPO_STRUCTURE.md` is this directory ownership map.
 - `docs/PORTING.md` maps what should be ported from private workstreams and what must stay private.
+- `docs/PORTING.md` also routes private-side EvalRank changes to the correct public or private workstream before any port starts.
 - `docs/build-log/` stores dated progress snapshots.
 - `docs/superpowers/plans/` stores public-safe implementation plans for agentic work.
 - `docs/AGENTS.md` gives scoped doc-editing rules.
@@ -49,5 +50,7 @@ Schemas define interoperability payloads, not private storage tables.
 - Add a scoped `AGENTS.md` when a directory has local ownership rules or commands.
 - Add or update `TESTS.md` when checks change.
 - Update `docs/PORTING.md` before moving private Syndai/Finn/Savida work into this repo.
+- Add a dated build log when progress status, build order, or porting ownership changes.
 - Add `NAVIGATION.md` when UI routes, API routes, deeplinks, or navigation-critical docs come online.
 - Do not add private data, secrets, private fixtures, or production evidence rows anywhere in this repo.
+- Do not add persistence/migration directories until EvalRank owns its own deploy path or its own Supabase project.

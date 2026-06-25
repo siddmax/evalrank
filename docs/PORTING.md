@@ -30,6 +30,7 @@ Last reviewed: 2026-06-25
 - MCP package metadata and deterministic public fixture adapter.
 - Runnable public fixture example.
 - Public scoring-stage vocabulary and method-boundary note.
+- Public progress router for deciding which private EvalRank workstream owns each future port.
 
 ## Ported To Date
 
@@ -42,6 +43,25 @@ Last reviewed: 2026-06-25
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
 | Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
 
+## Workstream Router
+
+Use this table before copying anything from private EvalRank planning into this public repo.
+
+| Private-side artifact or change | Public destination | Workstream owner | Public handling |
+| --- | --- | --- | --- |
+| Storage-free payload contracts, identifier aliases, and JSON-compatible request/response shapes | `packages/core`, `schemas`, SDK types | Public Contracts | Port when the shape stands alone with synthetic fixtures and schema drift tests. |
+| Recommendation ID aliases (`recommendation_id`, `recommend_id`, `search_run_id`) | `packages/core`, `schemas`, SDK types | Public Contracts | Public alias contract can move here; hosted HMAC derivation, route receipts, and secret keys stay private until a public route contract exists. |
+| OpenAPI, route schemas, REST/MCP parity contracts | `schemas`, future route docs, future `NAVIGATION.md` | Public Surface Contracts | Port only after a concrete public route exists; do not copy private DTOs, auth flows, tenant logic, or hosted-only response fields. |
+| CLI/MCP/SDK behavior beyond fixtures | `packages/cli`, `packages/mcp`, `packages/sdk-*` | SDK / CLI / MCP | Implement one pinned public contract at a time, with deterministic tests and no live private service dependency. |
+| Public method vocabulary and non-proprietary scoring explanations | `methods`, `schemas`, `docs` | Methods / Schemas | Rewrite as sanitized public notes; omit proprietary weights, thresholds, held-out tasks, answers, traces, and private benchmark outputs. |
+| Deterministic scoring or materializer code | Future core/runtime package only after split | Scoring / Materializer Runtime | Keep private during incubation unless it can run on synthetic/public inputs without private evidence rows, secrets, or proprietary tuning. |
+| Public-boundary, license, CI, fixture, and schema drift checks | `scripts`, `tests`, `.github/workflows` | Open-Core Boundary / CI | Port aggressively when checks prevent private leaks or public contract drift. |
+| Repo progress, build order, and sanitized decision summaries | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, `docs/build-log` | Docs / Public Planning | Summarize decisions; never paste raw private docs, live IDs, customers, or runbooks. |
+| Supabase schema bootstrap, migrations, roles, grants, RLS, pg_cron/pgmq, live DB checks | Syndai repo until cutover | DB Bootstrap / Syndai Ops | Keep private while EvalRank incubates in shared Finn/Supabase infrastructure. A future public cutover needs explicit migration ownership and API exposure docs. |
+| Hosted deploy, Fly/Doppler/Modal/R2/OpenObserve wiring, production schedulers | Private hosted systems | Hosted Ops / Deploy Ops | Keep out of this repo; only public setup docs may move after secrets and live IDs are removed. |
+| Auth, billing, admin, onboarding, tiering, account ops, GTM/vendor intent | Private hosted systems | Hosted Ops / GTM | Keep private unless converted into product-neutral public docs with no customer or operational data. |
+| Held-out suites, graders, answer keys, model traces, judge calibration, private benchmark results | Private eval systems | Evaluation Integrity | Never port; publish only synthetic or public reproducible fixtures. |
+
 ## Latest Port Review
 
 Reviewed the private-side EvalRank planning and migration surface by category on 2026-06-25. The public repo should keep accepting only artifacts that stand alone without private infrastructure or data.
@@ -50,6 +70,7 @@ Reviewed the private-side EvalRank planning and migration surface by category on
 | --- | --- |
 | Port storage-free payload contracts, JSON Schemas, synthetic fixtures, package boundaries, public examples, and deterministic boundary checks here. | Public Contracts, Methods / Schemas, SDK / CLI / MCP, Open-Core Boundary / CI, Docs / Public Planning |
 | Port REST/OpenAPI contracts here only after a concrete public route contract exists. | Public Surface Contracts |
+| Port deterministic runtime code only after it is separable from private data, live workers, proprietary tuning, and hosted-only controls. | Scoring / Materializer Runtime |
 | Keep Supabase schema bootstrap, migration runners, roles, workload isolation, live deployment wiring, and operational checks private during incubation. | DB Bootstrap / Syndai Ops |
 | Keep held-out tasks, graders, answers, traces, private benchmark results, and judge-calibration material private. | Evaluation Integrity |
 | Keep telemetry operations, billing/admin, vendor intent, account operations, private integrations, credentials, and live project refs out of this repo. | Hosted Ops / GTM, Secrets / Deploy Ops |
@@ -61,6 +82,7 @@ Public docs may summarize private planning decisions, but must not copy raw priv
 | Artifact or workstream | Destination | Owner workstream | Status |
 | --- | --- | --- | --- |
 | Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Capability fingerprint, request, recommendation, entity, and evidence slices ported |
+| Recommendation join aliases | This repo | Public Contracts | Next public-safe slice; aliases can port, hosted HMAC derivation stays private |
 | Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Ported |
 | Repo boundary checks, license hygiene, and CI gates | This repo | Open-Core Boundary / CI | Partly ported |
 | Sanitized build-readiness summaries from Syndai planning docs | This repo | Docs / Public Planning | In progress |
@@ -69,6 +91,7 @@ Public docs may summarize private planning decisions, but must not copy raw priv
 | REST/OpenAPI contracts | This repo | Public Surface Contracts | Wait until the first concrete route contract exists |
 | SDK, CLI, and MCP implementations | This repo | SDK / CLI / MCP | Python SDK re-export, TypeScript public types, CLI fixture command, and MCP fixture adapter ported |
 | Public methodology notes | This repo | Methods / Schemas | Port only after removing held-out and proprietary details |
+| Deterministic scorer/materializer runtime | Private incubation first | Scoring / Materializer Runtime | Port later only if storage-free and public-input-only |
 | Finn/Supabase `evalrank` schema bootstrap and migration runner | Syndai repo | DB Bootstrap / Syndai Ops | Keep private during incubation |
 | Secrets, Doppler config, live project refs, and deployment credentials | Private ops only | Secrets / Deploy Ops | Never port |
 | Production evidence graph rows, telemetry, and customer traces | Private hosted systems | Hosted Ops | Never port |
@@ -78,6 +101,7 @@ Public docs may summarize private planning decisions, but must not copy raw priv
 ## Port Now
 
 - Additional storage-free Python contracts and JSON Schemas when a new public payload is pinned.
+- Public identifier aliases that are deterministic, non-secret, and useful for interoperability.
 - Synthetic public fixtures that prove contract shape without using production data.
 - Public runnable examples that consume only synthetic fixtures.
 - Deterministic checks that prevent private imports, secrets, private data paths, and missing package hygiene.
@@ -88,8 +112,10 @@ Public docs may summarize private planning decisions, but must not copy raw priv
 ## Port Later
 
 - REST/OpenAPI surfaces after a concrete route contract exists.
+- Recommendation receipt routes and HMAC-backed hosted identifiers after public route semantics and secret handling are designed.
 - Full REST/OpenAPI, CLI, SDK, and MCP behavior beyond public fixtures after concrete public contracts are pinned.
 - Public scoring method details after proprietary thresholds, held-out eval details, and private ranking experiments are removed.
+- Deterministic scorer/materializer runtime after it is split from private evidence rows, hosted workers, and proprietary tuning.
 - Persistence migrations only after EvalRank owns its own deploy/release path or has its own Supabase project.
 - UI route docs and `NAVIGATION.md` after routes, deeplinks, or navigation-critical API docs exist.
 
@@ -110,6 +136,7 @@ Before moving anything into this repo, verify:
 - It does not import or depend on private Syndai/Finn/Savida packages.
 - It does not require live database access or private Supabase privileges to understand or test.
 - It does not expose proprietary hosted-product workflows that are not part of the open core.
+- It does not expose private HMAC keys, hosted receipt derivation, live route IDs, or production project references.
 - Its license is compatible with Apache-2.0 public distribution.
 - It can pass review as if the full Git history were public forever.
 - `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, `TESTS.md`, and the nearest `AGENTS.md` stay current when the port changes scope or checks.
@@ -122,6 +149,8 @@ Before moving anything into this repo, verify:
 - DB Bootstrap / Syndai Ops: keep shared Finn/Supabase migrations private until EvalRank owns persistence.
 - Methods / Schemas: publish only reusable method notes and schemas.
 - SDK / CLI / MCP: implement public clients once contracts stabilize.
+- Public Surface Contracts: own OpenAPI, REST, route, and navigation docs when concrete public routes exist.
+- Scoring / Materializer Runtime: incubate private runtime until reusable deterministic pieces can be separated safely.
 - Hosted Ops / GTM: keep private operational workflows outside this repo.
 - Evaluation Integrity: keep held-out materials private and publish only reproducible public fixtures.
 - Secrets / Deploy Ops: keep credentials, live project refs, deployment environment files, and private service config out of Git history.
@@ -133,4 +162,4 @@ Before moving anything into this repo, verify:
 - GitHub secret scanning can detect hardcoded credentials in repository history, but prevention is cheaper than cleanup: https://docs.github.com/en/code-security/reference/secret-security/supported-secret-scanning-patterns
 - If sensitive data reaches Git history, treat it as compromised, rotate credentials, and follow a coordinated removal process.
 - Supabase custom schemas must be deliberately exposed and granted for API access; EvalRank incubation uses private schema bootstrap outside this public repo: https://supabase.com/docs/guides/api/using-custom-schemas
-- For public API design, prefer a dedicated exposed API schema and keep internal tables/helpers in non-exposed schemas: https://supabase.com/docs/guides/api/securing-your-api
+- For public API design, prefer a dedicated exposed API schema and keep internal tables/helpers in non-exposed schemas; grants and RLS together decide what API roles can touch: https://supabase.com/docs/guides/api/securing-your-api

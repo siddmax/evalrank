@@ -40,6 +40,7 @@ Last updated: 2026-06-25
 - Evaluation request contract build log in `docs/build-log/2026-06-25-evaluation-request-contract.md`.
 - Methodology version format build log in `docs/build-log/2026-06-25-methodology-version-format.md`.
 - Capability fingerprint contract build log in `docs/build-log/2026-06-25-capability-fingerprint-contract.md`.
+- Public progress and porting router refresh in `docs/build-log/2026-06-25-progress-and-porting-router.md`.
 
 ## Current Public Surface
 
@@ -53,17 +54,17 @@ Last updated: 2026-06-25
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
 | Methods | Public scoring-stage vocabulary and private-boundary note. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
 | Examples | `examples/public_fixture.py` prints synthetic public recommendation and evidence JSON. | Non-fixture demos, live API examples, and private-data examples. |
-| Docs | Status tracker, repo structure map, porting map, package READMEs, and build logs. | `NAVIGATION.md`; add it only when UI/API routes or deeplinks exist. |
+| Docs | Status tracker, repo structure map, porting map, package READMEs, build logs, and public/private workstream router. | `NAVIGATION.md`; add it only when UI/API routes or deeplinks exist. |
 
 ## In Progress
 
-- Public/private porting triage.
+- Public/private porting triage and workstream routing.
 - Current source of truth is split between:
   - Python contracts in `packages/core/src/evalrank_core/contracts.py`
   - Public JSON Schemas in `schemas/`
   - Public porting decisions in `docs/PORTING.md`
 - Private Syndai build-readiness docs and operational plans, summarized here only when public-safe.
-- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, and sanitized method notes can move here. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, and held-out evaluation material stay private.
+- Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, public recommendation identifier aliases, and sanitized method notes can move here. DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, and held-out evaluation material stay private.
 
 ## Porting Queue
 
@@ -73,16 +74,19 @@ Last updated: 2026-06-25
 | 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary ported; add details only after private material is removed. |
 | 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK types, CLI fixture, and MCP fixture slices ported; extend after concrete non-fixture contracts are pinned. |
 | 4 | Docs / Public Planning | This repo | Current status, repo structure, porting docs, and first runnable example are public-safe; keep updating them with each port. |
-| 5 | DB Bootstrap / Syndai Ops | Syndai repo | Keep Supabase migrations, live bootstrap, and operational checks private during incubation. |
-| 6 | Evaluation Integrity | Private eval systems | Keep held-out tasks, graders, answers, traces, and benchmark results private. |
-| 7 | Hosted Ops / GTM | Private hosted systems | Keep billing, admin, telemetry, vendor intent, and account operations out of this repo. |
-| 8 | Secrets / Deploy Ops | Private ops only | Keep credentials, Doppler config, live project refs, and deploy environment files out of Git history. |
+| 5 | Public Surface Contracts | This repo | Add OpenAPI/route schemas only when a concrete public route exists; keep private DTOs and hosted auth outside. |
+| 6 | DB Bootstrap / Syndai Ops | Syndai repo | Keep Supabase migrations, live bootstrap, grants/RLS, and operational checks private during incubation. |
+| 7 | Scoring / Materializer Runtime | Private incubation first | Split reusable deterministic core before porting; private data, proprietary weights, and live workers stay out. |
+| 8 | Evaluation Integrity | Private eval systems | Keep held-out tasks, graders, answers, traces, and benchmark results private. |
+| 9 | Hosted Ops / GTM | Private hosted systems | Keep billing, admin, telemetry, vendor intent, and account operations out of this repo. |
+| 10 | Secrets / Deploy Ops | Private ops only | Keep credentials, Doppler config, live project refs, and deploy environment files out of Git history. |
 
 ## Next
 
-- Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior.
+- Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior; the next public-safe candidate is recommendation join aliases (`recommendation_id`, `recommend_id`, `search_run_id`) without hosted HMAC secrets.
 - SDK / CLI / MCP workstream: promote fixture-only adapters to real commands/tools only after the target public contract exists.
 - Public Surface Contracts workstream: add an OpenAPI skeleton only when the first REST route exists or a concrete route contract is ready.
+- Scoring / Materializer Runtime workstream: keep runtime and private evidence material in incubation until the deterministic, storage-free public core is separable.
 - Docs / Public Planning workstream: keep `docs/STATUS.md`, `docs/PORTING.md`, `docs/REPO_STRUCTURE.md`, package READMEs, and build logs aligned in the same change.
 - Add `NAVIGATION.md` only when EvalRank has UI routes, API routes, deeplinks, or navigation-critical docs.
 
