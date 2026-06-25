@@ -103,6 +103,41 @@ class PublicBoundaryTests(unittest.TestCase):
         self.assertIn("private-import", result.stdout)
         self.assertIn("packages/core/src/evalrank_core/leak.py", result.stdout)
 
+    def test_rejects_secret_files_private_data_paths_and_secret_values(self):
+        checker = load_checker()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write(root / "LICENSE", "Apache-2.0\n")
+            write(root / "NOTICE", "EvalRank\n")
+            write(root / ".env", "DATABASE_URL=postgres://example.invalid/evalrank\n")
+            write(root / ".env.staging", "DATABASE_URL=postgres://example.invalid/evalrank\n")
+            write(root / ".env.example", "DATABASE_URL=postgres://example.invalid/evalrank\n")
+            write(root / "private.pem", "not a real key\n")
+            write(root / "tests/fixtures/held-out/cases.json", "[]\n")
+            fake_secret = "sk-" + ("a" * 48)
+            write(root / "README.md", f"OPENAI_API_KEY={fake_secret}\n")
+
+            violations = list(checker.check_repository(root))
+            codes = {violation.code for violation in violations}
+
+        self.assertIn("secret-file", codes)
+        self.assertIn("private-data-path", codes)
+        self.assertIn("secret-value", codes)
+
+    def test_accepts_public_env_example_without_secret_values(self):
+        checker = load_checker()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write(root / "LICENSE", "Apache-2.0\n")
+            write(root / "NOTICE", "EvalRank\n")
+            write(root / ".env.example", "DATABASE_URL=postgres://example.invalid/evalrank\n")
+
+            violations = list(checker.check_repository(root))
+
+        self.assertEqual([], violations)
+
 
 if __name__ == "__main__":
     unittest.main()

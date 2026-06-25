@@ -51,7 +51,7 @@ Before moving anything into this repo, verify:
 ## Current Workstreams
 
 - Public Contracts: pin core payloads and schema compatibility.
-- Open-Core Boundary / CI: expand deterministic guards before larger ports.
+- Open-Core Boundary / CI: keep deterministic public-boundary guards current before larger ports.
 - DB Bootstrap / Syndai Ops: keep shared Finn/Supabase migrations private until EvalRank owns persistence.
 - Methods / Schemas: publish only reusable method notes and schemas.
 - SDK / CLI / MCP: implement public clients once contracts stabilize.

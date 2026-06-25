@@ -9,6 +9,7 @@ Last updated: 2026-06-25
 - Root and scoped `AGENTS.md` guidance.
 - `CLAUDE.md` shim to `@AGENTS.md`.
 - Public boundary checker for private imports, disallowed coupling, excluded method markers, and missing package license/notice files.
+- Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
 - Core Python recommendation contracts in `packages/core`.
 - Public JSON Schemas for ranked entities and recommendations.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
@@ -30,7 +31,6 @@ Last updated: 2026-06-25
 
 - Add an OpenAPI skeleton only when the first REST surface exists or a concrete route contract is ready.
 - Add package-level implementation for the next public surface only after its contract is pinned.
-- Expand public boundary checks with deterministic secret, fixture, and held-out-data guards before larger ports from Syndai.
 - Add `NAVIGATION.md` when EvalRank has UI routes, API routes, deeplinks, or navigation-critical docs.
 
 ## Left

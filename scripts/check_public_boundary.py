@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -28,7 +29,38 @@ MIN_K_MARKERS = (
     "min_k_percent",
     "min-k-percent",
 )
-IGNORED_DIRS = {".git", ".venv", "__pycache__", "node_modules", "dist", "build"}
+SECRET_FILENAMES = {
+    ".env",
+    "credentials.json",
+    "doppler.yaml",
+    "doppler.yml",
+    "secrets.toml",
+    "service-role-key.json",
+}
+PUBLIC_ENV_FILENAMES = {".env.example", ".env.sample"}
+SECRET_SUFFIXES = {".key", ".pem", ".p8"}
+SECRET_VALUE_PATTERNS = (
+    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
+    re.compile(r"\bghp_[A-Za-z0-9]{36,}\b"),
+    re.compile(r"\bgithub_pat_[A-Za-z0-9_]{22,}\b"),
+    re.compile(r"\bsk-[A-Za-z0-9_-]{32,}\b"),
+    re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"),
+)
+PRIVATE_DATA_PATH_MARKERS = (
+    "customer-data",
+    "customer_data",
+    "evidence-rows",
+    "evidence_rows",
+    "held-out",
+    "heldout",
+    "private-fixture",
+    "private_fixture",
+    "prod-telemetry",
+    "prod_telemetry",
+    "production-telemetry",
+)
+SCANNED_SUFFIXES = {".js", ".json", ".jsx", ".md", ".toml", ".ts", ".tsx", ".py", ".yaml", ".yml"}
+IGNORED_DIRS = {".codex", ".git", ".venv", "__pycache__", "node_modules", "dist", "build"}
 
 
 @dataclass(frozen=True)
@@ -42,10 +74,13 @@ def check_repository(root: Path | str) -> Iterable[Violation]:
     root = Path(root).resolve()
     yield from _check_root_contract(root)
     yield from _check_package_contract(root)
-    for path in _iter_source_files(root):
-        yield from _check_python_imports(root, path)
-        if _is_implementation_file(root, path):
-            yield from _check_disallowed_markers(root, path)
+    for path in _iter_files(root):
+        yield from _check_public_path(root, path)
+        if _should_scan_content(path):
+            yield from _check_secret_values(root, path)
+            yield from _check_python_imports(root, path)
+            if _is_implementation_file(root, path):
+                yield from _check_disallowed_markers(root, path)
 
 
 def _check_root_contract(root: Path) -> Iterable[Violation]:
@@ -77,12 +112,32 @@ def _has_package_content(package: Path) -> bool:
     return False
 
 
-def _iter_source_files(root: Path) -> Iterable[Path]:
+def _iter_files(root: Path) -> Iterable[Path]:
     for path in sorted(root.rglob("*")):
         if _is_ignored(path):
             continue
-        if path.is_file() and path.suffix in {".py", ".ts", ".tsx", ".js", ".jsx", ".md", ".yml", ".yaml"}:
+        if path.is_file():
             yield path
+
+
+def _should_scan_content(path: Path) -> bool:
+    return path.suffix.lower() in SCANNED_SUFFIXES or _is_secret_file(path)
+
+
+def _check_public_path(root: Path, path: Path) -> Iterable[Violation]:
+    rel = _relative_to(root, path)
+    if _is_secret_file(path) or path.suffix.lower() in SECRET_SUFFIXES:
+        yield Violation("secret-file", rel, "Public repo must not contain secret or credential files.")
+    normalized_parts = [part.lower().replace(" ", "-") for part in path.relative_to(root).parts]
+    if any(marker in part for marker in PRIVATE_DATA_PATH_MARKERS for part in normalized_parts):
+        yield Violation("private-data-path", rel, "Public repo must not contain held-out/private fixture or production data paths.")
+
+
+def _is_secret_file(path: Path) -> bool:
+    name = path.name.lower()
+    if name in SECRET_FILENAMES:
+        return True
+    return name.startswith(".env.") and name not in PUBLIC_ENV_FILENAMES
 
 
 def _is_implementation_file(root: Path, path: Path) -> bool:
@@ -117,6 +172,15 @@ def _classify_import(root: Path, path: Path, module: str) -> Iterable[Violation]
     disallowed = DISALLOWED_IMPORT_PREFIXES.get(top_level)
     if disallowed:
         yield Violation(disallowed, rel, f"Public code imports disallowed dependency '{module}'.")
+
+
+def _check_secret_values(root: Path, path: Path) -> Iterable[Violation]:
+    rel = _relative_to(root, path)
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    for pattern in SECRET_VALUE_PATTERNS:
+        if pattern.search(text):
+            yield Violation("secret-value", rel, "Public repo must not contain high-signal secret values.")
+            return
 
 
 def _check_disallowed_markers(root: Path, path: Path) -> Iterable[Violation]:
