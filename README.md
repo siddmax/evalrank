@@ -66,3 +66,11 @@ from evalrank_mcp import call_tool
 
 result = call_tool("evalrank.fixture", {"kind": "evidence"})
 ```
+
+TypeScript SDK:
+
+```ts
+import { EVIDENCE_KINDS, type EvidenceItem } from "@evalrank/sdk";
+
+const kind: EvidenceItem["kind"] = EVIDENCE_KINDS[0];
+```

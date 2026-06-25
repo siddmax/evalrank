@@ -24,6 +24,7 @@ Last reviewed: 2026-06-25
 - W0 public exit packet and W1 entity/evidence contract plan.
 - Storage-free entity references, evidence items, public fixtures, and evidence-item schema.
 - Python SDK package metadata and public core contract re-exports.
+- TypeScript SDK package metadata and mirrored public contract types/constants.
 - CLI package metadata and deterministic public fixture command.
 - MCP package metadata and deterministic public fixture adapter.
 - Public scoring-stage vocabulary and method-boundary note.
@@ -34,7 +35,7 @@ Last reviewed: 2026-06-25
 | --- | --- | --- |
 | Public Contracts | `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
 | Methods / Schemas | JSON Schemas for public payloads and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
-| SDK / CLI / MCP | Python SDK re-exports, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
+| SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
 | Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
 
@@ -49,7 +50,7 @@ Last reviewed: 2026-06-25
 | Public build-order and wave status | This repo | Docs / Public Planning | In progress |
 | Public scoring-stage vocabulary and method boundaries | This repo | Methods / Schemas | Public boundary note ported |
 | REST/OpenAPI contracts | This repo | Public Surface Contracts | Wait until the first concrete route contract exists |
-| SDK, CLI, and MCP implementations | This repo | SDK / CLI / MCP | Python SDK re-export, CLI fixture command, and MCP fixture adapter ported |
+| SDK, CLI, and MCP implementations | This repo | SDK / CLI / MCP | Python SDK re-export, TypeScript public types, CLI fixture command, and MCP fixture adapter ported |
 | Public methodology notes | This repo | Methods / Schemas | Port only after removing held-out and proprietary details |
 | Finn/Supabase `evalrank` schema bootstrap and migration runner | Syndai repo | DB Bootstrap / Syndai Ops | Keep private during incubation |
 | Secrets, Doppler config, live project refs, and deployment credentials | Private ops only | Secrets / Deploy Ops | Never port |
@@ -64,7 +65,7 @@ Last reviewed: 2026-06-25
 - Deterministic checks that prevent private imports, secrets, private data paths, and missing package hygiene.
 - Public build logs that summarize decisions without exposing private projects, credentials, customers, held-out tasks, or live telemetry.
 - Package README and agent guidance needed for contributors to work inside the public repo.
-- Public TypeScript SDK metadata and source only after the TypeScript package has a runnable public check.
+- Additional TypeScript SDK source only when the package-level check and repo tests prove the public contract shape.
 
 ## Port Later
 

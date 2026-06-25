@@ -14,8 +14,13 @@ make check
 - `tests/test_mcp_fixture.py` checks the public MCP fixture tool manifest and result shape.
 - `tests/test_schema_contracts.py` checks public JSON Schema files against the core payload keys.
 - `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts.
+- `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.
 - `scripts/check_public_boundary.py` rejects private imports, disallowed coupling, excluded implementation markers, secret files, high-signal secret values, private data paths, and missing package license/notice files.
+
+## Package Checks
+
+- TypeScript SDK syntax check: `npm run check --prefix packages/sdk-ts`
 
 ## Update Rules
 
