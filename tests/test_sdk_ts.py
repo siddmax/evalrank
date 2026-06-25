@@ -20,6 +20,7 @@ from evalrank_core.contracts import (  # noqa: E402
     USE_CASE_ENTITY_KINDS,
     USE_CASE_RANK_POLICIES,
 )
+from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
 
 PROBLEM_CODES = {
     "rate_limited",
@@ -55,6 +56,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "RankedEntity",
             "Recommendation",
             "ProblemDetails",
+            "PUBLIC_FIXTURE_KINDS",
+            "PublicFixtureKind",
         ):
             self.assertIn(name, text)
 
@@ -85,6 +88,7 @@ class TypeScriptSdkTests(unittest.TestCase):
         )
         self.assertEqual(USE_CASE_ENTITY_KINDS, _exported_string_array(source, "USE_CASE_ENTITY_KINDS"))
         self.assertEqual(USE_CASE_RANK_POLICIES, _exported_string_array(source, "USE_CASE_RANK_POLICIES"))
+        self.assertEqual(set(PUBLIC_FIXTURE_KINDS), _exported_string_array(source, "PUBLIC_FIXTURE_KINDS"))
 
     def test_public_interfaces_cover_schema_payloads(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
@@ -168,6 +172,7 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("exclusions: Exclusion[];", source)
         self.assertIn("groups: RankingGroup[] | null;", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
+        self.assertIn("export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];", source)
         self.assertIn("export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];", source)
         self.assertIn("export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];", source)
         self.assertIn("export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];", source)

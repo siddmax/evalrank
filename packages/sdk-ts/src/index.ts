@@ -69,6 +69,21 @@ export const PROBLEM_CODES = [
   "forbidden",
 ] as const;
 
+export const PUBLIC_FIXTURE_KINDS = [
+  "candidate-set",
+  "evidence",
+  "evidence-set",
+  "exclusion",
+  "fingerprint",
+  "raw-entry",
+  "recommendation",
+  "ranking-group",
+  "result-row",
+  "request",
+  "stage-candidate",
+  "use-cases",
+] as const;
+
 export type TrustTier = (typeof TRUST_TIERS)[number];
 export type FreshnessStatus = (typeof FRESHNESS_STATUSES)[number];
 export type ComparabilityMode = (typeof COMPARABILITY_MODES)[number];
@@ -79,6 +94,7 @@ export type TheCallDecision = (typeof THE_CALL_DECISIONS)[number];
 export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];
 export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];
 export type ProblemCode = (typeof PROBLEM_CODES)[number];
+export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];
 
 export interface Freshness {
   last_eval: string;

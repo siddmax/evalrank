@@ -18,7 +18,7 @@ Last updated: 2026-06-26
 - Public retry-aware Problem Details extensions: `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url`.
 - Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
 - Python SDK package metadata and public core contract re-exports.
-- TypeScript SDK package metadata and mirrored public contract types/constants, including public Problem Details codes and type shape.
+- TypeScript SDK package metadata and mirrored public contract types/constants, including public fixture kinds, Problem Details codes, and type shape.
 - SDK README drift checks for the Python and TypeScript public surfaces.
 - CLI package metadata and deterministic public fixture command, including `result-row`, `use-cases`, and `ranking-group`.
 - MCP package metadata and deterministic public fixture adapter, including `result-row`, `use-cases`, and `ranking-group`.
@@ -67,6 +67,7 @@ Last updated: 2026-06-26
 - SDK README drift-check build log in `docs/build-log/2026-06-26-sdk-readme-drift-checks.md`.
 - Progress and porting routing refresh in `docs/build-log/2026-06-26-progress-porting-routing.md`.
 - Public fixture dispatch build log in `docs/build-log/2026-06-26-public-fixture-dispatch.md`.
+- TypeScript fixture-kind parity build log in `docs/build-log/2026-06-26-typescript-fixture-kind-parity.md`.
 
 ## Current Public Surface
 
@@ -75,7 +76,7 @@ Last updated: 2026-06-26
 | Core contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, public constants, shared fixture-kind dispatch, and synthetic fixture factories. | Source adapters, storage models, graph persistence, scorer engine, benchmark weights, IRT clusters, Stage-2+ scorer rows, trust/security policy runtime. |
 | Schemas | JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, use-case catalogs, evidence sets, exclusions, ranked entities, recommendations with closed ranking groups, evidence items, and retry-aware RFC 9457 Problem Details, plus OpenAPI 3.1.1 for `GET /v1/use-cases` and `POST /v1/recommendations`, with drift tests against public contracts and pinned public patterns. | Persistence schemas, scorer-runtime schemas, benchmark-weight schemas, and additional route-specific problem types beyond the current public error vocabulary. |
 | Python SDK | Package metadata and public re-exports from `evalrank_core`, including public fixture dispatch helpers. | Installed package release flow and non-fixture client behavior. |
-| TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry`, `CandidateSet`, `StageCandidate`, `ResultRow`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, and `ProblemDetails`. | Built JS distribution, published package release flow, and non-fixture client behavior. |
+| TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts, including `RawEntry`, `CandidateSet`, `StageCandidate`, `ResultRow`, `UseCaseCatalog`, `RankingGroup`, `EvidenceSet`, `Exclusion`, `TheCall`, `ProblemDetails`, and public fixture kinds. | Built JS distribution, published package release flow, and non-fixture client behavior. |
 | CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture result-row`, `fixture use-cases`, `fixture ranking-group`, `fixture evidence-set`, `fixture exclusion`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence`, `result-row`, `use-cases`, `ranking-group`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
 | Methods | Public scoring-stage vocabulary, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, and `Exclusion`; public use-case taxonomy method; and private-boundary notes. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
