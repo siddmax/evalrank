@@ -29,7 +29,7 @@ Last updated: 2026-06-26
 - Public progress tracker and repo structure map.
 - Public route navigation map in `NAVIGATION.md`.
 - Public porting map for deciding what moves from Syndai/private workstreams into this repo.
-- Public/private porting audit confirming the current private Syndai dirty worktree is Memphant-only and has no EvalRank public-port candidate.
+- Public/private porting audit confirming the current private Syndai dirty worktree has Memphant spec edits plus two Memphant plan files and no EvalRank public-port candidate.
 - Public/private source scan classifying the current Syndai EvalRank spec, build-readiness, migration, and doc-validation surfaces without copying raw private text.
 - GitHub public repo security metadata snapshot confirming public visibility, secret scanning, push protection, and Dependabot security updates are enabled.
 - Direct `main` push workflow during scratch-build phase; branch protection is currently removed.
@@ -84,6 +84,7 @@ Last updated: 2026-06-26
 - Private source port-routing build log in `docs/build-log/2026-06-26-private-source-port-routing.md`.
 - Public abstention contract build log in `docs/build-log/2026-06-26-abstention-contract.md`.
 - Scoring-stage abstention output alignment build log in `docs/build-log/2026-06-26-scoring-stage-abstention-output.md`.
+- Public progress and port-over routing refresh in `docs/build-log/2026-06-26-progress-portover-refresh.md`.
 
 ## Current Public Surface
 
@@ -125,7 +126,7 @@ Last updated: 2026-06-26
 | Capability fingerprint, raw entry, evidence item, evidence set, candidate set, `the_call`, and abstention public string fields now reject truthy non-strings before serialization. | Built here as public contract hardening against existing schemas; no source adapter, scorer/runtime behavior, private evidence lookup, DB work, or hosted operation moved. | Public Contracts, Methods / Schemas |
 | Recommendation abstention responses now include a public `Abstention` reason/detail object and ordinary recommendations include `abstention: null`. | Built here as a storage-free response contract; evidence-floor thresholds, confidence policy, private reason taxonomy, scorer/runtime behavior, DB work, and hosted operations were not moved. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | The public scoring-stage catalog now names `Abstention` as an output of `ranking-or-abstention`. | Built here as catalog alignment after the public `Abstention` contract; no scorer thresholds, private policy, runtime, or DB behavior moved. | Methods / Schemas, Public Contracts |
-| Private-side dirty worktree check found only Memphant spec edits, not EvalRank public-port candidates. | Documented here as a routing decision; no private Memphant planning text was copied into the public repo. | Docs / Public Planning, Open-Core Boundary / CI |
+| Private-side dirty worktree check found Memphant spec edits and two Memphant plan files, not EvalRank public-port candidates. | Documented here as a routing decision; no private Memphant planning text was copied into the public repo. | Memphant / memory-system workstream, Docs / Public Planning, Open-Core Boundary / CI |
 | Current private-side EvalRank source scan classified private specs, build-readiness plans, migration bootstrap, migration guards, doc validators, and UI proof assets. | Documented here as a public-safe routing decision; raw private docs, proof assets, operations scripts, and private migrations were not copied. | Docs / Public Planning, Public Surface Contracts, DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
 | GitHub repo security metadata was checked for the public repo. | Public visibility, secret scanning, push protection, and Dependabot security updates are enabled; the local boundary scanner remains the required gate because platform scanning is only a backstop. | Open-Core Boundary / CI, Secrets / Deploy Ops |
 | Non-fixture clients, live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
@@ -138,7 +139,7 @@ Last updated: 2026-06-26
   - Public JSON Schemas in `schemas/`
   - Public porting decisions in `docs/PORTING.md`
 - Private Syndai build-readiness docs and operational plans, summarized here only when public-safe.
-- Latest private-side dirty check: Syndai had uncommitted `docs/superpowers/specs/memphant/` edits only. Treat those as adjacent memory-system planning, not EvalRank public-port material, unless a later task extracts an explicit EvalRank storage-free contract from them.
+- Latest private-side dirty check: Syndai had uncommitted `docs/superpowers/specs/memphant/` edits plus untracked `docs/superpowers/plans/2026-06-26-memphant-gapcheck-validation.md` and `docs/superpowers/plans/2026-06-26-memphant-lifecycle-validation.md`. Treat those as adjacent memory-system planning, not EvalRank public-port material, unless a later task extracts an explicit EvalRank storage-free contract from them.
 - Latest port review: storage-free contracts, schemas, synthetic fixtures, public SDK/CLI/MCP boundaries, public route contracts, deterministic public-boundary checks, and sanitized method notes can move here. Public recommendation identifier aliases, storage-free `RawEntry`, public `CandidateSet`, public `StageCandidate`, public `EvidenceItem`, public `ResultRow`, public `UseCaseCatalog`, public `ScoringStageCatalog`, public `RankingGroup`, public `EvidenceSet`, public `Exclusion`, structured public `the_call`, public `Abstention`, the first storage-free OpenAPI route contracts, and retry-aware public Problem Details error shape have moved. The private-side planning scan is summarized in `docs/PORTING.md` by workstream, not copied. Private EvalRank specs, build-readiness plans, UI proof assets, doc validators, DB bootstrap, Supabase migrations, live deploy wiring, telemetry, billing/admin/GTM, private integrations, credentials, production data, HMAC/secret-backed hosted IDs, source adapters, live fetch behavior, graph lookup, live evidence lookup, evidence ledger runtime, cross-kind score normalization, benchmark weights, IRT fit clusters, thin-coverage/synthesis policy details, Stage-2+ scorer rows, gate policy, private reason taxonomy, scorer thresholds, private problem types, and held-out evaluation material stay private unless a later task extracts a concrete public contract.
 
 ## Current Port-Over Snapshot
@@ -164,6 +165,7 @@ Last updated: 2026-06-26
 | Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | Keep private | DB Bootstrap / Syndai Ops |
 | Syndai EvalRank migration guard and runner tests | Keep private with the current DB bootstrap; port only a public migration-policy checklist if EvalRank later owns persistence. | DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
 | Syndai EvalRank doc-validation rules for private specs and build plans | Do not copy private spec checks. Distill only public-facing invariants into this repo when the matching public docs or plans exist. | Docs / Public Planning, Open-Core Boundary / CI |
+| Current Memphant dirty specs and validation/lifecycle plans in Syndai | Keep out of EvalRank. If they later reveal a reusable evaluation payload or route shape, extract only that public contract into EvalRank with synthetic fixtures and tests. | Memphant / memory-system workstream first; Public Contracts only after explicit extraction |
 | Private EvalRank UI proof assets and hosted-product design docs | Keep private until UI routes or public product docs are intentionally added; then port only synthetic screenshots or public-safe docs. | Public Surface Contracts, Hosted Ops / GTM |
 | Deterministic scorer, materializer, entity graph persistence, and evidence-ledger runtime | Incubate private until separable from production data and proprietary tuning | Scoring / Materializer Runtime |
 | Hosted receipts, HMAC-backed IDs, auth, billing/admin/GTM, telemetry, deploy config, and credentials | Keep private | Hosted Ops / GTM, Secrets / Deploy Ops |
