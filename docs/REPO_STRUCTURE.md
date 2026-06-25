@@ -7,6 +7,7 @@ This repo is the public core. Private hosted operations, production evidence dat
 - `README.md` explains the project and high-level boundaries.
 - `AGENTS.md` is the root agent contract.
 - `CLAUDE.md` stays a one-line shim to `@AGENTS.md`.
+- `NAVIGATION.md` maps public route contract entrypoints.
 - `TESTS.md` maps runnable checks.
 - `Makefile` owns the default local `make check` gate.
 - `LICENSE`, `NOTICE`, `CONTRIBUTING.md`, and `SECURITY.md` are public-repo hygiene files.
@@ -23,7 +24,7 @@ Package directories should keep their own `README.md`, `LICENSE`, `NOTICE`, and 
 
 ## Public Contracts
 
-- `schemas/` owns public JSON Schema contracts.
+- `schemas/` owns public JSON Schema contracts and the public OpenAPI route contract.
 - `methods/` owns public methodology notes and exclusion boundaries.
 - `examples/` owns public runnable examples.
 
@@ -49,6 +50,7 @@ Schemas define interoperability payloads, not private storage tables.
 
 - Add a scoped `AGENTS.md` when a directory has local ownership rules or commands.
 - Add or update `TESTS.md` when checks change.
+- Update `NAVIGATION.md` when public API routes, UI routes, deeplinks, or navigation-critical docs change.
 - Update `docs/PORTING.md` before moving private Syndai/Finn/Savida work into this repo.
 - Add a dated build log when progress status, build order, or porting ownership changes.
 - Add `NAVIGATION.md` when UI routes, API routes, deeplinks, or navigation-critical docs come online.

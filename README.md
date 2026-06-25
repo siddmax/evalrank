@@ -9,6 +9,7 @@ EvalRank is the public core for evidence-ranked evaluation primitives. This repo
 - `docs/STATUS.md` - Living build progress tracker.
 - `docs/REPO_STRUCTURE.md` - Directory ownership map.
 - `docs/PORTING.md` - Public/private porting decisions and workstream ownership.
+- `NAVIGATION.md` - Public route contract entrypoints.
 - `packages/core` - Python reference package for evidence objects and scoring contracts.
 - `packages/mcp` - MCP server boundary for evaluation and evidence lookup tools.
 - `packages/cli` - Command-line entrypoints that call the public APIs.
@@ -39,6 +40,12 @@ make check
 ```
 
 The boundary gate rejects private imports, Smithery coupling, Min-K% implementation markers, secret files, high-signal secret values, private data paths, and public packages missing license or notice files.
+
+## Public API Contract
+
+The first route contract is `POST /v1/recommendations` in `schemas/openapi.json`. It accepts `EvaluationRequest` JSON and returns `Recommendation` JSON.
+
+This is a contract only. Hosted auth, scorer runtime, persistence, receipt IDs, and deployment wiring stay outside this public repo.
 
 ## Public Fixture Surfaces
 

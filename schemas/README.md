@@ -2,6 +2,8 @@
 
 Public EvalRank JSON Schema contracts live here.
 
+- `openapi.json` defines the public REST route contract and references the payload schemas below.
+
 - `ranked-entity.schema.json` mirrors `RankedEntity.to_dict()` and core enum constants.
 - `recommendation.schema.json` mirrors `Recommendation.to_dict()` and core enum constants.
 - `evidence-item.schema.json` mirrors `EvidenceItem.to_dict()` and core enum constants.
@@ -16,5 +18,5 @@ Recommendation schemas require `recommendation_id`, `recommend_id`, and `search_
 Run:
 
 ```sh
-python3 -m unittest tests.test_schema_contracts
+python3 -m unittest tests.test_schema_contracts tests.test_openapi_contract
 ```

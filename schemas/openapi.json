@@ -1,0 +1,58 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "EvalRank Public API",
+    "version": "0.0.0",
+    "description": "Public contract for portable EvalRank evaluation surfaces. This file does not declare a live hosted service."
+  },
+  "tags": [
+    {
+      "name": "recommendations",
+      "description": "Evaluate a public request payload and return a recommendation payload."
+    }
+  ],
+  "paths": {
+    "/v1/recommendations": {
+      "post": {
+        "tags": [
+          "recommendations"
+        ],
+        "operationId": "evaluateRecommendation",
+        "summary": "Evaluate a request into a recommendation",
+        "description": "Contract-only public route shape. Runtime auth, scorer behavior, storage, receipt IDs, and deployment details are intentionally outside this file.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recommendation generated for the request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommendation"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EvaluationRequest": {
+        "$ref": "evaluation-request.schema.json"
+      },
+      "Recommendation": {
+        "$ref": "recommendation.schema.json"
+      }
+    }
+  }
+}
