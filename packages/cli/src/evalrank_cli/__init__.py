@@ -15,6 +15,7 @@ from evalrank_core.fixtures import (
     sample_evaluation_request,
     sample_raw_entry,
     sample_recommendation,
+    sample_stage_candidate,
 )
 
 
@@ -54,6 +55,7 @@ def _parser() -> argparse.ArgumentParser:
             "raw-entry",
             "recommendation",
             "request",
+            "stage-candidate",
         ),
     )
 
@@ -77,6 +79,8 @@ def _fixture_payload(kind: str) -> dict:
         return sample_recommendation().to_dict()
     if kind == "request":
         return sample_evaluation_request().to_dict()
+    if kind == "stage-candidate":
+        return sample_stage_candidate().to_dict()
     raise ValueError(f"unsupported fixture kind: {kind}")
 
 

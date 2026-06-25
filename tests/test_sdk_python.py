@@ -16,6 +16,7 @@ from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E4
 from evalrank_core.contracts import EvidenceSet as CoreEvidenceSet  # noqa: E402
 from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
 from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
+from evalrank_core.contracts import StageCandidate as CoreStageCandidate  # noqa: E402
 from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
@@ -25,6 +26,7 @@ from evalrank_sdk import (  # noqa: E402
     EvidenceItem,
     EvidenceSet,
     RawEntry,
+    StageCandidate,
     TheCall,
     sample_capability_fingerprint_input,
     sample_candidate_set,
@@ -33,6 +35,7 @@ from evalrank_sdk import (  # noqa: E402
     sample_evidence_set,
     sample_evaluation_request,
     sample_raw_entry,
+    sample_stage_candidate,
 )
 
 
@@ -85,6 +88,13 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(RawEntry, CoreRawEntry)
         self.assertIsInstance(entry, CoreRawEntry)
         self.assertEqual("raw_entry", entry.to_dict()["object"])
+
+    def test_sdk_re_exports_core_stage_candidate_contracts(self):
+        candidate = sample_stage_candidate()
+
+        self.assertIs(StageCandidate, CoreStageCandidate)
+        self.assertIsInstance(candidate, CoreStageCandidate)
+        self.assertEqual("stage_candidate", candidate.to_dict()["object"])
 
     def test_sdk_re_exports_core_the_call_contract(self):
         self.assertIs(TheCall, CoreTheCall)

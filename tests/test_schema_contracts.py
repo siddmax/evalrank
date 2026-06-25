@@ -28,6 +28,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_evidence_set,
     sample_evaluation_request,
     sample_raw_entry,
+    sample_stage_candidate,
 )
 
 
@@ -41,6 +42,7 @@ class SchemaContractTests(unittest.TestCase):
         exclusion_schema = _schema("exclusion.schema.json")
         evidence_schema = _schema("evidence-item.schema.json")
         evidence_set_schema = _schema("evidence-set.schema.json")
+        stage_candidate_schema = _schema("stage-candidate.schema.json")
         request_schema = _schema("evaluation-request.schema.json")
         candidate_set_schema = _schema("candidate-set.schema.json")
         fingerprint_schema = _schema("capability-fingerprint.schema.json")
@@ -69,6 +71,9 @@ class SchemaContractTests(unittest.TestCase):
         evidence_set_payload = sample_evidence_set().to_dict()
         self.assertEqual(set(evidence_set_payload), set(evidence_set_schema["properties"]))
         self.assertLessEqual(set(evidence_set_schema["required"]), set(evidence_set_payload))
+        stage_candidate_payload = sample_stage_candidate().to_dict()
+        self.assertEqual(set(stage_candidate_payload), set(stage_candidate_schema["properties"]))
+        self.assertLessEqual(set(stage_candidate_schema["required"]), set(stage_candidate_payload))
         request_payload = sample_evaluation_request().to_dict()
         self.assertEqual(set(request_payload), set(request_schema["properties"]))
         self.assertLessEqual(set(request_schema["required"]), set(request_payload))
@@ -89,6 +94,7 @@ class SchemaContractTests(unittest.TestCase):
             "exclusion.schema.json",
             "evidence-item.schema.json",
             "evidence-set.schema.json",
+            "stage-candidate.schema.json",
             "evaluation-request.schema.json",
             "candidate-set.schema.json",
             "capability-fingerprint.schema.json",
@@ -222,6 +228,24 @@ class SchemaContractTests(unittest.TestCase):
         self.assertTrue(evidence_items["uniqueItems"])
         self.assertNotIn("minItems", evidence_items)
         self.assertEqual("evidence-item.schema.json", evidence_items["items"]["$ref"])
+
+    def test_stage_candidate_schema_pins_stage_one_boundary(self):
+        stage_candidate_schema = _schema("stage-candidate.schema.json")
+
+        self.assertEqual(
+            {"object", "candidate_id", "entity", "fused_score", "rrf_components", "retrieval_provenance"},
+            set(stage_candidate_schema["required"]),
+        )
+        self.assertEqual("stage_candidate", stage_candidate_schema["properties"]["object"]["const"])
+        self.assertEqual("^[a-f0-9]{64}$", stage_candidate_schema["properties"]["candidate_id"]["pattern"])
+        self.assertFalse(stage_candidate_schema["properties"]["entity"]["additionalProperties"])
+        rrf = stage_candidate_schema["properties"]["rrf_components"]
+        self.assertEqual({"lexical_rank", "semantic_rank", "graph_rank"}, set(rrf["required"]))
+        self.assertFalse(rrf["additionalProperties"])
+        self.assertEqual(["integer", "null"], rrf["properties"]["graph_rank"]["type"])
+        provenance = stage_candidate_schema["properties"]["retrieval_provenance"]
+        self.assertEqual({"arms", "use_case"}, set(provenance["required"]))
+        self.assertTrue(provenance["properties"]["arms"]["uniqueItems"])
 
 
 def _schema(filename: str) -> dict:

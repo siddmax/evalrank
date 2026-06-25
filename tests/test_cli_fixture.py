@@ -88,6 +88,17 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual("req_public_fixture_01", payload["request_id"])
         self.assertEqual("ev_public_trace_01", payload["evidence_items"][0]["evidence_id"])
 
+    def test_fixture_stage_candidate_writes_public_json(self):
+        stdout = StringIO()
+
+        exit_code = main(["fixture", "stage-candidate"], stdout=stdout, stderr=StringIO())
+
+        self.assertEqual(0, exit_code)
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual("stage_candidate", payload["object"])
+        self.assertEqual("tool:public-search-demo", payload["entity"]["id"])
+        self.assertEqual(["lexical", "semantic"], payload["retrieval_provenance"]["arms"])
+
     def test_fixture_raw_entry_writes_public_json(self):
         stdout = StringIO()
 

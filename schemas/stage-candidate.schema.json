@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/stage-candidate.schema.json",
+  "title": "EvalRank Stage Candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "candidate_id",
+    "entity",
+    "fused_score",
+    "rrf_components",
+    "retrieval_provenance"
+  ],
+  "properties": {
+    "object": {
+      "const": "stage_candidate"
+    },
+    "candidate_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entity_type",
+        "id"
+      ],
+      "properties": {
+        "entity_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "fused_score": {
+      "type": "number",
+      "minimum": 0
+    },
+    "rrf_components": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lexical_rank",
+        "semantic_rank",
+        "graph_rank"
+      ],
+      "properties": {
+        "lexical_rank": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "semantic_rank": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "graph_rank": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        }
+      }
+    },
+    "retrieval_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "arms",
+        "use_case"
+      ],
+      "properties": {
+        "arms": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "use_case": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

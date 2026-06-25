@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from dataclasses import dataclass, field
 from typing import Any, ClassVar
@@ -12,7 +13,9 @@ FRESHNESS_STATUSES = {"fresh", "stale", "recalibrating"}
 COMPARABILITY_MODES = {"single-scale", "kind-grouped"}
 EVIDENCE_KINDS = {"attestation", "benchmark", "documentation", "runtime-observation", "trace"}
 THE_CALL_DECISIONS = {"recommend", "abstain"}
+_FINGERPRINT_RE = re.compile(r"^[a-f0-9]{64}$")
 _METHODOLOGY_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$")
+_RRF_COMPONENT_KEYS = ("lexical_rank", "semantic_rank", "graph_rank")
 
 
 @dataclass(frozen=True)
@@ -344,6 +347,54 @@ class CandidateSet:
 
 
 @dataclass(frozen=True)
+class StageCandidate:
+    object: ClassVar[str] = "stage_candidate"
+
+    candidate_id: str
+    entity: EntityRef
+    fused_score: float
+    rrf_components: dict[str, int | None]
+    retrieval_arms: tuple[str, ...]
+    use_case: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.candidate_id, str) or not _FINGERPRINT_RE.fullmatch(self.candidate_id):
+            raise ValueError("candidate_id must be a 64-character lowercase hex fingerprint")
+        if not isinstance(self.entity, EntityRef):
+            raise TypeError("entity must be an EntityRef")
+        _require_nonnegative_finite("fused_score", self.fused_score)
+        if not isinstance(self.rrf_components, dict):
+            raise ValueError("rrf_components must be a JSON object")
+        if set(self.rrf_components) != set(_RRF_COMPONENT_KEYS):
+            raise ValueError("rrf_components must include lexical_rank, semantic_rank, and graph_rank")
+        for key in _RRF_COMPONENT_KEYS:
+            value = self.rrf_components[key]
+            if value is not None and (not isinstance(value, int) or isinstance(value, bool) or value < 1):
+                raise ValueError(f"{key} must be null or an integer >= 1")
+        if not isinstance(self.retrieval_arms, tuple) or not self.retrieval_arms:
+            raise ValueError("retrieval_arms is required")
+        if any(not isinstance(arm, str) or not arm for arm in self.retrieval_arms):
+            raise ValueError("retrieval_arms must contain non-empty strings")
+        if len(set(self.retrieval_arms)) != len(self.retrieval_arms):
+            raise ValueError("retrieval_arms must be unique")
+        if not isinstance(self.use_case, str) or not self.use_case:
+            raise ValueError("use_case is required")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            "candidate_id": self.candidate_id,
+            "entity": self.entity.to_dict(),
+            "fused_score": _round_score(float(self.fused_score)),
+            "rrf_components": {key: self.rrf_components[key] for key in _RRF_COMPONENT_KEYS},
+            "retrieval_provenance": {
+                "arms": sorted(self.retrieval_arms),
+                "use_case": self.use_case,
+            },
+        }
+
+
+@dataclass(frozen=True)
 class RankedEntity:
     entity_type: str
     entity_id: str
@@ -580,6 +631,11 @@ class Recommendation:
 def _require_unit_interval(name: str, value: float) -> None:
     if not 0 <= value <= 1:
         raise ValueError(f"{name} must be between 0 and 1")
+
+
+def _require_nonnegative_finite(name: str, value: float) -> None:
+    if not isinstance(value, (int, float)) or isinstance(value, bool) or not math.isfinite(value) or value < 0:
+        raise ValueError(f"{name} must be a finite number >= 0")
 
 
 def _require_methodology_version(value: str) -> None:

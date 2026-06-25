@@ -13,6 +13,7 @@ from evalrank_core.contracts import (
     RawEntry,
     RankedEntity,
     Recommendation,
+    StageCandidate,
     TheCall,
 )
 
@@ -123,6 +124,17 @@ def sample_candidate_set() -> CandidateSet:
         use_case="web-research:freshness-check",
         candidates=(sample_entity_ref(),),
         generated_at=PUBLIC_GENERATED_AT,
+    )
+
+
+def sample_stage_candidate() -> StageCandidate:
+    return StageCandidate(
+        candidate_id=sample_capability_fingerprint_input().fingerprint(),
+        entity=sample_entity_ref(),
+        fused_score=0.0327864,
+        rrf_components={"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
+        retrieval_arms=("lexical", "semantic"),
+        use_case="web-research:freshness-check",
     )
 
 

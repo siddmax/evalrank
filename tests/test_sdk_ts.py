@@ -47,6 +47,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "RankedEntity",
             "RawEntry",
             "Recommendation",
+            "StageCandidate",
             "TheCall",
         ):
             self.assertIn(f"export interface {name}", source)
@@ -78,6 +79,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "recommendation_id",
             "recommend_id",
             "search_run_id",
+            "rrf_components",
+            "retrieval_provenance",
             "abstention_reason",
         ):
             self.assertRegex(source, rf"\b{field}\??:")

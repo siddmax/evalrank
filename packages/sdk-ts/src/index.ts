@@ -78,6 +78,22 @@ export interface CandidateSet {
   generated_at: string;
 }
 
+export interface StageCandidate {
+  object: "stage_candidate";
+  candidate_id: string;
+  entity: EntityRef;
+  fused_score: number;
+  rrf_components: {
+    lexical_rank: number | null;
+    semantic_rank: number | null;
+    graph_rank: number | null;
+  };
+  retrieval_provenance: {
+    arms: string[];
+    use_case: string;
+  };
+}
+
 export interface EvidenceSet {
   object: "evidence_set";
   request_id: string;

@@ -9,6 +9,7 @@ evalrank fixture fingerprint
 evalrank fixture raw-entry
 evalrank fixture request
 evalrank fixture candidate-set
+evalrank fixture stage-candidate
 evalrank fixture evidence
 evalrank fixture evidence-set
 evalrank fixture exclusion

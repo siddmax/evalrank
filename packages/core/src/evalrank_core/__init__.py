@@ -11,6 +11,7 @@ from evalrank_core.contracts import (
     RawEntry,
     Recommendation,
     RankedEntity,
+    StageCandidate,
     THE_CALL_DECISIONS,
     TheCall,
 )
@@ -25,6 +26,7 @@ from evalrank_core.fixtures import (
     sample_ranked_entity,
     sample_raw_entry,
     sample_recommendation,
+    sample_stage_candidate,
 )
 
 __version__ = "0.0.0"
@@ -42,6 +44,7 @@ __all__ = [
     "RawEntry",
     "Recommendation",
     "RankedEntity",
+    "StageCandidate",
     "THE_CALL_DECISIONS",
     "TheCall",
     "sample_capability_fingerprint_input",
@@ -54,5 +57,6 @@ __all__ = [
     "sample_ranked_entity",
     "sample_raw_entry",
     "sample_recommendation",
+    "sample_stage_candidate",
     "__version__",
 ]

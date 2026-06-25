@@ -19,6 +19,7 @@ from evalrank_core.contracts import (  # noqa: E402
     RawEntry,
     Recommendation,
     RankedEntity,
+    StageCandidate,
     TheCall,
 )
 
@@ -533,6 +534,77 @@ class CoreContractTests(unittest.TestCase):
                 evidence_items=(evidence,),
                 generated_at="",
             )
+
+    def test_stage_candidate_serializes_public_stage_one_boundary(self):
+        candidate = StageCandidate(
+            candidate_id=PUBLIC_CAPABILITY_FINGERPRINT,
+            entity=EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),
+            fused_score=0.0327864,
+            rrf_components={"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
+            retrieval_arms=("semantic", "lexical"),
+            use_case="web-research:freshness-check",
+        )
+
+        self.assertEqual(
+            {
+                "object": "stage_candidate",
+                "candidate_id": PUBLIC_CAPABILITY_FINGERPRINT,
+                "entity": {"entity_type": "mcp_server", "id": "tool:public-search-demo"},
+                "fused_score": 0.032786,
+                "rrf_components": {"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
+                "retrieval_provenance": {
+                    "arms": ["lexical", "semantic"],
+                    "use_case": "web-research:freshness-check",
+                },
+            },
+            candidate.to_dict(),
+        )
+
+    def test_stage_candidate_rejects_invalid_public_shape(self):
+        entity = EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo")
+        valid = {
+            "candidate_id": PUBLIC_CAPABILITY_FINGERPRINT,
+            "entity": entity,
+            "fused_score": 0.032786,
+            "rrf_components": {"lexical_rank": 1, "semantic_rank": 2, "graph_rank": None},
+            "retrieval_arms": ("lexical", "semantic"),
+            "use_case": "web-research:freshness-check",
+        }
+
+        with self.assertRaisesRegex(ValueError, "candidate_id"):
+            StageCandidate(**{**valid, "candidate_id": "not-a-fingerprint"})
+
+        with self.assertRaisesRegex(TypeError, "entity"):
+            StageCandidate(**{**valid, "entity": "tool:public-search-demo"})
+
+        with self.assertRaisesRegex(ValueError, "fused_score"):
+            StageCandidate(**{**valid, "fused_score": -0.1})
+
+        with self.assertRaisesRegex(ValueError, "rrf_components"):
+            StageCandidate(**{**valid, "rrf_components": {"lexical_rank": 1}})
+
+        with self.assertRaisesRegex(ValueError, "rrf_components"):
+            StageCandidate(**{**valid, "rrf_components": ["lexical_rank", "semantic_rank", "graph_rank"]})
+
+        with self.assertRaisesRegex(ValueError, "semantic_rank"):
+            StageCandidate(
+                **{
+                    **valid,
+                    "rrf_components": {"lexical_rank": 1, "semantic_rank": 0, "graph_rank": None},
+                }
+            )
+
+        with self.assertRaisesRegex(ValueError, "retrieval_arms"):
+            StageCandidate(**{**valid, "retrieval_arms": ("lexical", "lexical")})
+
+        with self.assertRaisesRegex(ValueError, "retrieval_arms"):
+            StageCandidate(**{**valid, "retrieval_arms": "semantic"})
+
+        with self.assertRaisesRegex(ValueError, "retrieval_arms"):
+            StageCandidate(**{**valid, "retrieval_arms": ("",)})
+
+        with self.assertRaisesRegex(ValueError, "use_case"):
+            StageCandidate(**{**valid, "use_case": ""})
 
     def test_evaluation_request_serializes_public_input_context(self):
         request = EvaluationRequest(

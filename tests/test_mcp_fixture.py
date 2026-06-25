@@ -29,6 +29,7 @@ class McpFixtureTests(unittest.TestCase):
                 "raw-entry",
                 "recommendation",
                 "request",
+                "stage-candidate",
             ],
             tools[0]["inputSchema"]["properties"]["kind"]["enum"],
         )
@@ -80,6 +81,14 @@ class McpFixtureTests(unittest.TestCase):
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("evidence_set", payload["object"])
         self.assertEqual("ev_public_trace_01", payload["evidence_items"][0]["evidence_id"])
+
+    def test_call_tool_returns_public_stage_candidate_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "stage-candidate"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("stage_candidate", payload["object"])
+        self.assertEqual("tool:public-search-demo", payload["entity"]["id"])
 
     def test_call_tool_returns_public_raw_entry_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "raw-entry"})

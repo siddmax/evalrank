@@ -17,6 +17,7 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_ranked_entity,
     sample_raw_entry,
     sample_recommendation,
+    sample_stage_candidate,
 )
 
 
@@ -98,6 +99,16 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("web-research:freshness-check", payload["use_case"])
         self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
         self.assertEqual([{"entity_type": "mcp_server", "id": "tool:public-search-demo"}], payload["candidates"])
+
+    def test_sample_stage_candidate_is_public_contract_payload(self):
+        candidate = sample_stage_candidate()
+        payload = candidate.to_dict()
+
+        self.assertEqual("stage_candidate", payload["object"])
+        self.assertEqual(64, len(payload["candidate_id"]))
+        self.assertEqual("tool:public-search-demo", payload["entity"]["id"])
+        self.assertEqual(["graph_rank", "lexical_rank", "semantic_rank"], sorted(payload["rrf_components"]))
+        self.assertEqual(["lexical", "semantic"], payload["retrieval_provenance"]["arms"])
 
     def test_sample_raw_entry_is_public_contract_payload(self):
         entry = sample_raw_entry()
