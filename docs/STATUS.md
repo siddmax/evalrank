@@ -75,6 +75,7 @@ Last updated: 2026-06-26
 - Public fixture dispatch build log in `docs/build-log/2026-06-26-public-fixture-dispatch.md`.
 - TypeScript fixture-kind parity build log in `docs/build-log/2026-06-26-typescript-fixture-kind-parity.md`.
 - Public fixture example README drift-check build log in `docs/build-log/2026-06-26-example-readme-drift-check.md`.
+- Public fixture example nested contract README drift-check build log in `docs/build-log/2026-06-26-example-nested-contract-drift-check.md`.
 - Score-component map hardening build log in `docs/build-log/2026-06-26-score-components-contract-hardening.md`.
 - Recommendation envelope validation hardening build log in `docs/build-log/2026-06-26-recommendation-envelope-contract-hardening.md`.
 - JSON-object metadata validation hardening build log in `docs/build-log/2026-06-26-json-object-contract-hardening.md`.
@@ -97,7 +98,7 @@ Last updated: 2026-06-26
 | CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture result-row`, `fixture use-cases`, `fixture scoring-stages`, `fixture ranking-group`, `fixture evidence-set`, `fixture exclusion`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |
 | MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence`, `result-row`, `use-cases`, `scoring-stages`, `ranking-group`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
 | Methods | Public scoring-stage vocabulary and storage-free `ScoringStageCatalog`, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, and `Abstention`; public use-case taxonomy method; and private-boundary notes. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
-| Examples | `examples/public_fixture.py` prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, scoring stage catalog, exclusion, and recommendation JSON; its README is drift-checked against the emitted JSON keys. | Non-fixture demos, live API examples, and private-data examples. |
+| Examples | `examples/public_fixture.py` prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, evidence set, result row, use-case catalog, scoring stage catalog, exclusion, and recommendation JSON; its README is drift-checked against the emitted JSON keys plus nested recommendation and scoring-stage contract refs. | Non-fixture demos, live API examples, and private-data examples. |
 | Docs | Status tracker, repo structure map, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
 
 ## Progress Snapshot
@@ -119,6 +120,7 @@ Last updated: 2026-06-26
 | CLI, MCP, Python SDK, and TypeScript SDK fixture-kind surfaces now share the core public fixture-kind dispatch. | Built here as local deterministic fixture behavior. | SDK / CLI / MCP, Open-Core Boundary / CI |
 | `GET /v1/scoring-stages` now exposes the public scoring-stage catalog route contract. | Built here as OpenAPI contract only; no live server, auth, storage, scorer runtime, or hosted deployment behavior was added. | Public Surface Contracts, Methods / Schemas |
 | Package and example README drift checks now guard public fixture, SDK, core, and schema surfaces. | Built here with stdlib tests. | Open-Core Boundary / CI, Docs / Public Planning |
+| Example README drift checks now include nested public fixture contract refs for recommendation abstention, `the_call`, and scoring-stage output contracts. | Built here as a deterministic docs/example guard; no runtime behavior or private fixture moved. | Open-Core Boundary / CI, Examples |
 | Ranked entity `score_components` now reject non-object maps, blank/non-string names, booleans, and out-of-range values before serialization. | Built here as public contract hardening; no private scorer formula was added. | Public Contracts, Methods / Schemas |
 | Recommendation envelopes now reject schema-incompatible metadata and duplicate ranked entities before serialization. | Built here as public contract hardening; no scorer/runtime, route implementation, hosted receipt, or private evidence behavior was added. | Public Contracts, Methods / Schemas |
 | Evidence item `metadata` and evaluation request `constraints` now reject non-object, non-string-key, and non-JSON values before serialization. | Built here as public contract hardening; no private evidence lookup, source adapter, or policy behavior was added. | Public Contracts, Methods / Schemas |

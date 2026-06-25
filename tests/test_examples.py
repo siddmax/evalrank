@@ -64,6 +64,34 @@ class PublicExampleTests(unittest.TestCase):
             with self.subTest(key=key):
                 self.assertIn(f"`{key}`", readme)
 
+    def test_public_fixture_readme_lists_nested_contract_refs(self):
+        result = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "examples" / "public_fixture.py")],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        payload = json.loads(result.stdout)
+        readme = (REPO_ROOT / "examples" / "README.md").read_text(encoding="utf-8")
+        self.assertIn("abstention", payload["recommendation"])
+        self.assertIn("the_call", payload["recommendation"])
+        output_contracts = {
+            contract
+            for stage in payload["scoring_stages"]["stages"]
+            for contract in stage["output_contracts"]
+        }
+        self.assertIn("Abstention", output_contracts)
+        for ref in (
+            "recommendation.abstention",
+            "recommendation.the_call",
+            "scoring_stages.stages[].output_contracts",
+            "Abstention",
+        ):
+            with self.subTest(ref=ref):
+                self.assertIn(f"`{ref}`", readme)
+
 
 if __name__ == "__main__":
     unittest.main()
