@@ -39,3 +39,30 @@ make check
 ```
 
 The boundary gate rejects private imports, Smithery coupling, Min-K% implementation markers, secret files, high-signal secret values, private data paths, and public packages missing license or notice files.
+
+## Public Fixture Surfaces
+
+These examples use local checkout paths until the packages are published.
+
+CLI:
+
+```sh
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
+```
+
+Python SDK:
+
+```python
+from evalrank_sdk import sample_evidence_item
+
+payload = sample_evidence_item().to_dict()
+```
+
+MCP adapter:
+
+```python
+from evalrank_mcp import call_tool
+
+result = call_tool("evalrank.fixture", {"kind": "evidence"})
+```
