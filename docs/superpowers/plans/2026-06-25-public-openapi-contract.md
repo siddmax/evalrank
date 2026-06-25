@@ -116,7 +116,7 @@ Expected: boundary check exits 0. Run the high-signal secret scan from shell his
 
 Run the available gstack/superpower review gate on the diff. Fix only concrete issues.
 
-- [ ] **Step 3: Commit and push**
+- [x] **Step 3: Commit and push**
 
 Commit with:
 
