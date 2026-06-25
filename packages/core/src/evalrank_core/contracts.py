@@ -584,7 +584,11 @@ class RankedEntity:
             raise ValueError(f"trust_tier must be one of {sorted(TRUST_TIERS)}")
         if self.evidence_count < 0:
             raise ValueError("evidence_count must be >= 0")
+        if not isinstance(self.score_components, dict):
+            raise ValueError("score_components must be a JSON object")
         for name, value in self.score_components.items():
+            if not isinstance(name, str) or not name:
+                raise ValueError("score_components keys must be non-empty strings")
             _require_unit_interval(f"score_components.{name}", value)
 
     def to_dict(self) -> dict[str, Any]:
@@ -860,7 +864,12 @@ class Recommendation:
 
 
 def _require_unit_interval(name: str, value: float) -> None:
-    if not 0 <= value <= 1:
+    if (
+        not isinstance(value, (int, float))
+        or isinstance(value, bool)
+        or not math.isfinite(value)
+        or not 0 <= value <= 1
+    ):
         raise ValueError(f"{name} must be between 0 and 1")
 
 

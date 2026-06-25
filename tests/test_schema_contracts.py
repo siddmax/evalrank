@@ -165,6 +165,17 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(USE_CASE_ENTITY_KINDS, set(use_case_schema["properties"]["entity_kinds"]["items"]["enum"]))
         self.assertEqual(USE_CASE_RANK_POLICIES, set(use_case_schema["properties"]["rank_policy"]["enum"]))
 
+    def test_ranked_entity_schema_pins_score_components_map_shape(self):
+        ranked_schema = _schema("ranked-entity.schema.json")
+        score_components = ranked_schema["properties"]["score_components"]
+
+        self.assertEqual("object", score_components["type"])
+        self.assertEqual({"type": "string", "minLength": 1}, score_components["propertyNames"])
+        self.assertEqual(
+            {"type": "number", "minimum": 0, "maximum": 1},
+            score_components["additionalProperties"],
+        )
+
     def test_methodology_version_schema_pattern_matches_pinned_format(self):
         ranked_schema = _schema("ranked-entity.schema.json")
         recommendation_schema = _schema("recommendation.schema.json")

@@ -73,6 +73,10 @@
     },
     "score_components": {
       "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1
+      },
       "additionalProperties": {
         "type": "number",
         "minimum": 0,

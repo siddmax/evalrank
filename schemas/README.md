@@ -20,6 +20,8 @@ Public EvalRank JSON Schema contracts live here.
 
 Schemas that expose `methodology_version` require `YYYY-MM-DD.SEQ.slug`.
 
+Ranked entity schemas require `score_components` to be a public explanation map with non-empty names and 0-1 numeric scores. Private weights, formulas, and scorer calibration stay outside this repo.
+
 Recommendation schemas require `recommendation_id`, `recommend_id`, and `search_run_id` to share the public `rec_` ID shape. They also pin the nested public `the_call` shape to `decision`, `confidence`, `reason`, and `abstention_reason`, use `exclusion.schema.json` for exclusions-with-reasons, and close ranking-group rows for `kind-grouped` recommendations.
 
 Candidate set schemas require at least one unique public `EntityRef`; source adapters and graph lookup stay outside this repo.

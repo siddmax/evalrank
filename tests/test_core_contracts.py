@@ -299,6 +299,23 @@ class CoreContractTests(unittest.TestCase):
                 evidence_count=10,
             )
 
+        valid = {
+            "entity_type": "model_version",
+            "entity_id": "model_version:vendor/model@1",
+            "rank": 1,
+            "capability_score": 0.4,
+            "confidence": 0.5,
+            "ci95": ConfidenceInterval(low=0.4, high=0.6),
+            "methodology_version": PINNED_METHODOLOGY_VERSION,
+            "trust_tier": "verified",
+            "freshness": Freshness(status="fresh", last_eval="2026-06-10", next_refresh="2026-06-17"),
+            "evidence_count": 10,
+        }
+        for components in ("not-a-map", {"": 0.5}, {1: 0.5}, {"capability": True}, {"capability": 1.2}):
+            with self.subTest(components=components):
+                with self.assertRaisesRegex(ValueError, "score_components"):
+                    RankedEntity(**{**valid, "score_components": components})
+
         with self.assertRaisesRegex(ValueError, "methodology_version"):
             RankedEntity(
                 entity_type="model_version",
