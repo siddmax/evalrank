@@ -10,9 +10,9 @@ Last updated: 2026-06-25
 - `CLAUDE.md` shim to `@AGENTS.md`.
 - Public boundary checker for private imports, disallowed coupling, excluded method markers, and missing package license/notice files.
 - Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
-- Core Python recommendation contracts in `packages/core`.
-- Public core fixture factory for canonical example recommendation payloads.
-- Public JSON Schemas for ranked entities and recommendations.
+- Core Python recommendation and evidence contracts in `packages/core`.
+- Public core fixture factory for canonical example recommendation and evidence payloads.
+- Public JSON Schemas for ranked entities, recommendations, and evidence items.
 - Schema drift tests for core payload keys and public enum constants.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
 - Public progress tracker and repo structure map.
@@ -22,11 +22,11 @@ Last updated: 2026-06-25
 - W0 public exit packet in `docs/build-log/2026-06-25-w0-public-exit.md`.
 - Public W1 entity/evidence contract plan in `docs/superpowers/plans/2026-06-25-entity-evidence-contracts.md`.
 - Public porting workstream sync in `docs/build-log/2026-06-25-porting-workstream-sync.md`.
+- W1 entity/evidence contract build log in `docs/build-log/2026-06-25-w1-entity-evidence-contracts.md`.
 
 ## In Progress
 
 - Public/private porting triage.
-- W1 public contract buildout for storage-free entity references, evidence items, and public evidence schemas.
 - Current source of truth is split between:
   - Python contracts in `packages/core/src/evalrank_core/contracts.py`
   - Public JSON Schemas in `schemas/`
@@ -47,7 +47,6 @@ Last updated: 2026-06-25
 
 ## Next
 
-- Implement the W1 entity/evidence contracts from `docs/superpowers/plans/2026-06-25-entity-evidence-contracts.md`.
 - Add an OpenAPI skeleton only when the first REST surface exists or a concrete route contract is ready.
 - Add package-level implementation for the next public surface only after its contract is pinned.
 - Add `NAVIGATION.md` when EvalRank has UI routes, API routes, deeplinks, or navigation-critical docs.

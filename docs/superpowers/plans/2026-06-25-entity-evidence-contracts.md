@@ -19,7 +19,7 @@
 - Test: `tests/test_core_contracts.py`
 - Test: `tests/test_core_fixtures.py`
 
-- [ ] **Step 1: Add failing tests for entity/evidence payloads**
+- [x] **Step 1: Add failing tests for entity/evidence payloads**
 
 ```python
 def test_evidence_item_serializes_public_subject_and_score():
@@ -30,15 +30,15 @@ def test_evidence_item_serializes_public_subject_and_score():
 Run: `python3 -m unittest tests.test_core_contracts`
 Expected: FAIL because `EvidenceItem` and `EntityRef` are not defined.
 
-- [ ] **Step 2: Implement minimal dataclasses**
+- [x] **Step 2: Implement minimal dataclasses**
 
 Add `EntityRef` and `EvidenceItem` to `contracts.py`. Validate required IDs, allowed evidence kinds, non-empty source/timestamps, and optional `score` in `[0, 1]`.
 
-- [ ] **Step 3: Export and fixture the contracts**
+- [x] **Step 3: Export and fixture the contracts**
 
 Export both classes from `evalrank_core.__init__`. Add `sample_entity_ref()` and `sample_evidence_item()` to `fixtures.py`.
 
-- [ ] **Step 4: Run focused tests**
+- [x] **Step 4: Run focused tests**
 
 Run: `python3 -m unittest tests.test_core_contracts tests.test_core_fixtures`
 Expected: PASS.
@@ -52,18 +52,18 @@ Expected: PASS.
 - Modify: `TESTS.md`
 - Modify: `docs/STATUS.md`
 
-- [ ] **Step 1: Add failing schema drift tests**
+- [x] **Step 1: Add failing schema drift tests**
 
 Assert `sample_evidence_item().to_dict()` keys match `evidence-item.schema.json`, and schema enums match core constants.
 
 Run: `python3 -m unittest tests.test_schema_contracts`
 Expected: FAIL because the schema file does not exist.
 
-- [ ] **Step 2: Add schema and docs**
+- [x] **Step 2: Add schema and docs**
 
 Create `schemas/evidence-item.schema.json` with strict top-level properties for `evidence_id`, `subject`, `kind`, `source`, `observed_at`, `summary`, `score`, and `metadata`.
 
-- [ ] **Step 3: Run full check**
+- [x] **Step 3: Run full check**
 
 Run: `make check`
 Expected: PASS.

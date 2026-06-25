@@ -8,6 +8,7 @@ sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.fixtures import (  # noqa: E402
     PUBLIC_METHODOLOGY_VERSION,
+    sample_evidence_item,
     sample_ranked_entity,
     sample_recommendation,
 )
@@ -31,6 +32,16 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("single-scale", payload["comparability"])
         self.assertEqual([sample_ranked_entity().to_dict()], payload["ranked"])
         self.assertEqual(sample_recommendation().recommendation_id, rec.recommendation_id)
+
+    def test_sample_evidence_item_is_public_contract_payload(self):
+        evidence = sample_evidence_item()
+        payload = evidence.to_dict()
+
+        self.assertEqual("ev_public_trace_01", payload["evidence_id"])
+        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertEqual("trace", payload["kind"])
+        self.assertEqual("public-fixture", payload["source"])
+        self.assertEqual(["latency_ms"], sorted(payload["metadata"]))
 
 
 if __name__ == "__main__":

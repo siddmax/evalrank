@@ -12,18 +12,21 @@ sys.path.insert(0, str(CORE_SRC))
 from evalrank_core.contracts import (  # noqa: E402
     COMPARABILITY_MODES,
     ConfidenceInterval,
+    EVIDENCE_KINDS,
     FRESHNESS_STATUSES,
     Freshness,
     Recommendation,
     RankedEntity,
     TRUST_TIERS,
 )
+from evalrank_core.fixtures import sample_evidence_item  # noqa: E402
 
 
 class SchemaContractTests(unittest.TestCase):
     def test_public_schema_files_cover_core_payload_keys(self):
         ranked_schema = _schema("ranked-entity.schema.json")
         recommendation_schema = _schema("recommendation.schema.json")
+        evidence_schema = _schema("evidence-item.schema.json")
 
         ranked_payload = _row().to_dict()
         recommendation_payload = Recommendation.single_scale(
@@ -39,9 +42,12 @@ class SchemaContractTests(unittest.TestCase):
         self.assertLessEqual(set(ranked_schema["required"]), set(ranked_payload))
         self.assertEqual(set(recommendation_payload), set(recommendation_schema["properties"]))
         self.assertLessEqual(set(recommendation_schema["required"]), set(recommendation_payload))
+        evidence_payload = sample_evidence_item().to_dict()
+        self.assertEqual(set(evidence_payload), set(evidence_schema["properties"]))
+        self.assertLessEqual(set(evidence_schema["required"]), set(evidence_payload))
 
     def test_schemas_are_draft_2020_12_objects(self):
-        for filename in ("ranked-entity.schema.json", "recommendation.schema.json"):
+        for filename in ("ranked-entity.schema.json", "recommendation.schema.json", "evidence-item.schema.json"):
             schema = _schema(filename)
 
             self.assertEqual("https://json-schema.org/draft/2020-12/schema", schema["$schema"])
@@ -59,6 +65,8 @@ class SchemaContractTests(unittest.TestCase):
             set(ranked_schema["properties"]["freshness"]["properties"]["status"]["enum"]),
         )
         self.assertEqual(COMPARABILITY_MODES, set(recommendation_schema["properties"]["comparability"]["enum"]))
+        evidence_schema = _schema("evidence-item.schema.json")
+        self.assertEqual(EVIDENCE_KINDS, set(evidence_schema["properties"]["kind"]["enum"]))
 
 
 def _schema(filename: str) -> dict:

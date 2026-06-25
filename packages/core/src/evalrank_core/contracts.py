@@ -9,6 +9,7 @@ from typing import Any, ClassVar
 TRUST_TIERS = {"verified", "standardized", "self-reported", "tracking-only"}
 FRESHNESS_STATUSES = {"fresh", "stale", "recalibrating"}
 COMPARABILITY_MODES = {"single-scale", "kind-grouped"}
+EVIDENCE_KINDS = {"attestation", "benchmark", "documentation", "runtime-observation", "trace"}
 
 
 @dataclass(frozen=True)
@@ -45,6 +46,66 @@ class Freshness:
             "last_eval": self.last_eval,
             "next_refresh": self.next_refresh,
             "status": self.status,
+        }
+
+
+@dataclass(frozen=True)
+class EntityRef:
+    entity_type: str
+    entity_id: str
+
+    def __post_init__(self) -> None:
+        if not self.entity_type:
+            raise ValueError("entity_type is required")
+        if not self.entity_id:
+            raise ValueError("entity_id is required")
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "entity_type": self.entity_type,
+            "id": self.entity_id,
+        }
+
+
+@dataclass(frozen=True)
+class EvidenceItem:
+    evidence_id: str
+    subject: EntityRef
+    kind: str
+    source: str
+    observed_at: str
+    summary: str
+    score: float | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        if not self.evidence_id:
+            raise ValueError("evidence_id is required")
+        if not isinstance(self.subject, EntityRef):
+            raise TypeError("subject must be an EntityRef")
+        if self.kind not in EVIDENCE_KINDS:
+            raise ValueError(f"kind must be one of {sorted(EVIDENCE_KINDS)}")
+        if not self.source:
+            raise ValueError("source is required")
+        if not self.observed_at:
+            raise ValueError("observed_at is required")
+        if not self.summary:
+            raise ValueError("summary is required")
+        if self.score is not None:
+            _require_unit_interval("score", self.score)
+        if any(not isinstance(key, str) for key in self.metadata):
+            raise ValueError("metadata keys must be strings")
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "evidence_id": self.evidence_id,
+            "subject": self.subject.to_dict(),
+            "kind": self.kind,
+            "source": self.source,
+            "observed_at": self.observed_at,
+            "summary": self.summary,
+            "score": None if self.score is None else _round_score(self.score),
+            "metadata": {key: self.metadata[key] for key in sorted(self.metadata)},
         }
 
 

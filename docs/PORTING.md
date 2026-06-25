@@ -22,13 +22,14 @@ Last reviewed: 2026-06-25
 - Direct `main` push workflow for the scratch-build phase.
 - `make check` public local/CI gate.
 - W0 public exit packet and W1 entity/evidence contract plan.
+- Storage-free entity references, evidence items, public fixtures, and evidence-item schema.
 
 ## Porting Decisions
 
 | Artifact or workstream | Destination | Owner workstream | Status |
 | --- | --- | --- | --- |
 | Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Partly ported |
-| Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Planned next |
+| Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Ported |
 | Repo boundary checks, license hygiene, and CI gates | This repo | Open-Core Boundary / CI | Partly ported |
 | Sanitized build-readiness summaries from Syndai planning docs | This repo | Docs / Public Planning | In progress |
 | Public build-order and wave status | This repo | Docs / Public Planning | In progress |

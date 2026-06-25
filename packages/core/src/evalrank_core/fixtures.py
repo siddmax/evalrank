@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-from evalrank_core.contracts import ConfidenceInterval, Freshness, RankedEntity, Recommendation
+from evalrank_core.contracts import (
+    ConfidenceInterval,
+    EntityRef,
+    EvidenceItem,
+    Freshness,
+    RankedEntity,
+    Recommendation,
+)
 
 
 PUBLIC_METHODOLOGY_VERSION = "2026.06.1"
@@ -24,6 +31,23 @@ def sample_ranked_entity() -> RankedEntity:
             "evidence": 0.91,
             "freshness": 0.87,
         },
+    )
+
+
+def sample_entity_ref() -> EntityRef:
+    return EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo")
+
+
+def sample_evidence_item() -> EvidenceItem:
+    return EvidenceItem(
+        evidence_id="ev_public_trace_01",
+        subject=sample_entity_ref(),
+        kind="trace",
+        source="public-fixture",
+        observed_at=PUBLIC_GENERATED_AT,
+        summary="public search demo returned a fresh cited result",
+        score=0.8754321,
+        metadata={"latency_ms": 1200},
     )
 
 

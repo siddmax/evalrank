@@ -8,6 +8,8 @@ sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import (  # noqa: E402
     ConfidenceInterval,
+    EntityRef,
+    EvidenceItem,
     Freshness,
     Recommendation,
     RankedEntity,
@@ -127,6 +129,50 @@ class CoreContractTests(unittest.TestCase):
         self.assertFalse(rec.result_usable)
         self.assertEqual([], rec.ranked)
         self.assertEqual("insufficient_evidence", rec.the_call["abstention_reason"])
+
+    def test_evidence_item_serializes_public_subject_and_score(self):
+        item = EvidenceItem(
+            evidence_id="ev_public_trace_01",
+            subject=EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),
+            kind="trace",
+            source="public-fixture",
+            observed_at="2026-06-25T00:00:00Z",
+            summary="public search demo returned a fresh cited result",
+            score=0.8754321,
+            metadata={"latency_ms": 1200, "region": "iad"},
+        )
+
+        payload = item.to_dict()
+
+        self.assertEqual("ev_public_trace_01", payload["evidence_id"])
+        self.assertEqual({"entity_type": "mcp_server", "id": "tool:public-search-demo"}, payload["subject"])
+        self.assertEqual("trace", payload["kind"])
+        self.assertEqual(0.875432, payload["score"])
+        self.assertEqual(["latency_ms", "region"], sorted(payload["metadata"]))
+
+    def test_evidence_item_rejects_invalid_kind_or_score(self):
+        subject = EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo")
+
+        with self.assertRaisesRegex(ValueError, "kind"):
+            EvidenceItem(
+                evidence_id="ev_bad_kind",
+                subject=subject,
+                kind="unsupported-kind",
+                source="public-fixture",
+                observed_at="2026-06-25T00:00:00Z",
+                summary="invalid kind",
+            )
+
+        with self.assertRaisesRegex(ValueError, "score"):
+            EvidenceItem(
+                evidence_id="ev_bad_score",
+                subject=subject,
+                kind="trace",
+                source="public-fixture",
+                observed_at="2026-06-25T00:00:00Z",
+                summary="invalid score",
+                score=1.2,
+            )
 
 
 def _row(entity_id: str, methodology_version: str = "2026.06.1") -> RankedEntity:
