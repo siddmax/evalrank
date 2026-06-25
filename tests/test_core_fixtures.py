@@ -8,6 +8,7 @@ sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.fixtures import (  # noqa: E402
     PUBLIC_METHODOLOGY_VERSION,
+    sample_capability_fingerprint_input,
     sample_evidence_item,
     sample_evaluation_request,
     sample_ranked_entity,
@@ -16,6 +17,14 @@ from evalrank_core.fixtures import (  # noqa: E402
 
 
 class CoreFixtureTests(unittest.TestCase):
+    def test_sample_capability_fingerprint_input_is_public_contract_payload(self):
+        payload = sample_capability_fingerprint_input().to_dict()
+
+        self.assertEqual("capability_fingerprint", payload["object"])
+        self.assertEqual("io.evalrank.public-search-demo", payload["canonical_id"])
+        self.assertEqual("mcp_server", payload["entity_kind"])
+        self.assertEqual(64, len(payload["capability_fingerprint"]))
+
     def test_public_methodology_version_uses_pinned_format(self):
         self.assertEqual("2026-06-25.1.public-fixture-v1", PUBLIC_METHODOLOGY_VERSION)
 

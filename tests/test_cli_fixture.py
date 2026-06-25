@@ -15,6 +15,16 @@ from evalrank_cli import main  # noqa: E402
 
 
 class CliFixtureTests(unittest.TestCase):
+    def test_fixture_fingerprint_writes_public_json(self):
+        stdout = StringIO()
+
+        exit_code = main(["fixture", "fingerprint"], stdout=stdout, stderr=StringIO())
+
+        self.assertEqual(0, exit_code)
+        payload = json.loads(stdout.getvalue())
+        self.assertEqual("capability_fingerprint", payload["object"])
+        self.assertEqual("io.evalrank.public-search-demo", payload["canonical_id"])
+
     def test_fixture_evidence_writes_public_json(self):
         stdout = StringIO()
 

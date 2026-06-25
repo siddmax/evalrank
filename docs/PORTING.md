@@ -17,13 +17,13 @@ Last reviewed: 2026-06-25
 - Root and scoped `AGENTS.md`, plus `CLAUDE.md` shim.
 - Public progress docs: `docs/STATUS.md` and `docs/REPO_STRUCTURE.md`.
 - Public boundary checker and default unit tests.
-- Core Python evaluation request, recommendation, entity reference, and evidence item contracts.
-- Public JSON Schemas for evaluation requests, ranked entities, recommendations, and evidence items.
+- Core Python capability fingerprint, evaluation request, recommendation, entity reference, and evidence item contracts.
+- Public JSON Schemas for capability fingerprints, evaluation requests, ranked entities, recommendations, and evidence items.
 - Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
 - Direct `main` push workflow for the scratch-build phase.
 - `make check` public local/CI gate.
 - W0 public exit packet and W1 entity/evidence contract plan.
-- Storage-free evaluation requests, entity references, evidence items, public fixtures, and schemas.
+- Storage-free capability fingerprints, evaluation requests, entity references, evidence items, public fixtures, and schemas.
 - Python SDK package metadata and public core contract re-exports.
 - TypeScript SDK package metadata and mirrored public contract types/constants.
 - CLI package metadata and deterministic public fixture command.
@@ -35,7 +35,7 @@ Last reviewed: 2026-06-25
 
 | Workstream | Public artifact now in this repo | Private material intentionally excluded |
 | --- | --- | --- |
-| Public Contracts | `EvaluationRequest`, `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
+| Public Contracts | `CapabilityFingerprintInput`, `EvaluationRequest`, `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
 | Methods / Schemas | JSON Schemas for public payloads, the pinned public `methodology_version` format, and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
 | SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
@@ -60,7 +60,7 @@ Public docs may summarize private planning decisions, but must not copy raw priv
 
 | Artifact or workstream | Destination | Owner workstream | Status |
 | --- | --- | --- | --- |
-| Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Request, recommendation, entity, and evidence slices ported |
+| Public contract dataclasses and JSON Schemas | This repo | Public Contracts | Capability fingerprint, request, recommendation, entity, and evidence slices ported |
 | Entity references, evidence items, and evidence-item schema | This repo | Public Contracts | Ported |
 | Repo boundary checks, license hygiene, and CI gates | This repo | Open-Core Boundary / CI | Partly ported |
 | Sanitized build-readiness summaries from Syndai planning docs | This repo | Docs / Public Planning | In progress |

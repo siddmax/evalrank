@@ -1,4 +1,5 @@
 from evalrank_core.contracts import (
+    CapabilityFingerprintInput,
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
@@ -8,6 +9,7 @@ from evalrank_core.contracts import (
     RankedEntity,
 )
 from evalrank_core.fixtures import (
+    sample_capability_fingerprint_input,
     sample_entity_ref,
     sample_evidence_item,
     sample_evaluation_request,
@@ -18,6 +20,7 @@ from evalrank_core.fixtures import (
 __version__ = "0.0.0"
 
 __all__ = [
+    "CapabilityFingerprintInput",
     "ConfidenceInterval",
     "EntityRef",
     "EvidenceItem",
@@ -25,6 +28,7 @@ __all__ = [
     "Freshness",
     "Recommendation",
     "RankedEntity",
+    "sample_capability_fingerprint_input",
     "sample_entity_ref",
     "sample_evidence_item",
     "sample_evaluation_request",

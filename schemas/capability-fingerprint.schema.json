@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/capability-fingerprint.schema.json",
+  "title": "EvalRank Capability Fingerprint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "id_scheme",
+    "canonical_id",
+    "entity_kind",
+    "declared_capability_shape",
+    "capability_fingerprint"
+  ],
+  "properties": {
+    "object": {
+      "const": "capability_fingerprint"
+    },
+    "id_scheme": {
+      "type": "string",
+      "minLength": 1
+    },
+    "canonical_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entity_kind": {
+      "type": "string",
+      "minLength": 1
+    },
+    "declared_capability_shape": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "capability_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

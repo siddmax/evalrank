@@ -10,6 +10,7 @@ SCHEMAS = REPO_ROOT / "schemas"
 sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import (  # noqa: E402
+    CapabilityFingerprintInput,
     COMPARABILITY_MODES,
     ConfidenceInterval,
     EVIDENCE_KINDS,
@@ -31,6 +32,7 @@ class SchemaContractTests(unittest.TestCase):
         recommendation_schema = _schema("recommendation.schema.json")
         evidence_schema = _schema("evidence-item.schema.json")
         request_schema = _schema("evaluation-request.schema.json")
+        fingerprint_schema = _schema("capability-fingerprint.schema.json")
 
         ranked_payload = _row().to_dict()
         recommendation_payload = Recommendation.single_scale(
@@ -52,6 +54,9 @@ class SchemaContractTests(unittest.TestCase):
         request_payload = sample_evaluation_request().to_dict()
         self.assertEqual(set(request_payload), set(request_schema["properties"]))
         self.assertLessEqual(set(request_schema["required"]), set(request_payload))
+        fingerprint_payload = _fingerprint_input().to_dict()
+        self.assertEqual(set(fingerprint_payload), set(fingerprint_schema["properties"]))
+        self.assertLessEqual(set(fingerprint_schema["required"]), set(fingerprint_payload))
 
     def test_schemas_are_draft_2020_12_objects(self):
         for filename in (
@@ -59,6 +64,7 @@ class SchemaContractTests(unittest.TestCase):
             "recommendation.schema.json",
             "evidence-item.schema.json",
             "evaluation-request.schema.json",
+            "capability-fingerprint.schema.json",
         ):
             schema = _schema(filename)
 
@@ -93,6 +99,20 @@ class SchemaContractTests(unittest.TestCase):
 
 def _schema(filename: str) -> dict:
     return json.loads((SCHEMAS / filename).read_text(encoding="utf-8"))
+
+
+def _fingerprint_input() -> CapabilityFingerprintInput:
+    return CapabilityFingerprintInput(
+        id_scheme="reverse_dns",
+        canonical_id="io.evalrank.public-search-demo",
+        entity_kind="mcp_server",
+        declared_capability_shape={
+            "tool_names": ["search"],
+            "param_schemas": {"search": {"type": "object"}},
+            "declared_scopes": ["web.search"],
+            "commit_sha": "abc123",
+        },
+    )
 
 
 def _row() -> RankedEntity:

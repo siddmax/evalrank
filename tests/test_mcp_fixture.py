@@ -19,7 +19,15 @@ class McpFixtureTests(unittest.TestCase):
 
         self.assertEqual(["evalrank.fixture"], [tool["name"] for tool in tools])
         self.assertEqual(["kind"], tools[0]["inputSchema"]["required"])
-        self.assertEqual(["evidence", "recommendation", "request"], tools[0]["inputSchema"]["properties"]["kind"]["enum"])
+        self.assertEqual(["evidence", "fingerprint", "recommendation", "request"], tools[0]["inputSchema"]["properties"]["kind"]["enum"])
+
+    def test_call_tool_returns_public_fingerprint_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("capability_fingerprint", payload["object"])
+        self.assertEqual("io.evalrank.public-search-demo", payload["canonical_id"])
 
     def test_call_tool_returns_public_evidence_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "evidence"})

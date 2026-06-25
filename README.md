@@ -53,6 +53,7 @@ python3 examples/public_fixture.py
 CLI:
 
 ```sh
+PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture fingerprint
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture request
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
 PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
@@ -61,9 +62,9 @@ PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture re
 Python SDK:
 
 ```python
-from evalrank_sdk import sample_evaluation_request
+from evalrank_sdk import sample_capability_fingerprint_input
 
-payload = sample_evaluation_request().to_dict()
+payload = sample_capability_fingerprint_input().to_dict()
 ```
 
 MCP adapter:
@@ -71,13 +72,13 @@ MCP adapter:
 ```python
 from evalrank_mcp import call_tool
 
-result = call_tool("evalrank.fixture", {"kind": "request"})
+result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 ```
 
 TypeScript SDK:
 
 ```ts
-import { type EvaluationRequest } from "@evalrank/sdk";
+import { type CapabilityFingerprint } from "@evalrank/sdk";
 
-const request: EvaluationRequest["object"] = "evaluation_request";
+const object: CapabilityFingerprint["object"] = "capability_fingerprint";
 ```

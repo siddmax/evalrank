@@ -7,6 +7,7 @@ CORE_SRC = Path(__file__).resolve().parents[1] / "packages" / "core" / "src"
 sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import (  # noqa: E402
+    CapabilityFingerprintInput,
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
@@ -18,9 +19,66 @@ from evalrank_core.contracts import (  # noqa: E402
 
 
 PINNED_METHODOLOGY_VERSION = "2026-06-25.1.public-fixture-v1"
+PUBLIC_CAPABILITY_FINGERPRINT = "da617b2b113a59a734acb6166c305086d9a850bac2a40c8febd6e67c7eff3e12"
 
 
 class CoreContractTests(unittest.TestCase):
+    def test_capability_fingerprint_is_stable_over_shape_key_order(self):
+        first = CapabilityFingerprintInput(
+            id_scheme="reverse_dns",
+            canonical_id="io.evalrank.public-search-demo",
+            entity_kind="mcp_server",
+            declared_capability_shape={
+                "tool_names": ["search"],
+                "param_schemas": {"search": {"type": "object"}},
+                "declared_scopes": ["web.search"],
+                "commit_sha": "abc123",
+            },
+        )
+        same_shape_different_order = CapabilityFingerprintInput(
+            id_scheme="reverse_dns",
+            canonical_id="io.evalrank.public-search-demo",
+            entity_kind="mcp_server",
+            declared_capability_shape={
+                "commit_sha": "abc123",
+                "declared_scopes": ["web.search"],
+                "param_schemas": {"search": {"type": "object"}},
+                "tool_names": ["search"],
+            },
+        )
+
+        payload = first.to_dict()
+
+        self.assertEqual("capability_fingerprint", payload["object"])
+        self.assertEqual(PUBLIC_CAPABILITY_FINGERPRINT, payload["capability_fingerprint"])
+        self.assertEqual(PUBLIC_CAPABILITY_FINGERPRINT, same_shape_different_order.fingerprint())
+        self.assertEqual("mcp_server", payload["entity_kind"])
+
+    def test_capability_fingerprint_rejects_missing_or_non_json_shape_keys(self):
+        with self.assertRaisesRegex(ValueError, "canonical_id"):
+            CapabilityFingerprintInput(
+                id_scheme="reverse_dns",
+                canonical_id="",
+                entity_kind="mcp_server",
+                declared_capability_shape={"tool_names": ["search"]},
+            )
+
+        with self.assertRaisesRegex(ValueError, "declared_capability_shape"):
+            CapabilityFingerprintInput(
+                id_scheme="reverse_dns",
+                canonical_id="io.evalrank.public-search-demo",
+                entity_kind="mcp_server",
+                declared_capability_shape={1: "not-public-json-key"},
+            )
+
+        with self.assertRaisesRegex(ValueError, "declared_capability_shape"):
+            CapabilityFingerprintInput(
+                id_scheme="reverse_dns",
+                canonical_id="io.evalrank.public-search-demo",
+                entity_kind="mcp_server",
+                declared_capability_shape={"score": float("nan")},
+            )
+
     def test_ranked_entity_requires_score_context(self):
         row = RankedEntity(
             entity_type="mcp_server",

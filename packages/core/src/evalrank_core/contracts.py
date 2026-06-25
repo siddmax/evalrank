@@ -52,6 +52,49 @@ class Freshness:
 
 
 @dataclass(frozen=True)
+class CapabilityFingerprintInput:
+    object: ClassVar[str] = "capability_fingerprint"
+
+    id_scheme: str
+    canonical_id: str
+    entity_kind: str
+    declared_capability_shape: dict[str, Any]
+
+    def __post_init__(self) -> None:
+        if not self.id_scheme:
+            raise ValueError("id_scheme is required")
+        if not self.canonical_id:
+            raise ValueError("canonical_id is required")
+        if not self.entity_kind:
+            raise ValueError("entity_kind is required")
+        if not isinstance(self.declared_capability_shape, dict) or not self.declared_capability_shape:
+            raise ValueError("declared_capability_shape is required")
+        _require_string_keys("declared_capability_shape", self.declared_capability_shape)
+        _normalize_json_object("declared_capability_shape", self.declared_capability_shape)
+
+    def fingerprint(self) -> str:
+        encoded = json.dumps(self._hash_input(), sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+        return hashlib.sha256(encoded).hexdigest()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "object": self.object,
+            **self._hash_input(),
+            "capability_fingerprint": self.fingerprint(),
+        }
+
+    def _hash_input(self) -> dict[str, Any]:
+        return {
+            "id_scheme": self.id_scheme,
+            "canonical_id": self.canonical_id,
+            "entity_kind": self.entity_kind,
+            "declared_capability_shape": _normalize_json_object(
+                "declared_capability_shape", self.declared_capability_shape
+            ),
+        }
+
+
+@dataclass(frozen=True)
 class EntityRef:
     entity_type: str
     entity_id: str
@@ -333,6 +376,24 @@ def _require_unit_interval(name: str, value: float) -> None:
 def _require_methodology_version(value: str) -> None:
     if not isinstance(value, str) or not _METHODOLOGY_VERSION_RE.fullmatch(value):
         raise ValueError("methodology_version must match YYYY-MM-DD.SEQ.slug")
+
+
+def _require_string_keys(name: str, value: Any) -> None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if not isinstance(key, str):
+                raise ValueError(f"{name} keys must be strings")
+            _require_string_keys(f"{name}.{key}", child)
+    elif isinstance(value, (list, tuple)):
+        for child in value:
+            _require_string_keys(name, child)
+
+
+def _normalize_json_object(name: str, value: dict[str, Any]) -> dict[str, Any]:
+    try:
+        return json.loads(json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must be JSON serializable") from exc
 
 
 def _round_score(value: float) -> float:

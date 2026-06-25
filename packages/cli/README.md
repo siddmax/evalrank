@@ -5,6 +5,7 @@ Command-line boundary for public EvalRank workflows.
 Current command:
 
 ```sh
+evalrank fixture fingerprint
 evalrank fixture request
 evalrank fixture evidence
 evalrank fixture recommendation

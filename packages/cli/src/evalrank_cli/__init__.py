@@ -6,7 +6,12 @@ import sys
 from contextlib import redirect_stderr
 from typing import TextIO
 
-from evalrank_core.fixtures import sample_evidence_item, sample_evaluation_request, sample_recommendation
+from evalrank_core.fixtures import (
+    sample_capability_fingerprint_input,
+    sample_evidence_item,
+    sample_evaluation_request,
+    sample_recommendation,
+)
 
 
 def main(argv: list[str] | None = None, *, stdout: TextIO | None = None, stderr: TextIO | None = None) -> int:
@@ -34,7 +39,7 @@ def _parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     fixture = subparsers.add_parser("fixture", help="write a public fixture payload")
-    fixture.add_argument("kind", choices=("evidence", "recommendation", "request"))
+    fixture.add_argument("kind", choices=("evidence", "fingerprint", "recommendation", "request"))
 
     return parser
 
@@ -42,6 +47,8 @@ def _parser() -> argparse.ArgumentParser:
 def _fixture_payload(kind: str) -> dict:
     if kind == "evidence":
         return sample_evidence_item().to_dict()
+    if kind == "fingerprint":
+        return sample_capability_fingerprint_input().to_dict()
     if kind == "recommendation":
         return sample_recommendation().to_dict()
     if kind == "request":

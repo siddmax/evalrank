@@ -1,4 +1,5 @@
 from evalrank_core import (
+    CapabilityFingerprintInput,
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
@@ -6,6 +7,7 @@ from evalrank_core import (
     Freshness,
     Recommendation,
     RankedEntity,
+    sample_capability_fingerprint_input,
     sample_entity_ref,
     sample_evidence_item,
     sample_evaluation_request,
@@ -16,6 +18,7 @@ from evalrank_core import (
 __version__ = "0.0.0"
 
 __all__ = [
+    "CapabilityFingerprintInput",
     "ConfidenceInterval",
     "EntityRef",
     "EvidenceItem",
@@ -23,6 +26,7 @@ __all__ = [
     "Freshness",
     "Recommendation",
     "RankedEntity",
+    "sample_capability_fingerprint_input",
     "sample_entity_ref",
     "sample_evidence_item",
     "sample_evaluation_request",

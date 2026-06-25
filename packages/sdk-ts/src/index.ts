@@ -40,6 +40,15 @@ export interface EntityRef {
   id: string;
 }
 
+export interface CapabilityFingerprint {
+  object: "capability_fingerprint";
+  id_scheme: string;
+  canonical_id: string;
+  entity_kind: string;
+  declared_capability_shape: Record<string, unknown>;
+  capability_fingerprint: string;
+}
+
 export interface EvaluationRequest {
   object: "evaluation_request";
   request_id: string;

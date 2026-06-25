@@ -35,10 +35,10 @@ class TypeScriptSdkTests(unittest.TestCase):
     def test_public_interfaces_cover_schema_payloads(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
 
-        for name in ("EntityRef", "EvaluationRequest", "EvidenceItem", "RankedEntity", "Recommendation"):
+        for name in ("CapabilityFingerprint", "EntityRef", "EvaluationRequest", "EvidenceItem", "RankedEntity", "Recommendation"):
             self.assertIn(f"export interface {name}", source)
 
-        for field in ("request_id", "entity_types", "requested_at", "constraints", "evidence_id", "subject", "kind", "source", "observed_at", "summary", "metadata"):
+        for field in ("capability_fingerprint", "id_scheme", "canonical_id", "declared_capability_shape", "request_id", "entity_types", "requested_at", "constraints", "evidence_id", "subject", "kind", "source", "observed_at", "summary", "metadata"):
             self.assertRegex(source, rf"\b{field}\??:")
 
 

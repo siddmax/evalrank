@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from evalrank_core.contracts import (
+    CapabilityFingerprintInput,
     ConfidenceInterval,
     EntityRef,
     EvidenceItem,
@@ -13,6 +14,20 @@ from evalrank_core.contracts import (
 
 PUBLIC_METHODOLOGY_VERSION = "2026-06-25.1.public-fixture-v1"
 PUBLIC_GENERATED_AT = "2026-06-25T00:00:00Z"
+
+
+def sample_capability_fingerprint_input() -> CapabilityFingerprintInput:
+    return CapabilityFingerprintInput(
+        id_scheme="reverse_dns",
+        canonical_id="io.evalrank.public-search-demo",
+        entity_kind="mcp_server",
+        declared_capability_shape={
+            "tool_names": ["search"],
+            "param_schemas": {"search": {"type": "object"}},
+            "declared_scopes": ["web.search"],
+            "commit_sha": "abc123",
+        },
+    )
 
 
 def sample_ranked_entity() -> RankedEntity:
