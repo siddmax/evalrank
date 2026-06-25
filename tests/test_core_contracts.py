@@ -17,6 +17,9 @@ from evalrank_core.contracts import (  # noqa: E402
 )
 
 
+PINNED_METHODOLOGY_VERSION = "2026-06-25.1.public-fixture-v1"
+
+
 class CoreContractTests(unittest.TestCase):
     def test_ranked_entity_requires_score_context(self):
         row = RankedEntity(
@@ -26,7 +29,7 @@ class CoreContractTests(unittest.TestCase):
             capability_score=0.84,
             confidence=0.86,
             ci95=ConfidenceInterval(low=0.80, high=0.88),
-            methodology_version="2026.06.1",
+            methodology_version=PINNED_METHODOLOGY_VERSION,
             trust_tier="standardized",
             freshness=Freshness(status="fresh", last_eval="2026-06-10", next_refresh="2026-06-17"),
             evidence_count=1840,
@@ -36,7 +39,7 @@ class CoreContractTests(unittest.TestCase):
 
         self.assertEqual("tool:exa-search-mcp", payload["id"])
         self.assertEqual([0.8, 0.88], payload["ci95"])
-        self.assertEqual("2026.06.1", payload["methodology_version"])
+        self.assertEqual(PINNED_METHODOLOGY_VERSION, payload["methodology_version"])
         self.assertEqual("fresh", payload["freshness"]["status"])
 
     def test_ranked_entity_rejects_bare_or_invalid_scores(self):
@@ -48,7 +51,7 @@ class CoreContractTests(unittest.TestCase):
                 capability_score=1.4,
                 confidence=0.5,
                 ci95=ConfidenceInterval(low=0.4, high=0.6),
-                methodology_version="2026.06.1",
+                methodology_version=PINNED_METHODOLOGY_VERSION,
                 trust_tier="verified",
                 freshness=Freshness(status="fresh", last_eval="2026-06-10", next_refresh="2026-06-17"),
                 evidence_count=10,
@@ -74,7 +77,7 @@ class CoreContractTests(unittest.TestCase):
         rec = Recommendation.single_scale(
             request_id="req_01",
             use_case="web-browsing:fresh-news",
-            methodology_version="2026.06.1",
+            methodology_version=PINNED_METHODOLOGY_VERSION,
             ranked=[row],
             generated_at="2026-06-25T00:00:00Z",
             depth_rationale="one candidate clears the evidence floor",
@@ -93,7 +96,7 @@ class CoreContractTests(unittest.TestCase):
         base = Recommendation.single_scale(
             request_id="req_a",
             use_case="function-calling",
-            methodology_version="2026.06.1",
+            methodology_version=PINNED_METHODOLOGY_VERSION,
             ranked=[_row("tool:exa-search-mcp")],
             generated_at="2026-06-25T00:00:00Z",
             depth_rationale="clear top set",
@@ -101,7 +104,7 @@ class CoreContractTests(unittest.TestCase):
         same_payload_new_request = Recommendation.single_scale(
             request_id="req_b",
             use_case="function-calling",
-            methodology_version="2026.06.1",
+            methodology_version=PINNED_METHODOLOGY_VERSION,
             ranked=[_row("tool:exa-search-mcp")],
             generated_at="2026-06-25T00:00:00Z",
             depth_rationale="clear top set",
@@ -109,8 +112,8 @@ class CoreContractTests(unittest.TestCase):
         changed_methodology = Recommendation.single_scale(
             request_id="req_a",
             use_case="function-calling",
-            methodology_version="2026.06.2",
-            ranked=[_row("tool:exa-search-mcp", methodology_version="2026.06.2")],
+            methodology_version="2026-06-25.2.public-fixture-v1",
+            ranked=[_row("tool:exa-search-mcp", methodology_version="2026-06-25.2.public-fixture-v1")],
             generated_at="2026-06-25T00:00:00Z",
             depth_rationale="clear top set",
         )
@@ -122,7 +125,7 @@ class CoreContractTests(unittest.TestCase):
         rec = Recommendation.abstain(
             request_id="req_01",
             use_case="mobile-codegen:flutter",
-            methodology_version="2026.06.1",
+            methodology_version=PINNED_METHODOLOGY_VERSION,
             generated_at="2026-06-25T00:00:00Z",
             reason="insufficient_evidence",
         )
@@ -130,6 +133,20 @@ class CoreContractTests(unittest.TestCase):
         self.assertFalse(rec.result_usable)
         self.assertEqual([], rec.ranked)
         self.assertEqual("insufficient_evidence", rec.the_call["abstention_reason"])
+
+    def test_methodology_version_rejects_unpinned_format(self):
+        with self.assertRaisesRegex(ValueError, "methodology_version"):
+            _row("tool:exa-search-mcp", methodology_version="2026.06.1")
+
+        with self.assertRaisesRegex(ValueError, "methodology_version"):
+            Recommendation.single_scale(
+                request_id="req_bad_version",
+                use_case="function-calling",
+                methodology_version="2026.06.1",
+                ranked=[_row("tool:exa-search-mcp")],
+                generated_at="2026-06-25T00:00:00Z",
+                depth_rationale="old version format should not serialize",
+            )
 
     def test_evidence_item_serializes_public_subject_and_score(self):
         item = EvidenceItem(
@@ -220,7 +237,7 @@ class CoreContractTests(unittest.TestCase):
             )
 
 
-def _row(entity_id: str, methodology_version: str = "2026.06.1") -> RankedEntity:
+def _row(entity_id: str, methodology_version: str = PINNED_METHODOLOGY_VERSION) -> RankedEntity:
     return RankedEntity(
         entity_type="mcp_server",
         entity_id=entity_id,

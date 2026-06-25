@@ -19,6 +19,7 @@ Last reviewed: 2026-06-25
 - Public boundary checker and default unit tests.
 - Core Python evaluation request, recommendation, entity reference, and evidence item contracts.
 - Public JSON Schemas for evaluation requests, ranked entities, recommendations, and evidence items.
+- Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
 - Direct `main` push workflow for the scratch-build phase.
 - `make check` public local/CI gate.
 - W0 public exit packet and W1 entity/evidence contract plan.
@@ -35,7 +36,7 @@ Last reviewed: 2026-06-25
 | Workstream | Public artifact now in this repo | Private material intentionally excluded |
 | --- | --- | --- |
 | Public Contracts | `EvaluationRequest`, `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Storage tables, production entity rows, customer context, private score semantics. |
-| Methods / Schemas | JSON Schemas for public payloads and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
+| Methods / Schemas | JSON Schemas for public payloads, the pinned public `methodology_version` format, and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
 | SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter. | Live service clients, auth, tenant/project operations, production evidence lookup, and hosted-only workflows. |
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |

@@ -7,6 +7,8 @@ Public EvalRank JSON Schema contracts live here.
 - `evidence-item.schema.json` mirrors `EvidenceItem.to_dict()` and core enum constants.
 - `evaluation-request.schema.json` mirrors `EvaluationRequest.to_dict()`.
 
+Schemas that expose `methodology_version` require `YYYY-MM-DD.SEQ.slug`.
+
 Run:
 
 ```sh

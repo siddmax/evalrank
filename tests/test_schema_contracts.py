@@ -22,6 +22,9 @@ from evalrank_core.contracts import (  # noqa: E402
 from evalrank_core.fixtures import sample_evidence_item, sample_evaluation_request  # noqa: E402
 
 
+METHODOLOGY_VERSION_PATTERN = r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$"
+
+
 class SchemaContractTests(unittest.TestCase):
     def test_public_schema_files_cover_core_payload_keys(self):
         ranked_schema = _schema("ranked-entity.schema.json")
@@ -33,7 +36,7 @@ class SchemaContractTests(unittest.TestCase):
         recommendation_payload = Recommendation.single_scale(
             request_id="req_01",
             use_case="function-calling",
-            methodology_version="2026.06.1",
+            methodology_version="2026-06-25.1.public-fixture-v1",
             ranked=[_row()],
             generated_at="2026-06-25T00:00:00Z",
             depth_rationale="clear top set",
@@ -77,6 +80,16 @@ class SchemaContractTests(unittest.TestCase):
         evidence_schema = _schema("evidence-item.schema.json")
         self.assertEqual(EVIDENCE_KINDS, set(evidence_schema["properties"]["kind"]["enum"]))
 
+    def test_methodology_version_schema_pattern_matches_pinned_format(self):
+        ranked_schema = _schema("ranked-entity.schema.json")
+        recommendation_schema = _schema("recommendation.schema.json")
+
+        self.assertEqual(METHODOLOGY_VERSION_PATTERN, ranked_schema["properties"]["methodology_version"]["pattern"])
+        self.assertEqual(
+            METHODOLOGY_VERSION_PATTERN,
+            recommendation_schema["properties"]["methodology_version"]["pattern"],
+        )
+
 
 def _schema(filename: str) -> dict:
     return json.loads((SCHEMAS / filename).read_text(encoding="utf-8"))
@@ -90,7 +103,7 @@ def _row() -> RankedEntity:
         capability_score=0.84,
         confidence=0.86,
         ci95=ConfidenceInterval(low=0.80, high=0.88),
-        methodology_version="2026.06.1",
+        methodology_version="2026-06-25.1.public-fixture-v1",
         trust_tier="standardized",
         freshness=Freshness(status="fresh", last_eval="2026-06-10", next_refresh="2026-06-17"),
         evidence_count=1840,

@@ -16,6 +16,9 @@ from evalrank_core.fixtures import (  # noqa: E402
 
 
 class CoreFixtureTests(unittest.TestCase):
+    def test_public_methodology_version_uses_pinned_format(self):
+        self.assertEqual("2026-06-25.1.public-fixture-v1", PUBLIC_METHODOLOGY_VERSION)
+
     def test_sample_ranked_entity_is_public_contract_payload(self):
         row = sample_ranked_entity()
         payload = row.to_dict()

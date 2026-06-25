@@ -11,7 +11,7 @@ from evalrank_core.contracts import (
 )
 
 
-PUBLIC_METHODOLOGY_VERSION = "2026.06.1"
+PUBLIC_METHODOLOGY_VERSION = "2026-06-25.1.public-fixture-v1"
 PUBLIC_GENERATED_AT = "2026-06-25T00:00:00Z"
 
 

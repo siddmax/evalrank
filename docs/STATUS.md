@@ -13,6 +13,7 @@ Last updated: 2026-06-25
 - Core Python request, recommendation, and evidence contracts in `packages/core`.
 - Public core fixture factory for canonical example request, recommendation, and evidence payloads.
 - Public JSON Schemas for evaluation requests, ranked entities, recommendations, and evidence items.
+- Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
 - Python SDK package metadata and public core contract re-exports.
 - TypeScript SDK package metadata and mirrored public contract types/constants.
 - CLI package metadata and deterministic public fixture command.
@@ -37,13 +38,14 @@ Last updated: 2026-06-25
 - TypeScript SDK public type surface build log in `docs/build-log/2026-06-25-typescript-sdk-types.md`.
 - Runnable public fixture example build log in `docs/build-log/2026-06-25-public-fixture-example.md`.
 - Evaluation request contract build log in `docs/build-log/2026-06-25-evaluation-request-contract.md`.
+- Methodology version format build log in `docs/build-log/2026-06-25-methodology-version-format.md`.
 
 ## Current Public Surface
 
 | Surface | Built | Not built yet |
 | --- | --- | --- |
 | Core contracts | `EvaluationRequest`, `RankedEntity`, `Recommendation`, `EntityRef`, `EvidenceItem`, public constants, and synthetic fixture factories. | Storage models, graph persistence, scorer engine, trust/security policy runtime. |
-| Schemas | JSON Schemas for evaluation requests, ranked entities, recommendations, and evidence items, with drift tests against Python contracts. | OpenAPI route schemas and persistence schemas. |
+| Schemas | JSON Schemas for evaluation requests, ranked entities, recommendations, and evidence items, with drift tests against Python contracts and pinned public patterns. | OpenAPI route schemas and persistence schemas. |
 | Python SDK | Package metadata and public re-exports from `evalrank_core`. | Installed package release flow and non-fixture client behavior. |
 | TypeScript SDK | Package metadata, public constants, and interfaces for current payload contracts. | Built JS distribution, published package release flow, and non-fixture client behavior. |
 | CLI | Deterministic `fixture request`, `fixture evidence`, and `fixture recommendation` commands. | Real evaluation commands, API clients, auth, or workspace/project operations. |

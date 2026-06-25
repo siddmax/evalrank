@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass, field
 from typing import Any, ClassVar
 
@@ -10,6 +11,7 @@ TRUST_TIERS = {"verified", "standardized", "self-reported", "tracking-only"}
 FRESHNESS_STATUSES = {"fresh", "stale", "recalibrating"}
 COMPARABILITY_MODES = {"single-scale", "kind-grouped"}
 EVIDENCE_KINDS = {"attestation", "benchmark", "documentation", "runtime-observation", "trace"}
+_METHODOLOGY_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$")
 
 
 @dataclass(frozen=True)
@@ -168,8 +170,7 @@ class RankedEntity:
             raise ValueError("rank must be >= 1")
         _require_unit_interval("capability_score", self.capability_score)
         _require_unit_interval("confidence", self.confidence)
-        if not self.methodology_version:
-            raise ValueError("methodology_version is required")
+        _require_methodology_version(self.methodology_version)
         if self.trust_tier not in TRUST_TIERS:
             raise ValueError(f"trust_tier must be one of {sorted(TRUST_TIERS)}")
         if self.evidence_count < 0:
@@ -223,8 +224,7 @@ class Recommendation:
             raise ValueError("request_id is required")
         if not self.use_case:
             raise ValueError("use_case is required")
-        if not self.methodology_version:
-            raise ValueError("methodology_version is required")
+        _require_methodology_version(self.methodology_version)
         if not self.generated_at:
             raise ValueError("generated_at is required")
         if self.comparability not in COMPARABILITY_MODES:
@@ -328,6 +328,11 @@ class Recommendation:
 def _require_unit_interval(name: str, value: float) -> None:
     if not 0 <= value <= 1:
         raise ValueError(f"{name} must be between 0 and 1")
+
+
+def _require_methodology_version(value: str) -> None:
+    if not isinstance(value, str) or not _METHODOLOGY_VERSION_RE.fullmatch(value):
+        raise ValueError("methodology_version must match YYYY-MM-DD.SEQ.slug")
 
 
 def _round_score(value: float) -> float:
