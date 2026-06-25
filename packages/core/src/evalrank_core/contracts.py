@@ -665,8 +665,8 @@ class RankedEntity:
             raise ValueError("evidence_count must be an integer >= 0")
         if not isinstance(self.caveats, tuple):
             raise ValueError("caveats must be an array")
-        if any(not isinstance(caveat, str) for caveat in self.caveats):
-            raise ValueError("caveats must contain strings")
+        if any(not isinstance(caveat, str) or not caveat for caveat in self.caveats):
+            raise ValueError("caveats must contain non-empty strings")
         if not isinstance(self.score_components, dict):
             raise ValueError("score_components must be a JSON object")
         for name, value in self.score_components.items():

@@ -553,6 +553,7 @@ class CoreContractTests(unittest.TestCase):
             {"evidence_count": True},
             {"caveats": "not-an-array"},
             {"caveats": (123,)},
+            {"caveats": ("",)},
         ):
             with self.subTest(overrides=overrides):
                 with self.assertRaises(ValueError):

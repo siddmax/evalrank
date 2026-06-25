@@ -181,6 +181,11 @@ class SchemaContractTests(unittest.TestCase):
             score_components["additionalProperties"],
         )
 
+    def test_ranked_entity_schema_pins_non_empty_caveats(self):
+        ranked_schema = _schema("ranked-entity.schema.json")
+
+        self.assertEqual({"type": "string", "minLength": 1}, ranked_schema["properties"]["caveats"]["items"])
+
     def test_methodology_version_schema_pattern_matches_pinned_format(self):
         ranked_schema = _schema("ranked-entity.schema.json")
         recommendation_schema = _schema("recommendation.schema.json")
