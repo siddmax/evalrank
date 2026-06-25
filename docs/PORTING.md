@@ -25,6 +25,7 @@ Last reviewed: 2026-06-25
 - Storage-free entity references, evidence items, public fixtures, and evidence-item schema.
 - Python SDK package metadata and public core contract re-exports.
 - CLI package metadata and deterministic public fixture command.
+- MCP package metadata and deterministic public fixture adapter.
 
 ## Porting Decisions
 
@@ -37,7 +38,7 @@ Last reviewed: 2026-06-25
 | Public build-order and wave status | This repo | Docs / Public Planning | In progress |
 | Public scoring-stage vocabulary and method boundaries | This repo | Methods / Schemas | Port sanitized public boundaries only |
 | REST/OpenAPI contracts | This repo | Public Surface Contracts | Wait until the first concrete route contract exists |
-| SDK, CLI, and MCP implementations | This repo | SDK / CLI / MCP | Python SDK re-export and CLI fixture command ported; MCP waits for concrete tools |
+| SDK, CLI, and MCP implementations | This repo | SDK / CLI / MCP | Python SDK re-export, CLI fixture command, and MCP fixture adapter ported |
 | Public methodology notes | This repo | Methods / Schemas | Port only after removing held-out and proprietary details |
 | Finn/Supabase `evalrank` schema bootstrap and migration runner | Syndai repo | DB Bootstrap / Syndai Ops | Keep private during incubation |
 | Secrets, Doppler config, live project refs, and deployment credentials | Private ops only | Secrets / Deploy Ops | Never port |
@@ -56,7 +57,7 @@ Last reviewed: 2026-06-25
 ## Port Later
 
 - REST/OpenAPI surfaces after a concrete route contract exists.
-- MCP behavior after a concrete public tool contract is pinned.
+- Full REST/OpenAPI, CLI, SDK, and MCP behavior beyond public fixtures after concrete public contracts are pinned.
 - Public scoring method notes after proprietary thresholds, held-out eval details, and private ranking experiments are removed.
 - Persistence migrations only after EvalRank owns its own deploy/release path or has its own Supabase project.
 

@@ -15,6 +15,7 @@ Last updated: 2026-06-25
 - Public JSON Schemas for ranked entities, recommendations, and evidence items.
 - Python SDK package metadata and public core contract re-exports.
 - CLI package metadata and deterministic public fixture command.
+- MCP package metadata and deterministic public fixture adapter.
 - Schema drift tests for core payload keys and public enum constants.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
 - Public progress tracker and repo structure map.
@@ -27,6 +28,7 @@ Last updated: 2026-06-25
 - W1 entity/evidence contract build log in `docs/build-log/2026-06-25-w1-entity-evidence-contracts.md`.
 - Python SDK re-export build log in `docs/build-log/2026-06-25-python-sdk-reexports.md`.
 - CLI fixture command build log in `docs/build-log/2026-06-25-cli-fixtures.md`.
+- MCP fixture adapter build log in `docs/build-log/2026-06-25-mcp-fixtures.md`.
 
 ## In Progress
 
@@ -43,7 +45,7 @@ Last updated: 2026-06-25
 | --- | --- | --- | --- |
 | 1 | Public Contracts | This repo | First entity/evidence slice ported; extend only for new public payload contracts. |
 | 2 | Methods / Schemas | This repo | Port sanitized method boundaries and public scoring-stage vocabulary only. |
-| 3 | SDK / CLI / MCP | This repo | Python SDK and CLI fixture slices ported; MCP waits for a concrete public tool contract. |
+| 3 | SDK / CLI / MCP | This repo | First public fixture slices ported; extend after concrete non-fixture contracts are pinned. |
 | 4 | Docs / Public Planning | This repo | Keep sanitized build logs and status docs current; do not copy private planning text verbatim. |
 | 5 | DB Bootstrap / Syndai Ops | Syndai repo | Keep Supabase migrations, live bootstrap, and operational checks private during incubation. |
 | 6 | Evaluation Integrity | Private eval systems | Keep held-out tasks, graders, answers, traces, and benchmark results private. |
