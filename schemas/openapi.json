@@ -40,6 +40,16 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid request payload.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
@@ -52,6 +62,9 @@
       },
       "Recommendation": {
         "$ref": "recommendation.schema.json"
+      },
+      "ProblemDetails": {
+        "$ref": "problem.schema.json"
       }
     }
   }

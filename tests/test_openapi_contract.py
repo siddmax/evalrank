@@ -37,10 +37,23 @@ class OpenApiContractTests(unittest.TestCase):
             "recommendation.schema.json",
             spec["components"]["schemas"]["Recommendation"]["$ref"],
         )
+        self.assertEqual(
+            "problem.schema.json",
+            spec["components"]["schemas"]["ProblemDetails"]["$ref"],
+        )
         for schema in spec["components"]["schemas"].values():
             ref = schema["$ref"]
             self.assertFalse(ref.startswith("#"))
             self.assertTrue((SCHEMAS / ref).is_file(), ref)
+
+    def test_public_openapi_contract_pins_problem_details_errors(self):
+        spec = _openapi()
+        response = spec["paths"]["/v1/recommendations"]["post"]["responses"]["400"]
+
+        self.assertEqual(
+            "#/components/schemas/ProblemDetails",
+            response["content"]["application/problem+json"]["schema"]["$ref"],
+        )
 
     def test_openapi_contract_stays_storage_free(self):
         spec = _openapi()

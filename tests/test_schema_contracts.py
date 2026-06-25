@@ -71,13 +71,17 @@ class SchemaContractTests(unittest.TestCase):
             "evaluation-request.schema.json",
             "capability-fingerprint.schema.json",
             "raw-entry.schema.json",
+            "problem.schema.json",
         ):
             schema = _schema(filename)
 
             self.assertEqual("https://json-schema.org/draft/2020-12/schema", schema["$schema"])
             self.assertTrue(schema["$id"].endswith(filename))
             self.assertEqual("object", schema["type"])
-            self.assertFalse(schema["additionalProperties"])
+            if filename == "problem.schema.json":
+                self.assertTrue(schema["additionalProperties"])
+            else:
+                self.assertFalse(schema["additionalProperties"])
 
     def test_schema_enums_match_core_constants(self):
         ranked_schema = _schema("ranked-entity.schema.json")
@@ -133,6 +137,20 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(["number", "null"], the_call["properties"]["confidence"]["type"])
         self.assertEqual(0, the_call["properties"]["confidence"]["minimum"])
         self.assertEqual(1, the_call["properties"]["confidence"]["maximum"])
+
+    def test_problem_schema_pins_rfc_9457_shape(self):
+        problem_schema = _schema("problem.schema.json")
+
+        self.assertTrue(problem_schema["additionalProperties"])
+        self.assertEqual({"type", "title", "status", "detail"}, set(problem_schema["required"]))
+        self.assertEqual("string", problem_schema["properties"]["type"]["type"])
+        self.assertEqual("uri-reference", problem_schema["properties"]["type"]["format"])
+        self.assertEqual("string", problem_schema["properties"]["title"]["type"])
+        self.assertEqual("integer", problem_schema["properties"]["status"]["type"])
+        self.assertEqual(400, problem_schema["properties"]["status"]["minimum"])
+        self.assertEqual(599, problem_schema["properties"]["status"]["maximum"])
+        self.assertEqual("string", problem_schema["properties"]["detail"]["type"])
+        self.assertEqual("uri-reference", problem_schema["properties"]["instance"]["format"])
 
 
 def _schema(filename: str) -> dict:

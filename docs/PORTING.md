@@ -18,8 +18,8 @@ Last reviewed: 2026-06-25
 - Public progress docs: `docs/STATUS.md` and `docs/REPO_STRUCTURE.md`.
 - Public boundary checker and default unit tests.
 - Core Python capability fingerprint, raw entry, evaluation request, `the_call`, recommendation, entity reference, and evidence item contracts.
-- Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, ranked entities, recommendations, and evidence items.
-- Public OpenAPI 3.1.1 contract for `POST /v1/recommendations`.
+- Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, ranked entities, recommendations, evidence items, and RFC 9457 problem details.
+- Public OpenAPI 3.1.1 contract for `POST /v1/recommendations`, including invalid-request Problem Details response.
 - Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
 - Direct `main` push workflow for the scratch-build phase.
 - `make check` public local/CI gate.
@@ -44,7 +44,7 @@ Last reviewed: 2026-06-25
 | Public Contracts | `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `TheCall`, `RankedEntity`, `Recommendation`, public recommendation ID aliases, `EntityRef`, `EvidenceItem`, constants, and synthetic fixture factories. | Source adapters, storage tables, production entity rows, customer context, private score semantics, scorer thresholds, hosted HMAC derivation. |
 | Methods / Schemas | JSON Schemas for public payloads, the pinned public `methodology_version` format, and the public scoring-stage vocabulary. | Proprietary weights, thresholds, held-out eval definitions, benchmark answers, and private ranking experiments. |
 | SDK / CLI / MCP | Python SDK re-exports, TypeScript public types/constants, deterministic CLI fixture command, and deterministic MCP fixture adapter, including `raw-entry`. | Live service clients, auth, tenant/project operations, production evidence lookup, source adapters, and hosted-only workflows. |
-| Public Surface Contracts | OpenAPI 3.1.1 contract for `POST /v1/recommendations` over existing public request and recommendation schemas. | Hosted auth, tenant logic, receipt storage, HMAC-backed IDs, private DTOs, live routing, and deployment wiring. |
+| Public Surface Contracts | OpenAPI 3.1.1 contract for `POST /v1/recommendations` over existing public request/recommendation schemas and RFC 9457 Problem Details for invalid request payloads. | Hosted auth, tenant logic, receipt storage, HMAC-backed IDs, private DTOs, private problem types, live routing, and deployment wiring. |
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
 | Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
@@ -57,7 +57,7 @@ Use this table before copying anything from private EvalRank planning into this 
 | --- | --- | --- | --- |
 | Storage-free payload contracts, identifier aliases, and JSON-compatible request/response shapes | `packages/core`, `schemas`, SDK types | Public Contracts | Port when the shape stands alone with synthetic fixtures and schema drift tests. |
 | Recommendation ID aliases (`recommendation_id`, `recommend_id`, `search_run_id`) | `packages/core`, `schemas`, SDK types | Public Contracts | Public alias contract can move here; hosted HMAC derivation, route receipts, and secret keys stay private until a public route contract exists. |
-| OpenAPI, route schemas, REST/MCP parity contracts | `schemas`, route docs, `NAVIGATION.md` | Public Surface Contracts | First route contract is ported; add more only after a concrete public route exists, and do not copy private DTOs, auth flows, tenant logic, or hosted-only response fields. |
+| OpenAPI, route schemas, REST/MCP parity contracts | `schemas`, route docs, `NAVIGATION.md` | Public Surface Contracts | First route and shared Problem Details contract are ported; add more only after a concrete public route exists, and do not copy private DTOs, auth flows, tenant logic, private problem types, or hosted-only response fields. |
 | CLI/MCP/SDK behavior beyond fixtures | `packages/cli`, `packages/mcp`, `packages/sdk-*` | SDK / CLI / MCP | Implement one pinned public contract at a time, with deterministic tests and no live private service dependency. |
 | Public method vocabulary and non-proprietary scoring explanations | `methods`, `schemas`, `docs` | Methods / Schemas | Rewrite as sanitized public notes; omit proprietary weights, thresholds, held-out tasks, answers, traces, and private benchmark outputs. |
 | Deterministic scoring or materializer code | Future core/runtime package only after split | Scoring / Materializer Runtime | Keep private during incubation unless it can run on synthetic/public inputs without private evidence rows, secrets, or proprietary tuning. |
@@ -95,7 +95,7 @@ Use this table for the next port decision. The destination is this public repo o
 | Public scoring-stage vocabulary | Already ported as a method-boundary note, without formulas, thresholds, private eval data, or benchmarks. | Methods / Schemas |
 | `RawEntry` ingestion-normalization shape | Ported as a storage-free contract with synthetic fixtures and deterministic content hash; source adapters, production metadata, and live fetch behavior stay private. | Public Contracts |
 | Public `the_call` / decision-confidence response shape | Ported as a nested recommendation contract with no proprietary thresholds, held-out evidence floors, or private confidence tuning. | Public Contracts, Methods / Schemas |
-| REST/OpenAPI contract | First concrete route contract ported for `POST /v1/recommendations`; keep private auth, tenant logic, hosted receipt internals, and app DTOs out. | Public Surface Contracts |
+| REST/OpenAPI contract | First concrete route contract ported for `POST /v1/recommendations`; invalid request errors use public Problem Details; keep private auth, tenant logic, hosted receipt internals, private problem types, and app DTOs out. | Public Surface Contracts |
 | Recommendation receipt route and HMAC-backed hosted ID derivation | Do not port yet. Public aliases are enough for open-core interoperability; secret-backed derivation belongs with hosted route design. | Public Surface Contracts, Hosted Ops / Deploy Ops |
 | Entity graph tables, evidence ledger storage, methodology table, migrations, grants, RLS, and live DB checks | Keep in Syndai/private systems until EvalRank owns persistence or its own Supabase project. | DB Bootstrap / Syndai Ops |
 | Deterministic scorer and materializer runtime | Incubate privately first, then split only public-input-only pieces that do not depend on production rows, private workers, or proprietary tuning. | Scoring / Materializer Runtime |
@@ -115,7 +115,7 @@ Use this table for the next port decision. The destination is this public repo o
 | Sanitized build-readiness summaries from Syndai planning docs | This repo | Docs / Public Planning | In progress |
 | Public build-order and wave status | This repo | Docs / Public Planning | In progress |
 | Public scoring-stage vocabulary and method boundaries | This repo | Methods / Schemas | Public boundary note ported |
-| REST/OpenAPI contracts | This repo | Public Surface Contracts | First `POST /v1/recommendations` contract ported |
+| REST/OpenAPI contracts | This repo | Public Surface Contracts | First `POST /v1/recommendations` and Problem Details contracts ported |
 | SDK, CLI, and MCP implementations | This repo | SDK / CLI / MCP | Python SDK re-export, TypeScript public types, CLI fixture command, and MCP fixture adapter ported |
 | Public methodology notes | This repo | Methods / Schemas | Port only after removing held-out and proprietary details |
 | Deterministic scorer/materializer runtime | Private incubation first | Scoring / Materializer Runtime | Port later only if storage-free and public-input-only |
@@ -129,6 +129,7 @@ Use this table for the next port decision. The destination is this public repo o
 
 - Additional storage-free Python contracts and JSON Schemas when a new public payload is pinned.
 - Additional OpenAPI routes only when a concrete public route contract exists.
+- Public Problem Details extensions only when they are product-neutral and do not expose hosted internals.
 - Public identifier aliases that are deterministic, non-secret, and useful for interoperability.
 - Synthetic public fixtures that prove contract shape without using production data.
 - Public runnable examples that consume only synthetic fixtures.
@@ -140,6 +141,7 @@ Use this table for the next port decision. The destination is this public repo o
 ## Port Later
 
 - Additional REST/OpenAPI surfaces after concrete route contracts exist.
+- Route-specific public problem types after their public semantics are stable.
 - Recommendation receipt routes and HMAC-backed hosted identifiers after public route semantics and secret handling are designed.
 - Full REST/OpenAPI, CLI, SDK, and MCP behavior beyond public fixtures after concrete public contracts are pinned.
 - Source adapters and live fetch behavior after they can run without private service dependencies or production metadata.

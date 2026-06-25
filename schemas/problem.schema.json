@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/problem.schema.json",
+  "title": "EvalRank Problem Details",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "type",
+    "title",
+    "status",
+    "detail"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "format": "uri-reference",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "integer",
+      "minimum": 400,
+      "maximum": 599
+    },
+    "detail": {
+      "type": "string",
+      "minLength": 1
+    },
+    "instance": {
+      "type": "string",
+      "format": "uri-reference",
+      "minLength": 1
+    }
+  }
+}

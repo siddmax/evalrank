@@ -43,9 +43,9 @@ The boundary gate rejects private imports, Smithery coupling, Min-K% implementat
 
 ## Public API Contract
 
-The first route contract is `POST /v1/recommendations` in `schemas/openapi.json`. It accepts `EvaluationRequest` JSON and returns `Recommendation` JSON.
+The first route contract is `POST /v1/recommendations` in `schemas/openapi.json`. It accepts `EvaluationRequest` JSON, returns `Recommendation` JSON, and uses RFC 9457 `application/problem+json` for invalid request payloads.
 
-This is a contract only. Hosted auth, scorer runtime, persistence, receipt IDs, and deployment wiring stay outside this public repo.
+This is a contract only. Hosted auth, scorer runtime, persistence, receipt IDs, private problem types, and deployment wiring stay outside this public repo.
 
 ## Public Fixture Surfaces
 
