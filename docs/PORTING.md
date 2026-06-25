@@ -59,6 +59,7 @@ Last reviewed: 2026-06-26
 - Public `NAVIGATION.md` route map for the first API contract.
 - Public/private porting audit confirming that the current private Syndai dirty worktree contains Memphant spec edits and two Memphant plan files, with no EvalRank public-port candidate.
 - Public/private source routing snapshot for the current Syndai EvalRank specs, build-readiness plans, migration bootstrap, doc validators, and UI proof assets.
+- Public/private source inventory refresh covering current private EvalRank specs, build plans, proof assets, backend migration assets, repo security settings, and dirty-worktree routing without copying private source text.
 - GitHub public-repo security metadata snapshot showing secret scanning, push protection, and Dependabot security updates enabled.
 
 ## Ported To Date
@@ -156,6 +157,32 @@ Reviewed the private-side EvalRank planning and migration surface by category on
 | Keep telemetry operations, billing/admin, vendor intent, account operations, private integrations, credentials, and live project refs out of this repo. | Hosted Ops / GTM, Secrets / Deploy Ops |
 
 Public docs may summarize private planning decisions, but must not copy raw private plans, live identifiers, customer examples, runbooks, production rows, or held-out evaluation details.
+
+## Latest Private Source Inventory
+
+Reviewed on 2026-06-26 from the private Syndai checkout. This is an inventory and router only; none of the private source text, proof assets, migrations, or operational details should be copied into this public repo.
+
+| Private-side source | Observed shape | Public handling | Workstream owner |
+| --- | --- | --- | --- |
+| Private EvalRank spec corpus | 25 private Markdown spec docs covering product, architecture, data/methodology, API, trust, UI, legal, telemetry, governance, and related planning. | Treat as input only. Extract one storage-free contract, public route shape, or sanitized method note at a time with synthetic fixtures and tests. | Public Contracts, Public Surface Contracts, Methods / Schemas, Docs / Public Planning |
+| Private EvalRank build-plan corpus | 6 private build-readiness docs: relations graph, master plan, foundation/services, pinned decisions, validation playbook, and README. | Port only public-safe build-order/status summaries and workstream routing. Do not copy account/service assumptions, live operations, or private runbooks. | Docs / Public Planning, Open-Core Boundary / CI |
+| Private UI/proof asset corpus | 18 private UI/proof assets and generated HTML/CSS proof files. | Keep private until public UI routes or public product docs intentionally exist; later use generated or synthetic public assets only. | Public Surface Contracts, Hosted Ops / GTM |
+| Private backend migration and guard assets | 5 private migration, guard, runner, and test assets tied to shared Finn/Supabase operations. | Keep private. If EvalRank later owns persistence, design a new public migration subsystem instead of copying live scripts. | DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |
+| Current Syndai dirty worktree | Uncommitted and untracked private edits remain in Memphant specs and Memphant validation/lifecycle plans. | Do not port to EvalRank. Route to Memphant / memory-system workstream unless a future task extracts a concrete EvalRank contract. | Memphant / memory-system workstream |
+| GitHub repo security metadata for `siddmax/evalrank` | Public visibility, secret scanning, push protection, and Dependabot security updates are enabled. | Keep local boundary checks mandatory; platform scanning is a backstop, not the public/private decision engine. | Open-Core Boundary / CI, Secrets / Deploy Ops |
+
+## Next Port Slices
+
+| Order | Slice | Destination | Guardrail |
+| --- | --- | --- | --- |
+| 1 | More schema/core parity hardening for already-public contracts. | This repo. | Must be storage-free, covered by focused tests, and aligned with JSON Schema. |
+| 2 | Additional deterministic fixture and README drift checks for public packages/examples. | This repo. | Must use synthetic fixtures and local checks only. |
+| 3 | Non-fixture `POST /v1/recommendations` client semantics. | This repo after the client contract is pinned. | Exclude auth, tenants, hosted receipts, live service dependencies, private DTOs, and production evidence lookup. |
+| 4 | Additional route-specific public Problem Details or OpenAPI surfaces. | This repo after concrete public routes exist. | Keep hosted enforcement, live throttling, private problem types, and deployment wiring private. |
+| 5 | Sanitized method notes distilled from private methodology docs. | This repo only after private material is removed. | Omit weights, thresholds, held-out tasks, benchmark outputs, private corpora, traces, and proprietary tuning. |
+| 6 | Public-facing doc-drift checks distilled from private validators. | This repo only when public docs carry the matching claim. | Do not copy private spec names, private plan paths, or private-only assertions. |
+
+Do not start public DB migrations, source adapters, graph/evidence lookup, runtime scorer/materializer, UI proof asset ports, hosted ops, GTM, telemetry, or eval-integrity material until the owning private workstream produces a separable public contract.
 
 ## Latest Dirty-Worktree Check
 
