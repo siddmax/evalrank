@@ -53,6 +53,7 @@ Last reviewed: 2026-06-26
 - Public recommendation envelope validation hardened for schema-compatible metadata: non-empty rationale/source fields, boolean degradation state, non-negative snapshot lag, and no duplicate ranked entities.
 - Public capability fingerprint declared-shape schema hardened to require at least one property, matching the existing core contract.
 - Public recommendation comparability schema hardened to pin `single-scale` and `kind-grouped` envelope branches, matching the existing core contract.
+- Public `the_call` schema hardened to pin `recommend` and `abstain` branch shapes, matching the existing core contract.
 - Public JSON-object fields hardened for evidence item `metadata` and evaluation request `constraints`: object values only, string keys only, and JSON-serializable values only.
 - Public primitive and sequence fields hardened for entity refs, freshness dates, request entity-type arrays, ranked-entity integer fields, and non-empty caveat strings.
 - Evaluation request `entity_types` are pinned as unique public request metadata in Python and JSON Schema.
@@ -131,6 +132,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Public Problem Details fixture. | Already ported as a synthetic `problem` fixture so examples, CLI, MCP, Python SDK, and TypeScript fixture kinds can demonstrate the public RFC 9457 shape without hosted error telemetry, tenant context, or private problem types. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP, Examples |
 | Capability fingerprint declared-shape schema hardening. | Already ported because it aligns the public schema with the existing core requirement without adding source adapters, live fetch behavior, private runtime, or DB work. | Public Contracts, Methods / Schemas |
 | Recommendation comparability schema hardening. | Already ported because it aligns the public schema with the existing core branch rules without exposing cross-kind normalization, scorer internals, hosted receipts, private runtime, or DB work. | Public Contracts, Methods / Schemas |
+| `the_call` branch schema hardening. | Already ported because it aligns the public schema with the existing `recommend`/`abstain` core rules without exposing confidence policy, private abstention taxonomy, scorer internals, hosted receipts, private runtime, or DB work. | Public Contracts, Methods / Schemas |
 | Ranked entity score-component map hardening. | Already ported because it closes an existing public payload shape without exposing formulas, weights, or scorer calibration. | Public Contracts, Methods / Schemas |
 | Recommendation envelope validation hardening. | Already ported because it aligns the public Python contract with the public schema and blocks duplicate ranked rows without exposing scorer/runtime behavior. | Public Contracts, Methods / Schemas |
 | Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |

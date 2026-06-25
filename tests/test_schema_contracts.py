@@ -229,6 +229,35 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(0, the_call["properties"]["confidence"]["minimum"])
         self.assertEqual(1, the_call["properties"]["confidence"]["maximum"])
 
+    def test_recommendation_schema_pins_the_call_branch_shapes(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+        the_call = recommendation_schema["properties"]["the_call"]
+
+        self.assertIn(
+            {
+                "if": {"properties": {"decision": {"const": "recommend"}}, "required": ["decision"]},
+                "then": {
+                    "properties": {
+                        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+                        "abstention_reason": {"const": None},
+                    }
+                },
+            },
+            the_call["allOf"],
+        )
+        self.assertIn(
+            {
+                "if": {"properties": {"decision": {"const": "abstain"}}, "required": ["decision"]},
+                "then": {
+                    "properties": {
+                        "confidence": {"const": None},
+                        "abstention_reason": {"type": "string", "minLength": 1},
+                    }
+                },
+            },
+            the_call["allOf"],
+        )
+
     def test_recommendation_schema_pins_abstention_shape(self):
         recommendation_schema = _schema("recommendation.schema.json")
 
