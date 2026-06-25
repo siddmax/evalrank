@@ -34,6 +34,30 @@ PROBLEM_CODES = {
 
 
 class TypeScriptSdkTests(unittest.TestCase):
+    def test_sdk_readme_lists_public_typescript_surface(self):
+        text = (SDK_TS / "README.md").read_text(encoding="utf-8")
+
+        for name in (
+            "CapabilityFingerprint",
+            "RawEntry",
+            "EntityRef",
+            "EvaluationRequest",
+            "CandidateSet",
+            "StageCandidate",
+            "EvidenceItem",
+            "EvidenceSet",
+            "ResultRow",
+            "UseCase",
+            "UseCaseCatalog",
+            "RankingGroup",
+            "Exclusion",
+            "TheCall",
+            "RankedEntity",
+            "Recommendation",
+            "ProblemDetails",
+        ):
+            self.assertIn(name, text)
+
     def test_package_metadata_exposes_public_typescript_entrypoint(self):
         package = json.loads((SDK_TS / "package.json").read_text(encoding="utf-8"))
 

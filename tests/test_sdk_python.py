@@ -49,6 +49,28 @@ from evalrank_sdk import (  # noqa: E402
 
 
 class PythonSdkTests(unittest.TestCase):
+    def test_sdk_readme_lists_public_reexport_surface(self):
+        text = (REPO_ROOT / "packages" / "sdk-python" / "README.md").read_text(encoding="utf-8")
+
+        for name in (
+            "CapabilityFingerprintInput",
+            "RawEntry",
+            "EvaluationRequest",
+            "CandidateSet",
+            "StageCandidate",
+            "EvidenceItem",
+            "EvidenceSet",
+            "ResultRow",
+            "UseCaseCatalog",
+            "RankingGroup",
+            "Exclusion",
+            "TheCall",
+            "RankedEntity",
+            "Recommendation",
+            "EntityRef",
+        ):
+            self.assertIn(name, text)
+
     def test_sdk_re_exports_core_capability_fingerprint_contracts(self):
         fingerprint_input = sample_capability_fingerprint_input()
 

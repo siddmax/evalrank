@@ -18,6 +18,7 @@ Last updated: 2026-06-26
 - Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
 - Python SDK package metadata and public core contract re-exports.
 - TypeScript SDK package metadata and mirrored public contract types/constants, including public Problem Details codes and type shape.
+- SDK README drift checks for the Python and TypeScript public surfaces.
 - CLI package metadata and deterministic public fixture command, including `result-row`, `use-cases`, and `ranking-group`.
 - MCP package metadata and deterministic public fixture adapter, including `result-row`, `use-cases`, and `ranking-group`.
 - Public scoring-stage vocabulary, use-case taxonomy method, and method-boundary notes.
@@ -62,6 +63,7 @@ Last updated: 2026-06-26
 - Use-case taxonomy method build log in `docs/build-log/2026-06-26-use-case-taxonomy-method.md`.
 - Fixture use-case alignment build log in `docs/build-log/2026-06-26-fixture-use-case-alignment.md`.
 - Public fixture bundle example build log in `docs/build-log/2026-06-26-public-fixture-bundle-example.md`.
+- SDK README drift-check build log in `docs/build-log/2026-06-26-sdk-readme-drift-checks.md`.
 
 ## Current Public Surface
 
