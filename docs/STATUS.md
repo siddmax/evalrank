@@ -11,6 +11,7 @@ Last updated: 2026-06-25
 - Public boundary checker for private imports, disallowed coupling, excluded method markers, and missing package license/notice files.
 - Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
 - Core Python recommendation contracts in `packages/core`.
+- Public core fixture factory for canonical example recommendation payloads.
 - Public JSON Schemas for ranked entities and recommendations.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
 - Public progress tracker and repo structure map.
@@ -35,7 +36,7 @@ Last updated: 2026-06-25
 
 ## Left
 
-- W0: finish source-of-truth wiring, CI gate expansion, local dev stack, fixture factory, and W0 exit packet.
+- W0: finish source-of-truth wiring, CI gate expansion, local dev stack, and W0 exit packet.
 - W1+: data-plane tables, entity graph, evidence ledger, trust/security primitives, scorer stages, engine materializer, public surfaces, web, telemetry, governance, and GTM fleet.
 
 ## Update Rules
