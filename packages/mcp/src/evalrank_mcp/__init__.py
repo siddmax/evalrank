@@ -44,6 +44,8 @@ def list_tools() -> list[dict[str, Any]]:
                 "properties": {
                     "base_url": {
                         "type": "string",
+                        "minLength": 1,
+                        "pattern": "^https?://",
                     },
                     "request": {
                         "type": "object",
@@ -61,6 +63,8 @@ def list_tools() -> list[dict[str, Any]]:
                 "properties": {
                     "base_url": {
                         "type": "string",
+                        "minLength": 1,
+                        "pattern": "^https?://",
                     },
                 },
             },
@@ -75,6 +79,8 @@ def list_tools() -> list[dict[str, Any]]:
                 "properties": {
                     "base_url": {
                         "type": "string",
+                        "minLength": 1,
+                        "pattern": "^https?://",
                     },
                 },
             },

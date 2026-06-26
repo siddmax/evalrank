@@ -65,6 +65,12 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual(["base_url", "request"], tools[1]["inputSchema"]["required"])
         self.assertEqual(["base_url"], tools[2]["inputSchema"]["required"])
         self.assertEqual(["base_url"], tools[3]["inputSchema"]["required"])
+        for tool in tools[1:]:
+            with self.subTest(tool=tool["name"]):
+                base_url = tool["inputSchema"]["properties"]["base_url"]
+                self.assertEqual("string", base_url["type"])
+                self.assertEqual(1, base_url["minLength"])
+                self.assertEqual("^https?://", base_url["pattern"])
 
     def test_call_tool_returns_public_fingerprint_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
