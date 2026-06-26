@@ -36,7 +36,7 @@ Ranking group payloads expose within-kind ranking rows with contiguous `1..N` ra
 
 Exclusion payloads expose storage-free public subjects and reasons; gate policy and private reason taxonomies stay outside this package.
 
-Public `methodology_version` values use `YYYY-MM-DD.SEQ.slug`, for example `2026-06-25.1.public-fixture-v1`.
+Public `methodology_version` values use calendar-valid `YYYY-MM-DD.SEQ.slug`, for example `2026-06-25.1.public-fixture-v1`.
 
 Recommendation payloads expose `recommendation_id`, `recommend_id`, and `search_run_id` as the same public ID.
 

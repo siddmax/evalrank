@@ -1115,6 +1115,10 @@ def _require_nonempty_string(name: str, value: Any) -> None:
 def _require_methodology_version(value: str) -> None:
     if not isinstance(value, str) or not _METHODOLOGY_VERSION_RE.fullmatch(value):
         raise ValueError("methodology_version must match YYYY-MM-DD.SEQ.slug")
+    try:
+        date.fromisoformat(value.split(".", 1)[0])
+    except ValueError as exc:
+        raise ValueError("methodology_version must match YYYY-MM-DD.SEQ.slug") from exc
 
 
 def _require_public_date(name: str, value: str) -> None:

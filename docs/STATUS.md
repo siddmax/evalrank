@@ -18,7 +18,7 @@ Last updated: 2026-06-26
 - Public OpenAPI 3.1.1 contract for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`, including reusable Problem Details responses for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts.
 - Public retry-aware Problem Details extensions: `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url`.
 - Public Problem Details `doc_url` HTTP(S) hardening.
-- Pinned public `methodology_version` format: `YYYY-MM-DD.SEQ.slug`.
+- Pinned public `methodology_version` format: calendar-valid `YYYY-MM-DD.SEQ.slug`.
 - Python SDK package metadata, public core contract re-exports, and dependency-free `EvalRankClient` behavior for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`.
 - TypeScript SDK package metadata, mirrored public contract types/constants, and dependency-free native `fetch` `EvalRankClient` behavior for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`.
 - Python and TypeScript SDK clients strictly parse `Retry-After` as non-negative integer seconds and treat malformed retry headers as absent while preserving Problem Details errors.
@@ -77,6 +77,7 @@ Last updated: 2026-06-26
 - Runnable public fixture example build log in `docs/build-log/2026-06-25-public-fixture-example.md`.
 - Evaluation request contract build log in `docs/build-log/2026-06-25-evaluation-request-contract.md`.
 - Methodology version format build log in `docs/build-log/2026-06-25-methodology-version-format.md`.
+- Methodology version calendar-date hardening build log in `docs/build-log/2026-06-26-methodology-version-calendar-hardening.md`.
 - Capability fingerprint contract build log in `docs/build-log/2026-06-25-capability-fingerprint-contract.md`.
 - Public progress and porting router refresh in `docs/build-log/2026-06-25-progress-and-porting-router.md`.
 - Recommendation join aliases build log in `docs/build-log/2026-06-25-recommendation-join-aliases.md`.

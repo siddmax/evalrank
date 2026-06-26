@@ -1179,18 +1179,24 @@ class CoreContractTests(unittest.TestCase):
                     Recommendation(**{**valid, **kwargs})
 
     def test_methodology_version_rejects_unpinned_format(self):
-        with self.assertRaisesRegex(ValueError, "methodology_version"):
-            _row("tool:exa-search-mcp", methodology_version="2026.06.1")
+        for methodology_version in (
+            "2026.06.1",
+            "2026-13-25.1.public-fixture-v1",
+            "2026-02-30.1.public-fixture-v1",
+        ):
+            with self.subTest(methodology_version=methodology_version):
+                with self.assertRaisesRegex(ValueError, "methodology_version"):
+                    _row("tool:exa-search-mcp", methodology_version=methodology_version)
 
-        with self.assertRaisesRegex(ValueError, "methodology_version"):
-            Recommendation.single_scale(
-                request_id="req_bad_version",
-                use_case="function-calling",
-                methodology_version="2026.06.1",
-                ranked=[_row("tool:exa-search-mcp")],
-                generated_at="2026-06-25T00:00:00Z",
-                depth_rationale="old version format should not serialize",
-            )
+                with self.assertRaisesRegex(ValueError, "methodology_version"):
+                    Recommendation.single_scale(
+                        request_id="req_bad_version",
+                        use_case="function-calling",
+                        methodology_version=methodology_version,
+                        ranked=[_row("tool:exa-search-mcp")],
+                        generated_at="2026-06-25T00:00:00Z",
+                        depth_rationale="old version format should not serialize",
+                    )
 
     def test_evidence_item_serializes_public_subject_and_score(self):
         item = EvidenceItem(
