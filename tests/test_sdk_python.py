@@ -266,6 +266,23 @@ class PythonSdkTests(unittest.TestCase):
         self.assertEqual(problem, raised.exception.problem)
         self.assertEqual(3, raised.exception.retry_after)
 
+    def test_recommend_treats_malformed_retry_after_as_absent(self):
+        problem = core_sample_problem_details().to_dict()
+        server = _SdkTestServer(
+            response_status=429,
+            response_body=problem,
+            response_headers={"Content-Type": "application/problem+json", "Retry-After": "3 seconds"},
+        )
+        try:
+            with self.assertRaises(EvalRankApiError) as raised:
+                EvalRankClient(server.base_url).recommend(sample_evaluation_request())
+        finally:
+            server.close()
+
+        self.assertEqual(429, raised.exception.status)
+        self.assertEqual(problem, raised.exception.problem)
+        self.assertIsNone(raised.exception.retry_after)
+
     def test_use_cases_gets_public_catalog_json(self):
         server = _SdkTestServer(response_status=200, response_body=sample_use_case_catalog().to_dict())
         try:

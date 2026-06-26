@@ -130,7 +130,12 @@ def _payload_dict(value: EvaluationRequest | dict[str, Any]) -> dict[str, Any]:
 
 def _retry_after(headers: Any) -> int | None:
     value = headers.get("Retry-After")
-    return None if value is None else int(value)
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text.isdigit():
+        return None
+    return int(text)
 
 __all__ = [
     "EvalRankApiError",

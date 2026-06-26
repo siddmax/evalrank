@@ -60,6 +60,37 @@ test("EvalRankClient raises public Problem Details errors", async () => {
   }
 });
 
+test("EvalRankClient treats malformed Retry-After as absent", async () => {
+  const problem: ProblemDetails = {
+    type: "https://evalrank.ai/problems/rate-limited",
+    title: "Rate limited",
+    status: 429,
+    detail: "too many requests",
+    code: "rate_limited",
+    retriable: true,
+    retry_after: 3,
+  };
+  const server = await startServer(429, problem, {
+    "Content-Type": "application/problem+json",
+    "Retry-After": "3 seconds",
+  });
+
+  try {
+    await assert.rejects(
+      () => new EvalRankClient(server.baseUrl).recommend(requestPayload()),
+      (error: unknown) => {
+        assert.ok(error instanceof EvalRankApiError);
+        assert.equal(error.status, 429);
+        assert.equal(error.retryAfter, null);
+        assert.deepEqual(error.problem, problem);
+        return true;
+      },
+    );
+  } finally {
+    await server.close();
+  }
+});
+
 test("EvalRankClient fetches public use-case catalog metadata", async () => {
   const server = await startServer(200, useCaseCatalogPayload());
 

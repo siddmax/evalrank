@@ -18,7 +18,7 @@ make check
 - `tests/test_openapi_contract.py` checks the public OpenAPI route contracts, reusable Problem Details responses, retry/rate-limit headers, schema refs, and storage-free boundary.
 - `tests/test_methods_docs.py` checks exact method README note coverage and verifies public method notes stay aligned with the use-case taxonomy and scoring-stage contracts plus private boundaries.
 - `tests/test_repo_docs.py` checks `CLAUDE.md` stays a one-line `@AGENTS.md` shim, scoped `AGENTS.md` files cover public work areas, and `docs/REPO_STRUCTURE.md` tracks the public top-level directories and package directories exactly.
-- `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts, vocabulary constants, public fixture dispatch helpers, and the stdlib `EvalRankClient` behavior for HTTP(S)-only `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations` success plus Problem Details errors.
+- `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts, vocabulary constants, public fixture dispatch helpers, and the stdlib `EvalRankClient` behavior for HTTP(S)-only `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations` success plus Problem Details errors, including strict numeric `Retry-After` parsing.
 - `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces, including public fixture kinds, Problem Details codes, abstention, `UseCase`, `the_call`, and recommendation branch typing, non-empty array helper typing, metadata-route client exports, recommendation client exports, and types.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.
 - `scripts/check_public_boundary.py` rejects private imports, disallowed coupling, excluded implementation markers, secret files, high-signal secret values, private data paths, and missing package license/notice files.
@@ -26,7 +26,7 @@ make check
 ## Package Checks
 
 - TypeScript SDK syntax check: `npm run check --prefix packages/sdk-ts`
-- TypeScript SDK runtime test: `npm run test --prefix packages/sdk-ts`
+- TypeScript SDK runtime test: `npm run test --prefix packages/sdk-ts` checks public route behavior and strict numeric `Retry-After` parsing.
 - Public fixture example smoke check: `python3 examples/public_fixture.py`
 
 ## Update Rules
