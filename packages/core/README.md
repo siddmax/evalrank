@@ -52,4 +52,4 @@ Recommendation `the_call` payloads expose only `decision`, `confidence`, `reason
 
 Recommendation `abstention` payloads expose only a public `reason` and `detail` when no ranked answer should be returned, and must be paired with an abstaining `the_call` on an empty single-scale response. Evidence-floor thresholds, policy internals, and private reason taxonomies stay outside this package.
 
-Problem Details payloads expose the public RFC 9457 error shape plus retry-safe public extensions. Private problem types, tenant context, hosted internals, and production telemetry stay outside this package.
+Problem Details payloads expose the public RFC 9457 error shape plus retry-safe public extensions. Optional `doc_url` values must be public HTTP(S) URLs. Private problem types, tenant context, hosted internals, and production telemetry stay outside this package.

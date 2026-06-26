@@ -788,10 +788,12 @@ class ProblemDetails:
             _require_nonempty_string(name, getattr(self, name))
         if not isinstance(self.status, int) or isinstance(self.status, bool) or not 400 <= self.status <= 599:
             raise ValueError("status must be an integer from 400 to 599")
-        for name in ("instance", "field", "request_id", "doc_url"):
+        for name in ("instance", "field", "request_id"):
             value = getattr(self, name)
             if value is not None:
                 _require_nonempty_string(name, value)
+        if self.doc_url is not None:
+            _require_http_url("doc_url", self.doc_url)
         if self.code is not None and self.code not in PROBLEM_CODES:
             raise ValueError(f"code must be one of {sorted(PROBLEM_CODES)}")
         if self.retriable is not None and not isinstance(self.retriable, bool):

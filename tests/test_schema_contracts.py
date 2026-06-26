@@ -499,7 +499,7 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(1, properties["request_id"]["minLength"])
         self.assertEqual("string", properties["doc_url"]["type"])
         self.assertEqual("uri-reference", properties["doc_url"]["format"])
-        self.assertEqual(1, properties["doc_url"]["minLength"])
+        self.assertEqual("^https?://", properties["doc_url"]["pattern"])
 
     def test_candidate_set_schema_pins_public_candidate_refs(self):
         candidate_set_schema = _schema("candidate-set.schema.json")

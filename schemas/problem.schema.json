@@ -65,7 +65,7 @@
     "doc_url": {
       "type": "string",
       "format": "uri-reference",
-      "minLength": 1
+      "pattern": "^https?://"
     }
   }
 }

@@ -160,6 +160,10 @@ class CoreContractTests(unittest.TestCase):
             ("field", ""),
             ("request_id", 123),
             ("doc_url", ""),
+            ("doc_url", "file:///tmp/private-error-doc.md"),
+            ("doc_url", "/docs/errors"),
+            ("doc_url", "evalrank.ai/docs/errors"),
+            ("doc_url", "HTTPS://evalrank.ai/docs/errors"),
             ("extensions", {"status": "override"}),
             ("extensions", {"bad": float("nan")}),
         ):
