@@ -17,7 +17,13 @@ sys.path.insert(0, str(CLI_SRC))
 sys.path.insert(0, str(SDK_SRC))
 
 from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
-from evalrank_core.fixtures import sample_evaluation_request, sample_problem_details, sample_recommendation  # noqa: E402
+from evalrank_core.fixtures import (  # noqa: E402
+    sample_evaluation_request,
+    sample_problem_details,
+    sample_recommendation,
+    sample_scoring_stage_catalog,
+    sample_use_case_catalog,
+)
 from evalrank_cli import main  # noqa: E402
 
 
@@ -189,6 +195,77 @@ class CliFixtureTests(unittest.TestCase):
 
         self.assertIn("evalrank recommend --base-url", text)
 
+    def test_cli_readme_lists_metadata_commands(self):
+        text = (REPO_ROOT / "packages" / "cli" / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("evalrank use-cases --base-url", text)
+        self.assertIn("evalrank scoring-stages --base-url", text)
+
+    def test_use_cases_gets_public_catalog_and_writes_json(self):
+        server = _CliTestServer(response_status=200, response_body=sample_use_case_catalog().to_dict())
+        stdout = StringIO()
+        try:
+            exit_code = main(
+                ["use-cases", "--base-url", server.base_url],
+                stdout=stdout,
+                stderr=StringIO(),
+            )
+        finally:
+            server.close()
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("GET", server.method)
+        self.assertEqual("/v1/use-cases", server.path)
+        self.assertIsNone(server.request_json)
+        self.assertEqual("use_case_catalog", json.loads(stdout.getvalue())["object"])
+
+    def test_scoring_stages_gets_public_catalog_and_writes_json(self):
+        server = _CliTestServer(response_status=200, response_body=sample_scoring_stage_catalog().to_dict())
+        stdout = StringIO()
+        try:
+            exit_code = main(
+                ["scoring-stages", "--base-url", server.base_url],
+                stdout=stdout,
+                stderr=StringIO(),
+            )
+        finally:
+            server.close()
+
+        self.assertEqual(0, exit_code)
+        self.assertEqual("GET", server.method)
+        self.assertEqual("/v1/scoring-stages", server.path)
+        self.assertIsNone(server.request_json)
+        self.assertEqual("scoring_stage_catalog", json.loads(stdout.getvalue())["object"])
+
+    def test_metadata_command_writes_problem_details_to_stderr(self):
+        problem = sample_problem_details().to_dict()
+        server = _CliTestServer(response_status=503, response_body=problem)
+        stderr = StringIO()
+        try:
+            exit_code = main(
+                ["use-cases", "--base-url", server.base_url],
+                stdout=StringIO(),
+                stderr=stderr,
+            )
+        finally:
+            server.close()
+
+        self.assertEqual(1, exit_code)
+        self.assertEqual("GET", server.method)
+        self.assertEqual(problem, json.loads(stderr.getvalue()))
+
+    def test_metadata_command_rejects_non_http_base_url(self):
+        stderr = StringIO()
+
+        exit_code = main(
+            ["use-cases", "--base-url", "file:///tmp/evalrank"],
+            stdout=StringIO(),
+            stderr=stderr,
+        )
+
+        self.assertEqual(2, exit_code)
+        self.assertIn("base_url must be an http or https URL", stderr.getvalue())
+
     def test_recommend_posts_request_file_and_writes_public_json(self):
         server = _CliTestServer(response_status=200, response_body=sample_recommendation().to_dict())
         stdout = StringIO()
@@ -205,6 +282,7 @@ class CliFixtureTests(unittest.TestCase):
             server.close()
 
         self.assertEqual(0, exit_code)
+        self.assertEqual("POST", server.method)
         self.assertEqual("/v1/recommendations", server.path)
         self.assertEqual(sample_evaluation_request().to_dict(), server.request_json)
         self.assertEqual("recommendation", json.loads(stdout.getvalue())["object"])
@@ -225,6 +303,7 @@ class CliFixtureTests(unittest.TestCase):
             server.close()
 
         self.assertEqual(0, exit_code)
+        self.assertEqual("POST", server.method)
         self.assertEqual("/v1/recommendations", server.path)
         self.assertEqual(sample_evaluation_request().to_dict(), server.request_json)
         self.assertEqual("recommendation", json.loads(stdout.getvalue())["object"])
@@ -303,14 +382,25 @@ class _CliTestServer:
     def __init__(self, *, response_status: int, response_body: dict) -> None:
         self.request_json: dict | None = None
         self.path: str | None = None
+        self.method: str | None = None
 
         owner = self
 
         class Handler(BaseHTTPRequestHandler):
             def do_POST(self) -> None:
+                owner.method = self.command
                 owner.path = self.path
                 body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
                 owner.request_json = json.loads(body.decode("utf-8"))
+                self._write_json()
+
+            def do_GET(self) -> None:
+                owner.method = self.command
+                owner.path = self.path
+                owner.request_json = None
+                self._write_json()
+
+            def _write_json(self) -> None:
                 encoded = json.dumps(response_body).encode("utf-8")
                 self.send_response(response_status)
                 self.send_header("Content-Type", "application/json")

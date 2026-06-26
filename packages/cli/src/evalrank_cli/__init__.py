@@ -28,6 +28,28 @@ def main(argv: list[str] | None = None, *, stdout: TextIO | None = None, stderr:
         payload = sample_public_fixture(args.kind)
         stdout.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
         return 0
+    if args.command == "use-cases":
+        try:
+            payload = EvalRankClient(args.base_url).use_cases()
+        except ValueError as exc:
+            stderr.write(str(exc) + "\n")
+            return 2
+        except EvalRankApiError as exc:
+            stderr.write(json.dumps(exc.problem, sort_keys=True, separators=(",", ":")) + "\n")
+            return 1
+        stdout.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
+        return 0
+    if args.command == "scoring-stages":
+        try:
+            payload = EvalRankClient(args.base_url).scoring_stages()
+        except ValueError as exc:
+            stderr.write(str(exc) + "\n")
+            return 2
+        except EvalRankApiError as exc:
+            stderr.write(json.dumps(exc.problem, sort_keys=True, separators=(",", ":")) + "\n")
+            return 1
+        stdout.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
+        return 0
     if args.command == "recommend":
         try:
             client = EvalRankClient(args.base_url)
@@ -60,6 +82,10 @@ def _parser() -> argparse.ArgumentParser:
         "kind",
         choices=PUBLIC_FIXTURE_KINDS,
     )
+    use_cases = subparsers.add_parser("use-cases", help="call the public use-case metadata API")
+    use_cases.add_argument("--base-url", required=True)
+    scoring_stages = subparsers.add_parser("scoring-stages", help="call the public scoring-stage metadata API")
+    scoring_stages.add_argument("--base-url", required=True)
     recommend = subparsers.add_parser("recommend", help="call the public recommendation API")
     recommend.add_argument("--base-url", required=True)
     recommend.add_argument("--request", required=True, help="EvaluationRequest JSON file, or '-' for stdin")

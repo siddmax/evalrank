@@ -85,6 +85,8 @@ PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m
 The CLI also exposes explicit public recommendation API plumbing:
 
 ```sh
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli use-cases --base-url https://evalrank.example
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli scoring-stages --base-url https://evalrank.example
 PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli recommend --base-url https://evalrank.example --request request.json
 PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli recommend --base-url https://evalrank.example --request -
 ```
