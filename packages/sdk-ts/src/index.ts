@@ -255,12 +255,21 @@ export interface ScoringStageCatalog {
   stages: NonEmptyArray<ScoringStage>;
 }
 
-export interface TheCall {
-  decision: TheCallDecision;
-  confidence: number | null;
+export interface RecommendCall {
+  decision: "recommend";
+  confidence: number;
   reason: string;
-  abstention_reason: string | null;
+  abstention_reason: null;
 }
+
+export interface AbstainCall {
+  decision: "abstain";
+  confidence: null;
+  reason: string;
+  abstention_reason: string;
+}
+
+export type TheCall = RecommendCall | AbstainCall;
 
 export interface ProblemDetails {
   type: string;

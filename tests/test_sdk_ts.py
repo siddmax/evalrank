@@ -118,13 +118,15 @@ class TypeScriptSdkTests(unittest.TestCase):
             "ScoringStage",
             "ScoringStageCatalog",
             "StageCandidate",
-            "TheCall",
             "ProblemDetails",
             "UseCase",
             "UseCaseCatalog",
         ):
             self.assertIn(f"export interface {name}", source)
 
+        self.assertIn("export interface RecommendCall", source)
+        self.assertIn("export interface AbstainCall", source)
+        self.assertIn("export type TheCall = RecommendCall | AbstainCall;", source)
         self.assertIn("export class EvalRankApiError extends Error", source)
         self.assertIn("export class EvalRankClient", source)
         self.assertIn("async useCases(): Promise<UseCaseCatalog>", source)
@@ -206,6 +208,12 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];", source)
         self.assertIn("export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];", source)
         self.assertIn("export type NonEmptyArray<T> = [T, ...T[]];", source)
+        self.assertIn('decision: "recommend";', source)
+        self.assertIn("confidence: number;", source)
+        self.assertIn("abstention_reason: null;", source)
+        self.assertIn('decision: "abstain";', source)
+        self.assertIn("confidence: null;", source)
+        self.assertIn("abstention_reason: string;", source)
         self.assertIn("code?: ProblemCode;", source)
         self.assertIn("retriable?: boolean;", source)
         self.assertIn("[key: string]: unknown;", source)
