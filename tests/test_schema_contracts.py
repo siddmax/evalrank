@@ -353,6 +353,7 @@ class SchemaContractTests(unittest.TestCase):
         stage_schema = schema["$defs"]["ScoringStage"]
 
         self.assertEqual("scoring_stage_catalog", schema["properties"]["object"]["const"])
+        self.assertTrue(schema["properties"]["stages"]["uniqueItems"])
         self.assertEqual("ScoringStage", stage_schema["title"])
         self.assertFalse(stage_schema["additionalProperties"])
         self.assertEqual(
@@ -369,7 +370,9 @@ class SchemaContractTests(unittest.TestCase):
         )
         self.assertEqual(1, stage_schema["properties"]["ordinal"]["minimum"])
         self.assertEqual(1, stage_schema["properties"]["input_contracts"]["minItems"])
+        self.assertTrue(stage_schema["properties"]["input_contracts"]["uniqueItems"])
         self.assertEqual(1, stage_schema["properties"]["output_contracts"]["minItems"])
+        self.assertTrue(stage_schema["properties"]["output_contracts"]["uniqueItems"])
 
     def test_problem_schema_pins_rfc_9457_shape(self):
         problem_schema = _schema("problem.schema.json")

@@ -34,6 +34,7 @@ Last updated: 2026-06-26
 - Exact `CLAUDE.md` shim drift check for the required `@AGENTS.md` reference.
 - Scoped `AGENTS.md` coverage drift check for public work areas.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
+- Scoring-stage catalog schema uniqueness drift guard.
 - Recommendation `ranked` schema uniqueness hardening.
 - Recommendation `RankingGroup.ranked` schema uniqueness hardening.
 - TypeScript SDK non-empty array helper type for schema `minItems: 1` public arrays.
@@ -137,6 +138,7 @@ Last updated: 2026-06-26
 - TypeScript `the_call` branch parity build log in `docs/build-log/2026-06-26-typescript-the-call-branch-parity.md`.
 - TypeScript recommendation branch parity build log in `docs/build-log/2026-06-26-typescript-recommendation-branch-parity.md`.
 - Public tuple sequence contract hardening build log in `docs/build-log/2026-06-26-tuple-sequence-contract-hardening.md`.
+- Scoring-stage schema uniqueness drift-check build log in `docs/build-log/2026-06-26-scoring-stage-schema-uniqueness-drift-check.md`.
 - Recommendation ranked schema uniqueness hardening build log in `docs/build-log/2026-06-26-recommendation-ranked-schema-uniqueness.md`.
 - Ranking group schema uniqueness hardening build log in `docs/build-log/2026-06-26-ranking-group-schema-uniqueness.md`.
 
@@ -215,6 +217,7 @@ Last updated: 2026-06-26
 | CLI added explicit metadata commands for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only Python SDK plumbing with JSON stdout and Problem Details stderr; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | MCP added explicit metadata tools for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only Python SDK plumbing with MCP text JSON results and Problem Details tool errors; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | `CandidateSet` and `EvidenceSet` now reject mutable list-backed sequence inputs in the Python core. | Built here as public contract immutability hardening for existing storage-free payloads; JSON serialization still emits public arrays, empty evidence sets remain valid, and no graph lookup, evidence lookup, scorer runtime, DB work, or private source adapter moved. | Public Contracts |
+| Scoring-stage catalog schema tests now pin uniqueness on stages and stage contract refs. | Built here as a drift guard for the existing public schema; no new scorer stages, scoring formulas, runtime, DB work, or private methodology moved. | Methods / Schemas, Open-Core Boundary / CI |
 | Recommendation `ranked` now pins `uniqueItems` in JSON Schema. | Built here as schema/core parity for the existing single-scale recommendation contract; no scorer normalization, private score semantics, hosted receipt behavior, runtime, or DB work moved. | Public Contracts, Methods / Schemas |
 | Recommendation `RankingGroup.ranked` now pins `uniqueItems` in JSON Schema. | Built here as schema/core parity for the existing grouped recommendation contract; no cross-kind normalization, scorer runtime, private score semantics, DB work, or hosted receipt behavior moved. | Public Contracts, Methods / Schemas |
 | Remaining live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private or out until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
