@@ -37,6 +37,7 @@ Last updated: 2026-06-26
 - Exact status build-log index drift check.
 - Exact porting workstream/status drift check.
 - Exact public MCP docs boundary drift check.
+- Exact TESTS abstention terminology drift check.
 - Exact `CLAUDE.md` shim drift check for the required `@AGENTS.md` reference.
 - Scoped `AGENTS.md` coverage drift check for public work areas.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
@@ -157,6 +158,7 @@ Last updated: 2026-06-26
 - Status build-log index drift-check build log in `docs/build-log/2026-06-26-status-build-log-index-drift-check.md`.
 - Porting workstream/status drift-check build log in `docs/build-log/2026-06-26-porting-workstream-status-drift-check.md`.
 - Public MCP docs boundary drift-check build log in `docs/build-log/2026-06-26-public-mcp-docs-boundary-drift-check.md`.
+- TESTS abstention terminology drift-check build log in `docs/build-log/2026-06-26-tests-abstention-terminology-drift-check.md`.
 - `CLAUDE.md` shim drift-check build log in `docs/build-log/2026-06-26-claude-shim-drift-check.md`.
 - Scoped `AGENTS.md` coverage drift-check build log in `docs/build-log/2026-06-26-scoped-agents-drift-check.md`.
 - Ranked entity axes shape hardening build log in `docs/build-log/2026-06-26-ranked-entity-axes-contract-hardening.md`.
@@ -267,6 +269,7 @@ Last updated: 2026-06-26
 | Python and TypeScript SDKs now parse `Retry-After` strictly as integer seconds. | Built here as public client error-header hardening for existing Problem Details behavior; malformed headers become absent retry hints, and no retry loop, auth, hosted receipt, service discovery, telemetry, or private route behavior moved. | SDK / CLI / MCP, Public Surface Contracts |
 | Status docs now mention every current porting workstream from `docs/PORTING.md`. | Built here as a deterministic public-doc guard so progress snapshots retain the routing vocabulary needed for future port decisions; no private plan text, private worktree contents, DB work, hosted ops, telemetry, or runtime behavior moved. | Open-Core Boundary / CI, Docs / Public Planning |
 | Public MCP docs no longer advertise private evidence lookup. | Built here as a deterministic public-doc boundary guard over root and MCP package docs; no live MCP server runtime, evidence lookup, private service access, DB work, hosted ops, telemetry, or runtime behavior moved. | Open-Core Boundary / CI, SDK / CLI / MCP, Docs / Public Planning |
+| `TESTS.md` now uses the current abstention-as-empty-single-scale contract name. | Built here as a deterministic public-doc terminology guard; no contract shape, private scorer policy, DB work, hosted ops, telemetry, or runtime behavior moved. | Open-Core Boundary / CI, Docs / Public Planning, Public Contracts |
 | Recommendation abstention state now requires `the_call` and `abstention` to agree. | Built here as public envelope consistency in core, JSON Schema, and TypeScript types; no evidence-floor threshold, private abstention taxonomy, scorer/runtime behavior, DB work, or hosted operation moved. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | Recommendation abstention responses must be empty single-scale responses. | Built here as public response-shape consistency in core, JSON Schema, and TypeScript types; no scorer threshold, evidence-floor policy, private reason taxonomy, runtime behavior, DB work, or hosted operation moved. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | Recommendation `shortlist_depth` now must match the returned ranked row count. | Built here as Python core response-shape consistency for single-scale and kind-grouped recommendations; JSON Schema stays structural, and no scorer threshold, private ranking policy, runtime behavior, DB work, hosted operation, or telemetry moved. | Public Contracts |

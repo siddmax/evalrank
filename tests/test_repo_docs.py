@@ -130,6 +130,12 @@ class RepoDocsTests(unittest.TestCase):
 
         self.assertEqual([], offenders)
 
+    def test_tests_map_uses_current_abstention_contract_name(self):
+        text = (REPO_ROOT / "TESTS.md").read_text(encoding="utf-8")
+
+        self.assertIn("abstention-as-empty-single-scale", text)
+        self.assertNotIn("abstention-as-empty-ranking", text)
+
 
 if __name__ == "__main__":
     unittest.main()
