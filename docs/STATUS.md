@@ -10,6 +10,7 @@ Last updated: 2026-06-26
 - `CLAUDE.md` shim to `@AGENTS.md`.
 - Public boundary checker for private imports, disallowed coupling, excluded method markers, and missing package license/notice files.
 - Public boundary checker guards for secret files, high-signal secret values, and held-out/private data paths.
+- Public Python package metadata drift guard for package names, versions, licenses, Python floor, dependency edges, and CLI entrypoint.
 - Core Python capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, result row, use-case catalog, scoring stage catalog, ranking group, evidence set, exclusion, `the_call`, abstention, and recommendation contracts in `packages/core`.
 - Public core fixture factory for canonical capability fingerprint, raw entry, request, candidate set, stage candidate, evidence item, Problem Details, result row, use-case catalog, scoring stage catalog, ranking group, evidence set, exclusion, and recommendation payloads with public abstention fields, with synthetic request use cases aligned to the public catalog.
 - Shared public fixture-kind dispatch in core, reused by CLI and MCP fixture adapters.
@@ -102,6 +103,7 @@ Last updated: 2026-06-26
 - CLI recommendation command build log in `docs/build-log/2026-06-26-cli-recommendation-command.md`.
 - TypeScript recommendation client build log in `docs/build-log/2026-06-26-typescript-recommendation-client.md`.
 - MCP recommendation tool build log in `docs/build-log/2026-06-26-mcp-recommendation-tool.md`.
+- Python package metadata drift guard build log in `docs/build-log/2026-06-26-python-package-metadata-drift-guard.md`.
 
 ## Current Public Surface
 
@@ -162,6 +164,7 @@ Last updated: 2026-06-26
 | CLI added an explicit recommendation command for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only file/stdin JSON plumbing around the public Python SDK client; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | TypeScript SDK added a dependency-free recommendation client for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only native `fetch` behavior with local package runtime tests; no auth, retries, hosted receipts, tenant context, private DTOs, service discovery, environment-variable defaults, local file URLs, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | MCP added an explicit recommendation tool for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only JSON plumbing around the public Python SDK client; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
+| Python package metadata drift guard now pins public package dependency edges and package hygiene metadata. | Built here as stdlib `tomllib` tests over existing `pyproject.toml` files; no packaging release or publishing workflow was added. | Open-Core Boundary / CI |
 | Remaining live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private or out until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
 
 ## In Progress

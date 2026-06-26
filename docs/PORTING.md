@@ -19,6 +19,7 @@ Last reviewed: 2026-06-26
 - Root and scoped `AGENTS.md`, plus `CLAUDE.md` shim.
 - Public progress docs: `docs/STATUS.md` and `docs/REPO_STRUCTURE.md`.
 - Public boundary checker and default unit tests.
+- Public Python package metadata drift guard for package names, versions, licenses, Python floor, dependency edges, and CLI entrypoint.
 - Core Python capability fingerprint, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, ranking group, evidence set, exclusion, `the_call`, abstention, recommendation, and entity reference contracts.
 - Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, use-case catalogs, evidence sets, exclusions, ranked entities, recommendations with closed ranking groups and public abstention objects, evidence items, and retry-aware RFC 9457 Problem Details.
 - Public OpenAPI 3.1.1 contract for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`, including reusable Problem Details responses and retry/rate-limit header contracts.
@@ -78,6 +79,7 @@ Last reviewed: 2026-06-26
 | Public Surface Contracts | OpenAPI 3.1.1 contract for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations` over existing public schemas and reusable RFC 9457 Problem Details responses for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts. | Hosted auth, tenant logic, receipt storage, HMAC-backed IDs, private DTOs, private problem types, live rate-limit enforcement, live routing, and deployment wiring. |
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output plus README coverage for each emitted JSON key. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
+| Package Metadata | Stdlib checks for Python package names, versions, licenses, Python floor, dependency edges, and CLI entrypoint. | Publish credentials, release automation, private package indexes, and hosted deployment wiring. |
 | Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
 
 ## Workstream Router
@@ -239,6 +241,7 @@ The latest private-side scan found EvalRank planning material in private spec, A
 | Use-case benchmark weights, IRT fit clusters, benchmark crosswalk, confidence policies, and thin-coverage/synthesis details | Keep private during incubation; later publish only sanitized method explanations that omit weights, held-out tasks, private corpora, proprietary thresholds, and benchmark outputs. | Methods / Schemas, Scoring / Materializer Runtime, Evaluation Integrity |
 | Public scoring-stage names, order, contract refs, use-case taxonomy, trust/freshness vocabulary, and method-boundary explanations | Scoring-stage catalog and use-case taxonomy notes are ported; future notes must omit formulas, thresholds, held-out eval details, private benchmark outputs, and production traces. | Methods / Schemas |
 | Boundary checks, license/notice hygiene, schema drift tests, and secret/private-data guards | Port aggressively when they reduce public leak risk or contract drift. | Open-Core Boundary / CI |
+| Python package metadata and dependency-edge guards | Ported as deterministic `tomllib` tests over public `pyproject.toml` files. | Open-Core Boundary / CI |
 | Supabase schema, migrations, grants/RLS, workload isolation, live DB checks, and shared Finn deployment details | Keep private until EvalRank owns persistence or its own Supabase project; then design a public migration ownership plan. | DB Bootstrap / Syndai Ops |
 | Deterministic scorer/materializer runtime and entity/evidence graph behavior | Incubate privately until public-input-only pieces are separable from proprietary tuning, production rows, live workers, and source adapters. | Scoring / Materializer Runtime |
 | Held-out suites, synthetic internal corpora, graders, answers, calibration traces, and private benchmark outputs | Never port; publish only synthetic or public reproducible fixtures. | Evaluation Integrity |
