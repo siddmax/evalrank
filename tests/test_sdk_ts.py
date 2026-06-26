@@ -113,7 +113,6 @@ class TypeScriptSdkTests(unittest.TestCase):
             "RankedEntity",
             "RankingGroup",
             "RawEntry",
-            "Recommendation",
             "ResultRow",
             "ScoringStage",
             "ScoringStageCatalog",
@@ -127,6 +126,10 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("export interface RecommendCall", source)
         self.assertIn("export interface AbstainCall", source)
         self.assertIn("export type TheCall = RecommendCall | AbstainCall;", source)
+        self.assertIn("export interface RecommendationBase", source)
+        self.assertIn("export interface SingleScaleRecommendation extends RecommendationBase", source)
+        self.assertIn("export interface KindGroupedRecommendation extends RecommendationBase", source)
+        self.assertIn("export type Recommendation = SingleScaleRecommendation | KindGroupedRecommendation;", source)
         self.assertIn("export class EvalRankApiError extends Error", source)
         self.assertIn("export class EvalRankClient", source)
         self.assertIn("async useCases(): Promise<UseCaseCatalog>", source)
@@ -200,7 +203,6 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("the_call: TheCall | null;", source)
         self.assertIn("abstention: Abstention | null;", source)
         self.assertIn("exclusions: Exclusion[];", source)
-        self.assertIn("groups: NonEmptyArray<RankingGroup> | null;", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
         self.assertIn("export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];", source)
         self.assertIn("export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];", source)
@@ -214,6 +216,12 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn('decision: "abstain";', source)
         self.assertIn("confidence: null;", source)
         self.assertIn("abstention_reason: string;", source)
+        self.assertIn('comparability: "single-scale";', source)
+        self.assertIn("ranked: RankedEntity[];", source)
+        self.assertIn("groups: null;", source)
+        self.assertIn('comparability: "kind-grouped";', source)
+        self.assertIn("ranked: [];", source)
+        self.assertIn("groups: NonEmptyArray<RankingGroup>;", source)
         self.assertIn("code?: ProblemCode;", source)
         self.assertIn("retriable?: boolean;", source)
         self.assertIn("[key: string]: unknown;", source)
@@ -229,7 +237,6 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("output_contracts: NonEmptyArray<string>;", source)
         self.assertIn("stages: NonEmptyArray<ScoringStage>;", source)
         self.assertIn("ranked: NonEmptyArray<RankedEntity>;", source)
-        self.assertIn("groups: NonEmptyArray<RankingGroup> | null;", source)
         self.assertIn("rank_policy: UseCaseRankPolicy;", source)
 
 

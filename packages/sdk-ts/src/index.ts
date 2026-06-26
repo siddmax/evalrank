@@ -314,7 +314,7 @@ export interface RankingGroup {
   group_rationale: string;
 }
 
-export interface Recommendation {
+export interface RecommendationBase {
   object: "recommendation";
   use_case: string;
   shortlist_depth: number;
@@ -324,9 +324,6 @@ export interface Recommendation {
   base_snapshot_lag_ms: number;
   methodology_version: string;
   generated_at: string;
-  comparability: ComparabilityMode;
-  ranked: RankedEntity[];
-  groups: NonEmptyArray<RankingGroup> | null;
   the_call: TheCall | null;
   abstention: Abstention | null;
   exclusions: Exclusion[];
@@ -335,6 +332,20 @@ export interface Recommendation {
   search_run_id: string;
   request_id: string;
 }
+
+export interface SingleScaleRecommendation extends RecommendationBase {
+  comparability: "single-scale";
+  ranked: RankedEntity[];
+  groups: null;
+}
+
+export interface KindGroupedRecommendation extends RecommendationBase {
+  comparability: "kind-grouped";
+  ranked: [];
+  groups: NonEmptyArray<RankingGroup>;
+}
+
+export type Recommendation = SingleScaleRecommendation | KindGroupedRecommendation;
 
 export class EvalRankApiError extends Error {
   readonly status: number;
