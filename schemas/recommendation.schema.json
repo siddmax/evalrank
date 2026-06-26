@@ -349,6 +349,34 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "abstention": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "abstention"
+        ]
+      },
+      "then": {
+        "properties": {
+          "comparability": {
+            "const": "single-scale"
+          },
+          "shortlist_depth": {
+            "const": 0
+          },
+          "ranked": {
+            "maxItems": 0
+          },
+          "groups": {
+            "const": null
+          }
+        }
+      }
     }
   ],
   "$defs": {

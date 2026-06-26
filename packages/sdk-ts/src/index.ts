@@ -358,8 +358,7 @@ export interface RecommendationWithAbstainCall {
 
 export type RecommendationCallState =
   | RecommendationWithoutCall
-  | RecommendationWithRecommendCall
-  | RecommendationWithAbstainCall;
+  | RecommendationWithRecommendCall;
 
 export interface SingleScaleRecommendationBase extends RecommendationBase {
   comparability: "single-scale";
@@ -373,8 +372,20 @@ export interface KindGroupedRecommendationBase extends RecommendationBase {
   groups: NonEmptyArray<RankingGroup>;
 }
 
-export type SingleScaleRecommendation = SingleScaleRecommendationBase & RecommendationCallState;
-export type KindGroupedRecommendation = KindGroupedRecommendationBase & RecommendationCallState;
+export interface EmptySingleScaleAbstentionRecommendation
+  extends RecommendationBase,
+    RecommendationWithAbstainCall {
+  comparability: "single-scale";
+  shortlist_depth: 0;
+  ranked: [];
+  groups: null;
+}
+
+export type SingleScaleRecommendation =
+  | (SingleScaleRecommendationBase & (RecommendationWithoutCall | RecommendationWithRecommendCall))
+  | EmptySingleScaleAbstentionRecommendation;
+export type KindGroupedRecommendation = KindGroupedRecommendationBase &
+  (RecommendationWithoutCall | RecommendationWithRecommendCall);
 export type Recommendation = SingleScaleRecommendation | KindGroupedRecommendation;
 
 export class EvalRankApiError extends Error {

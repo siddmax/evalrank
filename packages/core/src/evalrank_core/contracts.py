@@ -881,14 +881,31 @@ class Recommendation:
             raise ValueError("ranked must be an array")
         if self.groups is not None and not isinstance(self.groups, list):
             raise ValueError("groups must be an array or null")
+        if not isinstance(self.shortlist_depth, int) or isinstance(self.shortlist_depth, bool) or self.shortlist_depth < 0:
+            raise ValueError("shortlist_depth must be an integer >= 0")
+        if self.the_call is not None and not isinstance(self.the_call, TheCall):
+            raise TypeError("the_call must be a TheCall")
+        if self.abstention is not None and not isinstance(self.abstention, Abstention):
+            raise TypeError("abstention must be an Abstention")
+        if self.the_call is None and self.abstention is not None:
+            raise ValueError("the_call is required when abstention is set")
+        if self.the_call is not None and self.the_call.decision == "abstain" and self.abstention is None:
+            raise ValueError("abstention is required when the_call abstains")
+        if self.the_call is not None and self.the_call.decision == "recommend" and self.abstention is not None:
+            raise ValueError("abstention must be null when the_call recommends")
+        if self.abstention is not None and (
+            self.comparability != "single-scale"
+            or self.shortlist_depth != 0
+            or self.ranked
+            or self.groups is not None
+        ):
+            raise ValueError("abstention requires an empty single-scale recommendation")
         if self.comparability == "single-scale" and self.groups is not None:
             raise ValueError("single-scale recommendations must not include groups")
         if self.comparability == "kind-grouped" and self.ranked:
             raise ValueError("kind-grouped recommendations must not include ranked rows")
         if self.comparability == "kind-grouped" and not self.groups:
             raise ValueError("kind-grouped recommendations require groups")
-        if not isinstance(self.shortlist_depth, int) or isinstance(self.shortlist_depth, bool) or self.shortlist_depth < 0:
-            raise ValueError("shortlist_depth must be an integer >= 0")
         _require_nonempty_string("depth_rationale", self.depth_rationale)
         if not isinstance(self.degraded, bool):
             raise ValueError("degraded must be a boolean")
@@ -915,16 +932,6 @@ class Recommendation:
             for row in group.ranked:
                 if row.methodology_version != self.methodology_version:
                     raise ValueError("group rows must carry the envelope methodology_version")
-        if self.the_call is not None and not isinstance(self.the_call, TheCall):
-            raise TypeError("the_call must be a TheCall")
-        if self.abstention is not None and not isinstance(self.abstention, Abstention):
-            raise TypeError("abstention must be an Abstention")
-        if self.the_call is None and self.abstention is not None:
-            raise ValueError("the_call is required when abstention is set")
-        if self.the_call is not None and self.the_call.decision == "abstain" and self.abstention is None:
-            raise ValueError("abstention is required when the_call abstains")
-        if self.the_call is not None and self.the_call.decision == "recommend" and self.abstention is not None:
-            raise ValueError("abstention must be null when the_call recommends")
         if not isinstance(self.exclusions, list):
             raise ValueError("exclusions must be an array")
         for exclusion in self.exclusions:

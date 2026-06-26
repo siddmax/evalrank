@@ -18,7 +18,7 @@ Package metadata:
 - Public TypeScript interfaces and types for `CapabilityFingerprint`, `RawEntry`, `TheCall`, `Abstention`, `ProblemDetails`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `Exclusion`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankedEntity`, `RankingGroup`, and `Recommendation`.
 - `UseCase` is a discriminated union for the public ranked and veto-overlay branches.
 - `TheCall` is a discriminated union for the public `recommend` and `abstain` branches.
-- `Recommendation` is a discriminated union for the public `single-scale` and `kind-grouped` branches, plus the public `the_call`/`abstention` state.
+- `Recommendation` is a discriminated union for the public `single-scale` and `kind-grouped` branches, plus the public `the_call`/`abstention` state; abstaining responses are empty single-scale responses.
 - `RankedEntity.axes.evidence` carries the public evidence count and trust-tier coverage shape from the JSON Schema.
 - `Recommendation` includes `abstention`, `recommendation_id`, `recommend_id`, and `search_run_id` as public response fields.
 - `ProblemDetails` mirrors the public RFC 9457 error contract plus optional retry extensions; it does not imply a hosted service client.

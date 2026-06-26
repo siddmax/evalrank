@@ -134,10 +134,20 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("export interface RecommendationWithRecommendCall", source)
         self.assertIn("export interface RecommendationWithAbstainCall", source)
         self.assertIn("export type RecommendationCallState", source)
+        self.assertIn("export interface EmptySingleScaleAbstentionRecommendation", source)
         self.assertIn("export interface SingleScaleRecommendationBase extends RecommendationBase", source)
         self.assertIn("export interface KindGroupedRecommendationBase extends RecommendationBase", source)
-        self.assertIn("export type SingleScaleRecommendation", source)
-        self.assertIn("export type KindGroupedRecommendation", source)
+        self.assertIn(
+            "export type SingleScaleRecommendation =\n"
+            "  | (SingleScaleRecommendationBase & (RecommendationWithoutCall | RecommendationWithRecommendCall))\n"
+            "  | EmptySingleScaleAbstentionRecommendation;",
+            source,
+        )
+        self.assertIn(
+            "export type KindGroupedRecommendation = KindGroupedRecommendationBase &\n"
+            "  (RecommendationWithoutCall | RecommendationWithRecommendCall);",
+            source,
+        )
         self.assertIn("export type Recommendation = SingleScaleRecommendation | KindGroupedRecommendation;", source)
         self.assertIn("export class EvalRankApiError extends Error", source)
         self.assertIn("export class EvalRankClient", source)
@@ -214,6 +224,9 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("the_call: AbstainCall;", source)
         self.assertIn("abstention: null;", source)
         self.assertIn("abstention: Abstention;", source)
+        self.assertIn("shortlist_depth: 0;", source)
+        self.assertIn("ranked: [];", source)
+        self.assertIn("groups: null;", source)
         self.assertIn("exclusions: Exclusion[];", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
         self.assertIn("export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];", source)

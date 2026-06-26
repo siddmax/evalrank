@@ -879,6 +879,39 @@ class CoreContractTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "abstention|the_call"):
                     Recommendation(**{**valid, **kwargs})
 
+    def test_recommendation_rejects_abstention_with_ranked_answer(self):
+        abstention = contracts.Abstention(
+            reason="insufficient_evidence",
+            detail="no standardized-harness evidence; below ranking floor",
+        )
+        the_call = TheCall.abstain(reason="insufficient_evidence")
+        valid = {
+            "request_id": "req_01",
+            "use_case": "mobile-codegen:flutter",
+            "methodology_version": PINNED_METHODOLOGY_VERSION,
+            "generated_at": "2026-06-25T00:00:00Z",
+            "shortlist_depth": 0,
+            "depth_rationale": "insufficient_evidence",
+            "the_call": the_call,
+            "abstention": abstention,
+        }
+        group = RankingGroup(
+            group_key="mcp_server",
+            entity_type="mcp_server",
+            ranked=(_row("tool:exa-search-mcp"),),
+            group_rationale="public fixture group",
+        )
+
+        for kwargs in (
+            {"comparability": "single-scale", "ranked": [_row("tool:exa-search-mcp")], "groups": None},
+            {"comparability": "single-scale", "ranked": [], "groups": None, "shortlist_depth": 1},
+            {"comparability": "single-scale", "ranked": [], "groups": [group]},
+            {"comparability": "kind-grouped", "ranked": [], "groups": [group]},
+        ):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "abstention"):
+                    Recommendation(**{**valid, **kwargs})
+
     def test_methodology_version_rejects_unpinned_format(self):
         with self.assertRaisesRegex(ValueError, "methodology_version"):
             _row("tool:exa-search-mcp", methodology_version="2026.06.1")

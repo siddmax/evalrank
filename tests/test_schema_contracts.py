@@ -339,6 +339,24 @@ class SchemaContractTests(unittest.TestCase):
             recommendation_schema["allOf"],
         )
 
+    def test_recommendation_schema_pins_abstention_as_empty_single_scale(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+
+        self.assertIn(
+            {
+                "if": {"properties": {"abstention": {"type": "object"}}, "required": ["abstention"]},
+                "then": {
+                    "properties": {
+                        "comparability": {"const": "single-scale"},
+                        "shortlist_depth": {"const": 0},
+                        "ranked": {"maxItems": 0},
+                        "groups": {"const": None},
+                    }
+                },
+            },
+            recommendation_schema["allOf"],
+        )
+
     def test_recommendation_schema_reuses_exclusion_schema(self):
         recommendation_schema = _schema("recommendation.schema.json")
 
