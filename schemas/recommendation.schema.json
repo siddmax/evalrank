@@ -196,6 +196,7 @@
     },
     "exclusions": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "$ref": "exclusion.schema.json"
       }

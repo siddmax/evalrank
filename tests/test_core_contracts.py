@@ -1225,6 +1225,24 @@ class CoreContractTests(unittest.TestCase):
 
         self.assertEqual([exclusion.to_dict()], rec.to_dict()["exclusions"])
 
+    def test_recommendation_rejects_duplicate_exclusions(self):
+        exclusion = Exclusion(
+            subject=EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo"),
+            reason="unknown_cost",
+            detail="cost is unknown for this public fixture",
+        )
+
+        with self.assertRaisesRegex(ValueError, "duplicate exclusion"):
+            Recommendation.single_scale(
+                request_id="req_01",
+                use_case="function-calling",
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                ranked=[_row("tool:exa-search-mcp")],
+                generated_at="2026-06-25T00:00:00Z",
+                depth_rationale="one candidate clears the evidence floor",
+                exclusions=[exclusion, exclusion],
+            )
+
     def test_evidence_set_serializes_public_evidence_items(self):
         evidence = EvidenceItem(
             evidence_id="ev_public_trace_01",

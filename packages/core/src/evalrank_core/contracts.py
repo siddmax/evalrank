@@ -943,9 +943,19 @@ class Recommendation:
             raise ValueError("shortlist_depth must match ranked row count")
         if not isinstance(self.exclusions, list):
             raise ValueError("exclusions must be an array")
+        seen_exclusions: set[tuple[str, str, str, str]] = set()
         for exclusion in self.exclusions:
             if not isinstance(exclusion, Exclusion):
                 raise TypeError("exclusions must contain Exclusion values")
+            key = (
+                exclusion.subject.entity_type,
+                exclusion.subject.entity_id,
+                exclusion.reason,
+                exclusion.detail,
+            )
+            if key in seen_exclusions:
+                raise ValueError("duplicate exclusion")
+            seen_exclusions.add(key)
 
     @classmethod
     def single_scale(

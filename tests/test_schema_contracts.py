@@ -360,6 +360,7 @@ class SchemaContractTests(unittest.TestCase):
     def test_recommendation_schema_reuses_exclusion_schema(self):
         recommendation_schema = _schema("recommendation.schema.json")
 
+        self.assertTrue(recommendation_schema["properties"]["exclusions"]["uniqueItems"])
         self.assertEqual("exclusion.schema.json", recommendation_schema["properties"]["exclusions"]["items"]["$ref"])
 
     def test_recommendation_schema_pins_ranking_group_shape(self):
