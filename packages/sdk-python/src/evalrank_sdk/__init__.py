@@ -79,14 +79,35 @@ class EvalRankClient:
 
     def recommend(self, request: EvaluationRequest | dict[str, Any]) -> dict[str, Any]:
         body = json.dumps(_payload_dict(request), separators=(",", ":"), sort_keys=True, allow_nan=False).encode("utf-8")
+        return self._request_json(
+            "/v1/recommendations",
+            method="POST",
+            body=body,
+            headers={"Content-Type": "application/json"},
+        )
+
+    def use_cases(self) -> dict[str, Any]:
+        return self._request_json("/v1/use-cases")
+
+    def scoring_stages(self) -> dict[str, Any]:
+        return self._request_json("/v1/scoring-stages")
+
+    def _request_json(
+        self,
+        path: str,
+        *,
+        method: str = "GET",
+        body: bytes | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
         http_request = urllib.request.Request(
-            f"{self.base_url}/v1/recommendations",
+            f"{self.base_url}{path}",
             data=body,
             headers={
                 "Accept": "application/json",
-                "Content-Type": "application/json",
+                **(headers or {}),
             },
-            method="POST",
+            method=method,
         )
         try:
             with urllib.request.urlopen(http_request, timeout=self.timeout) as response:

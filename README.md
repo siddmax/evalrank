@@ -108,6 +108,8 @@ abstention = payload["abstention"]
 problem = sample_problem_details().to_dict()
 
 client = EvalRankClient("https://evalrank.example")
+# live_use_cases = client.use_cases()
+# live_stages = client.scoring_stages()
 # recommendation = client.recommend(sample_evaluation_request())
 ```
 

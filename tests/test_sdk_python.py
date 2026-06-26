@@ -266,6 +266,47 @@ class PythonSdkTests(unittest.TestCase):
         self.assertEqual(problem, raised.exception.problem)
         self.assertEqual(3, raised.exception.retry_after)
 
+    def test_use_cases_gets_public_catalog_json(self):
+        server = _SdkTestServer(response_status=200, response_body=sample_use_case_catalog().to_dict())
+        try:
+            response = EvalRankClient(server.base_url).use_cases()
+        finally:
+            server.close()
+
+        self.assertEqual("use_case_catalog", response["object"])
+        self.assertEqual("/v1/use-cases", server.path)
+        self.assertEqual("application/json", server.headers["Accept"])
+        self.assertIsNone(server.request_json)
+
+    def test_scoring_stages_gets_public_catalog_json(self):
+        server = _SdkTestServer(response_status=200, response_body=sample_scoring_stage_catalog().to_dict())
+        try:
+            response = EvalRankClient(server.base_url).scoring_stages()
+        finally:
+            server.close()
+
+        self.assertEqual("scoring_stage_catalog", response["object"])
+        self.assertEqual("/v1/scoring-stages", server.path)
+        self.assertEqual("application/json", server.headers["Accept"])
+        self.assertIsNone(server.request_json)
+
+    def test_metadata_route_raises_public_problem_details_error(self):
+        problem = core_sample_problem_details().to_dict()
+        server = _SdkTestServer(
+            response_status=503,
+            response_body=problem,
+            response_headers={"Content-Type": "application/problem+json", "Retry-After": "5"},
+        )
+        try:
+            with self.assertRaises(EvalRankApiError) as raised:
+                EvalRankClient(server.base_url).use_cases()
+        finally:
+            server.close()
+
+        self.assertEqual(503, raised.exception.status)
+        self.assertEqual(problem, raised.exception.problem)
+        self.assertEqual(5, raised.exception.retry_after)
+
     def test_client_rejects_non_http_base_url(self):
         with self.assertRaisesRegex(ValueError, "base_url must be an http or https URL"):
             EvalRankClient("file:///tmp/evalrank").recommend(sample_evaluation_request())
@@ -291,6 +332,15 @@ class _SdkTestServer:
                 owner.headers = {key: self.headers[key] for key in self.headers}
                 body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
                 owner.request_json = json.loads(body.decode("utf-8"))
+                self._write_json()
+
+            def do_GET(self) -> None:
+                owner.path = self.path
+                owner.headers = {key: self.headers[key] for key in self.headers}
+                owner.request_json = None
+                self._write_json()
+
+            def _write_json(self) -> None:
                 encoded = json.dumps(response_body).encode("utf-8")
                 self.send_response(response_status)
                 for key, value in (response_headers or {"Content-Type": "application/json"}).items():
