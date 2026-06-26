@@ -26,6 +26,8 @@ Capability fingerprint, raw entry, evidence item, evidence set, candidate set, `
 
 Result row payloads expose storage-free benchmark/result provenance. Source adapters, production rows, private benchmark material, scorer fitting, and storage tables stay outside this package.
 
+Result row `source_url` values must be public HTTP(S) URLs.
+
 Use case catalog payloads expose public taxonomy metadata only. Benchmark weights, IRT clusters, confidence policy, synthesis rules, and storage tables stay outside this package.
 
 Scoring stage catalog payloads expose public stage order with contiguous `1..N` ordinals, contract refs, and boundary notes only. Formulas, thresholds, graders, telemetry, and runtime scorer behavior stay outside this package.

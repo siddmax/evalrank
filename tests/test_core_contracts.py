@@ -1346,6 +1346,16 @@ class CoreContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "source_url"):
             ResultRow(**{**valid, "source_url": 123})
 
+        for source_url in (
+            "file:///tmp/private.json",
+            "/local/result.json",
+            "example.com/result.json",
+            "HTTPS://example.com/result.json",
+        ):
+            with self.subTest(source_url=source_url):
+                with self.assertRaisesRegex(ValueError, "source_url"):
+                    ResultRow(**{**valid, "source_url": source_url})
+
         with self.assertRaisesRegex(ValueError, "provenance"):
             ResultRow(**{**valid, "provenance": {1: "not-public-json-key"}})
 

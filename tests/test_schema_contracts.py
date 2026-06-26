@@ -575,6 +575,7 @@ class SchemaContractTests(unittest.TestCase):
             self.assertEqual("boolean", flags["properties"][key]["type"])
         self.assertEqual(0, result_row_schema["properties"]["n_items"]["minimum"])
         self.assertEqual("uri-reference", result_row_schema["properties"]["source_url"]["format"])
+        self.assertEqual("^https?://", result_row_schema["properties"]["source_url"]["pattern"])
 
     def test_stage_candidate_schema_pins_stage_one_boundary(self):
         stage_candidate_schema = _schema("stage-candidate.schema.json")

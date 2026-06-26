@@ -43,6 +43,8 @@ Evidence item `metadata` and evaluation request `constraints` are public JSON-ob
 
 Result row schemas expose the storage-free provenance envelope for ingested scores. Source adapters, raw production rows, private benchmark material, scorer fitting, and storage tables stay outside this repo.
 
+Result row `source_url` values are limited to public HTTP(S) URLs; local paths and private URI schemes stay outside the public schema.
+
 Exclusion schemas describe the public row shape only. Stage-0 gate policy, private safety taxonomy, and constraint evaluation stay outside this repo.
 
 Use case catalog schemas expose only public taxonomy metadata: slugs, names, one-line definitions, entity-kind spans, and ranked-vs-overlay policy. Benchmark weights, IRT clusters, confidence policy, synthesis/coverage rules, and live table semantics stay outside this repo.

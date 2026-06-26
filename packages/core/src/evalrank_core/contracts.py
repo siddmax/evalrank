@@ -7,6 +7,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from typing import Any, ClassVar
+from urllib.parse import urlparse
 
 
 TRUST_TIERS = {"verified", "standardized", "self-reported", "tracking-only"}
@@ -441,11 +442,11 @@ class ResultRow:
             "harness_version",
             "score_unit",
             "model_version",
-            "source_url",
             "attribution_string",
         ):
             _require_nonempty_string(name, getattr(self, name))
         _require_public_date("date_run", self.date_run)
+        _require_http_url("source_url", self.source_url)
         if self.entity_kind not in RESULT_ENTITY_KINDS:
             raise ValueError(f"entity_kind must be one of {sorted(RESULT_ENTITY_KINDS)}")
         if not isinstance(self.is_self_reported, bool):
@@ -1130,6 +1131,18 @@ def _require_public_timestamp(name: str, value: str) -> None:
         datetime.fromisoformat(value.removesuffix("Z") + "+00:00")
     except ValueError as exc:
         raise ValueError(f"{name} must match YYYY-MM-DDTHH:MM:SSZ") from exc
+
+
+def _require_http_url(name: str, value: str) -> None:
+    if not isinstance(value, str):
+        raise ValueError(f"{name} must be an http or https URL")
+    parsed = urlparse(value)
+    if (
+        not value.startswith(("http://", "https://"))
+        or parsed.scheme not in {"http", "https"}
+        or not parsed.netloc
+    ):
+        raise ValueError(f"{name} must be an http or https URL")
 
 
 def _require_contiguous_ranks(name: str, rows: tuple[RankedEntity, ...] | list[RankedEntity]) -> None:

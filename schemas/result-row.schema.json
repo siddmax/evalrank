@@ -103,7 +103,7 @@
     "source_url": {
       "type": "string",
       "format": "uri-reference",
-      "minLength": 1
+      "pattern": "^https?://"
     },
     "attribution_string": {
       "type": "string",
