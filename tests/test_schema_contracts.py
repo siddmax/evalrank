@@ -181,6 +181,18 @@ class SchemaContractTests(unittest.TestCase):
             score_components["additionalProperties"],
         )
 
+    def test_ranked_entity_schema_pins_axes_shape(self):
+        ranked_schema = _schema("ranked-entity.schema.json")
+        axes = ranked_schema["properties"]["axes"]
+        evidence = axes["properties"]["evidence"]
+
+        self.assertFalse(axes["additionalProperties"])
+        self.assertEqual({"evidence"}, set(axes["required"]))
+        self.assertFalse(evidence["additionalProperties"])
+        self.assertEqual({"n_items", "coverage"}, set(evidence["required"]))
+        self.assertEqual({"type": "integer", "minimum": 0}, evidence["properties"]["n_items"])
+        self.assertEqual(TRUST_TIERS, set(evidence["properties"]["coverage"]["enum"]))
+
     def test_ranked_entity_schema_pins_non_empty_caveats(self):
         ranked_schema = _schema("ranked-entity.schema.json")
 

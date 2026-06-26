@@ -61,6 +61,7 @@ Last reviewed: 2026-06-26
 - Public primitive and sequence fields hardened for entity refs, freshness dates, request entity-type arrays, ranked-entity integer fields, and non-empty caveat strings.
 - Evaluation request `entity_types` are pinned as unique public request metadata in Python and JSON Schema.
 - Public string fields hardened for capability fingerprints, raw entries, evidence items, evidence sets, candidate sets, `the_call`, and abstention: actual non-empty strings only.
+- Ranked entity `axes.evidence` is closed to public evidence count and trust-tier coverage in schema and TypeScript types.
 - Shared public fixture-kind dispatch reused by CLI, MCP, Python SDK, and TypeScript SDK types.
 - Public `NAVIGATION.md` route map for the first API contract.
 - Public/private porting audit confirming that the current private Syndai dirty worktree contains Memphant spec edits and two Memphant plan files, with no EvalRank public-port candidate.
@@ -141,6 +142,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | `the_call` branch schema hardening. | Already ported because it aligns the public schema with the existing `recommend`/`abstain` core rules without exposing confidence policy, private abstention taxonomy, scorer internals, hosted receipts, private runtime, or DB work. | Public Contracts, Methods / Schemas |
 | Ranked entity score-component map hardening. | Already ported because it closes an existing public payload shape without exposing formulas, weights, or scorer calibration. | Public Contracts, Methods / Schemas |
 | Recommendation envelope validation hardening. | Already ported because it aligns the public Python contract with the public schema and blocks duplicate ranked rows without exposing scorer/runtime behavior. | Public Contracts, Methods / Schemas |
+| Ranked entity axes shape hardening. | Already ported because it aligns the public schema and TypeScript type with the existing Python `RankedEntity.to_dict()` output without exposing private evidence scoring, weights, formulas, scorer runtime, or persistence. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | Evidence metadata and request constraint JSON-object hardening. | Already ported because it prevents invalid public JSON without adding private evidence lookup, source adapters, or policy semantics. | Public Contracts, Methods / Schemas |
 | Primitive and sequence field hardening for existing public payloads. | Already ported because it aligns Python contracts with public schemas without adding private runtime behavior; ranked-entity caveats now reject empty strings in both core and schema. | Public Contracts, Methods / Schemas |
 | Evaluation request entity-type uniqueness. | Already ported as public request-shape hardening; duplicate target types are rejected without adding candidate resolution, scorer behavior, route implementation, DB work, or private source adapters. | Public Contracts, Methods / Schemas |

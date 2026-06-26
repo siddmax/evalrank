@@ -286,7 +286,12 @@ export interface RankedEntity {
   methodology_version: string;
   trust_tier: TrustTier;
   score_components: Record<string, number>;
-  axes: Record<string, unknown>;
+  axes: {
+    evidence: {
+      n_items: number;
+      coverage: TrustTier;
+    };
+  };
   freshness: Freshness;
   caveats: string[];
 }

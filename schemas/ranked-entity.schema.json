@@ -85,7 +85,35 @@
     },
     "axes": {
       "type": "object",
-      "additionalProperties": true
+      "additionalProperties": false,
+      "required": [
+        "evidence"
+      ],
+      "properties": {
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "n_items",
+            "coverage"
+          ],
+          "properties": {
+            "n_items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "coverage": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "standardized",
+                "self-reported",
+                "tracking-only"
+              ]
+            }
+          }
+        }
+      }
     },
     "freshness": {
       "type": "object",

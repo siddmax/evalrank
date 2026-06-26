@@ -15,6 +15,7 @@ Package metadata:
 - Public constants for trust tiers, freshness statuses, comparability modes, evidence kinds, result-row vocabulary, use-case vocabulary, `the_call` decisions, public Problem Details codes, and `PUBLIC_FIXTURE_KINDS`.
 - Public string-union type `PublicFixtureKind` mirrors the shared fixture kind list.
 - Public TypeScript interfaces for `CapabilityFingerprint`, `RawEntry`, `TheCall`, `Abstention`, `ProblemDetails`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `Exclusion`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankedEntity`, `RankingGroup`, and `Recommendation`.
+- `RankedEntity.axes.evidence` carries the public evidence count and trust-tier coverage shape from the JSON Schema.
 - `Recommendation` includes `abstention`, `recommendation_id`, `recommend_id`, and `search_run_id` as public response fields.
 - `ProblemDetails` mirrors the public RFC 9457 error contract plus optional retry extensions; it does not imply a hosted service client.
 - `EvalRankClient` is a dependency-free native `fetch` client for the public metadata and recommendation route contracts. It accepts only explicit HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, posts public `EvaluationRequest` JSON to `POST /v1/recommendations`, returns public JSON, and raises `EvalRankApiError` with public Problem Details for non-2xx responses.

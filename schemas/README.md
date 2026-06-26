@@ -21,7 +21,7 @@ Public EvalRank JSON Schema contracts live here.
 
 Schemas that expose `methodology_version` require `YYYY-MM-DD.SEQ.slug`.
 
-Ranked entity schemas require `score_components` to be a public explanation map with non-empty names and 0-1 numeric scores. Private weights, formulas, and scorer calibration stay outside this repo.
+Ranked entity schemas require `score_components` to be a public explanation map with non-empty names and 0-1 numeric scores, and `axes.evidence` to carry only public evidence count plus trust-tier coverage. Private weights, formulas, and scorer calibration stay outside this repo.
 
 Core contract tests also guard primitive and sequence fields that JSON Schema already constrains, including entity refs, freshness dates, unique request entity-type arrays, ranked-entity integer fields, and caveats arrays.
 

@@ -178,6 +178,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "retrieval_provenance",
             "abstention",
             "abstention_reason",
+            "axes",
+            "coverage",
             "retry_after",
             "request_id",
             "doc_url",
@@ -205,6 +207,7 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("code?: ProblemCode;", source)
         self.assertIn("retriable?: boolean;", source)
         self.assertIn("[key: string]: unknown;", source)
+        self.assertIn("coverage: TrustTier;", source)
         self.assertIn("entity_kind: ResultEntityKind;", source)
         self.assertIn("verification_state: ResultVerificationState;", source)
         self.assertIn("entity_kinds: UseCaseEntityKind[];", source)
