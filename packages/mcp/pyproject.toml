@@ -5,5 +5,6 @@ description = "Public EvalRank MCP adapter"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 dependencies = [
-  "evalrank-core==0.0.0"
+  "evalrank-core==0.0.0",
+  "evalrank-sdk==0.0.0"
 ]

@@ -21,7 +21,7 @@ Last updated: 2026-06-26
 - TypeScript SDK package metadata, mirrored public contract types/constants, and dependency-free native `fetch` `EvalRankClient` behavior for `POST /v1/recommendations`.
 - SDK README drift checks for the Python and TypeScript public surfaces.
 - CLI package metadata, deterministic public fixture command, and explicit public `recommend` command for `POST /v1/recommendations`.
-- MCP package metadata and deterministic public fixture adapter, including `result-row`, `use-cases`, `scoring-stages`, and `ranking-group`.
+- MCP package metadata, deterministic public fixture adapter, and explicit public `evalrank.recommend` tool for `POST /v1/recommendations`.
 - Public scoring-stage vocabulary and catalog contract, use-case taxonomy method, and method-boundary notes.
 - Runnable public fixture bundle example, including the scoring stage catalog.
 - Schema drift tests for core payload keys and public enum constants.
@@ -101,6 +101,7 @@ Last updated: 2026-06-26
 - Public progress, porting, and public-repo safety refresh in `docs/build-log/2026-06-26-public-repo-porting-safety-refresh.md`.
 - CLI recommendation command build log in `docs/build-log/2026-06-26-cli-recommendation-command.md`.
 - TypeScript recommendation client build log in `docs/build-log/2026-06-26-typescript-recommendation-client.md`.
+- MCP recommendation tool build log in `docs/build-log/2026-06-26-mcp-recommendation-tool.md`.
 
 ## Current Public Surface
 
@@ -111,7 +112,7 @@ Last updated: 2026-06-26
 | Python SDK | Package metadata, public re-exports from `evalrank_core`, including `ProblemDetails`, public vocabulary constants, public fixture dispatch helpers, and dependency-free HTTP(S)-only `EvalRankClient` behavior for `POST /v1/recommendations` success and Problem Details errors. | Installed package release flow and additional non-fixture client behavior beyond the first recommendation call. |
 | TypeScript SDK | Package metadata, public constants, interfaces for current payload contracts, and dependency-free native `fetch` `EvalRankClient` behavior for `POST /v1/recommendations` success and Problem Details errors. | Built JS distribution, published package release flow, and additional non-fixture client behavior beyond the first recommendation call. |
 | CLI | Deterministic `fixture fingerprint`, `fixture raw-entry`, `fixture request`, `fixture candidate-set`, `fixture stage-candidate`, `fixture evidence`, `fixture problem`, `fixture result-row`, `fixture use-cases`, `fixture scoring-stages`, `fixture ranking-group`, `fixture evidence-set`, `fixture exclusion`, `fixture recommendation`, and explicit HTTP(S)-only `recommend --base-url ... --request ...` commands. | Auth, retries, service discovery, workspace/project operations, private DTOs, hosted receipts, or persistence. |
-| MCP | Deterministic `evalrank.fixture` adapter and public tool manifest, including `raw-entry`, `candidate-set`, `stage-candidate`, `evidence`, `problem`, `result-row`, `use-cases`, `scoring-stages`, `ranking-group`, `evidence-set`, and `exclusion`. | Live MCP server runtime, evidence lookup, scorer tools, or private data access. |
+| MCP | Deterministic `evalrank.fixture` adapter and public `evalrank.recommend` tool for explicit HTTP(S)-only `POST /v1/recommendations` success and Problem Details errors. | Live MCP server runtime, evidence lookup, scorer tools, auth, retries, service discovery, hosted receipts, persistence, or private data access. |
 | Methods | Public scoring-stage vocabulary and storage-free `ScoringStageCatalog`, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, and `Abstention`; public use-case taxonomy method; and private-boundary notes. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
 | Examples | `examples/public_fixture.py` prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, Problem Details, evidence set, result row, use-case catalog, scoring stage catalog, exclusion, and recommendation JSON; its README is drift-checked against the emitted JSON keys plus nested recommendation and scoring-stage contract refs. | Non-fixture demos, live API examples, and private-data examples. |
 | Docs | Status tracker, repo structure map, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
@@ -123,7 +124,7 @@ Last updated: 2026-06-26
 | Repo foundation | Built: public scaffold, package boundaries, license/notice hygiene, root/scoped agent docs, CI, `make check`, and deterministic public-boundary scanner. | Open-Core Boundary / CI keeps leak and drift checks current. |
 | Public contracts | Built through the current storage-free payload set: fingerprints, raw entries, requests, candidate sets, stage candidates, result rows, use-case catalogs, scoring stage catalogs, ranking groups, evidence sets, exclusions, `the_call`, abstentions, recommendations, public aliases, entity refs, and evidence items. | Public Contracts pins the next standalone payload before SDK/CLI/MCP behavior grows. |
 | Schemas and methods | Built: JSON Schemas, OpenAPI route contracts for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`, retry-aware Problem Details, public scoring-stage vocabulary/catalog, and sanitized use-case taxonomy method note. | Methods / Schemas and Public Surface Contracts add only public, product-neutral semantics. |
-| Interfaces | Built: Python SDK re-exports plus the first stdlib recommendation client, TypeScript public types/constants plus the first native `fetch` recommendation client, CLI fixture and recommendation commands, MCP fixture adapter, runnable public example, and README drift guards. | SDK / CLI / MCP promotes more non-fixture behavior only after public route/client contracts are pinned. |
+| Interfaces | Built: Python SDK re-exports plus the first stdlib recommendation client, TypeScript public types/constants plus the first native `fetch` recommendation client, CLI fixture and recommendation commands, MCP fixture and recommendation tools, runnable public example, and README drift guards. | SDK / CLI / MCP promotes more behavior only after public route/client contracts are pinned. |
 | Persistence and hosted ops | Not public: DB bootstrap, Supabase migrations, grants/RLS, live workers, telemetry, auth, billing/admin, deploy config, and credentials. | DB Bootstrap / Syndai Ops, Hosted Ops / GTM, and Secrets / Deploy Ops keep this private until an explicit public cutover exists. |
 | Scoring runtime and eval integrity | Not public: deterministic scorer/materializer runtime, graph persistence, source adapters, private weights, IRT clusters, held-out tasks, graders, traces, answers, and benchmark outputs. | Scoring / Materializer Runtime incubates separable public-input-only code privately; Evaluation Integrity keeps held-out material private. |
 
@@ -160,7 +161,8 @@ Last updated: 2026-06-26
 | Python SDK added a dependency-free recommendation client for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only stdlib HTTP/JSON behavior; no auth, retries, hosted receipts, tenant context, private DTOs, service discovery, local file URLs, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | CLI added an explicit recommendation command for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only file/stdin JSON plumbing around the public Python SDK client; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | TypeScript SDK added a dependency-free recommendation client for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only native `fetch` behavior with local package runtime tests; no auth, retries, hosted receipts, tenant context, private DTOs, service discovery, environment-variable defaults, local file URLs, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
-| Remaining non-fixture MCP behavior, live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private or out until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
+| MCP added an explicit recommendation tool for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only JSON plumbing around the public Python SDK client; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
+| Remaining live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private or out until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
 
 ## In Progress
 
@@ -182,7 +184,7 @@ Last updated: 2026-06-26
 | Public repository scaffold, package boundaries, CI, license/notice hygiene, and boundary scanner | Ported here | Open-Core Boundary / CI |
 | Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, abstention, ranked entity, recommendation, recommendation aliases, strict recommendation envelope validation, and entity reference | Ported here | Public Contracts |
 | Public JSON Schemas and schema drift tests for current payloads | Ported here, including retry-aware Problem Details extensions | Methods / Schemas, Public Contracts, Public Surface Contracts |
-| Synthetic fixtures, runnable public example, CLI fixture/recommend commands, MCP fixture adapter, Python SDK re-exports/client, and TypeScript public types/client | Ported here, including raw-entry, candidate-set, stage-candidate, result-row, problem, use-cases, scoring-stages, ranking-group, evidence-set, exclusion fixture surfaces, first recommendation clients, and README drift guards | SDK / CLI / MCP, Examples, Open-Core Boundary / CI |
+| Synthetic fixtures, runnable public example, CLI fixture/recommend commands, MCP fixture/recommend tools, Python SDK re-exports/client, and TypeScript public types/client | Ported here, including raw-entry, candidate-set, stage-candidate, result-row, problem, use-cases, scoring-stages, ranking-group, evidence-set, exclusion fixture surfaces, first recommendation clients/tools, and README drift guards | SDK / CLI / MCP, Examples, Open-Core Boundary / CI |
 | Public scoring-stage vocabulary, catalog, and private-boundary notes | Ported here, including `ScoringStageCatalog`, `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, `Abstention`, and the use-case taxonomy method | Methods / Schemas |
 | `RawEntry` ingestion-normalization contract | Ported here as a storage-free synthetic fixture contract | Public Contracts |
 | `CandidateSet` candidate-resolution contract | Ported here as a storage-free list of public `EntityRef` candidates | Public Contracts, Methods / Schemas |
@@ -210,7 +212,7 @@ Last updated: 2026-06-26
 | --- | --- | --- | --- |
 | 1 | Public Contracts | This repo | First raw entry, request, candidate set, stage candidate, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, abstention, recommendation, recommendation alias, and entity/evidence slices ported; extend only for new public payload contracts. |
 | 2 | Methods / Schemas | This repo | Public scoring-stage vocabulary/catalog and use-case taxonomy method note ported; add details only after private material is removed. |
-| 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK, and CLI first recommendation clients plus fixture surfaces are ported; MCP non-fixture behavior waits for a pinned contract. |
+| 3 | SDK / CLI / MCP | This repo | Python SDK, TypeScript SDK, CLI, and MCP first recommendation clients/tools plus fixture surfaces are ported; richer behavior waits for pinned public contracts. |
 | 4 | Docs / Public Planning | This repo | Current status, repo structure, porting docs, and first runnable example are public-safe; keep updating them with each port. |
 | 5 | Public Surface Contracts | This repo | First OpenAPI route contracts and retry-aware public error responses are ported; add more routes only when concrete public contracts exist, and keep private DTOs and hosted auth outside. |
 | 6 | DB Bootstrap / Syndai Ops | Syndai repo | Keep Supabase migrations, live bootstrap, grants/RLS, and operational checks private during incubation. |
@@ -222,7 +224,7 @@ Last updated: 2026-06-26
 ## Next
 
 - Public Contracts workstream: pin the next storage-free payload contract before adding more SDK/CLI/MCP behavior; keep hardening existing public envelopes when schema/core drift is found.
-- SDK / CLI / MCP workstream: Python SDK, TypeScript SDK, and CLI now have first `POST /v1/recommendations` behavior; promote MCP or richer SDK/CLI behavior only after each public client contract is pinned.
+- SDK / CLI / MCP workstream: Python SDK, TypeScript SDK, CLI, and MCP now have first `POST /v1/recommendations` behavior; promote richer behavior only after each public client contract is pinned.
 - Public Surface Contracts workstream: extend OpenAPI only for concrete public routes or route-specific problem types beyond the current shared retry vocabulary.
 - Scoring / Materializer Runtime workstream: keep runtime and private evidence material in incubation until the deterministic, storage-free public core is separable.
 - Docs / Public Planning workstream: keep `docs/STATUS.md`, `docs/PORTING.md`, `docs/REPO_STRUCTURE.md`, package READMEs, and build logs aligned in the same change.

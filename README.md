@@ -117,6 +117,7 @@ MCP adapter:
 from evalrank_mcp import call_tool
 
 result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
+# recommendation = call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": {...}})
 ```
 
 TypeScript SDK:

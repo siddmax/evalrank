@@ -1,16 +1,22 @@
 import json
+import http.server
 import sys
+import threading
 import unittest
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CORE_SRC = REPO_ROOT / "packages" / "core" / "src"
+SDK_SRC = REPO_ROOT / "packages" / "sdk-python" / "src"
 MCP_SRC = REPO_ROOT / "packages" / "mcp" / "src"
 sys.path.insert(0, str(CORE_SRC))
+sys.path.insert(0, str(SDK_SRC))
 sys.path.insert(0, str(MCP_SRC))
 
 from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
+from evalrank_core.fixtures import sample_evaluation_request  # noqa: E402
+from evalrank_core.fixtures import sample_recommendation  # noqa: E402
 from evalrank_mcp import call_tool, list_tools  # noqa: E402
 
 
@@ -22,12 +28,20 @@ class McpFixtureTests(unittest.TestCase):
             with self.subTest(kind=kind):
                 self.assertIn(f'"kind": "{kind}"', text)
 
+    def test_mcp_readme_documents_recommend_tool(self):
+        text = (REPO_ROOT / "packages" / "mcp" / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("evalrank.recommend", text)
+        self.assertIn("base_url", text)
+        self.assertIn("request", text)
+
     def test_list_tools_exposes_public_fixture_tool(self):
         tools = list_tools()
 
-        self.assertEqual(["evalrank.fixture"], [tool["name"] for tool in tools])
+        self.assertEqual(["evalrank.fixture", "evalrank.recommend"], [tool["name"] for tool in tools])
         self.assertEqual(["kind"], tools[0]["inputSchema"]["required"])
         self.assertEqual(list(PUBLIC_FIXTURE_KINDS), tools[0]["inputSchema"]["properties"]["kind"]["enum"])
+        self.assertEqual(["base_url", "request"], tools[1]["inputSchema"]["required"])
 
     def test_call_tool_returns_public_fingerprint_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
@@ -136,9 +150,108 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual("scoring_stage_catalog", payload["object"])
         self.assertEqual("freshness-trust-labeling", payload["stages"][-1]["id"])
 
+    def test_call_tool_posts_public_recommendation_request(self):
+        with LocalApiServer(200, sample_recommendation().to_dict()) as server:
+            result = call_tool(
+                "evalrank.recommend",
+                {"base_url": server.base_url, "request": sample_evaluation_request().to_dict()},
+            )
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("recommendation", payload["object"])
+        self.assertEqual("/v1/recommendations", server.path)
+        self.assertEqual(sample_evaluation_request().to_dict(), server.request_json)
+        self.assertEqual("application/json", server.headers["content-type"])
+        self.assertEqual("application/json", server.headers["accept"])
+
+    def test_call_tool_returns_problem_details_as_tool_error(self):
+        problem = {
+            "type": "https://evalrank.ai/problems/rate-limited",
+            "title": "Rate limited",
+            "status": 429,
+            "detail": "too many requests",
+            "code": "rate_limited",
+            "retriable": True,
+            "retry_after": 3,
+        }
+        with LocalApiServer(429, problem, {"Retry-After": "3"}) as server:
+            result = call_tool(
+                "evalrank.recommend",
+                {"base_url": server.base_url, "request": sample_evaluation_request().to_dict()},
+            )
+
+        self.assertTrue(result["isError"])
+        self.assertEqual(problem, json.loads(result["content"][0]["text"]))
+
+    def test_call_tool_rejects_invalid_recommend_arguments(self):
+        with self.assertRaisesRegex(ValueError, "arguments must be an object"):
+            call_tool("evalrank.recommend", [])
+        with self.assertRaisesRegex(ValueError, "base_url is required"):
+            call_tool("evalrank.recommend", {"request": sample_evaluation_request().to_dict()})
+        with self.assertRaisesRegex(ValueError, "request must be an object"):
+            call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": []})
+
     def test_call_tool_rejects_unknown_tool(self):
         with self.assertRaisesRegex(ValueError, "unknown tool"):
             call_tool("evalrank.unknown", {"kind": "evidence"})
+
+
+class LocalApiServer:
+    def __init__(
+        self,
+        response_status: int,
+        response_body: dict,
+        response_headers: dict[str, str] | None = None,
+    ) -> None:
+        self.response_status = response_status
+        self.response_body = response_body
+        self.response_headers = response_headers or {}
+        self.path: str | None = None
+        self.headers: dict[str, str] = {}
+        self.request_json: dict | None = None
+        self._server: http.server.ThreadingHTTPServer | None = None
+        self._thread: threading.Thread | None = None
+
+    @property
+    def base_url(self) -> str:
+        if self._server is None:
+            raise RuntimeError("server is not running")
+        host, port = self._server.server_address
+        return f"http://{host}:{port}"
+
+    def __enter__(self) -> "LocalApiServer":
+        owner = self
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_POST(self) -> None:  # noqa: N802
+                owner.path = self.path
+                owner.headers = {key.lower(): value for key, value in self.headers.items()}
+                length = int(self.headers.get("Content-Length", "0"))
+                owner.request_json = json.loads(self.rfile.read(length).decode("utf-8"))
+                encoded = json.dumps(owner.response_body).encode("utf-8")
+                self.send_response(owner.response_status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(encoded)))
+                for key, value in owner.response_headers.items():
+                    self.send_header(key, value)
+                self.end_headers()
+                self.wfile.write(encoded)
+
+            def log_message(self, format: str, *args: object) -> None:
+                return
+
+        self._server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self._thread = threading.Thread(target=self._server.serve_forever)
+        self._thread.start()
+        return self
+
+    def __exit__(self, exc_type: object, exc: object, traceback: object) -> None:
+        if self._server is not None:
+            self._server.shutdown()
+            self._server.server_close()
+        if self._thread is not None:
+            self._thread.join()
 
 
 if __name__ == "__main__":
