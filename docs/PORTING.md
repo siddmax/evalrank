@@ -20,7 +20,7 @@ Last reviewed: 2026-06-26
 - Public progress docs: `docs/STATUS.md` and `docs/REPO_STRUCTURE.md`.
 - Public boundary checker and default unit tests.
 - Public Python package metadata drift guard for package names, versions, licenses, Python floor, dependency edges, and CLI entrypoint.
-- Package README metadata drift guard for public package names, imports, dependencies, entrypoint, licenses, and TypeScript SDK manifest metadata.
+- Exact package README metadata drift guard for public package names, imports, dependencies, entrypoint, licenses, and TypeScript SDK manifest metadata.
 - Exact CLI and MCP README drift guards for public fixture commands, route commands, fixture kinds, and tool names.
 - Exact schema README drift guard for public schema and OpenAPI filenames.
 - Core Python capability fingerprint, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, ranking group, evidence set, exclusion, `the_call`, abstention, recommendation, and entity reference contracts.
@@ -139,6 +139,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | `GET /v1/scoring-stages` route contract. | Already ported because `ScoringStageCatalog` is a concrete public metadata contract; live routing, auth, storage, and scorer runtime stay private. | Public Surface Contracts, Methods / Schemas |
 | README drift checks for SDK, example, core, and schema surfaces. | Already ported because they are deterministic public-boundary checks. | Open-Core Boundary / CI, Docs / Public Planning |
 | Package README metadata drift guard. | Already ported because it binds public package docs to manifest metadata without adding private package indexes, publish credentials, or hosted deploy behavior. | Open-Core Boundary / CI, Docs / Public Planning |
+| Package README exact metadata drift guard. | Already ported because it rejects stale extra package metadata docs using only current public manifests and README metadata blocks without adding runtime behavior, publish credentials, private package indexes, or hosted deployment behavior. | Open-Core Boundary / CI, Docs / Public Planning |
 | CLI and MCP README exact drift guards. | Already ported because they reject stale extra public command/tool docs using only public constants and README text without adding runtime behavior, private services, or dependencies. | Open-Core Boundary / CI, SDK / CLI / MCP, Docs / Public Planning |
 | Schema README exact drift guard. | Already ported because it rejects stale public schema/OpenAPI filename references using only current public files and README text without adding runtime behavior or private material. | Open-Core Boundary / CI, Methods / Schemas, Docs / Public Planning |
 | Nested public fixture README drift checks for recommendation abstention, `the_call`, and scoring-stage output contracts. | Already ported because they keep public examples aligned with existing public contracts without adding private data or runtime behavior. | Open-Core Boundary / CI, Examples |

@@ -1,4 +1,5 @@
 import json
+import re
 import tomllib
 import unittest
 from pathlib import Path
@@ -77,6 +78,18 @@ class PackageMetadataTests(unittest.TestCase):
                     self.assertIn(f"`{dependency}`", readme)
                 for script in project.get("scripts", {}):
                     self.assertIn(f"`{script}`", readme)
+                expected_metadata = {
+                    "Distribution": {project["name"]},
+                    "Import": {import_name},
+                    "License": {project["license"]},
+                }
+                dependencies = set(project.get("dependencies", []))
+                if dependencies:
+                    label = "Runtime dependency" if len(dependencies) == 1 else "Runtime dependencies"
+                    expected_metadata[label] = dependencies
+                if project.get("scripts"):
+                    expected_metadata["Entrypoint"] = set(project["scripts"])
+                self.assertEqual(expected_metadata, _readme_metadata(package))
 
     def test_typescript_package_readme_matches_manifest_metadata(self):
         package = json.loads((PACKAGES / "sdk-ts" / "package.json").read_text(encoding="utf-8"))
@@ -87,11 +100,34 @@ class PackageMetadataTests(unittest.TestCase):
         self.assertIn(f"`{package['types']}`", readme)
         self.assertIn(f"`{package['license']}`", readme)
         self.assertIn("`private`", readme)
+        self.assertEqual(
+            {
+                "Package": {package["name"]},
+                "Type": {package["type"]},
+                "Types": {package["types"]},
+                "License": {package["license"]},
+                "Publish status": {"private"},
+            },
+            _readme_metadata("sdk-ts"),
+        )
 
 
 def _pyproject(package: str) -> dict:
     with (PACKAGES / package / "pyproject.toml").open("rb") as handle:
         return tomllib.load(handle)
+
+
+def _readme_metadata(package: str) -> dict[str, set[str]]:
+    lines = (PACKAGES / package / "README.md").read_text(encoding="utf-8").splitlines()
+    start = lines.index("Package metadata:") + 1
+    metadata: dict[str, set[str]] = {}
+    for line in lines[start:]:
+        if not line.strip() and metadata:
+            break
+        match = re.fullmatch(r"- ([^:]+): (.+)", line)
+        if match:
+            metadata[match.group(1)] = set(re.findall(r"`([^`]+)`", match.group(2)))
+    return metadata
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ Last updated: 2026-06-26
 - Public scoring-stage vocabulary and catalog contract, use-case taxonomy method, and method-boundary notes.
 - Runnable public fixture bundle example, including the scoring stage catalog.
 - Schema drift tests for core payload keys and public enum constants.
-- Package README metadata drift guard for Python package manifests and the TypeScript SDK manifest.
+- Exact package README metadata drift guard for Python package manifests and the TypeScript SDK manifest.
 - Exact CLI and MCP README drift checks for public fixture commands, route commands, fixture kinds, and tool names.
 - Exact schema README drift check for public schema and OpenAPI filenames.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
@@ -117,6 +117,7 @@ Last updated: 2026-06-26
 - CLI metadata command build log in `docs/build-log/2026-06-26-cli-metadata-commands.md`.
 - MCP metadata tool build log in `docs/build-log/2026-06-26-mcp-metadata-tools.md`.
 - Package README metadata drift-guard build log in `docs/build-log/2026-06-26-package-readme-metadata-drift-guard.md`.
+- Package README exact metadata drift-check build log in `docs/build-log/2026-06-26-package-readme-exact-metadata-drift-check.md`.
 - CLI and MCP README exact drift-check build log in `docs/build-log/2026-06-26-cli-mcp-readme-exact-drift-check.md`.
 - Schema README exact drift-check build log in `docs/build-log/2026-06-26-schema-readme-exact-drift-check.md`.
 - Ranked entity axes shape hardening build log in `docs/build-log/2026-06-26-ranked-entity-axes-contract-hardening.md`.
@@ -186,6 +187,7 @@ Last updated: 2026-06-26
 | MCP added an explicit recommendation tool for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only JSON plumbing around the public Python SDK client; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | Python package metadata drift guard now pins public package dependency edges and package hygiene metadata. | Built here as stdlib `tomllib` tests over existing `pyproject.toml` files; no packaging release or publishing workflow was added. | Open-Core Boundary / CI |
 | Package READMEs now carry manifest metadata and a deterministic drift guard. | Built here as local stdlib tests that bind public Python package READMEs and the TypeScript SDK README to current package names, imports, dependencies, entrypoints, license, module type, and private publish status; no publish workflow, private package index, credentials, or hosted deployment behavior was added. | Open-Core Boundary / CI, Docs / Public Planning |
+| Package README metadata drift checks now reject stale extra package metadata lines. | Built here as a stdlib exact-set check over each public README metadata block and current package manifests; no runtime behavior, packaging release flow, private package index, credentials, or hosted deployment behavior moved. | Open-Core Boundary / CI, Docs / Public Planning |
 | CLI and MCP README drift checks now reject stale extra public commands, fixture kinds, and tool names. | Built here as stdlib regex checks over public docs and existing public fixture/tool constants; no runtime behavior, private services, or new package surface moved. | Open-Core Boundary / CI, SDK / CLI / MCP, Docs / Public Planning |
 | Schema README drift checks now reject stale extra schema/OpenAPI filenames. | Built here as a stdlib regex check over public schema docs and current public schema files; no schema shape, runtime behavior, or private material moved. | Open-Core Boundary / CI, Methods / Schemas, Docs / Public Planning |
 | Ranked entity `axes.evidence` is now closed in JSON Schema and mirrored in the TypeScript SDK type. | Built here as schema/type parity with the existing Python `RankedEntity.to_dict()` output; no private evidence scoring, weights, formulas, scorer runtime, or persistence behavior moved. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
