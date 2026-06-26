@@ -30,12 +30,13 @@ Last updated: 2026-06-26
 - Exact CLI and MCP README drift checks for public fixture commands, route commands, fixture kinds, and tool names.
 - Exact schema README drift check for public schema and OpenAPI filenames.
 - Exact methods README drift check for public method-note filenames.
+- Exact repo structure drift check for public top-level directories and package directories.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
 - TypeScript SDK non-empty array helper type for schema `minItems: 1` public arrays.
 - TypeScript SDK `UseCase` discriminated union for public ranked and veto-overlay branches.
 - TypeScript SDK `TheCall` discriminated union for public `recommend` and `abstain` branches.
 - TypeScript SDK `Recommendation` discriminated union for public `single-scale` and `kind-grouped` branches.
-- Tests for core contracts, schema-contract drift, and public boundary rules.
+- Tests for core contracts, schema-contract drift, repo docs, and public boundary rules.
 - Public progress tracker and repo structure map.
 - Public route navigation map in `NAVIGATION.md`.
 - Public porting map for deciding what moves from Syndai/private workstreams into this repo.
@@ -122,6 +123,7 @@ Last updated: 2026-06-26
 - CLI and MCP README exact drift-check build log in `docs/build-log/2026-06-26-cli-mcp-readme-exact-drift-check.md`.
 - Schema README exact drift-check build log in `docs/build-log/2026-06-26-schema-readme-exact-drift-check.md`.
 - Methods README exact drift-check build log in `docs/build-log/2026-06-26-methods-readme-exact-drift-check.md`.
+- Repo structure exact drift-check build log in `docs/build-log/2026-06-26-repo-structure-drift-check.md`.
 - Ranked entity axes shape hardening build log in `docs/build-log/2026-06-26-ranked-entity-axes-contract-hardening.md`.
 - TypeScript non-empty array parity build log in `docs/build-log/2026-06-26-typescript-nonempty-array-parity.md`.
 - TypeScript use-case branch parity build log in `docs/build-log/2026-06-26-typescript-use-case-branch-parity.md`.
@@ -140,7 +142,7 @@ Last updated: 2026-06-26
 | MCP | Deterministic `evalrank.fixture` adapter, public `evalrank.use_cases` and `evalrank.scoring_stages` tools for explicit HTTP(S)-only metadata success and Problem Details errors, and public `evalrank.recommend` tool for explicit HTTP(S)-only `POST /v1/recommendations` success and Problem Details errors. | Live MCP server runtime, evidence lookup, scorer tools, auth, retries, service discovery, hosted receipts, persistence, or private data access. |
 | Methods | Public scoring-stage vocabulary and storage-free `ScoringStageCatalog`, including `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, and `Abstention`; public use-case taxonomy method; and private-boundary notes. | Proprietary weights, thresholds, graders, held-out tasks, and benchmark outputs. |
 | Examples | `examples/public_fixture.py` prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, Problem Details, evidence set, result row, use-case catalog, scoring stage catalog, exclusion, and recommendation JSON; its README is drift-checked against the emitted JSON keys plus nested recommendation and scoring-stage contract refs. | Non-fixture demos, live API examples, and private-data examples. |
-| Docs | Status tracker, repo structure map, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
+| Docs | Status tracker, repo structure map with exact drift tests, porting map, route navigation map, package READMEs, build logs, and public/private workstream router. | UI navigation docs; add only when UI routes or deeplinks exist. |
 
 ## Progress Snapshot
 

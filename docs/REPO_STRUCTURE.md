@@ -14,6 +14,7 @@ This repo is the public core. Private hosted operations, production evidence dat
 
 ## Code And Packages
 
+- `packages/` owns public package workspaces.
 - `packages/core/` owns portable Python contracts and shared public behavior.
 - `packages/mcp/` owns the public MCP adapter boundary.
 - `packages/cli/` owns scriptable command-line workflows.
@@ -32,6 +33,7 @@ Schemas define interoperability payloads, not private storage tables.
 
 ## Project Docs
 
+- `docs/` owns public project docs, build logs, and public-safe agent plans.
 - `docs/STATUS.md` is the living progress tracker.
 - `docs/REPO_STRUCTURE.md` is this directory ownership map.
 - `docs/PORTING.md` maps what should be ported from private workstreams and what must stay private.
@@ -54,6 +56,5 @@ Schemas define interoperability payloads, not private storage tables.
 - Update `NAVIGATION.md` when public API routes, UI routes, deeplinks, or navigation-critical docs change.
 - Update `docs/PORTING.md` before moving private Syndai/Finn/Savida work into this repo.
 - Add a dated build log when progress status, build order, or porting ownership changes.
-- Add `NAVIGATION.md` when UI routes, API routes, deeplinks, or navigation-critical docs come online.
 - Do not add private data, secrets, private fixtures, or production evidence rows anywhere in this repo.
 - Do not add persistence/migration directories until EvalRank owns its own deploy path or its own Supabase project.

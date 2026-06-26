@@ -24,6 +24,7 @@ Last reviewed: 2026-06-26
 - Exact CLI and MCP README drift guards for public fixture commands, route commands, fixture kinds, and tool names.
 - Exact schema README drift guard for public schema and OpenAPI filenames.
 - Exact methods README drift guard for public method-note filenames.
+- Exact repo structure drift guard for public top-level directories and package directories.
 - Core Python capability fingerprint, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, ranking group, evidence set, exclusion, `the_call`, abstention, recommendation, and entity reference contracts.
 - Public JSON Schemas for capability fingerprints, raw entries, evaluation requests, candidate sets, stage candidates, result rows, use-case catalogs, evidence sets, exclusions, ranked entities, recommendations with closed ranking groups and public abstention objects, evidence items, and retry-aware RFC 9457 Problem Details.
 - Public OpenAPI 3.1.1 contract for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`, including reusable Problem Details responses and retry/rate-limit header contracts.
@@ -89,7 +90,7 @@ Last reviewed: 2026-06-26
 | Examples | `examples/public_fixture.py` runnable synthetic fixture output plus README coverage for each emitted JSON key. | Customer demos, production evidence rows, private traces, and held-out eval examples. |
 | Open-Core Boundary / CI | Boundary scanner, unit tests, package license/notice checks, and default `make check`. | Private repo checks, Doppler config, live project refs, and deployment credentials. |
 | Package Metadata | Stdlib checks for Python package names, versions, licenses, Python floor, dependency edges, CLI entrypoint, and package README metadata drift. | Publish credentials, release automation, private package indexes, and hosted deployment wiring. |
-| Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md`, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
+| Docs / Public Planning | `docs/STATUS.md`, `docs/REPO_STRUCTURE.md` with exact public directory drift tests, this porting map, package READMEs, and dated build logs. | Raw private planning docs, private customer examples, operational runbooks, and held-out eval detail. |
 
 ## Workstream Router
 
@@ -119,7 +120,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 
 | Candidate change | Destination | Workstream | Handling |
 | --- | --- | --- | --- |
-| Package README drift guards for CLI, MCP, core, schemas, examples, and future SDK surfaces | This repo | Open-Core Boundary / CI, Docs / Public Planning | Initial package manifest metadata README guard is ported; keep extending when a README can drift from a public contract or command list. |
+| README and repo-structure drift guards for CLI, MCP, core, schemas, examples, docs, packages, and future SDK surfaces | This repo | Open-Core Boundary / CI, Docs / Public Planning | Package manifest, package README, command/tool, schema, method, and repo-structure guards are ported; keep extending when public docs can drift from a current contract or directory. |
 | Additional schema or fixture drift checks for already-public payloads | This repo | Open-Core Boundary / CI, Public Contracts | Port now when the check prevents public contract skew or private leakage. |
 | Next storage-free payload contract | This repo | Public Contracts, Methods / Schemas | Port only after the shape stands alone with synthetic fixtures, JSON Schema, SDK type/re-export coverage, and no private source adapter dependency. |
 | Non-fixture SDK/CLI/MCP behavior for currently public routes | This repo after client semantics are pinned | SDK / CLI / MCP, Public Surface Contracts | Python SDK stdlib metadata/recommendation client, TypeScript native `fetch` metadata/recommendation client, CLI explicit metadata/recommendation commands, and MCP explicit metadata/recommendation tools are now ported; retries, auth, tenant context, live hosted receipts, private DTOs, environment-variable defaults, and production service dependencies stay out until separately pinned. |
@@ -144,6 +145,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | CLI and MCP README exact drift guards. | Already ported because they reject stale extra public command/tool docs using only public constants and README text without adding runtime behavior, private services, or dependencies. | Open-Core Boundary / CI, SDK / CLI / MCP, Docs / Public Planning |
 | Schema README exact drift guard. | Already ported because it rejects stale public schema/OpenAPI filename references using only current public files and README text without adding runtime behavior or private material. | Open-Core Boundary / CI, Methods / Schemas, Docs / Public Planning |
 | Methods README exact drift guard. | Already ported because it rejects stale public method-note filenames using only current public method docs and README text without adding private methodology, scorer behavior, or dependencies. | Open-Core Boundary / CI, Methods / Schemas, Docs / Public Planning |
+| Repo structure exact drift guard. | Already ported because it rejects stale public directory/package ownership docs using only the current public repo tree and `docs/REPO_STRUCTURE.md`, without copying private plans or adding runtime behavior. | Open-Core Boundary / CI, Docs / Public Planning |
 | Nested public fixture README drift checks for recommendation abstention, `the_call`, and scoring-stage output contracts. | Already ported because they keep public examples aligned with existing public contracts without adding private data or runtime behavior. | Open-Core Boundary / CI, Examples |
 | Python SDK public vocabulary constant re-exports. | Already ported because they mirror existing public schema/core/TypeScript vocabulary without exposing scorer thresholds, private trust policy, or runtime behavior. | SDK / CLI / MCP, Public Contracts |
 | Python `ProblemDetails` contract and public problem-code enum. | Already ported because it mirrors existing OpenAPI/schema/TypeScript public error contracts without exposing hosted auth, tenant context, private problem types, telemetry, or runtime behavior. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
