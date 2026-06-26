@@ -28,6 +28,7 @@ Last updated: 2026-06-26
 - Schema drift tests for core payload keys and public enum constants.
 - Package README metadata drift guard for Python package manifests and the TypeScript SDK manifest.
 - Exact CLI and MCP README drift checks for public fixture commands, route commands, fixture kinds, and tool names.
+- Exact schema README drift check for public schema and OpenAPI filenames.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
 - TypeScript SDK non-empty array helper type for schema `minItems: 1` public arrays.
 - TypeScript SDK `UseCase` discriminated union for public ranked and veto-overlay branches.
@@ -117,6 +118,7 @@ Last updated: 2026-06-26
 - MCP metadata tool build log in `docs/build-log/2026-06-26-mcp-metadata-tools.md`.
 - Package README metadata drift-guard build log in `docs/build-log/2026-06-26-package-readme-metadata-drift-guard.md`.
 - CLI and MCP README exact drift-check build log in `docs/build-log/2026-06-26-cli-mcp-readme-exact-drift-check.md`.
+- Schema README exact drift-check build log in `docs/build-log/2026-06-26-schema-readme-exact-drift-check.md`.
 - Ranked entity axes shape hardening build log in `docs/build-log/2026-06-26-ranked-entity-axes-contract-hardening.md`.
 - TypeScript non-empty array parity build log in `docs/build-log/2026-06-26-typescript-nonempty-array-parity.md`.
 - TypeScript use-case branch parity build log in `docs/build-log/2026-06-26-typescript-use-case-branch-parity.md`.
@@ -185,6 +187,7 @@ Last updated: 2026-06-26
 | Python package metadata drift guard now pins public package dependency edges and package hygiene metadata. | Built here as stdlib `tomllib` tests over existing `pyproject.toml` files; no packaging release or publishing workflow was added. | Open-Core Boundary / CI |
 | Package READMEs now carry manifest metadata and a deterministic drift guard. | Built here as local stdlib tests that bind public Python package READMEs and the TypeScript SDK README to current package names, imports, dependencies, entrypoints, license, module type, and private publish status; no publish workflow, private package index, credentials, or hosted deployment behavior was added. | Open-Core Boundary / CI, Docs / Public Planning |
 | CLI and MCP README drift checks now reject stale extra public commands, fixture kinds, and tool names. | Built here as stdlib regex checks over public docs and existing public fixture/tool constants; no runtime behavior, private services, or new package surface moved. | Open-Core Boundary / CI, SDK / CLI / MCP, Docs / Public Planning |
+| Schema README drift checks now reject stale extra schema/OpenAPI filenames. | Built here as a stdlib regex check over public schema docs and current public schema files; no schema shape, runtime behavior, or private material moved. | Open-Core Boundary / CI, Methods / Schemas, Docs / Public Planning |
 | Ranked entity `axes.evidence` is now closed in JSON Schema and mirrored in the TypeScript SDK type. | Built here as schema/type parity with the existing Python `RankedEntity.to_dict()` output; no private evidence scoring, weights, formulas, scorer runtime, or persistence behavior moved. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | TypeScript SDK now exposes `NonEmptyArray<T>` for already-public schema `minItems: 1` arrays. | Built here as compile-time parity for existing Python and JSON Schema contracts; no runtime validation, new route behavior, private data, scorer logic, or persistence behavior moved. | SDK / CLI / MCP, Public Contracts |
 | TypeScript SDK now models `UseCase` as a ranked/veto-overlay discriminated union. | Built here as compile-time parity for existing Python and JSON Schema use-case branch rules; no private rank-policy tuning, scorer runtime, hosted behavior, or persistence moved. | SDK / CLI / MCP, Public Contracts |

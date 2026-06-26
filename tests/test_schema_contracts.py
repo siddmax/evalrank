@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -46,7 +47,10 @@ METHODOLOGY_VERSION_PATTERN = r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0
 class SchemaContractTests(unittest.TestCase):
     def test_schema_readme_lists_public_schema_files_and_string_guards(self):
         text = (SCHEMAS / "README.md").read_text(encoding="utf-8")
+        documented = set(re.findall(r"`([^`]*(?:\.schema\.json|openapi\.json))`", text))
+        expected = {path.name for path in SCHEMAS.glob("*.schema.json")} | {"openapi.json"}
 
+        self.assertEqual(expected, documented)
         for filename in sorted(path.name for path in SCHEMAS.glob("*.schema.json")):
             with self.subTest(filename=filename):
                 self.assertIn(filename, text)
