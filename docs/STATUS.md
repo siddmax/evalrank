@@ -32,6 +32,7 @@ Last updated: 2026-06-26
 - Exact methods README drift check for public method-note filenames.
 - Exact repo structure drift check for public top-level directories and package directories.
 - Exact `CLAUDE.md` shim drift check for the required `@AGENTS.md` reference.
+- Scoped `AGENTS.md` coverage drift check for public work areas.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
 - TypeScript SDK non-empty array helper type for schema `minItems: 1` public arrays.
 - TypeScript SDK `UseCase` discriminated union for public ranked and veto-overlay branches.
@@ -126,6 +127,7 @@ Last updated: 2026-06-26
 - Methods README exact drift-check build log in `docs/build-log/2026-06-26-methods-readme-exact-drift-check.md`.
 - Repo structure exact drift-check build log in `docs/build-log/2026-06-26-repo-structure-drift-check.md`.
 - `CLAUDE.md` shim drift-check build log in `docs/build-log/2026-06-26-claude-shim-drift-check.md`.
+- Scoped `AGENTS.md` coverage drift-check build log in `docs/build-log/2026-06-26-scoped-agents-drift-check.md`.
 - Ranked entity axes shape hardening build log in `docs/build-log/2026-06-26-ranked-entity-axes-contract-hardening.md`.
 - TypeScript non-empty array parity build log in `docs/build-log/2026-06-26-typescript-nonempty-array-parity.md`.
 - TypeScript use-case branch parity build log in `docs/build-log/2026-06-26-typescript-use-case-branch-parity.md`.

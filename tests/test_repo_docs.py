@@ -24,6 +24,30 @@ class RepoDocsTests(unittest.TestCase):
 
         self.assertEqual("@AGENTS.md\n", text)
 
+    def test_scoped_agents_cover_public_work_areas(self):
+        package_dirs = {
+            f"packages/{path.parts[1]}"
+            for path in tracked_paths()
+            if len(path.parts) > 2 and path.parts[0] == "packages"
+        }
+        scoped_dirs = {
+            "docs",
+            "examples",
+            "methods",
+            "packages",
+            "schemas",
+            "scripts",
+            "tests",
+            *package_dirs,
+        }
+        missing = sorted(
+            directory
+            for directory in scoped_dirs
+            if not (REPO_ROOT / directory / "AGENTS.md").is_file()
+        )
+
+        self.assertEqual([], missing)
+
     def test_repo_structure_tracks_public_top_level_directories(self):
         text = (REPO_ROOT / "docs" / "REPO_STRUCTURE.md").read_text(encoding="utf-8")
         top_level_dirs = {path.parts[0] for path in tracked_paths() if len(path.parts) > 1}
