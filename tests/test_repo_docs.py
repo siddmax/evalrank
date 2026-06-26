@@ -19,6 +19,11 @@ def tracked_paths() -> list[Path]:
 
 
 class RepoDocsTests(unittest.TestCase):
+    def test_claude_md_is_agents_shim(self):
+        text = (REPO_ROOT / "CLAUDE.md").read_text(encoding="utf-8")
+
+        self.assertEqual("@AGENTS.md\n", text)
+
     def test_repo_structure_tracks_public_top_level_directories(self):
         text = (REPO_ROOT / "docs" / "REPO_STRUCTURE.md").read_text(encoding="utf-8")
         top_level_dirs = {path.parts[0] for path in tracked_paths() if len(path.parts) > 1}
