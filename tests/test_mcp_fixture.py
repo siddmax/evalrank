@@ -65,6 +65,23 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual(["base_url", "request"], tools[1]["inputSchema"]["required"])
         self.assertEqual(["base_url"], tools[2]["inputSchema"]["required"])
         self.assertEqual(["base_url"], tools[3]["inputSchema"]["required"])
+        request_schema = tools[1]["inputSchema"]["properties"]["request"]
+        self.assertFalse(request_schema["additionalProperties"])
+        self.assertEqual(
+            ["object", "request_id", "use_case", "entity_types", "requested_at", "constraints"],
+            request_schema["required"],
+        )
+        self.assertEqual("evaluation_request", request_schema["properties"]["object"]["const"])
+        self.assertEqual(1, request_schema["properties"]["request_id"]["minLength"])
+        self.assertEqual(1, request_schema["properties"]["use_case"]["minLength"])
+        self.assertEqual(1, request_schema["properties"]["entity_types"]["minItems"])
+        self.assertTrue(request_schema["properties"]["entity_types"]["uniqueItems"])
+        self.assertEqual(1, request_schema["properties"]["entity_types"]["items"]["minLength"])
+        self.assertEqual(
+            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+            request_schema["properties"]["requested_at"]["pattern"],
+        )
+        self.assertTrue(request_schema["properties"]["constraints"]["additionalProperties"])
         for tool in tools[1:]:
             with self.subTest(tool=tool["name"]):
                 base_url = tool["inputSchema"]["properties"]["base_url"]

@@ -49,6 +49,45 @@ def list_tools() -> list[dict[str, Any]]:
                     },
                     "request": {
                         "type": "object",
+                        "additionalProperties": False,
+                        "required": [
+                            "object",
+                            "request_id",
+                            "use_case",
+                            "entity_types",
+                            "requested_at",
+                            "constraints",
+                        ],
+                        "properties": {
+                            "object": {
+                                "const": "evaluation_request",
+                            },
+                            "request_id": {
+                                "type": "string",
+                                "minLength": 1,
+                            },
+                            "use_case": {
+                                "type": "string",
+                                "minLength": 1,
+                            },
+                            "entity_types": {
+                                "type": "array",
+                                "minItems": 1,
+                                "uniqueItems": True,
+                                "items": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                },
+                            },
+                            "requested_at": {
+                                "type": "string",
+                                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+                            },
+                            "constraints": {
+                                "type": "object",
+                                "additionalProperties": True,
+                            },
+                        },
                     },
                 },
             },
