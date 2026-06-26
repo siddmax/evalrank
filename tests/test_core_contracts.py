@@ -574,6 +574,153 @@ class CoreContractTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "YYYY-MM-DD"):
                     Freshness(**kwargs)
 
+    def test_public_temporal_fields_require_pinned_formats(self):
+        entity = EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo")
+        stage = ScoringStage(
+            id="candidate-resolution",
+            ordinal=1,
+            name="Candidate resolution",
+            description="Identify public candidates",
+            input_contracts=("EvaluationRequest",),
+            output_contracts=("CandidateSet",),
+            public_boundary="storage-free contract refs only",
+        )
+        evidence_item = EvidenceItem(
+            evidence_id="ev_public_trace_01",
+            subject=entity,
+            kind="trace",
+            source="public-fixture",
+            observed_at="2026-06-25T00:00:00Z",
+            summary="public evidence",
+        )
+        row = _row("tool:public-search-demo")
+
+        timestamp_cases = (
+            (
+                "raw_entry.fetched_at",
+                lambda value: RawEntry(
+                    source="public-fixture",
+                    source_id="public-fixture:search-demo",
+                    entity_kind="mcp_server",
+                    canonical_id="io.evalrank.public-search-demo",
+                    raw_metadata={},
+                    declared_capability_shape={"tool_names": ["search"]},
+                    fetched_at=value,
+                ),
+            ),
+            (
+                "use_case_catalog.generated_at",
+                lambda value: UseCaseCatalog(
+                    methodology_version=PINNED_METHODOLOGY_VERSION,
+                    generated_at=value,
+                    use_cases=(
+                        UseCase(
+                            id="web-browsing",
+                            name="Web browsing",
+                            definition="Retrieve live web content",
+                            entity_kinds=("model", "tool", "agent"),
+                        ),
+                    ),
+                ),
+            ),
+            (
+                "scoring_stage_catalog.generated_at",
+                lambda value: ScoringStageCatalog(
+                    methodology_version=PINNED_METHODOLOGY_VERSION,
+                    generated_at=value,
+                    stages=(stage,),
+                ),
+            ),
+            (
+                "evidence_item.observed_at",
+                lambda value: EvidenceItem(
+                    evidence_id="ev_public_trace_02",
+                    subject=entity,
+                    kind="trace",
+                    source="public-fixture",
+                    observed_at=value,
+                    summary="public evidence",
+                ),
+            ),
+            (
+                "evidence_set.generated_at",
+                lambda value: EvidenceSet(
+                    request_id="req_01",
+                    use_case="web-browsing",
+                    evidence_items=(evidence_item,),
+                    generated_at=value,
+                ),
+            ),
+            (
+                "evaluation_request.requested_at",
+                lambda value: EvaluationRequest(
+                    request_id="req_01",
+                    use_case="web-browsing",
+                    entity_types=("mcp_server",),
+                    requested_at=value,
+                ),
+            ),
+            (
+                "candidate_set.generated_at",
+                lambda value: CandidateSet(
+                    request_id="req_01",
+                    use_case="web-browsing",
+                    candidates=(entity,),
+                    generated_at=value,
+                ),
+            ),
+            (
+                "recommendation.generated_at",
+                lambda value: Recommendation.single_scale(
+                    request_id="req_01",
+                    use_case="web-browsing",
+                    methodology_version=PINNED_METHODOLOGY_VERSION,
+                    ranked=[row],
+                    generated_at=value,
+                    depth_rationale="one candidate clears the evidence floor",
+                ),
+            ),
+        )
+        for name, factory in timestamp_cases:
+            for value in (
+                "2026-06-25",
+                "2026-06-25T00:00Z",
+                "2026-06-25T00:00:00+00:00",
+                "2026-02-30T00:00:00Z",
+            ):
+                with self.subTest(name=name, value=value):
+                    with self.assertRaisesRegex(ValueError, "YYYY-MM-DDTHH:MM:SSZ"):
+                        factory(value)
+
+        for value in ("20260625", "2026-06-25T00:00:00Z", "2026-13-25"):
+            with self.subTest(name="result_row.date_run", value=value):
+                with self.assertRaisesRegex(ValueError, "YYYY-MM-DD"):
+                    ResultRow(
+                        entity_id="tool:public-search-demo",
+                        entity_kind="tool_server",
+                        benchmark_id="bench_public_search",
+                        benchmark_version="2026-06-25",
+                        harness="public-fixture-harness",
+                        harness_version="2026-06-25.1",
+                        is_self_reported=False,
+                        n_items=40,
+                        ci95=ConfidenceInterval(low=0.80, high=0.88),
+                        score_raw=0.875,
+                        score_unit="pass_rate",
+                        date_run=value,
+                        model_version="public-search-demo@2026-06-25",
+                        provenance={"source": "public-fixture"},
+                        source_url="https://example.com/evalrank/public-search-demo",
+                        attribution_string="Synthetic public fixture",
+                        flags={
+                            "saturated": False,
+                            "contaminated": False,
+                            "judge_model_dependent": False,
+                            "scaffold_nonstandard": False,
+                        },
+                        verification_state="verified",
+                    )
+
     def test_ranked_entity_rejects_bare_or_invalid_scores(self):
         with self.assertRaisesRegex(ValueError, "capability_score"):
             RankedEntity(

@@ -204,6 +204,25 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual(r"^\d{4}-\d{2}-\d{2}$", freshness["last_eval"]["pattern"])
         self.assertEqual(r"^\d{4}-\d{2}-\d{2}$", freshness["next_refresh"]["pattern"])
 
+    def test_temporal_schema_fields_pin_public_formats(self):
+        timestamp_pattern = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$"
+        for filename, field_name in (
+            ("raw-entry.schema.json", "fetched_at"),
+            ("use-case-catalog.schema.json", "generated_at"),
+            ("scoring-stage-catalog.schema.json", "generated_at"),
+            ("evidence-item.schema.json", "observed_at"),
+            ("evidence-set.schema.json", "generated_at"),
+            ("evaluation-request.schema.json", "requested_at"),
+            ("candidate-set.schema.json", "generated_at"),
+            ("recommendation.schema.json", "generated_at"),
+        ):
+            with self.subTest(filename=filename, field_name=field_name):
+                schema = _schema(filename)
+                self.assertEqual(timestamp_pattern, schema["properties"][field_name]["pattern"])
+
+        result_row_schema = _schema("result-row.schema.json")
+        self.assertEqual(r"^\d{4}-\d{2}-\d{2}$", result_row_schema["properties"]["date_run"]["pattern"])
+
     def test_ranked_entity_schema_pins_non_empty_caveats(self):
         ranked_schema = _schema("ranked-entity.schema.json")
 

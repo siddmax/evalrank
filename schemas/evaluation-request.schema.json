@@ -35,7 +35,7 @@
     },
     "requested_at": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
     },
     "constraints": {
       "type": "object",

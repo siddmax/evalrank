@@ -25,6 +25,8 @@ Ranked entity schemas require `score_components` to be a public explanation map 
 
 Ranked entity freshness dates use public `YYYY-MM-DD` strings for `last_eval` and `next_refresh`; Python core validation requires calendar-valid dates, while timestamps and private scheduler details stay outside the schema.
 
+Public event timestamp fields use UTC `YYYY-MM-DDTHH:MM:SSZ` strings, and result-row `date_run` uses `YYYY-MM-DD`; private scheduler cadence and runtime refresh policy stay outside the schemas.
+
 Core contract tests also guard primitive and sequence fields that JSON Schema already constrains, including entity refs, freshness dates, unique request entity-type arrays, ranked-entity integer fields, and caveats arrays.
 
 Core contract tests also guard public string fields that JSON Schema already constrains; those values must be actual non-empty strings before serialization.

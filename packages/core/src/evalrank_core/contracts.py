@@ -5,7 +5,7 @@ import json
 import math
 import re
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from typing import Any, ClassVar
 
 
@@ -31,6 +31,7 @@ PROBLEM_CODES = {
 }
 _FINGERPRINT_RE = re.compile(r"^[a-f0-9]{64}$")
 _PUBLIC_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_PUBLIC_TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 _METHODOLOGY_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$")
 _RRF_COMPONENT_KEYS = ("lexical_rank", "semantic_rank", "graph_rank")
 _PROBLEM_DETAIL_FIELDS = {
@@ -136,8 +137,9 @@ class RawEntry:
     fetched_at: str
 
     def __post_init__(self) -> None:
-        for name in ("source", "source_id", "entity_kind", "canonical_id", "fetched_at"):
+        for name in ("source", "source_id", "entity_kind", "canonical_id"):
             _require_nonempty_string(name, getattr(self, name))
+        _require_public_timestamp("fetched_at", self.fetched_at)
         if not self.declared_capability_shape:
             raise ValueError("declared_capability_shape is required")
         for name, value in (
@@ -250,7 +252,7 @@ class UseCaseCatalog:
 
     def __post_init__(self) -> None:
         _require_methodology_version(self.methodology_version)
-        _require_nonempty_string("generated_at", self.generated_at)
+        _require_public_timestamp("generated_at", self.generated_at)
         if not isinstance(self.use_cases, tuple) or not self.use_cases:
             raise ValueError("use_cases is required")
         seen: set[str] = set()
@@ -319,7 +321,7 @@ class ScoringStageCatalog:
 
     def __post_init__(self) -> None:
         _require_methodology_version(self.methodology_version)
-        _require_nonempty_string("generated_at", self.generated_at)
+        _require_public_timestamp("generated_at", self.generated_at)
         if not isinstance(self.stages, tuple) or not self.stages:
             raise ValueError("stages is required")
         seen_ids: set[str] = set()
@@ -385,7 +387,7 @@ class EvidenceItem:
         if self.kind not in EVIDENCE_KINDS:
             raise ValueError(f"kind must be one of {sorted(EVIDENCE_KINDS)}")
         _require_nonempty_string("source", self.source)
-        _require_nonempty_string("observed_at", self.observed_at)
+        _require_public_timestamp("observed_at", self.observed_at)
         _require_nonempty_string("summary", self.summary)
         if self.score is not None:
             _require_unit_interval("score", self.score)
@@ -438,12 +440,12 @@ class ResultRow:
             "harness",
             "harness_version",
             "score_unit",
-            "date_run",
             "model_version",
             "source_url",
             "attribution_string",
         ):
             _require_nonempty_string(name, getattr(self, name))
+        _require_public_date("date_run", self.date_run)
         if self.entity_kind not in RESULT_ENTITY_KINDS:
             raise ValueError(f"entity_kind must be one of {sorted(RESULT_ENTITY_KINDS)}")
         if not isinstance(self.is_self_reported, bool):
@@ -503,7 +505,7 @@ class EvidenceSet:
     def __post_init__(self) -> None:
         _require_nonempty_string("request_id", self.request_id)
         _require_nonempty_string("use_case", self.use_case)
-        _require_nonempty_string("generated_at", self.generated_at)
+        _require_public_timestamp("generated_at", self.generated_at)
         if not isinstance(self.evidence_items, tuple):
             raise ValueError("evidence_items must be a tuple")
         seen: set[str] = set()
@@ -543,7 +545,7 @@ class EvaluationRequest:
             raise ValueError("entity_types must contain non-empty strings")
         if len(set(self.entity_types)) != len(self.entity_types):
             raise ValueError("entity_types must be unique")
-        _require_nonempty_string("requested_at", self.requested_at)
+        _require_public_timestamp("requested_at", self.requested_at)
         if not isinstance(self.constraints, dict):
             raise ValueError("constraints must be a JSON object")
         _require_string_keys("constraints", self.constraints)
@@ -576,7 +578,7 @@ class CandidateSet:
             raise ValueError("candidates must be a tuple")
         if not self.candidates:
             raise ValueError("candidates is required")
-        _require_nonempty_string("generated_at", self.generated_at)
+        _require_public_timestamp("generated_at", self.generated_at)
         seen: set[tuple[str, str]] = set()
         for candidate in self.candidates:
             if not isinstance(candidate, EntityRef):
@@ -879,7 +881,7 @@ class Recommendation:
         _require_nonempty_string("request_id", self.request_id)
         _require_nonempty_string("use_case", self.use_case)
         _require_methodology_version(self.methodology_version)
-        _require_nonempty_string("generated_at", self.generated_at)
+        _require_public_timestamp("generated_at", self.generated_at)
         if self.comparability not in COMPARABILITY_MODES:
             raise ValueError("comparability must be 'single-scale' or 'kind-grouped'")
         if not isinstance(self.ranked, list):
@@ -1119,6 +1121,15 @@ def _require_public_date(name: str, value: str) -> None:
         date.fromisoformat(value)
     except ValueError as exc:
         raise ValueError(f"{name} must match YYYY-MM-DD") from exc
+
+
+def _require_public_timestamp(name: str, value: str) -> None:
+    if not isinstance(value, str) or not _PUBLIC_TIMESTAMP_RE.fullmatch(value):
+        raise ValueError(f"{name} must match YYYY-MM-DDTHH:MM:SSZ")
+    try:
+        datetime.fromisoformat(value.removesuffix("Z") + "+00:00")
+    except ValueError as exc:
+        raise ValueError(f"{name} must match YYYY-MM-DDTHH:MM:SSZ") from exc
 
 
 def _require_contiguous_ranks(name: str, rows: tuple[RankedEntity, ...] | list[RankedEntity]) -> None:
