@@ -59,6 +59,8 @@ class TypeScriptSdkTests(unittest.TestCase):
             "RankedEntity",
             "Recommendation",
             "ProblemDetails",
+            "EvalRankClient",
+            "EvalRankApiError",
             "PUBLIC_FIXTURE_KINDS",
             "PublicFixtureKind",
         ):
@@ -75,6 +77,8 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertEqual("./src/index.ts", package["types"])
         self.assertEqual("./src/index.ts", package["exports"]["."]["types"])
         self.assertEqual("./src/index.ts", package["exports"]["."]["default"])
+        self.assertEqual("node --experimental-strip-types --check src/index.ts", package["scripts"]["check"])
+        self.assertEqual("node --experimental-strip-types --test src/index.test.ts", package["scripts"]["test"])
 
     def test_public_constants_match_core_contracts(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
@@ -119,6 +123,11 @@ class TypeScriptSdkTests(unittest.TestCase):
             "UseCaseCatalog",
         ):
             self.assertIn(f"export interface {name}", source)
+
+        self.assertIn("export class EvalRankApiError extends Error", source)
+        self.assertIn("export class EvalRankClient", source)
+        self.assertIn("async recommend(request: EvaluationRequest): Promise<Recommendation>", source)
+        self.assertIn("/v1/recommendations", source)
 
         for field in (
             "capability_fingerprint",

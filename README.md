@@ -122,7 +122,7 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { type Abstention, type CandidateSet, type EvidenceSet, type Exclusion, type ProblemDetails, type RankingGroup, type ResultRow, type ScoringStageCatalog, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
+import { EvalRankClient, type Abstention, type CandidateSet, type EvaluationRequest, type EvidenceSet, type Exclusion, type ProblemDetails, type RankingGroup, type ResultRow, type ScoringStageCatalog, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
 
 const useCases: UseCaseCatalog["use_cases"] = [];
 const stages: ScoringStageCatalog["stages"] = [];
@@ -135,4 +135,14 @@ const exclusion: Exclusion["reason"] = "unknown_cost";
 const call: TheCall["decision"] = "recommend";
 const abstention: Abstention | null = null;
 const problem: ProblemDetails["code"] = "rate_limited";
+const request: EvaluationRequest = {
+  object: "evaluation_request",
+  request_id: "req_public_fixture_01",
+  use_case: "web-browsing",
+  entity_types: ["mcp_server"],
+  requested_at: "2026-06-25T00:00:00Z",
+  constraints: {},
+};
+const client = new EvalRankClient("https://evalrank.example");
+// const recommendation = await client.recommend(request);
 ```

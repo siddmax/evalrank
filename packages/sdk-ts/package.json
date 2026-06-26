@@ -13,6 +13,7 @@
     }
   },
   "scripts": {
-    "check": "node --experimental-strip-types --check src/index.ts"
+    "check": "node --experimental-strip-types --check src/index.ts",
+    "test": "node --experimental-strip-types --test src/index.test.ts"
   }
 }

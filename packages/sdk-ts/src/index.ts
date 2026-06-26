@@ -320,3 +320,54 @@ export interface Recommendation {
   search_run_id: string;
   request_id: string;
 }
+
+export class EvalRankApiError extends Error {
+  readonly status: number;
+  readonly problem: ProblemDetails;
+  readonly retryAfter: number | null;
+
+  constructor(status: number, problem: ProblemDetails, retryAfter: number | null = null) {
+    super(`EvalRank API error ${status}: ${problem.title ?? "request failed"}`);
+    this.name = "EvalRankApiError";
+    this.status = status;
+    this.problem = problem;
+    this.retryAfter = retryAfter;
+  }
+}
+
+export class EvalRankClient {
+  readonly baseUrl: string;
+
+  constructor(baseUrl: string) {
+    const parsed = new URL(baseUrl);
+    if (!["http:", "https:"].includes(parsed.protocol) || !parsed.host) {
+      throw new TypeError("baseUrl must be an http or https URL");
+    }
+    this.baseUrl = baseUrl.replace(/\/+$/, "");
+  }
+
+  async recommend(request: EvaluationRequest): Promise<Recommendation> {
+    const response = await fetch(`${this.baseUrl}/v1/recommendations`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+    const body = await response.json();
+    if (!response.ok) {
+      throw new EvalRankApiError(response.status, body as ProblemDetails, retryAfter(response.headers));
+    }
+    return body as Recommendation;
+  }
+}
+
+function retryAfter(headers: Headers): number | null {
+  const value = headers.get("Retry-After");
+  if (value === null) {
+    return null;
+  }
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}

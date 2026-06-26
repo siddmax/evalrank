@@ -17,13 +17,14 @@ make check
 - `tests/test_openapi_contract.py` checks the public OpenAPI route contracts, reusable Problem Details responses, retry/rate-limit headers, schema refs, and storage-free boundary.
 - `tests/test_methods_docs.py` checks public method notes stay aligned with the use-case taxonomy and scoring-stage contracts plus private boundaries.
 - `tests/test_sdk_python.py` checks the Python SDK re-exports public core contracts, vocabulary constants, public fixture dispatch helpers, and the stdlib `EvalRankClient` behavior for HTTP(S)-only `POST /v1/recommendations` success and Problem Details errors.
-- `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces, including public fixture kinds, Problem Details codes, abstention, and types.
+- `tests/test_sdk_ts.py` checks TypeScript SDK package metadata and mirrored public constants/interfaces, including public fixture kinds, Problem Details codes, abstention, client exports, and types.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.
 - `scripts/check_public_boundary.py` rejects private imports, disallowed coupling, excluded implementation markers, secret files, high-signal secret values, private data paths, and missing package license/notice files.
 
 ## Package Checks
 
 - TypeScript SDK syntax check: `npm run check --prefix packages/sdk-ts`
+- TypeScript SDK runtime test: `npm run test --prefix packages/sdk-ts`
 - Public fixture example smoke check: `python3 examples/public_fixture.py`
 
 ## Update Rules
