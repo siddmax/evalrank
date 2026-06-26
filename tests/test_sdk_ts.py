@@ -126,7 +126,11 @@ class TypeScriptSdkTests(unittest.TestCase):
 
         self.assertIn("export class EvalRankApiError extends Error", source)
         self.assertIn("export class EvalRankClient", source)
+        self.assertIn("async useCases(): Promise<UseCaseCatalog>", source)
+        self.assertIn("async scoringStages(): Promise<ScoringStageCatalog>", source)
         self.assertIn("async recommend(request: EvaluationRequest): Promise<Recommendation>", source)
+        self.assertIn("/v1/use-cases", source)
+        self.assertIn("/v1/scoring-stages", source)
         self.assertIn("/v1/recommendations", source)
 
         for field in (

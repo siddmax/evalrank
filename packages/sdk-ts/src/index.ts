@@ -346,20 +346,40 @@ export class EvalRankClient {
     this.baseUrl = baseUrl.replace(/\/+$/, "");
   }
 
+  async useCases(): Promise<UseCaseCatalog> {
+    return this.requestJson<UseCaseCatalog>("/v1/use-cases");
+  }
+
+  async scoringStages(): Promise<ScoringStageCatalog> {
+    return this.requestJson<ScoringStageCatalog>("/v1/scoring-stages");
+  }
+
   async recommend(request: EvaluationRequest): Promise<Recommendation> {
-    const response = await fetch(`${this.baseUrl}/v1/recommendations`, {
+    return this.requestJson<Recommendation>("/v1/recommendations", {
       method: "POST",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(request),
+    });
+  }
+
+  private async requestJson<T>(
+    path: string,
+    init: RequestInit = {},
+  ): Promise<T> {
+    const response = await fetch(`${this.baseUrl}${path}`, {
+      ...init,
+      headers: {
+        Accept: "application/json",
+        ...init.headers,
+      },
     });
     const body = await response.json();
     if (!response.ok) {
       throw new EvalRankApiError(response.status, body as ProblemDetails, retryAfter(response.headers));
     }
-    return body as Recommendation;
+    return body as T;
   }
 }
 

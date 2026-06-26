@@ -147,5 +147,7 @@ const request: EvaluationRequest = {
   constraints: {},
 };
 const client = new EvalRankClient("https://evalrank.example");
+// const liveUseCases = await client.useCases();
+// const liveStages = await client.scoringStages();
 // const recommendation = await client.recommend(request);
 ```

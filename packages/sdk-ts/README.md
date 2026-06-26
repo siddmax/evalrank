@@ -9,7 +9,7 @@ TypeScript SDK package boundary for public EvalRank APIs.
 - Public TypeScript interfaces for `CapabilityFingerprint`, `RawEntry`, `TheCall`, `Abstention`, `ProblemDetails`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `Exclusion`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankedEntity`, `RankingGroup`, and `Recommendation`.
 - `Recommendation` includes `abstention`, `recommendation_id`, `recommend_id`, and `search_run_id` as public response fields.
 - `ProblemDetails` mirrors the public RFC 9457 error contract plus optional retry extensions; it does not imply a hosted service client.
-- `EvalRankClient` is a dependency-free native `fetch` client for the public `POST /v1/recommendations` contract. It accepts only explicit HTTP(S) base URLs, posts public `EvaluationRequest` JSON, returns public `Recommendation` JSON, and raises `EvalRankApiError` with public Problem Details for non-2xx responses.
+- `EvalRankClient` is a dependency-free native `fetch` client for the public metadata and recommendation route contracts. It accepts only explicit HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, posts public `EvaluationRequest` JSON to `POST /v1/recommendations`, returns public JSON, and raises `EvalRankApiError` with public Problem Details for non-2xx responses.
 - No auth flow, retries, service discovery, environment-variable defaults, hosted-product behavior, hosted receipt IDs, persistence, or private data access.
 - The npm package is marked private until a built JS distribution and publish flow exist.
 
@@ -28,6 +28,8 @@ const request: EvaluationRequest = {
 };
 
 const client = new EvalRankClient("https://evalrank.example");
+const useCases = await client.useCases();
+const stages = await client.scoringStages();
 const recommendation = await client.recommend(request);
 ```
 
