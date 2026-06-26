@@ -121,6 +121,8 @@ MCP adapter:
 from evalrank_mcp import call_tool
 
 result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
+# use_cases = call_tool("evalrank.use_cases", {"base_url": "https://evalrank.example"})
+# stages = call_tool("evalrank.scoring_stages", {"base_url": "https://evalrank.example"})
 # recommendation = call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": {...}})
 ```
 

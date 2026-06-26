@@ -13,6 +13,8 @@ from evalrank_sdk import EvalRankApiError, EvalRankClient
 __version__ = "0.0.0"
 FIXTURE_TOOL_NAME = "evalrank.fixture"
 RECOMMEND_TOOL_NAME = "evalrank.recommend"
+USE_CASES_TOOL_NAME = "evalrank.use_cases"
+SCORING_STAGES_TOOL_NAME = "evalrank.scoring_stages"
 
 
 def list_tools() -> list[dict[str, Any]]:
@@ -49,6 +51,34 @@ def list_tools() -> list[dict[str, Any]]:
                 },
             },
         },
+        {
+            "name": USE_CASES_TOOL_NAME,
+            "description": "Call the public EvalRank use-case metadata API.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["base_url"],
+                "properties": {
+                    "base_url": {
+                        "type": "string",
+                    },
+                },
+            },
+        },
+        {
+            "name": SCORING_STAGES_TOOL_NAME,
+            "description": "Call the public EvalRank scoring-stage metadata API.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["base_url"],
+                "properties": {
+                    "base_url": {
+                        "type": "string",
+                    },
+                },
+            },
+        },
     ]
 
 
@@ -61,6 +91,10 @@ def call_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, A
         return _text_result(sample_public_fixture(arguments.get("kind")))
     if name == RECOMMEND_TOOL_NAME:
         return _recommend(arguments)
+    if name == USE_CASES_TOOL_NAME:
+        return _metadata(arguments, "use_cases")
+    if name == SCORING_STAGES_TOOL_NAME:
+        return _metadata(arguments, "scoring_stages")
     raise ValueError(f"unknown tool: {name}")
 
 
@@ -77,6 +111,21 @@ def _recommend(arguments: dict[str, Any]) -> dict[str, Any]:
         return _text_result(exc.problem, is_error=True)
 
 
+def _metadata(arguments: dict[str, Any], method: str) -> dict[str, Any]:
+    base_url = arguments.get("base_url")
+    if not isinstance(base_url, str) or not base_url:
+        raise ValueError("base_url is required")
+    client = EvalRankClient(base_url)
+    try:
+        if method == "use_cases":
+            return _text_result(client.use_cases())
+        if method == "scoring_stages":
+            return _text_result(client.scoring_stages())
+    except EvalRankApiError as exc:
+        return _text_result(exc.problem, is_error=True)
+    raise ValueError(f"unknown metadata method: {method}")
+
+
 def _text_result(payload: dict[str, Any], *, is_error: bool = False) -> dict[str, Any]:
     return {
         "isError": is_error,
@@ -89,4 +138,12 @@ def _text_result(payload: dict[str, Any], *, is_error: bool = False) -> dict[str
     }
 
 
-__all__ = ["FIXTURE_TOOL_NAME", "RECOMMEND_TOOL_NAME", "call_tool", "list_tools", "__version__"]
+__all__ = [
+    "FIXTURE_TOOL_NAME",
+    "RECOMMEND_TOOL_NAME",
+    "SCORING_STAGES_TOOL_NAME",
+    "USE_CASES_TOOL_NAME",
+    "call_tool",
+    "list_tools",
+    "__version__",
+]

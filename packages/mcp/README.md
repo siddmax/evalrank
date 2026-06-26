@@ -4,7 +4,7 @@ Public MCP server boundary for EvalRank evidence and evaluation tools.
 
 Current adapter:
 
-- `list_tools()` exposes `evalrank.fixture` and `evalrank.recommend`.
+- `list_tools()` exposes `evalrank.fixture`, `evalrank.recommend`, `evalrank.use_cases`, and `evalrank.scoring_stages`.
 - `call_tool("evalrank.fixture", {"kind": "fingerprint"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "raw-entry"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "request"})` returns deterministic public fixture JSON text.
@@ -20,5 +20,7 @@ Current adapter:
 - `call_tool("evalrank.fixture", {"kind": "scoring-stages"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "recommendation"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": {...}})` calls the public `POST /v1/recommendations` contract and returns recommendation JSON text.
+- `call_tool("evalrank.use_cases", {"base_url": "https://evalrank.example"})` calls the public `GET /v1/use-cases` contract and returns use-case catalog JSON text.
+- `call_tool("evalrank.scoring_stages", {"base_url": "https://evalrank.example"})` calls the public `GET /v1/scoring-stages` contract and returns scoring-stage catalog JSON text.
 
 This package does not start a server, discover services, read environment defaults, add auth, retry requests, create hosted receipts, persist data, or call private services.

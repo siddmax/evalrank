@@ -17,6 +17,8 @@ sys.path.insert(0, str(MCP_SRC))
 from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
 from evalrank_core.fixtures import sample_evaluation_request  # noqa: E402
 from evalrank_core.fixtures import sample_recommendation  # noqa: E402
+from evalrank_core.fixtures import sample_scoring_stage_catalog  # noqa: E402
+from evalrank_core.fixtures import sample_use_case_catalog  # noqa: E402
 from evalrank_mcp import call_tool, list_tools  # noqa: E402
 
 
@@ -35,13 +37,25 @@ class McpFixtureTests(unittest.TestCase):
         self.assertIn("base_url", text)
         self.assertIn("request", text)
 
+    def test_mcp_readme_documents_metadata_tools(self):
+        text = (REPO_ROOT / "packages" / "mcp" / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn("evalrank.use_cases", text)
+        self.assertIn("evalrank.scoring_stages", text)
+        self.assertIn("base_url", text)
+
     def test_list_tools_exposes_public_fixture_tool(self):
         tools = list_tools()
 
-        self.assertEqual(["evalrank.fixture", "evalrank.recommend"], [tool["name"] for tool in tools])
+        self.assertEqual(
+            ["evalrank.fixture", "evalrank.recommend", "evalrank.use_cases", "evalrank.scoring_stages"],
+            [tool["name"] for tool in tools],
+        )
         self.assertEqual(["kind"], tools[0]["inputSchema"]["required"])
         self.assertEqual(list(PUBLIC_FIXTURE_KINDS), tools[0]["inputSchema"]["properties"]["kind"]["enum"])
         self.assertEqual(["base_url", "request"], tools[1]["inputSchema"]["required"])
+        self.assertEqual(["base_url"], tools[2]["inputSchema"]["required"])
+        self.assertEqual(["base_url"], tools[3]["inputSchema"]["required"])
 
     def test_call_tool_returns_public_fingerprint_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
@@ -160,9 +174,34 @@ class McpFixtureTests(unittest.TestCase):
         self.assertFalse(result["isError"])
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("recommendation", payload["object"])
+        self.assertEqual("POST", server.method)
         self.assertEqual("/v1/recommendations", server.path)
         self.assertEqual(sample_evaluation_request().to_dict(), server.request_json)
         self.assertEqual("application/json", server.headers["content-type"])
+        self.assertEqual("application/json", server.headers["accept"])
+
+    def test_call_tool_gets_public_use_case_catalog(self):
+        with LocalApiServer(200, sample_use_case_catalog().to_dict()) as server:
+            result = call_tool("evalrank.use_cases", {"base_url": server.base_url})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("use_case_catalog", payload["object"])
+        self.assertEqual("GET", server.method)
+        self.assertEqual("/v1/use-cases", server.path)
+        self.assertIsNone(server.request_json)
+        self.assertEqual("application/json", server.headers["accept"])
+
+    def test_call_tool_gets_public_scoring_stage_catalog(self):
+        with LocalApiServer(200, sample_scoring_stage_catalog().to_dict()) as server:
+            result = call_tool("evalrank.scoring_stages", {"base_url": server.base_url})
+
+        self.assertFalse(result["isError"])
+        payload = json.loads(result["content"][0]["text"])
+        self.assertEqual("scoring_stage_catalog", payload["object"])
+        self.assertEqual("GET", server.method)
+        self.assertEqual("/v1/scoring-stages", server.path)
+        self.assertIsNone(server.request_json)
         self.assertEqual("application/json", server.headers["accept"])
 
     def test_call_tool_returns_problem_details_as_tool_error(self):
@@ -184,6 +223,23 @@ class McpFixtureTests(unittest.TestCase):
         self.assertTrue(result["isError"])
         self.assertEqual(problem, json.loads(result["content"][0]["text"]))
 
+    def test_call_tool_returns_metadata_problem_details_as_tool_error(self):
+        problem = {
+            "type": "https://evalrank.ai/problems/upstream-timeout",
+            "title": "Upstream timeout",
+            "status": 503,
+            "detail": "catalog temporarily unavailable",
+            "code": "upstream_timeout",
+            "retriable": True,
+            "retry_after": 5,
+        }
+        with LocalApiServer(503, problem, {"Retry-After": "5"}) as server:
+            result = call_tool("evalrank.use_cases", {"base_url": server.base_url})
+
+        self.assertTrue(result["isError"])
+        self.assertEqual("GET", server.method)
+        self.assertEqual(problem, json.loads(result["content"][0]["text"]))
+
     def test_call_tool_rejects_invalid_recommend_arguments(self):
         with self.assertRaisesRegex(ValueError, "arguments must be an object"):
             call_tool("evalrank.recommend", [])
@@ -191,6 +247,12 @@ class McpFixtureTests(unittest.TestCase):
             call_tool("evalrank.recommend", {"request": sample_evaluation_request().to_dict()})
         with self.assertRaisesRegex(ValueError, "request must be an object"):
             call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": []})
+
+    def test_call_tool_rejects_invalid_metadata_arguments(self):
+        with self.assertRaisesRegex(ValueError, "base_url is required"):
+            call_tool("evalrank.use_cases", {})
+        with self.assertRaisesRegex(ValueError, "base_url is required"):
+            call_tool("evalrank.scoring_stages", {"base_url": ""})
 
     def test_call_tool_rejects_unknown_tool(self):
         with self.assertRaisesRegex(ValueError, "unknown tool"):
@@ -209,6 +271,7 @@ class LocalApiServer:
         self.response_headers = response_headers or {}
         self.path: str | None = None
         self.headers: dict[str, str] = {}
+        self.method: str | None = None
         self.request_json: dict | None = None
         self._server: http.server.ThreadingHTTPServer | None = None
         self._thread: threading.Thread | None = None
@@ -225,10 +288,21 @@ class LocalApiServer:
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_POST(self) -> None:  # noqa: N802
+                owner.method = self.command
                 owner.path = self.path
                 owner.headers = {key.lower(): value for key, value in self.headers.items()}
                 length = int(self.headers.get("Content-Length", "0"))
                 owner.request_json = json.loads(self.rfile.read(length).decode("utf-8"))
+                self._write_json()
+
+            def do_GET(self) -> None:  # noqa: N802
+                owner.method = self.command
+                owner.path = self.path
+                owner.headers = {key.lower(): value for key, value in self.headers.items()}
+                owner.request_json = None
+                self._write_json()
+
+            def _write_json(self) -> None:
                 encoded = json.dumps(owner.response_body).encode("utf-8")
                 self.send_response(owner.response_status)
                 self.send_header("Content-Type", "application/json")
