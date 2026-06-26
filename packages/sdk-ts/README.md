@@ -2,6 +2,14 @@
 
 TypeScript SDK package boundary for public EvalRank APIs.
 
+Package metadata:
+
+- Package: `@evalrank/sdk`
+- Type: `module`
+- Types: `./src/index.ts`
+- License: `Apache-2.0`
+- Publish status: `private`
+
 ## Public Surface
 
 - Public constants for trust tiers, freshness statuses, comparability modes, evidence kinds, result-row vocabulary, use-case vocabulary, `the_call` decisions, public Problem Details codes, and `PUBLIC_FIXTURE_KINDS`.

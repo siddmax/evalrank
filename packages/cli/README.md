@@ -2,6 +2,14 @@
 
 Command-line boundary for public EvalRank workflows.
 
+Package metadata:
+
+- Distribution: `evalrank-cli`
+- Import: `evalrank_cli`
+- Entrypoint: `evalrank`
+- Runtime dependencies: `evalrank-core==0.0.0`, `evalrank-sdk==0.0.0`
+- License: `Apache-2.0`
+
 Fixture commands:
 
 ```sh

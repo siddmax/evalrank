@@ -2,6 +2,13 @@
 
 Python SDK package boundary for public EvalRank APIs.
 
+Package metadata:
+
+- Distribution: `evalrank-sdk`
+- Import: `evalrank_sdk`
+- Runtime dependency: `evalrank-core==0.0.0`
+- License: `Apache-2.0`
+
 The current SDK surface re-exports public contracts, vocabulary constants, and fixtures from `evalrank-core`, including `CapabilityFingerprintInput`, `RawEntry`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `ProblemDetails`, `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, `EVIDENCE_KINDS`, `PROBLEM_CODES`, `PUBLIC_FIXTURE_KINDS`, `sample_problem_details`, and `sample_public_fixture`.
 
 `EvalRankClient` is a dependency-free stdlib client for the public metadata and recommendation route contracts. It accepts only HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, posts `EvaluationRequest` JSON to `POST /v1/recommendations`, and returns public JSON. Non-2xx Problem Details responses raise `EvalRankApiError`.

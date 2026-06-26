@@ -26,6 +26,7 @@ Last updated: 2026-06-26
 - Public scoring-stage vocabulary and catalog contract, use-case taxonomy method, and method-boundary notes.
 - Runnable public fixture bundle example, including the scoring stage catalog.
 - Schema drift tests for core payload keys and public enum constants.
+- Package README metadata drift guard for Python package manifests and the TypeScript SDK manifest.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
 - Public progress tracker and repo structure map.
 - Public route navigation map in `NAVIGATION.md`.
@@ -108,6 +109,7 @@ Last updated: 2026-06-26
 - TypeScript SDK metadata route build log in `docs/build-log/2026-06-26-typescript-sdk-metadata-routes.md`.
 - CLI metadata command build log in `docs/build-log/2026-06-26-cli-metadata-commands.md`.
 - MCP metadata tool build log in `docs/build-log/2026-06-26-mcp-metadata-tools.md`.
+- Package README metadata drift-guard build log in `docs/build-log/2026-06-26-package-readme-metadata-drift-guard.md`.
 
 ## Current Public Surface
 
@@ -127,7 +129,7 @@ Last updated: 2026-06-26
 
 | Area | State | Next owner |
 | --- | --- | --- |
-| Repo foundation | Built: public scaffold, package boundaries, license/notice hygiene, root/scoped agent docs, CI, `make check`, and deterministic public-boundary scanner. | Open-Core Boundary / CI keeps leak and drift checks current. |
+| Repo foundation | Built: public scaffold, package boundaries, license/notice hygiene, root/scoped agent docs, CI, `make check`, deterministic public-boundary scanner, package metadata checks, and package README metadata drift guards. | Open-Core Boundary / CI keeps leak and drift checks current. |
 | Public contracts | Built through the current storage-free payload set: fingerprints, raw entries, requests, candidate sets, stage candidates, result rows, use-case catalogs, scoring stage catalogs, ranking groups, evidence sets, exclusions, `the_call`, abstentions, recommendations, public aliases, entity refs, and evidence items. | Public Contracts pins the next standalone payload before SDK/CLI/MCP behavior grows. |
 | Schemas and methods | Built: JSON Schemas, OpenAPI route contracts for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`, retry-aware Problem Details, public scoring-stage vocabulary/catalog, and sanitized use-case taxonomy method note. | Methods / Schemas and Public Surface Contracts add only public, product-neutral semantics. |
 | Interfaces | Built: Python SDK re-exports plus stdlib metadata/recommendation client behavior, TypeScript public types/constants plus native `fetch` metadata/recommendation client behavior, CLI fixture and recommendation commands, MCP fixture and recommendation tools, runnable public example, and README drift guards. | SDK / CLI / MCP promotes more behavior only after public route/client contracts are pinned. |
@@ -169,6 +171,7 @@ Last updated: 2026-06-26
 | TypeScript SDK added a dependency-free recommendation client for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only native `fetch` behavior with local package runtime tests; no auth, retries, hosted receipts, tenant context, private DTOs, service discovery, environment-variable defaults, local file URLs, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | MCP added an explicit recommendation tool for the existing public `POST /v1/recommendations` route contract. | Built here as HTTP(S)-only JSON plumbing around the public Python SDK client; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | Python package metadata drift guard now pins public package dependency edges and package hygiene metadata. | Built here as stdlib `tomllib` tests over existing `pyproject.toml` files; no packaging release or publishing workflow was added. | Open-Core Boundary / CI |
+| Package READMEs now carry manifest metadata and a deterministic drift guard. | Built here as local stdlib tests that bind public Python package READMEs and the TypeScript SDK README to current package names, imports, dependencies, entrypoints, license, module type, and private publish status; no publish workflow, private package index, credentials, or hosted deployment behavior was added. | Open-Core Boundary / CI, Docs / Public Planning |
 | Python SDK added metadata route helpers for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only stdlib GET behavior sharing public JSON and Problem Details handling; no auth, retries, service discovery, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | TypeScript SDK added metadata route helpers for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only native `fetch` GET behavior sharing public JSON and Problem Details handling; no auth, retries, service discovery, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | CLI added explicit metadata commands for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only Python SDK plumbing with JSON stdout and Problem Details stderr; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
@@ -196,6 +199,7 @@ Last updated: 2026-06-26
 | Storage-free core payloads: capability fingerprint, methodology version, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, use-case catalog, ranking group, evidence set, exclusion, `the_call`, abstention, ranked entity, recommendation, recommendation aliases, strict recommendation envelope validation, and entity reference | Ported here | Public Contracts |
 | Public JSON Schemas and schema drift tests for current payloads | Ported here, including retry-aware Problem Details extensions | Methods / Schemas, Public Contracts, Public Surface Contracts |
 | Synthetic fixtures, runnable public example, CLI fixture/metadata/recommend commands, MCP fixture/metadata/recommend tools, Python SDK re-exports/client, and TypeScript public types/client | Ported here, including raw-entry, candidate-set, stage-candidate, result-row, problem, use-cases, scoring-stages, ranking-group, evidence-set, exclusion fixture surfaces, first recommendation clients/tools, Python/TypeScript SDK metadata route helpers, CLI metadata commands, MCP metadata tools, and README drift guards | SDK / CLI / MCP, Examples, Open-Core Boundary / CI |
+| Public package README metadata | Ported here as concise package metadata blocks plus deterministic manifest drift tests for public distribution names, imports, dependencies, entrypoint, license, TypeScript module/type metadata, and private publish status. | Open-Core Boundary / CI, Docs / Public Planning |
 | Public scoring-stage vocabulary, catalog, and private-boundary notes | Ported here, including `ScoringStageCatalog`, `CandidateSet`, `StageCandidate`, `ResultRow`, `EvidenceSet`, `Exclusion`, `Abstention`, and the use-case taxonomy method | Methods / Schemas |
 | `RawEntry` ingestion-normalization contract | Ported here as a storage-free synthetic fixture contract | Public Contracts |
 | `CandidateSet` candidate-resolution contract | Ported here as a storage-free list of public `EntityRef` candidates | Public Contracts, Methods / Schemas |

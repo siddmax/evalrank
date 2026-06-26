@@ -2,6 +2,12 @@
 
 Reference Python package for public EvalRank evidence and scoring contracts.
 
+Package metadata:
+
+- Distribution: `evalrank-core`
+- Import: `evalrank_core`
+- License: `Apache-2.0`
+
 Use `evalrank_core.fixtures.sample_public_fixture(kind)` with `PUBLIC_FIXTURE_KINDS`, or individual fixture helpers such as `sample_problem_details()`, for public examples and contract tests.
 
 Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `ProblemDetails`, `EntityRef`, and public vocabulary constants including `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, `EVIDENCE_KINDS`, and `PROBLEM_CODES`.

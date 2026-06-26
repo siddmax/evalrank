@@ -1,3 +1,4 @@
+import json
 import tomllib
 import unittest
 from pathlib import Path
@@ -55,6 +56,37 @@ class PackageMetadataTests(unittest.TestCase):
         tests_doc = (REPO_ROOT / "TESTS.md").read_text(encoding="utf-8")
 
         self.assertIn("tests/test_package_metadata.py", tests_doc)
+
+    def test_python_package_readmes_match_manifest_metadata(self):
+        imports = {
+            "core": "evalrank_core",
+            "sdk-python": "evalrank_sdk",
+            "cli": "evalrank_cli",
+            "mcp": "evalrank_mcp",
+        }
+
+        for package, import_name in imports.items():
+            with self.subTest(package=package):
+                project = _pyproject(package)["project"]
+                readme = (PACKAGES / package / "README.md").read_text(encoding="utf-8")
+
+                self.assertIn(f"`{project['name']}`", readme)
+                self.assertIn(f"`{import_name}`", readme)
+                self.assertIn(f"`{project['license']}`", readme)
+                for dependency in project.get("dependencies", []):
+                    self.assertIn(f"`{dependency}`", readme)
+                for script in project.get("scripts", {}):
+                    self.assertIn(f"`{script}`", readme)
+
+    def test_typescript_package_readme_matches_manifest_metadata(self):
+        package = json.loads((PACKAGES / "sdk-ts" / "package.json").read_text(encoding="utf-8"))
+        readme = (PACKAGES / "sdk-ts" / "README.md").read_text(encoding="utf-8")
+
+        self.assertIn(f"`{package['name']}`", readme)
+        self.assertIn(f"`{package['type']}`", readme)
+        self.assertIn(f"`{package['types']}`", readme)
+        self.assertIn(f"`{package['license']}`", readme)
+        self.assertIn("`private`", readme)
 
 
 def _pyproject(package: str) -> dict:

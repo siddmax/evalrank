@@ -2,6 +2,13 @@
 
 Public MCP server boundary for EvalRank evidence and evaluation tools.
 
+Package metadata:
+
+- Distribution: `evalrank-mcp`
+- Import: `evalrank_mcp`
+- Runtime dependencies: `evalrank-core==0.0.0`, `evalrank-sdk==0.0.0`
+- License: `Apache-2.0`
+
 Current adapter:
 
 - `list_tools()` exposes `evalrank.fixture`, `evalrank.recommend`, `evalrank.use_cases`, and `evalrank.scoring_stages`.
