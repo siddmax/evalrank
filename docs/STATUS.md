@@ -43,6 +43,7 @@ Last updated: 2026-06-26
 - Recommendation `RankingGroup.ranked` schema uniqueness hardening.
 - Recommendation group uniqueness hardening.
 - Recommendation exclusion uniqueness hardening.
+- Recommendation alias exact schema pattern drift guard.
 - Recommendation abstention envelope consistency hardening.
 - Recommendation abstention-as-empty-single-scale hardening.
 - Recommendation `shortlist_depth` count consistency hardening.
@@ -162,6 +163,7 @@ Last updated: 2026-06-26
 - Ranking group schema uniqueness hardening build log in `docs/build-log/2026-06-26-ranking-group-schema-uniqueness.md`.
 - Recommendation group uniqueness hardening build log in `docs/build-log/2026-06-26-recommendation-group-uniqueness.md`.
 - Recommendation exclusion uniqueness hardening build log in `docs/build-log/2026-06-26-recommendation-exclusion-uniqueness.md`.
+- Recommendation alias exact schema pattern drift-guard build log in `docs/build-log/2026-06-26-recommendation-alias-pattern-drift-guard.md`.
 - SDK retry-after parser hardening build log in `docs/build-log/2026-06-26-sdk-retry-after-parser-hardening.md`.
 - Recommendation abstention envelope consistency build log in `docs/build-log/2026-06-26-recommendation-abstention-envelope-consistency.md`.
 - Recommendation abstention-as-empty-single-scale build log in `docs/build-log/2026-06-26-abstention-no-ranked-answer.md`.

@@ -242,6 +242,7 @@ class SchemaContractTests(unittest.TestCase):
         recommendation_schema = _schema("recommendation.schema.json")
         rec_id_pattern = recommendation_schema["properties"]["recommendation_id"]["pattern"]
 
+        self.assertEqual("^rec_[0-9a-f]{24}$", rec_id_pattern)
         self.assertEqual(rec_id_pattern, recommendation_schema["properties"]["recommend_id"]["pattern"])
         self.assertEqual(rec_id_pattern, recommendation_schema["properties"]["search_run_id"]["pattern"])
         self.assertIn("recommend_id", recommendation_schema["required"])

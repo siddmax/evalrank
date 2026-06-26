@@ -62,6 +62,7 @@ Last reviewed: 2026-06-26
 - Public `EvidenceSet` contract and deterministic `evidence-set` fixture surfaces.
 - Public `Exclusion` contract and deterministic `exclusion` fixture surfaces.
 - Public structured `the_call` and abstention contracts embedded in recommendation fixtures.
+- Public recommendation alias schema fields are pinned to the exact `rec_` plus 24 lowercase hex shape.
 - Public `score_components` map shape hardened for ranked entities: non-empty public names and 0-1 numeric values only.
 - Public recommendation envelope validation hardened for schema-compatible metadata: non-empty rationale/source fields, boolean degradation state, non-negative snapshot lag, and no duplicate ranked entities.
 - Public capability fingerprint declared-shape schema hardened to require at least one property, matching the existing core contract.
