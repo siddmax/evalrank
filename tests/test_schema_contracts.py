@@ -247,6 +247,11 @@ class SchemaContractTests(unittest.TestCase):
         self.assertIn("recommend_id", recommendation_schema["required"])
         self.assertIn("search_run_id", recommendation_schema["required"])
 
+    def test_recommendation_schema_pins_group_uniqueness(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+
+        self.assertTrue(recommendation_schema["properties"]["groups"]["uniqueItems"])
+
     def test_raw_entry_schema_requires_declared_capability_shape_content(self):
         raw_entry_schema = _schema("raw-entry.schema.json")
 

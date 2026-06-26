@@ -79,6 +79,7 @@
         "array",
         "null"
       ],
+      "uniqueItems": true,
       "items": {
         "$ref": "#/$defs/RankingGroup"
       }

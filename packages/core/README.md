@@ -32,7 +32,7 @@ Use case catalog payloads expose public taxonomy metadata only. Benchmark weight
 
 Scoring stage catalog payloads expose public stage order with contiguous `1..N` ordinals, contract refs, and boundary notes only. Formulas, thresholds, graders, telemetry, and runtime scorer behavior stay outside this package.
 
-Ranking group payloads expose within-kind ranking rows with contiguous `1..N` ranks in array order for `kind-grouped` recommendations only. Cross-kind score normalization and scorer internals stay outside this package.
+Ranking group payloads expose within-kind ranking rows with contiguous `1..N` ranks in array order for `kind-grouped` recommendations only. Recommendation envelopes reject duplicate group keys and entity types. Cross-kind score normalization and scorer internals stay outside this package.
 
 Exclusion payloads expose storage-free public subjects and reasons; gate policy and private reason taxonomies stay outside this package.
 

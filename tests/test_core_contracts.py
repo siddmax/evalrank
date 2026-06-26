@@ -936,6 +936,49 @@ class CoreContractTests(unittest.TestCase):
         self.assertEqual(1, payload["shortlist_depth"])
         self.assertTrue(rec.result_usable)
 
+    def test_kind_grouped_recommendation_rejects_duplicate_groups(self):
+        row = _row("tool:exa-search-mcp")
+        duplicate_key = [
+            RankingGroup(
+                group_key="mcp_server",
+                entity_type="mcp_server",
+                ranked=(row,),
+                group_rationale="first group",
+            ),
+            RankingGroup(
+                group_key="mcp_server",
+                entity_type="tool_server",
+                ranked=(_row("tool:browser-mcp", entity_type="tool_server"),),
+                group_rationale="duplicate key",
+            ),
+        ]
+        duplicate_entity_type = [
+            RankingGroup(
+                group_key="mcp_server",
+                entity_type="mcp_server",
+                ranked=(row,),
+                group_rationale="first group",
+            ),
+            RankingGroup(
+                group_key="tool_server",
+                entity_type="mcp_server",
+                ranked=(_row("tool:browser-mcp"),),
+                group_rationale="duplicate entity type",
+            ),
+        ]
+
+        for groups in (duplicate_key, duplicate_entity_type):
+            with self.subTest(groups=[group.group_key for group in groups]):
+                with self.assertRaisesRegex(ValueError, "duplicate group"):
+                    Recommendation.kind_grouped(
+                        request_id="req_01",
+                        use_case="mcp-tool-orchestration",
+                        methodology_version=PINNED_METHODOLOGY_VERSION,
+                        groups=groups,
+                        generated_at="2026-06-25T00:00:00Z",
+                        depth_rationale="different entity kinds are not on one score scale",
+                    )
+
     def test_ranking_group_rejects_private_or_cross_kind_shapes(self):
         row = _row("model:public-demo", entity_type="model_version")
 

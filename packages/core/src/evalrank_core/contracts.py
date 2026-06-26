@@ -937,9 +937,15 @@ class Recommendation:
                 raise ValueError("duplicate ranked entity")
             seen_ranked.add(key)
         _require_contiguous_ranks("ranked ranks", self.ranked)
+        seen_group_keys: set[str] = set()
+        seen_group_entity_types: set[str] = set()
         for group in self.groups or []:
             if not isinstance(group, RankingGroup):
                 raise TypeError("groups must contain RankingGroup values")
+            if group.group_key in seen_group_keys or group.entity_type in seen_group_entity_types:
+                raise ValueError("duplicate group")
+            seen_group_keys.add(group.group_key)
+            seen_group_entity_types.add(group.entity_type)
             for row in group.ranked:
                 if row.methodology_version != self.methodology_version:
                     raise ValueError("group rows must carry the envelope methodology_version")
