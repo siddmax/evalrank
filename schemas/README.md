@@ -23,6 +23,8 @@ Schemas that expose `methodology_version` require `YYYY-MM-DD.SEQ.slug`.
 
 Ranked entity schemas require `score_components` to be a public explanation map with non-empty names and 0-1 numeric scores, and `axes.evidence` to carry only public evidence count plus trust-tier coverage. Private weights, formulas, and scorer calibration stay outside this repo.
 
+Ranked entity and result row `ci95` fields are exactly two numeric unit-interval scores: `[low, high]`.
+
 Ranked entity freshness dates use public `YYYY-MM-DD` strings for `last_eval` and `next_refresh`; Python core validation requires calendar-valid dates, while timestamps and private scheduler details stay outside the schema.
 
 Public event timestamp fields use UTC `YYYY-MM-DDTHH:MM:SSZ` strings, and result-row `date_run` uses `YYYY-MM-DD`; private scheduler cadence and runtime refresh policy stay outside the schemas.

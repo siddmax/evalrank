@@ -74,6 +74,7 @@ Last reviewed: 2026-06-26
 - Ranked entity freshness dates use public calendar-valid `YYYY-MM-DD` strings in the Python core and structural `YYYY-MM-DD` patterns in JSON Schema.
 - Public event timestamps use calendar-valid UTC `YYYY-MM-DDTHH:MM:SSZ` strings in the Python core and structural schema patterns; `ResultRow.date_run` uses `YYYY-MM-DD`.
 - Result row `source_url` values are pinned to public HTTP(S) URLs in the Python core and JSON Schema.
+- Public confidence interval schema fields are pinned as exactly two numeric unit-interval scores for ranked entities and result rows.
 - Public JSON-object fields hardened for evidence item `metadata` and evaluation request `constraints`: object values only, string keys only, and JSON-serializable values only.
 - Public primitive and sequence fields hardened for entity refs, freshness dates, request entity-type arrays, ranked-entity integer fields, and non-empty caveat strings.
 - Evaluation request `entity_types` are pinned as unique public request metadata in Python and JSON Schema.

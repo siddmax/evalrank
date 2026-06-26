@@ -49,6 +49,7 @@ Last updated: 2026-06-26
 - Ranked entity freshness date format hardening.
 - Public temporal field format hardening.
 - Result row public source URL hardening.
+- Public confidence interval schema drift guard.
 - TypeScript SDK non-empty array helper type for schema `minItems: 1` public arrays.
 - TypeScript SDK `UseCase` discriminated union for public ranked and veto-overlay branches.
 - TypeScript SDK `TheCall` discriminated union for public `recommend` and `abstain` branches.
@@ -167,6 +168,7 @@ Last updated: 2026-06-26
 - Ranked entity freshness date format build log in `docs/build-log/2026-06-26-freshness-date-format-hardening.md`.
 - Public temporal field format build log in `docs/build-log/2026-06-26-public-temporal-format-hardening.md`.
 - Result row public source URL build log in `docs/build-log/2026-06-26-result-row-source-url-hardening.md`.
+- Public confidence interval schema drift-guard build log in `docs/build-log/2026-06-26-confidence-interval-schema-drift-guard.md`.
 - Public progress and private-side port-routing refresh build log in `docs/build-log/2026-06-26-public-progress-private-routing-refresh.md`.
 
 ## Current Public Surface

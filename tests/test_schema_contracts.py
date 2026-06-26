@@ -582,6 +582,22 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual("uri-reference", result_row_schema["properties"]["source_url"]["format"])
         self.assertEqual("^https?://", result_row_schema["properties"]["source_url"]["pattern"])
 
+    def test_confidence_interval_schemas_pin_two_unit_scores(self):
+        for filename in ("ranked-entity.schema.json", "result-row.schema.json"):
+            with self.subTest(filename=filename):
+                ci95 = _schema(filename)["properties"]["ci95"]
+
+                self.assertEqual("array", ci95["type"])
+                self.assertEqual(2, ci95["minItems"])
+                self.assertEqual(2, ci95["maxItems"])
+                self.assertEqual(
+                    [
+                        {"type": "number", "minimum": 0, "maximum": 1},
+                        {"type": "number", "minimum": 0, "maximum": 1},
+                    ],
+                    ci95["prefixItems"],
+                )
+
     def test_stage_candidate_schema_pins_stage_one_boundary(self):
         stage_candidate_schema = _schema("stage-candidate.schema.json")
 
