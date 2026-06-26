@@ -369,7 +369,7 @@ class CoreContractTests(unittest.TestCase):
     def test_scoring_stage_catalog_serializes_public_stage_vocabulary(self):
         stage = ScoringStage(
             id="candidate-resolution",
-            ordinal=2,
+            ordinal=1,
             name="Candidate resolution",
             description="Identify public candidates for a request",
             input_contracts=("EvaluationRequest",),
@@ -390,7 +390,7 @@ class CoreContractTests(unittest.TestCase):
                 "stages": [
                     {
                         "id": "candidate-resolution",
-                        "ordinal": 2,
+                        "ordinal": 1,
                         "name": "Candidate resolution",
                         "description": "Identify public candidates for a request",
                         "input_contracts": ["EvaluationRequest"],
@@ -444,6 +444,53 @@ class CoreContractTests(unittest.TestCase):
                 methodology_version=PINNED_METHODOLOGY_VERSION,
                 generated_at="2026-06-25T00:00:00Z",
                 stages=(valid_stage, valid_stage),
+            )
+
+    def test_scoring_stage_catalog_rejects_gapped_ordinals(self):
+        stages = (
+            ScoringStage(
+                id="request-normalization",
+                ordinal=1,
+                name="Request normalization",
+                description="Normalize a request",
+                input_contracts=("EvaluationRequest",),
+                output_contracts=("EvaluationRequest",),
+                public_boundary="storage-free contract refs only",
+            ),
+            ScoringStage(
+                id="evidence-attachment",
+                ordinal=3,
+                name="Evidence attachment",
+                description="Attach public evidence",
+                input_contracts=("CandidateSet",),
+                output_contracts=("EvidenceSet",),
+                public_boundary="storage-free contract refs only",
+            ),
+        )
+
+        with self.assertRaisesRegex(ValueError, "contiguous"):
+            ScoringStageCatalog(
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                generated_at="2026-06-25T00:00:00Z",
+                stages=stages,
+            )
+
+    def test_scoring_stage_catalog_rejects_missing_initial_ordinal(self):
+        stage = ScoringStage(
+            id="candidate-resolution",
+            ordinal=2,
+            name="Candidate resolution",
+            description="Identify public candidates for a request",
+            input_contracts=("EvaluationRequest",),
+            output_contracts=("CandidateSet",),
+            public_boundary="storage-free contract refs only",
+        )
+
+        with self.assertRaisesRegex(ValueError, "contiguous"):
+            ScoringStageCatalog(
+                methodology_version=PINNED_METHODOLOGY_VERSION,
+                generated_at="2026-06-25T00:00:00Z",
+                stages=(stage,),
             )
 
     def test_use_case_rejects_invalid_public_shape(self):

@@ -28,7 +28,7 @@ Result row payloads expose storage-free benchmark/result provenance. Source adap
 
 Use case catalog payloads expose public taxonomy metadata only. Benchmark weights, IRT clusters, confidence policy, synthesis rules, and storage tables stay outside this package.
 
-Scoring stage catalog payloads expose public stage order, contract refs, and boundary notes only. Formulas, thresholds, graders, telemetry, and runtime scorer behavior stay outside this package.
+Scoring stage catalog payloads expose public stage order with contiguous `1..N` ordinals, contract refs, and boundary notes only. Formulas, thresholds, graders, telemetry, and runtime scorer behavior stay outside this package.
 
 Ranking group payloads expose within-kind ranking rows for `kind-grouped` recommendations only. Cross-kind score normalization and scorer internals stay outside this package.
 

@@ -331,6 +331,8 @@ class ScoringStageCatalog:
                 raise ValueError("duplicate stage ordinal")
             seen_ids.add(stage.id)
             seen_ordinals.add(stage.ordinal)
+        if seen_ordinals != set(range(1, len(self.stages) + 1)):
+            raise ValueError("stage ordinals must be contiguous")
 
     def to_dict(self) -> dict[str, Any]:
         return {
