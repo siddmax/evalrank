@@ -81,6 +81,16 @@ class RepoDocsTests(unittest.TestCase):
 
         self.assertEqual(expected, documented)
 
+    def test_status_lists_build_logs_exactly(self):
+        text = (REPO_ROOT / "docs" / "STATUS.md").read_text(encoding="utf-8")
+        documented = set(re.findall(r"`(docs/build-log/[^`]+\.md)`", text))
+        expected = {
+            str(path.relative_to(REPO_ROOT))
+            for path in (REPO_ROOT / "docs" / "build-log").glob("*.md")
+        }
+
+        self.assertEqual(expected, documented)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -34,6 +34,7 @@ Last updated: 2026-06-26
 - Exact schema README drift check for public schema and OpenAPI filenames.
 - Exact methods README drift check for public method-note filenames.
 - Exact repo structure drift check for public top-level directories and package directories.
+- Exact status build-log index drift check.
 - Exact `CLAUDE.md` shim drift check for the required `@AGENTS.md` reference.
 - Scoped `AGENTS.md` coverage drift check for public work areas.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
@@ -68,6 +69,7 @@ Last updated: 2026-06-26
 - Public-repo safety guidance in `SECURITY.md` for private disclosure, no public secret reports, immediate rotation on exposure, and coordinated remediation if sensitive data reaches Git history.
 - Direct `main` push workflow during scratch-build phase; branch protection is currently removed.
 - `make check` local gate shared with CI.
+- W0 core repository snapshot in `docs/build-log/2026-06-25-w0-core-repo-snapshot.md`.
 - W0 public exit packet in `docs/build-log/2026-06-25-w0-public-exit.md`.
 - Public W1 entity/evidence contract plan in `docs/superpowers/plans/2026-06-25-entity-evidence-contracts.md`.
 - Public porting workstream sync in `docs/build-log/2026-06-25-porting-workstream-sync.md`.
@@ -135,6 +137,7 @@ Last updated: 2026-06-26
 - Public progress and private-side porting recheck build log in `docs/build-log/2026-06-26-public-progress-porting-recheck.md`.
 - Public progress, porting, and public-repo safety refresh in `docs/build-log/2026-06-26-public-repo-porting-safety-refresh.md`.
 - Current public/private porting workstream refresh in `docs/build-log/2026-06-26-public-porting-workstream-refresh.md`.
+- Python SDK recommendation client build log in `docs/build-log/2026-06-26-python-sdk-recommendation-client.md`.
 - CLI recommendation command build log in `docs/build-log/2026-06-26-cli-recommendation-command.md`.
 - TypeScript recommendation client build log in `docs/build-log/2026-06-26-typescript-recommendation-client.md`.
 - MCP recommendation tool build log in `docs/build-log/2026-06-26-mcp-recommendation-tool.md`.
@@ -149,6 +152,7 @@ Last updated: 2026-06-26
 - Schema README exact drift-check build log in `docs/build-log/2026-06-26-schema-readme-exact-drift-check.md`.
 - Methods README exact drift-check build log in `docs/build-log/2026-06-26-methods-readme-exact-drift-check.md`.
 - Repo structure exact drift-check build log in `docs/build-log/2026-06-26-repo-structure-drift-check.md`.
+- Status build-log index drift-check build log in `docs/build-log/2026-06-26-status-build-log-index-drift-check.md`.
 - `CLAUDE.md` shim drift-check build log in `docs/build-log/2026-06-26-claude-shim-drift-check.md`.
 - Scoped `AGENTS.md` coverage drift-check build log in `docs/build-log/2026-06-26-scoped-agents-drift-check.md`.
 - Ranked entity axes shape hardening build log in `docs/build-log/2026-06-26-ranked-entity-axes-contract-hardening.md`.
