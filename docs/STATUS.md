@@ -19,6 +19,7 @@ Last updated: 2026-06-26
 - Public retry-aware Problem Details extensions: `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url`.
 - Public Problem Details `doc_url` HTTP(S) hardening.
 - Pinned public `methodology_version` format: calendar-valid `YYYY-MM-DD.SEQ.slug`.
+- Public generated hash schema drift guard.
 - Python SDK package metadata, public core contract re-exports, and dependency-free `EvalRankClient` behavior for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`.
 - TypeScript SDK package metadata, mirrored public contract types/constants, and dependency-free native `fetch` `EvalRankClient` behavior for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`.
 - Python and TypeScript SDK clients strictly parse `Retry-After` as non-negative integer seconds and treat malformed retry headers as absent while preserving Problem Details errors.
@@ -114,6 +115,7 @@ Last updated: 2026-06-26
 - Public Problem Details fixture build log in `docs/build-log/2026-06-26-problem-details-fixture.md`.
 - Public Problem Details doc URL hardening build log in `docs/build-log/2026-06-26-problem-details-doc-url-hardening.md`.
 - Capability fingerprint declared-shape schema hardening build log in `docs/build-log/2026-06-26-capability-fingerprint-shape-schema-hardening.md`.
+- Public generated hash schema drift-guard build log in `docs/build-log/2026-06-26-public-hash-schema-drift-guard.md`.
 - Recommendation comparability schema hardening build log in `docs/build-log/2026-06-26-recommendation-comparability-schema-hardening.md`.
 - `the_call` branch schema hardening build log in `docs/build-log/2026-06-26-the-call-branch-schema-hardening.md`.
 - Score-component map hardening build log in `docs/build-log/2026-06-26-score-components-contract-hardening.md`.

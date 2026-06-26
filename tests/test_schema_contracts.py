@@ -262,6 +262,16 @@ class SchemaContractTests(unittest.TestCase):
 
         self.assertEqual(1, fingerprint_schema["properties"]["declared_capability_shape"]["minProperties"])
 
+    def test_generated_hash_schemas_pin_lowercase_hex_shape(self):
+        self.assertEqual(
+            "^[0-9a-f]{64}$",
+            _schema("capability-fingerprint.schema.json")["properties"]["capability_fingerprint"]["pattern"],
+        )
+        self.assertEqual(
+            "^[0-9a-f]{64}$",
+            _schema("raw-entry.schema.json")["properties"]["content_hash"]["pattern"],
+        )
+
     def test_recommendation_schema_pins_the_call_shape(self):
         recommendation_schema = _schema("recommendation.schema.json")
         the_call = recommendation_schema["properties"]["the_call"]

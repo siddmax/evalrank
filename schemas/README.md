@@ -21,6 +21,8 @@ Public EvalRank JSON Schema contracts live here.
 
 Schemas that expose `methodology_version` require `YYYY-MM-DD.SEQ.slug`.
 
+Generated public hashes use 64-character lowercase hex strings.
+
 Ranked entity schemas require `score_components` to be a public explanation map with non-empty names and 0-1 numeric scores, and `axes.evidence` to carry only public evidence count plus trust-tier coverage. Private weights, formulas, and scorer calibration stay outside this repo.
 
 Ranked entity and result row `ci95` fields are exactly two numeric unit-interval scores: `[low, high]`.

@@ -34,6 +34,7 @@ Last reviewed: 2026-06-26
 - Deterministic public `ProblemDetails` fixture via `problem` fixture kind and `sample_problem_details()`.
 - Public Problem Details `doc_url` values are pinned to public HTTP(S) URLs in the Python core and JSON Schema.
 - Pinned public `methodology_version` format: calendar-valid `YYYY-MM-DD.SEQ.slug` in the Python core, with structural schema patterns.
+- Public generated hash schema fields are pinned to 64-character lowercase hex strings.
 - Direct `main` push workflow for the scratch-build phase.
 - `make check` public local/CI gate.
 - W0 public exit packet and W1 entity/evidence contract plan.
