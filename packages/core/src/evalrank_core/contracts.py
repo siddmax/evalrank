@@ -5,6 +5,7 @@ import json
 import math
 import re
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any, ClassVar
 
 
@@ -29,6 +30,7 @@ PROBLEM_CODES = {
     "forbidden",
 }
 _FINGERPRINT_RE = re.compile(r"^[a-f0-9]{64}$")
+_PUBLIC_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _METHODOLOGY_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$")
 _RRF_COMPONENT_KEYS = ("lexical_rank", "semantic_rank", "graph_rank")
 _PROBLEM_DETAIL_FIELDS = {
@@ -70,8 +72,8 @@ class Freshness:
     def __post_init__(self) -> None:
         if self.status not in FRESHNESS_STATUSES:
             raise ValueError(f"freshness.status must be one of {sorted(FRESHNESS_STATUSES)}")
-        _require_nonempty_string("freshness.last_eval", self.last_eval)
-        _require_nonempty_string("freshness.next_refresh", self.next_refresh)
+        _require_public_date("freshness.last_eval", self.last_eval)
+        _require_public_date("freshness.next_refresh", self.next_refresh)
 
     def to_dict(self) -> dict[str, str]:
         return {
@@ -1108,6 +1110,15 @@ def _require_nonempty_string(name: str, value: Any) -> None:
 def _require_methodology_version(value: str) -> None:
     if not isinstance(value, str) or not _METHODOLOGY_VERSION_RE.fullmatch(value):
         raise ValueError("methodology_version must match YYYY-MM-DD.SEQ.slug")
+
+
+def _require_public_date(name: str, value: str) -> None:
+    if not isinstance(value, str) or not _PUBLIC_DATE_RE.fullmatch(value):
+        raise ValueError(f"{name} must match YYYY-MM-DD")
+    try:
+        date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(f"{name} must match YYYY-MM-DD") from exc
 
 
 def _require_contiguous_ranks(name: str, rows: tuple[RankedEntity, ...] | list[RankedEntity]) -> None:

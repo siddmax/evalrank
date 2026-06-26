@@ -20,7 +20,7 @@ Evidence set payloads expose storage-free public `EvidenceItem` rows for a reque
 
 Evidence item `metadata` and evaluation request `constraints` are public JSON objects. Non-object values, non-string keys, and non-JSON values are rejected before serialization.
 
-Entity references, freshness dates, request entity types, ranked-entity ranks, evidence counts, and caveats reject schema-incompatible Python values before serialization. Caveat strings must be non-empty. Request entity types must be unique.
+Entity references, freshness dates, request entity types, ranked-entity ranks, evidence counts, and caveats reject schema-incompatible Python values before serialization. Freshness dates use calendar-valid `YYYY-MM-DD`. Caveat strings must be non-empty. Request entity types must be unique.
 
 Capability fingerprint, raw entry, evidence item, evidence set, candidate set, `the_call`, and abstention public string fields must be actual non-empty strings.
 
@@ -41,6 +41,8 @@ Recommendation payloads expose `recommendation_id`, `recommend_id`, and `search_
 Recommendation envelopes reject schema-incompatible metadata before serialization: invalid depth, `shortlist_depth` count drift, blank rationale/source fields, non-boolean degradation flags, negative or non-integer snapshot lag, duplicate ranked entities, duplicate/gapped/out-of-order rank positions, and duplicate exclusions.
 
 Ranked entity `score_components` values are a public explanation map: non-empty component names to 0-1 numeric scores. Private weights, formulas, and calibration stay out of this package.
+
+Ranked entity freshness dates use public calendar-valid `YYYY-MM-DD` strings for `last_eval` and `next_refresh`.
 
 Recommendation `the_call` payloads expose only `decision`, `confidence`, `reason`, and `abstention_reason`; scorer thresholds and private confidence tuning stay out of this package.
 

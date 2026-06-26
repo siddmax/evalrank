@@ -23,6 +23,8 @@ Schemas that expose `methodology_version` require `YYYY-MM-DD.SEQ.slug`.
 
 Ranked entity schemas require `score_components` to be a public explanation map with non-empty names and 0-1 numeric scores, and `axes.evidence` to carry only public evidence count plus trust-tier coverage. Private weights, formulas, and scorer calibration stay outside this repo.
 
+Ranked entity freshness dates use public `YYYY-MM-DD` strings for `last_eval` and `next_refresh`; Python core validation requires calendar-valid dates, while timestamps and private scheduler details stay outside the schema.
+
 Core contract tests also guard primitive and sequence fields that JSON Schema already constrains, including entity refs, freshness dates, unique request entity-type arrays, ranked-entity integer fields, and caveats arrays.
 
 Core contract tests also guard public string fields that JSON Schema already constrains; those values must be actual non-empty strings before serialization.

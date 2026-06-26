@@ -197,6 +197,13 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual({"type": "integer", "minimum": 0}, evidence["properties"]["n_items"])
         self.assertEqual(TRUST_TIERS, set(evidence["properties"]["coverage"]["enum"]))
 
+    def test_ranked_entity_schema_pins_freshness_date_format(self):
+        ranked_schema = _schema("ranked-entity.schema.json")
+        freshness = ranked_schema["properties"]["freshness"]["properties"]
+
+        self.assertEqual(r"^\d{4}-\d{2}-\d{2}$", freshness["last_eval"]["pattern"])
+        self.assertEqual(r"^\d{4}-\d{2}-\d{2}$", freshness["next_refresh"]["pattern"])
+
     def test_ranked_entity_schema_pins_non_empty_caveats(self):
         ranked_schema = _schema("ranked-entity.schema.json")
 

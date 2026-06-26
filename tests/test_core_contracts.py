@@ -561,6 +561,19 @@ class CoreContractTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "freshness"):
                     Freshness(**kwargs)
 
+    def test_freshness_requires_public_date_format(self):
+        for kwargs in (
+            {"status": "fresh", "last_eval": "20260610", "next_refresh": "2026-06-17"},
+            {"status": "fresh", "last_eval": "2026-06-10T00:00:00Z", "next_refresh": "2026-06-17"},
+            {"status": "fresh", "last_eval": "2026-06-10", "next_refresh": "2026/06/17"},
+            {"status": "fresh", "last_eval": "2026-06-10", "next_refresh": "2026-06-17T00:00:00Z"},
+            {"status": "fresh", "last_eval": "2026-13-10", "next_refresh": "2026-06-17"},
+            {"status": "fresh", "last_eval": "2026-02-30", "next_refresh": "2026-06-17"},
+        ):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "YYYY-MM-DD"):
+                    Freshness(**kwargs)
+
     def test_ranked_entity_rejects_bare_or_invalid_scores(self):
         with self.assertRaisesRegex(ValueError, "capability_score"):
             RankedEntity(

@@ -126,11 +126,11 @@
       "properties": {
         "last_eval": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
         },
         "next_refresh": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
         },
         "status": {
           "type": "string",
