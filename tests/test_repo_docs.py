@@ -111,6 +111,25 @@ class RepoDocsTests(unittest.TestCase):
         self.assertNotEqual([], workstreams)
         self.assertEqual([], missing)
 
+    def test_public_mcp_docs_do_not_advertise_private_evidence_lookup(self):
+        checked_paths = (
+            "README.md",
+            "packages/mcp/AGENTS.md",
+            "packages/mcp/README.md",
+        )
+        forbidden_phrases = (
+            "evidence lookup tools",
+            "evidence and evaluation tools",
+        )
+        offenders = []
+        for relative_path in checked_paths:
+            text = (REPO_ROOT / relative_path).read_text(encoding="utf-8")
+            for phrase in forbidden_phrases:
+                if phrase in text:
+                    offenders.append(f"{relative_path}: {phrase}")
+
+        self.assertEqual([], offenders)
+
 
 if __name__ == "__main__":
     unittest.main()

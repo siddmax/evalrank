@@ -1,6 +1,6 @@
 # EvalRank MCP
 
-Public MCP server boundary for EvalRank evidence and evaluation tools.
+Public MCP adapter for EvalRank fixture, metadata-route, and recommendation-route tools.
 
 Package metadata:
 

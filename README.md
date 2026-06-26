@@ -11,7 +11,7 @@ EvalRank is the public core for evidence-ranked evaluation primitives. This repo
 - `docs/PORTING.md` - Public/private porting decisions and workstream ownership.
 - `NAVIGATION.md` - Public route contract entrypoints.
 - `packages/core` - Python reference package for evidence, candidate, and scoring contracts.
-- `packages/mcp` - MCP server boundary for evaluation and evidence lookup tools.
+- `packages/mcp` - Public MCP adapter for fixture, metadata-route, and recommendation-route tools.
 - `packages/cli` - Command-line entrypoints that call the public APIs.
 - `packages/sdk-python` - Python SDK packaging boundary.
 - `packages/sdk-ts` - TypeScript SDK packaging boundary.
