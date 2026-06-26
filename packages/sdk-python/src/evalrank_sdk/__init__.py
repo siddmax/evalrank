@@ -92,7 +92,10 @@ class EvalRankClient:
             with urllib.request.urlopen(http_request, timeout=self.timeout) as response:
                 return json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
-            problem = json.loads(exc.read().decode("utf-8"))
+            try:
+                problem = json.loads(exc.read().decode("utf-8"))
+            finally:
+                exc.close()
             raise EvalRankApiError(status=exc.code, problem=problem, retry_after=_retry_after(exc.headers)) from exc
 
 

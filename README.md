@@ -66,20 +66,27 @@ The example prints the current synthetic public fixture bundle: raw entry, reque
 CLI:
 
 ```sh
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture fingerprint
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture raw-entry
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture request
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture candidate-set
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture stage-candidate
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture problem
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture result-row
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture ranking-group
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture use-cases
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture scoring-stages
-PYTHONPATH=packages/core/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture fingerprint
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture raw-entry
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture request
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture candidate-set
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture stage-candidate
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture evidence
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture problem
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture result-row
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture ranking-group
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture use-cases
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture scoring-stages
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
+```
+
+The CLI also exposes explicit public recommendation API plumbing:
+
+```sh
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli recommend --base-url https://evalrank.example --request request.json
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli recommend --base-url https://evalrank.example --request -
 ```
 
 Python SDK:
