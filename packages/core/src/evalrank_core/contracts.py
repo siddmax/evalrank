@@ -919,6 +919,12 @@ class Recommendation:
             raise TypeError("the_call must be a TheCall")
         if self.abstention is not None and not isinstance(self.abstention, Abstention):
             raise TypeError("abstention must be an Abstention")
+        if self.the_call is None and self.abstention is not None:
+            raise ValueError("the_call is required when abstention is set")
+        if self.the_call is not None and self.the_call.decision == "abstain" and self.abstention is None:
+            raise ValueError("abstention is required when the_call abstains")
+        if self.the_call is not None and self.the_call.decision == "recommend" and self.abstention is not None:
+            raise ValueError("abstention must be null when the_call recommends")
         if not isinstance(self.exclusions, list):
             raise ValueError("exclusions must be an array")
         for exclusion in self.exclusions:

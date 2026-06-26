@@ -287,6 +287,58 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual("string", abstention["properties"]["detail"]["type"])
         self.assertEqual(1, abstention["properties"]["detail"]["minLength"])
 
+    def test_recommendation_schema_pins_abstention_envelope_consistency(self):
+        recommendation_schema = _schema("recommendation.schema.json")
+
+        self.assertIn(
+            {
+                "if": {
+                    "properties": {
+                        "the_call": {
+                            "type": "object",
+                            "properties": {"decision": {"const": "abstain"}},
+                            "required": ["decision"],
+                        }
+                    },
+                    "required": ["the_call"],
+                },
+                "then": {"required": ["abstention"], "properties": {"abstention": {"type": "object"}}},
+            },
+            recommendation_schema["allOf"],
+        )
+        self.assertIn(
+            {
+                "if": {
+                    "properties": {
+                        "the_call": {
+                            "type": "object",
+                            "properties": {"decision": {"const": "recommend"}},
+                            "required": ["decision"],
+                        }
+                    },
+                    "required": ["the_call"],
+                },
+                "then": {"required": ["abstention"], "properties": {"abstention": {"const": None}}},
+            },
+            recommendation_schema["allOf"],
+        )
+        self.assertIn(
+            {
+                "if": {"properties": {"abstention": {"type": "object"}}, "required": ["abstention"]},
+                "then": {
+                    "required": ["the_call"],
+                    "properties": {
+                        "the_call": {
+                            "type": "object",
+                            "properties": {"decision": {"const": "abstain"}},
+                            "required": ["decision"],
+                        }
+                    }
+                },
+            },
+            recommendation_schema["allOf"],
+        )
+
     def test_recommendation_schema_reuses_exclusion_schema(self):
         recommendation_schema = _schema("recommendation.schema.json")
 

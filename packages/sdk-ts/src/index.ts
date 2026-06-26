@@ -334,8 +334,6 @@ export interface RecommendationBase {
   base_snapshot_lag_ms: number;
   methodology_version: string;
   generated_at: string;
-  the_call: TheCall | null;
-  abstention: Abstention | null;
   exclusions: Exclusion[];
   recommendation_id: string;
   recommend_id: string;
@@ -343,18 +341,40 @@ export interface RecommendationBase {
   request_id: string;
 }
 
-export interface SingleScaleRecommendation extends RecommendationBase {
+export interface RecommendationWithoutCall {
+  the_call: null;
+  abstention: null;
+}
+
+export interface RecommendationWithRecommendCall {
+  the_call: RecommendCall;
+  abstention: null;
+}
+
+export interface RecommendationWithAbstainCall {
+  the_call: AbstainCall;
+  abstention: Abstention;
+}
+
+export type RecommendationCallState =
+  | RecommendationWithoutCall
+  | RecommendationWithRecommendCall
+  | RecommendationWithAbstainCall;
+
+export interface SingleScaleRecommendationBase extends RecommendationBase {
   comparability: "single-scale";
   ranked: RankedEntity[];
   groups: null;
 }
 
-export interface KindGroupedRecommendation extends RecommendationBase {
+export interface KindGroupedRecommendationBase extends RecommendationBase {
   comparability: "kind-grouped";
   ranked: [];
   groups: NonEmptyArray<RankingGroup>;
 }
 
+export type SingleScaleRecommendation = SingleScaleRecommendationBase & RecommendationCallState;
+export type KindGroupedRecommendation = KindGroupedRecommendationBase & RecommendationCallState;
 export type Recommendation = SingleScaleRecommendation | KindGroupedRecommendation;
 
 export class EvalRankApiError extends Error {

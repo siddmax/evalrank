@@ -288,7 +288,12 @@ function recommendationPayload(): Recommendation {
     comparability: "single-scale",
     ranked: [],
     groups: null,
-    the_call: null,
+    the_call: {
+      decision: "abstain",
+      confidence: null,
+      reason: "insufficient_evidence",
+      abstention_reason: "insufficient_evidence",
+    },
     abstention: {
       reason: "insufficient_evidence",
       detail: "fixture-only response",

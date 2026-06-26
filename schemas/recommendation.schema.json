@@ -259,6 +259,96 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "the_call": {
+            "type": "object",
+            "properties": {
+              "decision": {
+                "const": "abstain"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          }
+        },
+        "required": [
+          "the_call"
+        ]
+      },
+      "then": {
+        "required": [
+          "abstention"
+        ],
+        "properties": {
+          "abstention": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "the_call": {
+            "type": "object",
+            "properties": {
+              "decision": {
+                "const": "recommend"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          }
+        },
+        "required": [
+          "the_call"
+        ]
+      },
+      "then": {
+        "required": [
+          "abstention"
+        ],
+        "properties": {
+          "abstention": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "abstention": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "abstention"
+        ]
+      },
+      "then": {
+        "required": [
+          "the_call"
+        ],
+        "properties": {
+          "the_call": {
+            "type": "object",
+            "properties": {
+              "decision": {
+                "const": "abstain"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          }
+        }
+      }
     }
   ],
   "$defs": {

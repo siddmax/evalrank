@@ -853,6 +853,32 @@ class CoreContractTests(unittest.TestCase):
                 detail="",
             )
 
+    def test_recommendation_rejects_inconsistent_abstention_envelope(self):
+        valid = {
+            "request_id": "req_01",
+            "use_case": "mobile-codegen:flutter",
+            "methodology_version": PINNED_METHODOLOGY_VERSION,
+            "generated_at": "2026-06-25T00:00:00Z",
+            "comparability": "single-scale",
+            "ranked": [],
+            "groups": None,
+            "shortlist_depth": 0,
+            "depth_rationale": "insufficient_evidence",
+        }
+        abstention = contracts.Abstention(
+            reason="insufficient_evidence",
+            detail="no standardized-harness evidence; below ranking floor",
+        )
+
+        for kwargs in (
+            {"the_call": TheCall.abstain(reason="insufficient_evidence")},
+            {"the_call": TheCall.recommend(confidence=0.86, reason="clear top set"), "abstention": abstention},
+            {"abstention": abstention},
+        ):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "abstention|the_call"):
+                    Recommendation(**{**valid, **kwargs})
+
     def test_methodology_version_rejects_unpinned_format(self):
         with self.assertRaisesRegex(ValueError, "methodology_version"):
             _row("tool:exa-search-mcp", methodology_version="2026.06.1")

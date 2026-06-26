@@ -44,6 +44,6 @@ Ranked entity `score_components` values are a public explanation map: non-empty 
 
 Recommendation `the_call` payloads expose only `decision`, `confidence`, `reason`, and `abstention_reason`; scorer thresholds and private confidence tuning stay out of this package.
 
-Recommendation `abstention` payloads expose only a public `reason` and `detail` when no ranked answer should be returned. Evidence-floor thresholds, policy internals, and private reason taxonomies stay outside this package.
+Recommendation `abstention` payloads expose only a public `reason` and `detail` when no ranked answer should be returned, and must be paired with an abstaining `the_call`. Evidence-floor thresholds, policy internals, and private reason taxonomies stay outside this package.
 
 Problem Details payloads expose the public RFC 9457 error shape plus retry-safe public extensions. Private problem types, tenant context, hosted internals, and production telemetry stay outside this package.
