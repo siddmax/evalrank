@@ -34,6 +34,7 @@ Last updated: 2026-06-26
 - Exact `CLAUDE.md` shim drift check for the required `@AGENTS.md` reference.
 - Scoped `AGENTS.md` coverage drift check for public work areas.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
+- Recommendation `RankingGroup.ranked` schema uniqueness hardening.
 - TypeScript SDK non-empty array helper type for schema `minItems: 1` public arrays.
 - TypeScript SDK `UseCase` discriminated union for public ranked and veto-overlay branches.
 - TypeScript SDK `TheCall` discriminated union for public `recommend` and `abstain` branches.
@@ -135,6 +136,7 @@ Last updated: 2026-06-26
 - TypeScript `the_call` branch parity build log in `docs/build-log/2026-06-26-typescript-the-call-branch-parity.md`.
 - TypeScript recommendation branch parity build log in `docs/build-log/2026-06-26-typescript-recommendation-branch-parity.md`.
 - Public tuple sequence contract hardening build log in `docs/build-log/2026-06-26-tuple-sequence-contract-hardening.md`.
+- Ranking group schema uniqueness hardening build log in `docs/build-log/2026-06-26-ranking-group-schema-uniqueness.md`.
 
 ## Current Public Surface
 
@@ -211,6 +213,7 @@ Last updated: 2026-06-26
 | CLI added explicit metadata commands for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only Python SDK plumbing with JSON stdout and Problem Details stderr; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | MCP added explicit metadata tools for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only Python SDK plumbing with MCP text JSON results and Problem Details tool errors; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | `CandidateSet` and `EvidenceSet` now reject mutable list-backed sequence inputs in the Python core. | Built here as public contract immutability hardening for existing storage-free payloads; JSON serialization still emits public arrays, empty evidence sets remain valid, and no graph lookup, evidence lookup, scorer runtime, DB work, or private source adapter moved. | Public Contracts |
+| Recommendation `RankingGroup.ranked` now pins `uniqueItems` in JSON Schema. | Built here as schema/core parity for the existing grouped recommendation contract; no cross-kind normalization, scorer runtime, private score semantics, DB work, or hosted receipt behavior moved. | Public Contracts, Methods / Schemas |
 | Remaining live scorer calls, hosted receipts, auth, persistence, graph lookup, source adapters, and eval-integrity material were not ported. | Keep private or out until each item has a public contract and no secret/private-data dependency. | Public Surface Contracts, Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / GTM, Evaluation Integrity |
 
 ## In Progress
@@ -245,7 +248,7 @@ Last updated: 2026-06-26
 | Structured public `the_call` / decision-confidence shape and public `Abstention` reason/detail object | Ported here as storage-free nested recommendation contracts | Public Contracts, Methods / Schemas |
 | REST/OpenAPI source of truth | Route contracts ported for `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`; public errors use reusable RFC 9457 Problem Details responses plus retry and rate-limit headers | Public Surface Contracts |
 | Use-case taxonomy and `/v1/use-cases` route shape | Ported here as storage-free public taxonomy only: id/slug, name, one-line definition, entity-kind spans, ranked-vs-overlay policy, fixture, schema, SDK/CLI/MCP parity, OpenAPI route contract, and sanitized method note | Public Contracts, Public Surface Contracts, SDK / CLI / MCP, Methods / Schemas |
-| Recommendation comparability and ranking groups | Ported here as storage-free grouped response shape only: `kind-grouped` recommendations now contain closed `RankingGroup` rows with within-kind ranked entities and rationale | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
+| Recommendation comparability and ranking groups | Ported here as storage-free grouped response shape only: `kind-grouped` recommendations now contain closed `RankingGroup` rows with within-kind ranked entities, unique grouped ranked rows, and rationale | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | Use-case benchmark weights, IRT cluster crosswalk, confidence policies, and synthesis/coverage rules | Keep private for now; later publish only sanitized method notes that omit weights, held-out tasks, proprietary tuning, and private benchmark outputs | Methods / Schemas, Scoring / Materializer Runtime, Evaluation Integrity |
 | Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | Keep private | DB Bootstrap / Syndai Ops |
 | Syndai EvalRank migration guard and runner tests | Keep private with the current DB bootstrap; port only a public migration-policy checklist if EvalRank later owns persistence. | DB Bootstrap / Syndai Ops, Open-Core Boundary / CI |

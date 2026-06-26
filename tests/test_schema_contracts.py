@@ -305,6 +305,7 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual("ranking_group", group_schema["properties"]["object"]["const"])
         self.assertEqual("ranked-entity.schema.json", group_schema["properties"]["ranked"]["items"]["$ref"])
         self.assertEqual(1, group_schema["properties"]["ranked"]["minItems"])
+        self.assertTrue(group_schema["properties"]["ranked"]["uniqueItems"])
 
     def test_recommendation_schema_pins_comparability_branch_shapes(self):
         recommendation_schema = _schema("recommendation.schema.json")
