@@ -118,11 +118,14 @@ class TypeScriptSdkTests(unittest.TestCase):
             "ScoringStageCatalog",
             "StageCandidate",
             "ProblemDetails",
-            "UseCase",
             "UseCaseCatalog",
         ):
             self.assertIn(f"export interface {name}", source)
 
+        self.assertIn("export interface UseCaseBase", source)
+        self.assertIn("export interface RankedUseCase extends UseCaseBase", source)
+        self.assertIn("export interface OverlayUseCase extends UseCaseBase", source)
+        self.assertIn("export type UseCase = RankedUseCase | OverlayUseCase;", source)
         self.assertIn("export interface RecommendCall", source)
         self.assertIn("export interface AbstainCall", source)
         self.assertIn("export type TheCall = RecommendCall | AbstainCall;", source)
@@ -237,7 +240,10 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("output_contracts: NonEmptyArray<string>;", source)
         self.assertIn("stages: NonEmptyArray<ScoringStage>;", source)
         self.assertIn("ranked: NonEmptyArray<RankedEntity>;", source)
-        self.assertIn("rank_policy: UseCaseRankPolicy;", source)
+        self.assertIn('rank_policy: "ranked";', source)
+        self.assertIn("is_overlay: false;", source)
+        self.assertIn('rank_policy: "veto_overlay";', source)
+        self.assertIn("is_overlay: true;", source)
 
 
 def _exported_string_array(source: str, name: str) -> set[str]:

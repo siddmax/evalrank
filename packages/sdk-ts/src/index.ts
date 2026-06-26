@@ -221,15 +221,25 @@ export interface ResultRow {
   verification_state: ResultVerificationState;
 }
 
-export interface UseCase {
+export interface UseCaseBase {
   object: "use_case";
   id: string;
   name: string;
   definition: string;
   entity_kinds: NonEmptyArray<UseCaseEntityKind>;
-  rank_policy: UseCaseRankPolicy;
-  is_overlay: boolean;
 }
+
+export interface RankedUseCase extends UseCaseBase {
+  rank_policy: "ranked";
+  is_overlay: false;
+}
+
+export interface OverlayUseCase extends UseCaseBase {
+  rank_policy: "veto_overlay";
+  is_overlay: true;
+}
+
+export type UseCase = RankedUseCase | OverlayUseCase;
 
 export interface UseCaseCatalog {
   object: "use_case_catalog";
