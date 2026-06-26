@@ -500,6 +500,8 @@ class EvidenceSet:
         _require_nonempty_string("request_id", self.request_id)
         _require_nonempty_string("use_case", self.use_case)
         _require_nonempty_string("generated_at", self.generated_at)
+        if not isinstance(self.evidence_items, tuple):
+            raise ValueError("evidence_items must be a tuple")
         seen: set[str] = set()
         for item in self.evidence_items:
             if not isinstance(item, EvidenceItem):
@@ -566,6 +568,8 @@ class CandidateSet:
     def __post_init__(self) -> None:
         _require_nonempty_string("request_id", self.request_id)
         _require_nonempty_string("use_case", self.use_case)
+        if not isinstance(self.candidates, tuple):
+            raise ValueError("candidates must be a tuple")
         if not self.candidates:
             raise ValueError("candidates is required")
         _require_nonempty_string("generated_at", self.generated_at)

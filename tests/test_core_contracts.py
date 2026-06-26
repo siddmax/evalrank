@@ -1164,6 +1164,14 @@ class CoreContractTests(unittest.TestCase):
                 generated_at="2026-06-25T00:00:00Z",
             )
 
+        with self.assertRaisesRegex(ValueError, "evidence_items"):
+            EvidenceSet(
+                request_id="req_public_fixture_01",
+                use_case="web-browsing",
+                evidence_items=[evidence],
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
         with self.assertRaisesRegex(ValueError, "duplicate"):
             EvidenceSet(
                 request_id="req_public_fixture_01",
@@ -1378,6 +1386,14 @@ class CoreContractTests(unittest.TestCase):
                 request_id="req_public_fixture_01",
                 use_case="web-browsing",
                 candidates=("tool:public-search-demo",),
+                generated_at="2026-06-25T00:00:00Z",
+            )
+
+        with self.assertRaisesRegex(ValueError, "candidates"):
+            CandidateSet(
+                request_id="req_public_fixture_01",
+                use_case="web-browsing",
+                candidates=[candidate],
                 generated_at="2026-06-25T00:00:00Z",
             )
 
