@@ -63,6 +63,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "EvalRankApiError",
             "PUBLIC_FIXTURE_KINDS",
             "PublicFixtureKind",
+            "NonEmptyArray",
         ):
             self.assertIn(name, text)
 
@@ -197,20 +198,30 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("the_call: TheCall | null;", source)
         self.assertIn("abstention: Abstention | null;", source)
         self.assertIn("exclusions: Exclusion[];", source)
-        self.assertIn("groups: RankingGroup[] | null;", source)
+        self.assertIn("groups: NonEmptyArray<RankingGroup> | null;", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
         self.assertIn("export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];", source)
         self.assertIn("export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];", source)
         self.assertIn("export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];", source)
         self.assertIn("export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];", source)
         self.assertIn("export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];", source)
+        self.assertIn("export type NonEmptyArray<T> = [T, ...T[]];", source)
         self.assertIn("code?: ProblemCode;", source)
         self.assertIn("retriable?: boolean;", source)
         self.assertIn("[key: string]: unknown;", source)
         self.assertIn("coverage: TrustTier;", source)
         self.assertIn("entity_kind: ResultEntityKind;", source)
         self.assertIn("verification_state: ResultVerificationState;", source)
-        self.assertIn("entity_kinds: UseCaseEntityKind[];", source)
+        self.assertIn("entity_types: NonEmptyArray<string>;", source)
+        self.assertIn("candidates: NonEmptyArray<EntityRef>;", source)
+        self.assertIn("arms: NonEmptyArray<string>;", source)
+        self.assertIn("entity_kinds: NonEmptyArray<UseCaseEntityKind>;", source)
+        self.assertIn("use_cases: NonEmptyArray<UseCase>;", source)
+        self.assertIn("input_contracts: NonEmptyArray<string>;", source)
+        self.assertIn("output_contracts: NonEmptyArray<string>;", source)
+        self.assertIn("stages: NonEmptyArray<ScoringStage>;", source)
+        self.assertIn("ranked: NonEmptyArray<RankedEntity>;", source)
+        self.assertIn("groups: NonEmptyArray<RankingGroup> | null;", source)
         self.assertIn("rank_policy: UseCaseRankPolicy;", source)
 
 

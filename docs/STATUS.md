@@ -28,6 +28,7 @@ Last updated: 2026-06-26
 - Schema drift tests for core payload keys and public enum constants.
 - Package README metadata drift guard for Python package manifests and the TypeScript SDK manifest.
 - Ranked entity `axes.evidence` schema and TypeScript type hardening.
+- TypeScript SDK non-empty array helper type for schema `minItems: 1` public arrays.
 - Tests for core contracts, schema-contract drift, and public boundary rules.
 - Public progress tracker and repo structure map.
 - Public route navigation map in `NAVIGATION.md`.
@@ -112,6 +113,7 @@ Last updated: 2026-06-26
 - MCP metadata tool build log in `docs/build-log/2026-06-26-mcp-metadata-tools.md`.
 - Package README metadata drift-guard build log in `docs/build-log/2026-06-26-package-readme-metadata-drift-guard.md`.
 - Ranked entity axes shape hardening build log in `docs/build-log/2026-06-26-ranked-entity-axes-contract-hardening.md`.
+- TypeScript non-empty array parity build log in `docs/build-log/2026-06-26-typescript-nonempty-array-parity.md`.
 
 ## Current Public Surface
 
@@ -175,6 +177,7 @@ Last updated: 2026-06-26
 | Python package metadata drift guard now pins public package dependency edges and package hygiene metadata. | Built here as stdlib `tomllib` tests over existing `pyproject.toml` files; no packaging release or publishing workflow was added. | Open-Core Boundary / CI |
 | Package READMEs now carry manifest metadata and a deterministic drift guard. | Built here as local stdlib tests that bind public Python package READMEs and the TypeScript SDK README to current package names, imports, dependencies, entrypoints, license, module type, and private publish status; no publish workflow, private package index, credentials, or hosted deployment behavior was added. | Open-Core Boundary / CI, Docs / Public Planning |
 | Ranked entity `axes.evidence` is now closed in JSON Schema and mirrored in the TypeScript SDK type. | Built here as schema/type parity with the existing Python `RankedEntity.to_dict()` output; no private evidence scoring, weights, formulas, scorer runtime, or persistence behavior moved. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
+| TypeScript SDK now exposes `NonEmptyArray<T>` for already-public schema `minItems: 1` arrays. | Built here as compile-time parity for existing Python and JSON Schema contracts; no runtime validation, new route behavior, private data, scorer logic, or persistence behavior moved. | SDK / CLI / MCP, Public Contracts |
 | Python SDK added metadata route helpers for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only stdlib GET behavior sharing public JSON and Problem Details handling; no auth, retries, service discovery, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | TypeScript SDK added metadata route helpers for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only native `fetch` GET behavior sharing public JSON and Problem Details handling; no auth, retries, service discovery, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |
 | CLI added explicit metadata commands for the existing public `GET /v1/use-cases` and `GET /v1/scoring-stages` route contracts. | Built here as explicit HTTP(S)-only Python SDK plumbing with JSON stdout and Problem Details stderr; no hidden network calls, auth, retries, environment-variable defaults, hosted receipts, private DTOs, database work, or production evidence lookup moved. | SDK / CLI / MCP, Public Surface Contracts |

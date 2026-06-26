@@ -97,6 +97,7 @@ export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];
 export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];
 export type ProblemCode = (typeof PROBLEM_CODES)[number];
 export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];
+export type NonEmptyArray<T> = [T, ...T[]];
 
 export interface Freshness {
   last_eval: string;
@@ -133,7 +134,7 @@ export interface EvaluationRequest {
   object: "evaluation_request";
   request_id: string;
   use_case: string;
-  entity_types: string[];
+  entity_types: NonEmptyArray<string>;
   requested_at: string;
   constraints: Record<string, unknown>;
 }
@@ -142,7 +143,7 @@ export interface CandidateSet {
   object: "candidate_set";
   request_id: string;
   use_case: string;
-  candidates: EntityRef[];
+  candidates: NonEmptyArray<EntityRef>;
   generated_at: string;
 }
 
@@ -157,7 +158,7 @@ export interface StageCandidate {
     graph_rank: number | null;
   };
   retrieval_provenance: {
-    arms: string[];
+    arms: NonEmptyArray<string>;
     use_case: string;
   };
 }
@@ -225,7 +226,7 @@ export interface UseCase {
   id: string;
   name: string;
   definition: string;
-  entity_kinds: UseCaseEntityKind[];
+  entity_kinds: NonEmptyArray<UseCaseEntityKind>;
   rank_policy: UseCaseRankPolicy;
   is_overlay: boolean;
 }
@@ -234,7 +235,7 @@ export interface UseCaseCatalog {
   object: "use_case_catalog";
   methodology_version: string;
   generated_at: string;
-  use_cases: UseCase[];
+  use_cases: NonEmptyArray<UseCase>;
 }
 
 export interface ScoringStage {
@@ -242,8 +243,8 @@ export interface ScoringStage {
   ordinal: number;
   name: string;
   description: string;
-  input_contracts: string[];
-  output_contracts: string[];
+  input_contracts: NonEmptyArray<string>;
+  output_contracts: NonEmptyArray<string>;
   public_boundary: string;
 }
 
@@ -251,7 +252,7 @@ export interface ScoringStageCatalog {
   object: "scoring_stage_catalog";
   methodology_version: string;
   generated_at: string;
-  stages: ScoringStage[];
+  stages: NonEmptyArray<ScoringStage>;
 }
 
 export interface TheCall {
@@ -300,7 +301,7 @@ export interface RankingGroup {
   object: "ranking_group";
   group_key: string;
   entity_type: string;
-  ranked: RankedEntity[];
+  ranked: NonEmptyArray<RankedEntity>;
   group_rationale: string;
 }
 
@@ -316,7 +317,7 @@ export interface Recommendation {
   generated_at: string;
   comparability: ComparabilityMode;
   ranked: RankedEntity[];
-  groups: RankingGroup[] | null;
+  groups: NonEmptyArray<RankingGroup> | null;
   the_call: TheCall | null;
   abstention: Abstention | null;
   exclusions: Exclusion[];
