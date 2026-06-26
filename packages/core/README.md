@@ -30,7 +30,7 @@ Use case catalog payloads expose public taxonomy metadata only. Benchmark weight
 
 Scoring stage catalog payloads expose public stage order with contiguous `1..N` ordinals, contract refs, and boundary notes only. Formulas, thresholds, graders, telemetry, and runtime scorer behavior stay outside this package.
 
-Ranking group payloads expose within-kind ranking rows for `kind-grouped` recommendations only. Cross-kind score normalization and scorer internals stay outside this package.
+Ranking group payloads expose within-kind ranking rows with contiguous `1..N` ranks in array order for `kind-grouped` recommendations only. Cross-kind score normalization and scorer internals stay outside this package.
 
 Exclusion payloads expose storage-free public subjects and reasons; gate policy and private reason taxonomies stay outside this package.
 
@@ -38,7 +38,7 @@ Public `methodology_version` values use `YYYY-MM-DD.SEQ.slug`, for example `2026
 
 Recommendation payloads expose `recommendation_id`, `recommend_id`, and `search_run_id` as the same public ID.
 
-Recommendation envelopes reject schema-incompatible metadata before serialization: invalid depth, `shortlist_depth` count drift, blank rationale/source fields, non-boolean degradation flags, negative or non-integer snapshot lag, duplicate ranked entities, and duplicate exclusions.
+Recommendation envelopes reject schema-incompatible metadata before serialization: invalid depth, `shortlist_depth` count drift, blank rationale/source fields, non-boolean degradation flags, negative or non-integer snapshot lag, duplicate ranked entities, duplicate/gapped/out-of-order rank positions, and duplicate exclusions.
 
 Ranked entity `score_components` values are a public explanation map: non-empty component names to 0-1 numeric scores. Private weights, formulas, and calibration stay out of this package.
 

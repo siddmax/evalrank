@@ -709,6 +709,23 @@ class CoreContractTests(unittest.TestCase):
                 depth_rationale="one candidate clears the evidence floor",
             )
 
+    def test_recommendation_rejects_duplicate_gapped_or_unordered_ranks(self):
+        for ranked in (
+            [_row("tool:exa-search-mcp", rank=1), _row("tool:browser-mcp", rank=1)],
+            [_row("tool:exa-search-mcp", rank=1), _row("tool:browser-mcp", rank=3)],
+            [_row("tool:exa-search-mcp", rank=2), _row("tool:browser-mcp", rank=1)],
+        ):
+            with self.subTest(ranks=[row.rank for row in ranked]):
+                with self.assertRaisesRegex(ValueError, "ranked ranks"):
+                    Recommendation.single_scale(
+                        request_id="req_01",
+                        use_case="web-browsing:fresh-news",
+                        methodology_version=PINNED_METHODOLOGY_VERSION,
+                        ranked=ranked,
+                        generated_at="2026-06-25T00:00:00Z",
+                        depth_rationale="two candidates clear the evidence floor",
+                    )
+
     def test_ranking_group_serializes_within_kind_rows(self):
         row = _row("tool:exa-search-mcp")
         group = RankingGroup(
@@ -788,6 +805,20 @@ class CoreContractTests(unittest.TestCase):
                 generated_at="2026-06-25T00:00:00Z",
                 depth_rationale="different methodology should not serialize",
             )
+
+        for ranked in (
+            (_row("tool:exa-search-mcp", rank=1), _row("tool:browser-mcp", rank=1)),
+            (_row("tool:exa-search-mcp", rank=1), _row("tool:browser-mcp", rank=3)),
+            (_row("tool:exa-search-mcp", rank=2), _row("tool:browser-mcp", rank=1)),
+        ):
+            with self.subTest(ranks=[row.rank for row in ranked]):
+                with self.assertRaisesRegex(ValueError, "ranked ranks"):
+                    RankingGroup(
+                        group_key="mcp_server",
+                        entity_type="mcp_server",
+                        ranked=ranked,
+                        group_rationale="MCP servers are ranked only against MCP servers",
+                    )
 
     def test_recommendation_id_is_content_addressed(self):
         base = Recommendation.single_scale(
@@ -1577,11 +1608,12 @@ def _row(
     entity_id: str,
     methodology_version: str = PINNED_METHODOLOGY_VERSION,
     entity_type: str = "mcp_server",
+    rank: int = 1,
 ) -> RankedEntity:
     return RankedEntity(
         entity_type=entity_type,
         entity_id=entity_id,
-        rank=1,
+        rank=rank,
         capability_score=0.84,
         confidence=0.86,
         ci95=ConfidenceInterval(low=0.80, high=0.88),

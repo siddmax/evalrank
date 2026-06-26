@@ -841,6 +841,7 @@ class RankingGroup:
             if row.entity_id in seen:
                 raise ValueError("duplicate ranked entity")
             seen.add(row.entity_id)
+        _require_contiguous_ranks("ranked ranks", self.ranked)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -928,6 +929,7 @@ class Recommendation:
             if key in seen_ranked:
                 raise ValueError("duplicate ranked entity")
             seen_ranked.add(key)
+        _require_contiguous_ranks("ranked ranks", self.ranked)
         for group in self.groups or []:
             if not isinstance(group, RankingGroup):
                 raise TypeError("groups must contain RankingGroup values")
@@ -1106,6 +1108,11 @@ def _require_nonempty_string(name: str, value: Any) -> None:
 def _require_methodology_version(value: str) -> None:
     if not isinstance(value, str) or not _METHODOLOGY_VERSION_RE.fullmatch(value):
         raise ValueError("methodology_version must match YYYY-MM-DD.SEQ.slug")
+
+
+def _require_contiguous_ranks(name: str, rows: tuple[RankedEntity, ...] | list[RankedEntity]) -> None:
+    if [row.rank for row in rows] != list(range(1, len(rows) + 1)):
+        raise ValueError(f"{name} must be contiguous from 1 in ranked order")
 
 
 def _require_string_keys(name: str, value: Any) -> None:
