@@ -25,6 +25,8 @@ Last reviewed: 2026-06-26
 - Exact schema README drift guard for public schema and OpenAPI filenames.
 - Exact methods README drift guard for public method-note filenames.
 - Exact repo structure drift guard for public top-level directories and package directories.
+- Exact status build-log index drift guard.
+- Exact porting workstream/status drift guard.
 - Exact `CLAUDE.md` shim drift guard for the required `@AGENTS.md` reference.
 - Scoped `AGENTS.md` coverage drift guard for public work areas.
 - Core Python capability fingerprint, raw entry, evaluation request, candidate set, stage candidate, evidence item, result row, ranking group, evidence set, exclusion, `the_call`, abstention, recommendation, and entity reference contracts.
@@ -165,6 +167,7 @@ Use this queue for the next public-repo decisions. Each row is intentionally phr
 | Methods README exact drift guard. | Already ported because it rejects stale public method-note filenames using only current public method docs and README text without adding private methodology, scorer behavior, or dependencies. | Open-Core Boundary / CI, Methods / Schemas, Docs / Public Planning |
 | Repo structure exact drift guard. | Already ported because it rejects stale public directory/package ownership docs using only the current public repo tree and `docs/REPO_STRUCTURE.md`, without copying private plans or adding runtime behavior. | Open-Core Boundary / CI, Docs / Public Planning |
 | Status build-log index exact drift guard. | Already ported because it rejects missing or stale build-log references in `docs/STATUS.md` using only public docs. | Open-Core Boundary / CI, Docs / Public Planning |
+| Porting workstream/status exact drift guard. | Already ported because it requires `docs/STATUS.md` to retain every current workstream named by `docs/PORTING.md` using only public docs. | Open-Core Boundary / CI, Docs / Public Planning |
 | `CLAUDE.md` shim exact drift guard. | Already ported because it rejects agent-entrypoint drift using only the public root shim and `AGENTS.md` convention, without adding runtime behavior or private material. | Open-Core Boundary / CI, Docs / Public Planning |
 | Scoped `AGENTS.md` coverage drift guard. | Already ported because it rejects missing local agent guidance for public work areas using only current public directories, without adding private instructions or runtime behavior. | Open-Core Boundary / CI, Docs / Public Planning |
 | Nested public fixture README drift checks for recommendation abstention, `the_call`, and scoring-stage output contracts. | Already ported because they keep public examples aligned with existing public contracts without adding private data or runtime behavior. | Open-Core Boundary / CI, Examples |

@@ -91,6 +91,26 @@ class RepoDocsTests(unittest.TestCase):
 
         self.assertEqual(expected, documented)
 
+    def test_status_mentions_current_porting_workstreams(self):
+        status_text = (REPO_ROOT / "docs" / "STATUS.md").read_text(encoding="utf-8")
+        porting_text = (REPO_ROOT / "docs" / "PORTING.md").read_text(encoding="utf-8")
+        match = re.search(
+            r"## Current Workstreams\n\n(?P<body>.*?)(?:\n## |\Z)",
+            porting_text,
+            re.S,
+        )
+        self.assertIsNotNone(match)
+        workstreams = [
+            item.strip()
+            for item in re.findall(r"^- ([^:\n]+):", match.group("body"), re.M)
+        ]
+        missing = [
+            workstream for workstream in workstreams if workstream not in status_text
+        ]
+
+        self.assertNotEqual([], workstreams)
+        self.assertEqual([], missing)
+
 
 if __name__ == "__main__":
     unittest.main()
