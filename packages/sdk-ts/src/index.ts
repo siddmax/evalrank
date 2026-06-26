@@ -358,7 +358,8 @@ export interface RecommendationWithAbstainCall {
 
 export type RecommendationCallState =
   | RecommendationWithoutCall
-  | RecommendationWithRecommendCall;
+  | RecommendationWithRecommendCall
+  | RecommendationWithAbstainCall;
 
 export interface SingleScaleRecommendationBase extends RecommendationBase {
   comparability: "single-scale";

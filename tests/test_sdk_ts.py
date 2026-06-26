@@ -57,6 +57,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "Exclusion",
             "TheCall",
             "RankedEntity",
+            "RecommendationCallState",
             "Recommendation",
             "ProblemDetails",
             "EvalRankClient",
@@ -133,7 +134,13 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("export interface RecommendationWithoutCall", source)
         self.assertIn("export interface RecommendationWithRecommendCall", source)
         self.assertIn("export interface RecommendationWithAbstainCall", source)
-        self.assertIn("export type RecommendationCallState", source)
+        self.assertIn(
+            "export type RecommendationCallState =\n"
+            "  | RecommendationWithoutCall\n"
+            "  | RecommendationWithRecommendCall\n"
+            "  | RecommendationWithAbstainCall;",
+            source,
+        )
         self.assertIn("export interface EmptySingleScaleAbstentionRecommendation", source)
         self.assertIn("export interface SingleScaleRecommendationBase extends RecommendationBase", source)
         self.assertIn("export interface KindGroupedRecommendationBase extends RecommendationBase", source)
