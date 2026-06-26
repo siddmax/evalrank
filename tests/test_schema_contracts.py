@@ -309,6 +309,10 @@ class SchemaContractTests(unittest.TestCase):
 
     def test_recommendation_schema_pins_comparability_branch_shapes(self):
         recommendation_schema = _schema("recommendation.schema.json")
+        ranked = recommendation_schema["properties"]["ranked"]
+
+        self.assertEqual("array", ranked["type"])
+        self.assertTrue(ranked["uniqueItems"])
 
         self.assertIn(
             {

@@ -69,6 +69,7 @@
     },
     "ranked": {
       "type": "array",
+      "uniqueItems": true,
       "items": {
         "$ref": "ranked-entity.schema.json"
       }
