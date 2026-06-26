@@ -625,6 +625,30 @@ class CoreContractTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, field):
                     Recommendation(**{**valid, field: value})
 
+    def test_recommendation_rejects_shortlist_depth_count_drift(self):
+        row = _row("tool:exa-search-mcp")
+        group = RankingGroup(
+            group_key="mcp_server",
+            entity_type="mcp_server",
+            ranked=(row,),
+            group_rationale="MCP servers are ranked only against MCP servers",
+        )
+
+        for kwargs in (
+            {"comparability": "single-scale", "ranked": [row], "groups": None, "shortlist_depth": 0},
+            {"comparability": "kind-grouped", "ranked": [], "groups": [group], "shortlist_depth": 0},
+        ):
+            with self.subTest(kwargs=kwargs):
+                with self.assertRaisesRegex(ValueError, "shortlist_depth"):
+                    Recommendation(
+                        request_id="req_01",
+                        use_case="web-browsing:fresh-news",
+                        methodology_version=PINNED_METHODOLOGY_VERSION,
+                        generated_at="2026-06-25T00:00:00Z",
+                        depth_rationale="one candidate clears the evidence floor",
+                        **kwargs,
+                    )
+
     def test_recommendation_rejects_duplicate_ranked_entities(self):
         row = _row("tool:exa-search-mcp")
 

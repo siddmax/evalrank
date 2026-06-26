@@ -932,6 +932,13 @@ class Recommendation:
             for row in group.ranked:
                 if row.methodology_version != self.methodology_version:
                     raise ValueError("group rows must carry the envelope methodology_version")
+        expected_shortlist_depth = (
+            len(self.ranked)
+            if self.comparability == "single-scale"
+            else sum(len(group.ranked) for group in self.groups or [])
+        )
+        if self.shortlist_depth != expected_shortlist_depth:
+            raise ValueError("shortlist_depth must match ranked row count")
         if not isinstance(self.exclusions, list):
             raise ValueError("exclusions must be an array")
         for exclusion in self.exclusions:

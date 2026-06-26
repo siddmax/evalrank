@@ -38,7 +38,7 @@ Public `methodology_version` values use `YYYY-MM-DD.SEQ.slug`, for example `2026
 
 Recommendation payloads expose `recommendation_id`, `recommend_id`, and `search_run_id` as the same public ID.
 
-Recommendation envelopes reject schema-incompatible metadata before serialization: invalid depth, blank rationale/source fields, non-boolean degradation flags, negative or non-integer snapshot lag, and duplicate ranked entities.
+Recommendation envelopes reject schema-incompatible metadata before serialization: invalid depth, `shortlist_depth` count drift, blank rationale/source fields, non-boolean degradation flags, negative or non-integer snapshot lag, and duplicate ranked entities.
 
 Ranked entity `score_components` values are a public explanation map: non-empty component names to 0-1 numeric scores. Private weights, formulas, and calibration stay out of this package.
 
