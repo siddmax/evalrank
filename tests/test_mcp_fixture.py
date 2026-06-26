@@ -1,5 +1,6 @@
 import json
 import http.server
+import re
 import sys
 import threading
 import unittest
@@ -25,7 +26,9 @@ from evalrank_mcp import call_tool, list_tools  # noqa: E402
 class McpFixtureTests(unittest.TestCase):
     def test_mcp_readme_lists_all_public_fixture_kinds(self):
         text = (REPO_ROOT / "packages" / "mcp" / "README.md").read_text(encoding="utf-8")
+        documented = set(re.findall(r'"kind": "([a-z-]+)"', text))
 
+        self.assertEqual(set(PUBLIC_FIXTURE_KINDS), documented)
         for kind in PUBLIC_FIXTURE_KINDS:
             with self.subTest(kind=kind):
                 self.assertIn(f'"kind": "{kind}"', text)
@@ -39,10 +42,16 @@ class McpFixtureTests(unittest.TestCase):
 
     def test_mcp_readme_documents_metadata_tools(self):
         text = (REPO_ROOT / "packages" / "mcp" / "README.md").read_text(encoding="utf-8")
+        documented = set(re.findall(r'call_tool\("(evalrank\.[a-z_]+)"', text))
 
+        self.assertIn("evalrank.fixture", documented)
         self.assertIn("evalrank.use_cases", text)
         self.assertIn("evalrank.scoring_stages", text)
         self.assertIn("base_url", text)
+        self.assertEqual(
+            {"evalrank.fixture", "evalrank.recommend", "evalrank.use_cases", "evalrank.scoring_stages"},
+            documented,
+        )
 
     def test_list_tools_exposes_public_fixture_tool(self):
         tools = list_tools()

@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 import unittest
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -30,7 +31,9 @@ from evalrank_cli import main  # noqa: E402
 class CliFixtureTests(unittest.TestCase):
     def test_cli_readme_lists_all_public_fixture_commands(self):
         text = (REPO_ROOT / "packages" / "cli" / "README.md").read_text(encoding="utf-8")
+        documented = set(re.findall(r"^evalrank fixture ([a-z-]+)$", text, re.M))
 
+        self.assertEqual(set(PUBLIC_FIXTURE_KINDS), documented)
         for kind in PUBLIC_FIXTURE_KINDS:
             with self.subTest(kind=kind):
                 self.assertIn(f"evalrank fixture {kind}", text)
@@ -192,7 +195,17 @@ class CliFixtureTests(unittest.TestCase):
 
     def test_cli_readme_lists_recommend_command(self):
         text = (REPO_ROOT / "packages" / "cli" / "README.md").read_text(encoding="utf-8")
+        documented = set(re.findall(r"^evalrank (?:use-cases|scoring-stages|recommend) .*$", text, re.M))
 
+        self.assertEqual(
+            {
+                "evalrank use-cases --base-url https://evalrank.example",
+                "evalrank scoring-stages --base-url https://evalrank.example",
+                "evalrank recommend --base-url https://evalrank.example --request request.json",
+                "evalrank recommend --base-url https://evalrank.example --request -",
+            },
+            documented,
+        )
         self.assertIn("evalrank recommend --base-url", text)
 
     def test_cli_readme_lists_metadata_commands(self):
