@@ -53,6 +53,7 @@ from evalrank_core.fixtures import (
     sample_stage_candidate,
     sample_use_case_catalog,
 )
+from evalrank_core.materializer import materialize_recommendation
 
 __version__ = "0.0.0"
 
@@ -108,5 +109,6 @@ __all__ = [
     "sample_scoring_stage_catalog",
     "sample_stage_candidate",
     "sample_use_case_catalog",
+    "materialize_recommendation",
     "__version__",
 ]

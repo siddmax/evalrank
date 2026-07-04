@@ -66,6 +66,7 @@ class CoreContractTests(unittest.TestCase):
             "RankedEntity",
             "Recommendation",
             "EntityRef",
+            "materialize_recommendation",
             "PUBLIC_FIXTURE_KINDS",
             "sample_public_fixture",
         ):

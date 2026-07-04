@@ -11,6 +11,8 @@
 
 - EvalRank public repo owns public APIs and portable evaluation contracts.
 - Syndai currently owns the shared Finn/Supabase database bootstrap for the private `evalrank` schema.
+- During private incubation, Syndai projection scripts may read Syndai-owned source tables as private inputs, but all derived EvalRank rows, caches, catalog rows, grants, RLS policies, and migrations belong in the dedicated private `evalrank` schema.
+- Private Syndai customer identity/control-plane objects, including customer API-key scope catalogs used to authenticate EvalRank routes during incubation, remain in Syndai's own schema because they are shared auth infrastructure, not EvalRank persistence.
 - Keep DB migrations in Syndai until EvalRank has its own deploy/release path or its own Supabase project.
 - If EvalRank later owns persistence, add versioned migrations, update this file, and document the cutover in `README.md` and `docs/build-log/`.
 

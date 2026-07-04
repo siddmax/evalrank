@@ -111,6 +111,26 @@ class RepoDocsTests(unittest.TestCase):
         self.assertNotEqual([], workstreams)
         self.assertEqual([], missing)
 
+    def test_status_reports_full_spec_and_wave_coverage(self):
+        text = (REPO_ROOT / "docs" / "STATUS.md").read_text(encoding="utf-8")
+
+        required_markers = (
+            "## Full-Spec Dashboard",
+            "## Agent Completion Rule",
+            "## Coverage Rubric",
+            "## Wave Coverage",
+            "## Spec Coverage",
+            "## Next Vertical Slice",
+            "W6 Engine library and materializer",
+            "Spec 22 Methodology Hardening",
+            "TDD is the preferred way",
+            "Start the local server, `curl`",
+            "Playwright",
+        )
+        missing = [marker for marker in required_markers if marker not in text]
+
+        self.assertEqual([], missing)
+
     def test_public_mcp_docs_do_not_advertise_private_evidence_lookup(self):
         checked_paths = (
             "README.md",
