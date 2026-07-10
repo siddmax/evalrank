@@ -3,6 +3,12 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
 import * as contracts from "./decision-contracts.ts";
+import {
+  aggregationInputDocument,
+  bootstrapSeedDocument,
+  deriveAggregationInputDigest,
+  deriveBootstrapSeed,
+} from "./index.ts";
 
 import {
   canonicalJson,
@@ -36,6 +42,20 @@ const golden = JSON.parse(
   receipt: { body: Record<string, unknown>; body_sha256: string; receipt_id: string };
   rejection_vectors: Array<{ name: string; value: unknown }>;
 };
+const aggregationGolden = JSON.parse(
+  readFileSync(new URL("../../../catalog/aggregation-vectors.json", import.meta.url), "utf8"),
+) as {
+  vectors: Array<{
+    aggregation_document: Record<string, unknown>;
+    aggregation_canonical: string;
+    aggregation_input_digest: string;
+    seed_document: Record<string, unknown>;
+    seed_canonical: string;
+    seed_digest: string;
+    seed_first_eight_bytes_hex: string;
+    bootstrap_seed: number;
+  }>;
+};
 const manifest = JSON.parse(
   readFileSync(new URL("../../../catalog/manifest.json", import.meta.url), "utf8"),
 ) as {
@@ -67,6 +87,135 @@ test("restricted JCS orders by UTF-16 and rejects unsafe hash material", () => {
     parseDecisionQueryV1({ ...golden.query.input, provider_ids: golden.utf16_set_order.input }).provider_ids,
     golden.utf16_set_order.canonical,
   );
+});
+
+test("aggregation identity matches the shared Python golden", async () => {
+  const vector = aggregationGolden.vectors[0]!;
+  const source = vector.aggregation_document;
+  const document = aggregationInputDocument(source);
+
+  assert.deepEqual(document, vector.aggregation_document);
+  assert.equal(canonicalJson(document), vector.aggregation_canonical);
+  assert.equal(await deriveAggregationInputDigest(source), vector.aggregation_input_digest);
+
+  const seedDocument = bootstrapSeedDocument(
+    vector.aggregation_input_digest,
+    source.methodology_version,
+  );
+  assert.deepEqual(seedDocument, vector.seed_document);
+  assert.equal(canonicalJson(seedDocument), vector.seed_canonical);
+  assert.equal(await sha256Hex(seedDocument), vector.seed_digest);
+  assert.equal(vector.seed_digest.slice(0, 16), vector.seed_first_eight_bytes_hex);
+  assert.ok(BigInt(`0x${vector.seed_first_eight_bytes_hex}`) > BigInt(Number.MAX_SAFE_INTEGER));
+  assert.equal(
+    await deriveBootstrapSeed(vector.aggregation_input_digest, source.methodology_version),
+    vector.bootstrap_seed,
+  );
+  assert.ok(vector.bootstrap_seed <= Number.MAX_SAFE_INTEGER);
+});
+
+test("aggregation identity preserves ranking-group slot order", async () => {
+  const source = aggregationGolden.vectors[0]!.aggregation_document;
+  const rankingGroup = source.ranking_group as unknown[];
+  const reordered = {
+    ...source,
+    ranking_group: [rankingGroup[1], rankingGroup[0], ...rankingGroup.slice(2)],
+  };
+
+  assert.deepEqual(aggregationInputDocument(reordered).ranking_group, reordered.ranking_group);
+  assert.notEqual(
+    await deriveAggregationInputDigest(source),
+    await deriveAggregationInputDigest(reordered),
+  );
+});
+
+test("aggregation identity canonicalizes observation-set order", async () => {
+  const source = aggregationGolden.vectors[0]!.aggregation_document;
+  const reordered = {
+    ...source,
+    observation_ids: [...(source.observation_ids as string[])].reverse(),
+  };
+
+  assert.deepEqual(
+    aggregationInputDocument(reordered).observation_ids,
+    source.observation_ids,
+  );
+  assert.equal(
+    await deriveAggregationInputDigest(reordered),
+    await deriveAggregationInputDigest(source),
+  );
+});
+
+test("aggregation identity rejects invalid observation arrays", () => {
+  const source = aggregationGolden.vectors[0]!.aggregation_document;
+  const observationIds = source.observation_ids as string[];
+  const sparseObservations = Array(1);
+  const invalidValues: unknown[] = [
+    null,
+    [],
+    sparseObservations,
+    [observationIds[0], observationIds[0]],
+    [`observation_${"0".repeat(64)}`],
+    [`obs_${"A".repeat(64)}`],
+    [`obs_${"0".repeat(63)}`],
+    [1],
+  ];
+
+  for (const observation_ids of invalidValues) {
+    assert.throws(
+      () => aggregationInputDocument({ ...source, observation_ids }),
+      /observation_ids/,
+    );
+  }
+});
+
+test("aggregation identity rejects invalid or open documents", () => {
+  const source = aggregationGolden.vectors[0]!.aggregation_document;
+  const rankingGroup = source.ranking_group as unknown[];
+  const sparseRankingGroup = Array(4);
+  const { methodology_version: _methodologyVersion, ...missingMethodology } = source;
+  const invalidDocuments: unknown[] = [
+    null,
+    { ...source, unknown: true },
+    missingMethodology,
+    { ...source, admission_cohort_digest: 1 },
+    { ...source, admission_cohort_digest: "A".repeat(64) },
+    { ...source, admission_cohort_digest: "0".repeat(63) },
+    { ...source, calibration_report_id: null },
+    { ...source, calibration_report_id: `report_${"0".repeat(64)}` },
+    { ...source, calibration_report_id: `calibration_${"0".repeat(63)}` },
+    { ...source, methodology_version: 1 },
+    { ...source, methodology_version: "" },
+    { ...source, methodology_version: "\ud800" },
+    { ...source, ranking_group: rankingGroup.slice(0, 3) },
+    { ...source, ranking_group: sparseRankingGroup },
+    { ...source, ranking_group: [...rankingGroup, "extra"] },
+    { ...source, ranking_group: ["", ...rankingGroup.slice(1)] },
+    { ...source, ranking_group: [1, ...rankingGroup.slice(1)] },
+    { ...source, ranking_group: ["\ud800", ...rankingGroup.slice(1)] },
+  ];
+
+  for (const document of invalidDocuments) {
+    assert.throws(() => aggregationInputDocument(document));
+  }
+});
+
+test("bootstrap seed rejects invalid inputs", async () => {
+  const vector = aggregationGolden.vectors[0]!;
+  const invalidInputs: Array<[unknown, unknown]> = [
+    [null, "aggregation-v1"],
+    ["A".repeat(64), "aggregation-v1"],
+    [vector.aggregation_input_digest.slice(0, -1), "aggregation-v1"],
+    [vector.aggregation_input_digest, 1],
+    [vector.aggregation_input_digest, ""],
+    [vector.aggregation_input_digest, "\ud800"],
+  ];
+
+  for (const [aggregationInputDigest, methodologyVersion] of invalidInputs) {
+    await assert.rejects(
+      () => deriveBootstrapSeed(aggregationInputDigest, methodologyVersion),
+    );
+  }
 });
 
 test("content-addressed artifact and evaluated configuration identities match Python", async () => {

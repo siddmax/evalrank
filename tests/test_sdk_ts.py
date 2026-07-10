@@ -70,6 +70,13 @@ class TypeScriptSdkTests(unittest.TestCase):
             "PUBLIC_FIXTURE_KINDS",
             "PublicFixtureKind",
             "NonEmptyArray",
+            "AggregationInputDocument",
+            "BootstrapSeedDocument",
+            "RankingGroupIdentity",
+            "aggregationInputDocument",
+            "bootstrapSeedDocument",
+            "deriveAggregationInputDigest",
+            "deriveBootstrapSeed",
         ):
             self.assertIn(name, text)
 
@@ -86,7 +93,8 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertEqual("./src/index.ts", package["exports"]["."]["default"])
         self.assertEqual(
             "node --experimental-strip-types --check src/index.ts && "
-            "node --experimental-strip-types --check src/decision-contracts.ts",
+            "node --experimental-strip-types --check src/decision-contracts.ts && "
+            "node --experimental-strip-types --check src/aggregation-identity.ts",
             package["scripts"]["check"],
         )
         self.assertEqual(
@@ -97,6 +105,7 @@ class TypeScriptSdkTests(unittest.TestCase):
     def test_public_constants_match_core_contracts(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
         self.assertIn('export * from "./decision-contracts.ts";', source)
+        self.assertIn('export * from "./aggregation-identity.ts";', source)
 
         self.assertEqual(TRUST_TIERS, _exported_string_array(source, "TRUST_TIERS"))
         self.assertEqual(EVIDENCE_KINDS, _exported_string_array(source, "EVIDENCE_KINDS"))

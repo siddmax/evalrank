@@ -309,7 +309,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -345,7 +345,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": null,
@@ -381,7 +381,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -417,7 +417,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": null,
@@ -453,7 +453,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -495,7 +495,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -537,7 +537,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -579,7 +579,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -621,7 +621,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -663,7 +663,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -705,7 +705,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -741,7 +741,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": null,
@@ -777,7 +777,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -819,7 +819,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -861,7 +861,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -903,7 +903,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -945,7 +945,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -987,7 +987,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1029,7 +1029,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1071,7 +1071,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1113,7 +1113,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1149,7 +1149,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": null,
@@ -1185,7 +1185,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1227,7 +1227,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1269,7 +1269,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1311,7 +1311,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1353,7 +1353,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1395,7 +1395,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1437,7 +1437,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1479,7 +1479,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1521,7 +1521,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1557,7 +1557,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": null,
@@ -1593,7 +1593,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1635,7 +1635,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": 0.95,
@@ -1671,7 +1671,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": null,
@@ -1701,7 +1701,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": null,
@@ -1731,7 +1731,7 @@
         "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
         "block_bootstrap": {
           "replicates": 10000,
-          "seed_derivation": "sha256(aggregation_input_digest,methodology_version)"
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
         },
         "bootstrap_coverage_target": 0.95,
         "superiority_threshold": null,

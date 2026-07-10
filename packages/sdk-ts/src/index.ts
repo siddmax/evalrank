@@ -523,3 +523,4 @@ function retryAfter(headers: Headers): number | null {
 }
 
 export * from "./decision-contracts.ts";
+export * from "./aggregation-identity.ts";

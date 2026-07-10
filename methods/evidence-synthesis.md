@@ -42,7 +42,21 @@ A single-winner label is exceptional. It is withheld whenever the top identity c
 
 Uncertainty is derived from the source's real sampling unit. The baseline resamples whole paired **exact benchmark-version and lineage blocks** jointly across configurations, then gives each independent family equal total influence. It never invents a Gaussian likelihood from a reported standard error. Reported standard errors and intervals remain in native-unit practical-effect gates. When retained evidence has no raw task blocks, the result is labeled a family/version-block bootstrap rather than claiming within-task resampling.
 
-Before any bootstrap output exists, the implementation hashes the exact ranking-group tuple, sorted observation IDs, calibration report ID, and methodology version into an **aggregation input digest**. The deterministic seed is `sha256(aggregation_input_digest, methodology_version)`. The final publication snapshot hashes the completed result, so bootstrap output never participates in its own seed.
+Before any bootstrap output exists, the implementation constructs this exact aggregation document:
+
+```json
+{
+  "admission_cohort_digest": "<64 lowercase hex>",
+  "calibration_report_id": "calibration_<64 lowercase hex>",
+  "methodology_version": "<non-empty string>",
+  "observation_ids": ["obs_<64 lowercase hex>", "..."],
+  "ranking_group": ["cell_id", "entity_kind", "interaction_policy", "configuration_passport_class"]
+}
+```
+
+`observation_ids` is a non-empty semantic set supplied after admission and identical-mirror dedupe. Caller order is irrelevant: the public helper rejects invalid or duplicate IDs and sorts the unique IDs lexicographically into the preimage. Identical variants within one exact block and evaluated configuration must collapse upstream to one semantic observation identity; a content conflict quarantines that block instead of perturbing the seed.
+
+The aggregation input digest is `sha256(restricted_jcs(aggregation_document))`. The seed document is exactly `{"aggregation_input_digest": "<64 lowercase hex>", "methodology_version": "<same non-empty string>"}`. Its restricted-JCS SHA-256 digest is converted to the bootstrap seed by reading the first eight bytes as one big-endian unsigned integer and applying `& 9007199254740991`. The final publication snapshot hashes the completed result, so bootstrap output never participates in its own seed.
 
 Every publishable result records sensitivity to:
 

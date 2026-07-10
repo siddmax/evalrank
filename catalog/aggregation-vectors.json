@@ -1,0 +1,34 @@
+{
+  "schema_version": "1",
+  "vectors": [
+    {
+      "name": "public-aggregation-v1",
+      "aggregation_document": {
+        "admission_cohort_digest": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "calibration_report_id": "calibration_fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210",
+        "methodology_version": "aggregation-v1",
+        "observation_ids": [
+          "obs_0000000000000000000000000000000000000000000000000000000000000001",
+          "obs_7777777777777777777777777777777777777777777777777777777777777777",
+          "obs_ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ],
+        "ranking_group": [
+          "code-generation",
+          "model_configuration",
+          "direct_prompt",
+          "model-configuration-v1"
+        ]
+      },
+      "aggregation_canonical": "{\"admission_cohort_digest\":\"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\",\"calibration_report_id\":\"calibration_fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210\",\"methodology_version\":\"aggregation-v1\",\"observation_ids\":[\"obs_0000000000000000000000000000000000000000000000000000000000000001\",\"obs_7777777777777777777777777777777777777777777777777777777777777777\",\"obs_ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\"],\"ranking_group\":[\"code-generation\",\"model_configuration\",\"direct_prompt\",\"model-configuration-v1\"]}",
+      "aggregation_input_digest": "1388fb51c201c91e00f8db0d14042d16cbac0513f422234fcc8b1de4fd878a66",
+      "seed_document": {
+        "aggregation_input_digest": "1388fb51c201c91e00f8db0d14042d16cbac0513f422234fcc8b1de4fd878a66",
+        "methodology_version": "aggregation-v1"
+      },
+      "seed_canonical": "{\"aggregation_input_digest\":\"1388fb51c201c91e00f8db0d14042d16cbac0513f422234fcc8b1de4fd878a66\",\"methodology_version\":\"aggregation-v1\"}",
+      "seed_digest": "e8fb200163ccc34890a994c3c9cf94287aa9beb176097314187f27652babd508",
+      "seed_first_eight_bytes_hex": "e8fb200163ccc348",
+      "bootstrap_seed": 7635014712607560
+    }
+  ]
+}

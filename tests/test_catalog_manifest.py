@@ -358,6 +358,18 @@ def manifest_semantic_errors(payload: dict) -> list[str]:
 
 
 class CatalogManifestTests(unittest.TestCase):
+    def test_catalog_readme_documents_portable_aggregation_vectors(self):
+        text = (REPO_ROOT / "catalog" / "README.md").read_text(encoding="utf-8")
+
+        for phrase in (
+            "aggregation-vectors.json",
+            "post-admission",
+            "identical-mirror",
+            "semantic observation",
+            "conflict",
+        ):
+            self.assertIn(phrase, text)
+
     def test_manifest_has_unique_cells_ranking_groups_families_and_feeds(self):
         payload = manifest()
 
@@ -476,7 +488,8 @@ class CatalogManifestTests(unittest.TestCase):
                 self.assertLess(eligibility["bootstrap_coverage_target"], 1)
                 self.assertEqual(10_000, eligibility["block_bootstrap"]["replicates"])
                 self.assertEqual(
-                    "sha256(aggregation_input_digest,methodology_version)",
+                    "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])"
+                    "&9007199254740991",
                     eligibility["block_bootstrap"]["seed_derivation"],
                 )
                 self.assertIn("native", eligibility["native_effect_policy"])
