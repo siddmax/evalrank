@@ -1,0 +1,932 @@
+{
+  "$schema": "../schemas/benchmark-research-provenance.schema.json",
+  "object": "benchmark_research_provenance",
+  "schema_version": "1",
+  "manifest_version": "2026-07-09.2",
+  "families": [
+    {
+      "benchmark_family_id": "livecodebench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/LiveCodeBench/LiveCodeBench"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "aider-polyglot",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://aider.chat/docs/leaderboards/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "bigcodebench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/bigcode-project/bigcodebench"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "scicode",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://scicode-bench.github.io/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swe-bench-live",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://swe-bench-live.github.io/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "terminal-bench-2-1",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "release", "kind": "official_site", "url": "https://www.tbench.ai/news/terminal-bench-2-1"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swe-lancer",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/openai/SWELancer-Benchmark"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swe-rebench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://swe-rebench.com/about"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "bfcl-v4",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://sky.cs.berkeley.edu/project/berkeley-function-calling-leaderboard/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "complexfuncbench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2501.10132"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "tau2-bench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/sierra-research/tau2-bench"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "mcp-universe",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/SalesforceAIResearch/MCP-Universe"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "mcpmark",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/eval-sys/mcpmark"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "mcp-bench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/Accenture/mcp-bench"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "webarena-verified",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://servicenow.github.io/webarena-verified/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "online-mind2web",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/OSU-NLP-Group/Online-Mind2Web"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "browsecomp-plus",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/texttron/BrowseComp-Plus"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "real-benchmark",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2504.11543"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "osworld-verified",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/xlang-ai/OSWorld"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "windowsagentarena",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/microsoft/WindowsAgentArena"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "androidworld",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://google-research.github.io/android_world/"}
+      ],
+      "claims": [
+        {
+          "topic": "research_flag",
+          "research_flag": "possible-ceiling-pressure",
+          "basis": "evalrank_inference",
+          "statement": "EvalRank treats top-cohort compression as a hypothesis to measure on a dated AndroidWorld leaderboard snapshot, not as an established saturation fact.",
+          "source_ids": ["site"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "screenspot-pro",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2504.07981"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "deepresearch-bench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "drb", "kind": "official_repository", "url": "https://github.com/Ayanami0730/deep_research_bench"},
+        {"source_id": "drb2", "kind": "official_repository", "url": "https://github.com/imlrz/DeepResearch-Bench-II"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "hle-with-tools",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://lastexam.ai/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "futuresearch-drb",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://drb.futuresearch.ai/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "tau-voice",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://sierra.ai/resources/research/tau-3-bench"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "crmarena-pro-service",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://openreview.net/forum?id=EPlpe3Fx1x"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "crmarena-pro",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://openreview.net/forum?id=EPlpe3Fx1x"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "workarena-plus-plus",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/ServiceNow/WorkArena"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "theagentcompany",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/TheAgentCompany/TheAgentCompany"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "gaia2-are",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "release", "kind": "official_site", "url": "https://huggingface.co/blog/gaia2"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "matharena",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://matharena.ai/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "frontiermath-v2",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://epoch.ai/frontiermath/tiers-1-4/about"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "putnambench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/trishullab/PutnamBench"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "hle",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2501.14249"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "simpleqa-verified",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2509.07968"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "facts-parametric",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "release", "kind": "official_site", "url": "https://deepmind.google/blog/facts-benchmark-suite-systematically-evaluating-the-factuality-of-large-language-models/"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "FACTS Parametric is the suite component that measures factual knowledge from model parameters without search or other external tools.",
+          "source_ids": ["release"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mmlu-pro",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/TIGER-AI-Lab/MMLU-Pro"},
+        {"source_id": "prox_site", "kind": "official_site", "url": "https://mmluprox.github.io/"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MMLU-Pro is built around questions adapted from original MMLU, and MMLU-ProX carries the resulting questions across translated language versions.",
+          "source_ids": ["repository", "prox_site"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "facts-grounding-v2",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "release", "kind": "official_site", "url": "https://deepmind.google/blog/facts-benchmark-suite-systematically-evaluating-the-factuality-of-large-language-models/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "mteb-beir",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "mteb", "kind": "official_repository", "url": "https://github.com/embeddings-benchmark/mteb"},
+        {"source_id": "beir", "kind": "official_repository", "url": "https://github.com/beir-cellar/beir"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "crag",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/facebookresearch/CRAG"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "frames",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/google/frames-benchmark"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "longmemeval",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/xiaowu0162/LongMemEval-V2"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "locomo",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/snap-research/locomo"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "beam-memory",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/mohammadtavakoli78/BEAM"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "vals-fab-v2",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://www.vals.ai/benchmarks/fabv2"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "finsearchcomp",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://randomtutu.github.io/FinSearchComp/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "financebench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2311.11944"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "legalbench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://hazyresearch.stanford.edu/legalbench/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "vlair",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "report", "kind": "official_site", "url": "https://www.vals.ai/industry-reports/vlair-10-14-25"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "healthbench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "release", "kind": "official_site", "url": "https://openai.com/index/healthbench/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "healthbench-professional",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2604.27470"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "medhelm",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://crfm.stanford.edu/helm/medhelm/v2.0.0/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "global-mmlu",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://cohere.com/research/globalmmlu"},
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2412.03304"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Global-MMLU translates and professionally or communally reviews original MMLU questions across languages.",
+          "source_ids": ["site", "paper"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mmlu-prox",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://mmluprox.github.io/"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MMLU-ProX is built on MMLU-Pro and uses identical translated questions to enable direct cross-linguistic comparison.",
+          "source_ids": ["site"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "wmt24-plus-plus",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/google-research/mt-metrics-eval"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "mmmu-pro",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/MMMU-Benchmark/MMMU"}
+      ],
+      "claims": [
+        {
+          "topic": "research_flag",
+          "research_flag": "possible-ceiling-pressure",
+          "basis": "evalrank_inference",
+          "statement": "EvalRank treats top-cohort compression as a hypothesis to test on a dated MMMU-Pro result snapshot, not as a source-established saturation fact.",
+          "source_ids": ["repository"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mathvista",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/lupantech/MathVista"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "video-mme",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/MME-Benchmarks/Video-MME"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "webdev-arena",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "release", "kind": "official_site", "url": "https://arena.ai/blog/webdev-arena/"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "design-arena",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "docs", "kind": "official_site", "url": "https://docs.designarena.ai/introduction"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swe-bench-multimodal",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/SWE-bench/SWE-bench"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "itbench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/itbench-hub/ITBench"},
+        {"source_id": "artificial_analysis", "kind": "official_site", "url": "https://artificialanalysis.ai/evaluations/itbench-aa"},
+        {"source_id": "artificial_analysis_dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/ArtificialAnalysis/ITBench-AA"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "ITBench-AA is an independent implementation and rerun layer over ITBench SRE tasks, combining 40 public tasks with 19 private tasks in one reported result, so it remains a feed of the ITBench family rather than independent evidence.",
+          "source_ids": ["repository", "artificial_analysis", "artificial_analysis_dataset"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "aiopslab",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/microsoft/AIOpsLab"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "android-bench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "methodology", "kind": "official_site", "url": "https://developer.android.com/bench/methodology"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "appforge",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2510.07740"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swifteval",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2505.24324"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swe-bench-mobile",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2602.09540"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "livebench-reasoning",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/LiveBench/LiveBench"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "arc-agi-2",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/arcprize/ARC-AGI-2"}
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swe-bench-verified",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "audit", "kind": "official_site", "url": "https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/"}
+      ],
+      "claims": [
+        {
+          "topic": "quarantine_reason",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The official audit reports task-design and contamination defects that prevent the unrepaired benchmark from supporting current system comparisons.",
+          "source_ids": ["audit"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "swe-bench-pro",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2509.16941"},
+        {"source_id": "audit", "kind": "official_site", "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations/"}
+      ],
+      "claims": [
+        {
+          "topic": "quarantine_reason",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The official audit documents broken tasks at a rate that requires a repaired task set and replay before admission.",
+          "source_ids": ["audit"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "steel-current-composites",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/steel-dev/leaderboard"}
+      ],
+      "claims": [
+        {
+          "topic": "quarantine_reason",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "EvalRank's code audit found that the current composite rows do not retain exact system kind and use competitor count as task count, so identity and uncertainty are not admission-ready.",
+          "source_ids": ["repository"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "gdpval",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "release", "kind": "official_site", "url": "https://openai.com/index/gdpval/"},
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2510.04374"},
+        {"source_id": "dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/openai/gdpval"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "GDPval v1 covers 1,320 professional tasks across 44 occupations in nine U.S. industries, with a 220-task open gold subset.",
+          "source_ids": ["release", "paper"]
+        },
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The checked public release identifies the benchmark as the first version and describes future interactive versions as planned work.",
+          "source_ids": ["release"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "cross-occupation-mixture",
+          "basis": "direct_source",
+          "statement": "The reported aggregate spans 44 occupations selected from nine industries rather than one homogeneous occupation.",
+          "source_ids": ["release", "paper"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "one-shot-complete-context",
+          "basis": "direct_source",
+          "statement": "GDPval v1 supplies prompts, reference files, and context in one-shot tasks and does not measure iterative context building or revision.",
+          "source_ids": ["release"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "tooling-scaffold-sensitive",
+          "basis": "evalrank_inference",
+          "statement": "Because tasks require heterogeneous document, slide, spreadsheet, diagram, and multimedia deliverables, EvalRank will compare only explicitly identified tool and scaffold configurations.",
+          "source_ids": ["release", "dataset"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "human-pairwise-primary",
+          "basis": "direct_source",
+          "statement": "The primary evaluation uses blinded occupational experts to compare and rank AI and human deliverables.",
+          "source_ids": ["release"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "automated-grader-not-independent",
+          "basis": "direct_source",
+          "statement": "The experimental automated grader estimates expert preferences and is explicitly described as not reliable enough to replace expert grading.",
+          "source_ids": ["release"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mle-bench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/openai/mle-bench"},
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2410.07095"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MLE-bench v1 evaluates agents on 75 Kaggle machine-learning competitions; its low-complexity lite split contains 22 competitions.",
+          "source_ids": ["repository", "paper"]
+        },
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "As checked on 2026-07-09, the repository says v1 fixes are deferred to an upcoming v2 release and new leaderboard submissions have been paused since 2026-04-24.",
+          "source_ids": ["repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "leaderboard-submissions-paused",
+          "basis": "direct_source",
+          "statement": "The official repository states that new leaderboard submissions have been paused since 2026-04-24 while a fairer, more comparable process is developed.",
+          "source_ids": ["repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "v1-known-health-defects",
+          "basis": "direct_source",
+          "statement": "The official Known Issues list records preparation, grading, checksum, leakage, missing-data, and crowded-leaderboard defects in v1 competitions.",
+          "source_ids": ["repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "v2-pending",
+          "basis": "direct_source",
+          "statement": "The maintainers say batched fixes and version-separated results are planned for an upcoming v2 release.",
+          "source_ids": ["repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "high-cost",
+          "basis": "direct_source",
+          "statement": "The canonical full protocol recommends 24 hours, 36 vCPUs, 440 GB RAM, one 24 GB A10 GPU, and at least three seeds across 75 competitions.",
+          "source_ids": ["repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "scaffold-sensitive",
+          "basis": "evalrank_inference",
+          "statement": "Because the official protocol says resource changes can degrade results and evaluates agent systems rather than bare models, EvalRank will not pool unlike scaffolds or resource envelopes.",
+          "source_ids": ["repository", "paper"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "competition-lineage",
+          "basis": "direct_source",
+          "statement": "The benchmark is constructed from 75 Kaggle competitions and uses their data and leaderboard-derived medal thresholds.",
+          "source_ids": ["repository", "paper"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "contamination-risk",
+          "basis": "direct_source",
+          "statement": "The paper studies pre-training familiarity, while the official Known Issues list identifies public labels and test-label leakage in multiple competitions.",
+          "source_ids": ["repository", "paper"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "paperbench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "release", "kind": "official_site", "url": "https://openai.com/index/paperbench/"},
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/openai/frontier-evals/tree/main/project/paperbench"},
+        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2504.01848"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "PaperBench evaluates end-to-end replication of 20 ICML 2024 Spotlight and Oral machine-learning papers.",
+          "source_ids": ["release", "repository", "paper"]
+        },
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The checked canonical release is the 2025-04-02 PaperBench task set and its maintained frontier-evals implementation.",
+          "source_ids": ["release", "repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "ml-paper-only",
+          "basis": "direct_source",
+          "statement": "All 20 source papers are ICML 2024 Spotlight or Oral machine-learning papers.",
+          "source_ids": ["release", "paper"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "from-scratch-implementation",
+          "basis": "direct_source",
+          "statement": "Agents must understand each paper, develop a codebase, and execute experiments to replicate it from scratch.",
+          "source_ids": ["release", "repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "judge-model-dependent",
+          "basis": "direct_source",
+          "statement": "Executed submissions are graded against hierarchical rubrics by an LLM-based judge whose performance is separately evaluated.",
+          "source_ids": ["release", "repository", "paper"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "third-party-assets",
+          "basis": "direct_source",
+          "statement": "The official setup requires separately hydrated Git LFS data, and some papers require external OpenAI or Hugging Face access or non-redistributable JudgeEval assets.",
+          "source_ids": ["repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "high-cost",
+          "basis": "direct_source",
+          "statement": "The benchmark uses separate rollout, GPU reproduction, and grading stages, with official leaderboard runs reporting 24-hour and 36-hour agent limits.",
+          "source_ids": ["repository"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "core-bench-reproducibility",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {"source_id": "v11_paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2606.26158"},
+        {"source_id": "v11_repository", "kind": "official_repository", "url": "https://github.com/nnadgi01/corebench-analysis"},
+        {"source_id": "original_repository", "kind": "official_repository", "url": "https://github.com/siegelz/core-bench"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CORE-Bench v1.1 contains 39 corrected mainline computational-reproducibility tasks, while CORE-Bench OOD contains 19 field-shift tasks.",
+          "source_ids": ["v11_paper", "v11_repository"]
+        },
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The June 2026 primary paper introduces CORE-Bench v1.1 and CORE-Bench OOD and treats both as active benchmarks that may be updated as validity threats are found.",
+          "source_ids": ["v11_paper", "v11_repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "measured-top-cohort-compression",
+          "basis": "direct_source",
+          "statement": "The paper reports that the top five agents are statistically indistinguishable on accuracy for both v1.1 and OOD.",
+          "source_ids": ["v11_paper"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "active-validity-revision",
+          "basis": "direct_source",
+          "statement": "v1.1 corrects task-level errors and exploitable shortcuts, and the authors plan continued updates when new validity threats surface.",
+          "source_ids": ["v11_paper", "v11_repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "scaffold-sensitive",
+          "basis": "direct_source",
+          "statement": "The paper reports material model-scaffold interaction, including an approximately 44-point difference for the same GPT-5.4 setting across two scaffolds.",
+          "source_ids": ["v11_paper"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "rights-incomplete",
+          "basis": "evalrank_inference",
+          "statement": "Because tasks depend on separately owned Code Ocean capsules and the primary sources do not establish one blanket redistribution grant, EvalRank requires a per-capsule rights audit before retention or publication.",
+          "source_ids": ["v11_paper", "original_repository"]
+        },
+        {
+          "topic": "research_flag",
+          "research_flag": "multidimensional-utility",
+          "basis": "direct_source",
+          "statement": "The v1.1 study finds retained signal in efficiency, reliability, model-versus-scaffold behavior, out-of-distribution generalization, and human-agent uplift despite accuracy compression.",
+          "source_ids": ["v11_paper", "v11_repository"]
+        }
+      ]
+    }
+  ]
+}

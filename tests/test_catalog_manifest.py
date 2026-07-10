@@ -1,0 +1,1017 @@
+import json
+import sys
+import unittest
+from collections import Counter
+from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+CORE_SRC = REPO_ROOT / "packages" / "core" / "src"
+sys.path.insert(0, str(CORE_SRC))
+
+from evalrank_core.fixtures import sample_use_case_catalog  # noqa: E402
+
+
+EXPECTED_CELL_IDS = (
+    "code-generation",
+    "autonomous-swe-agent",
+    "function-calling",
+    "mcp-tool-orchestration",
+    "web-browsing",
+    "computer-use",
+    "deep-research",
+    "customer-support",
+    "enterprise-crm-workflow",
+    "math-reasoning",
+    "general-knowledge-qa",
+    "rag-retrieval",
+    "long-term-memory",
+    "finance",
+    "legal",
+    "medical",
+    "multilingual",
+    "vision-multimodal",
+    "web-frontend-code-generation",
+    "devops-sre-terminal",
+    "mobile-codegen",
+    "reasoning",
+    "factuality",
+    "professional-deliverable-creation",
+    "machine-learning-engineering",
+    "computational-research-reproduction",
+)
+
+EXPECTED_FAMILY_IDS = (
+    "livecodebench",
+    "aider-polyglot",
+    "bigcodebench",
+    "scicode",
+    "swe-bench-live",
+    "terminal-bench-2-1",
+    "swe-lancer",
+    "swe-rebench",
+    "bfcl-v4",
+    "complexfuncbench",
+    "tau2-bench",
+    "mcp-universe",
+    "mcpmark",
+    "mcp-bench",
+    "webarena-verified",
+    "online-mind2web",
+    "browsecomp-plus",
+    "real-benchmark",
+    "osworld-verified",
+    "windowsagentarena",
+    "androidworld",
+    "screenspot-pro",
+    "deepresearch-bench",
+    "hle-with-tools",
+    "futuresearch-drb",
+    "tau-voice",
+    "crmarena-pro-service",
+    "crmarena-pro",
+    "workarena-plus-plus",
+    "theagentcompany",
+    "gaia2-are",
+    "matharena",
+    "frontiermath-v2",
+    "putnambench",
+    "hle",
+    "simpleqa-verified",
+    "facts-parametric",
+    "mmlu-pro",
+    "facts-grounding-v2",
+    "mteb-beir",
+    "crag",
+    "frames",
+    "longmemeval",
+    "locomo",
+    "beam-memory",
+    "vals-fab-v2",
+    "finsearchcomp",
+    "financebench",
+    "legalbench",
+    "vlair",
+    "healthbench",
+    "healthbench-professional",
+    "medhelm",
+    "global-mmlu",
+    "mmlu-prox",
+    "wmt24-plus-plus",
+    "mmmu-pro",
+    "mathvista",
+    "video-mme",
+    "webdev-arena",
+    "design-arena",
+    "swe-bench-multimodal",
+    "itbench",
+    "aiopslab",
+    "android-bench",
+    "appforge",
+    "swifteval",
+    "swe-bench-mobile",
+    "livebench-reasoning",
+    "arc-agi-2",
+    "swe-bench-verified",
+    "swe-bench-pro",
+    "steel-current-composites",
+    "gdpval",
+    "mle-bench",
+    "paperbench",
+    "core-bench-reproducibility",
+)
+
+EXPECTED_FEED_IDS = tuple(
+    feed_id
+    for family_id in EXPECTED_FAMILY_IDS[:-4]
+    for feed_id in (
+        (f"{family_id}-discovery", "itbench-aa-discovery")
+        if family_id == "itbench"
+        else (f"{family_id}-discovery",)
+    )
+) + (
+    "gdpval-discovery",
+    "mle-bench-v1-discovery",
+    "paperbench-full-discovery",
+    "core-bench-v1-1-mainline-discovery",
+    "core-bench-v1-1-ood-discovery",
+)
+
+# Exact ranking identities project into the deliberately smaller public catalog
+# ontology. A system is public-facing as either a tool or agent depending on the
+# cell; unresolved identities cannot make a compatibility claim.
+PUBLIC_ENTITY_KINDS_BY_CONFIGURATION_KIND = {
+    "model_configuration": frozenset({"model"}),
+    "agent_system": frozenset({"agent"}),
+    "component_configuration": frozenset({"tool"}),
+    "system_configuration": frozenset({"tool", "agent"}),
+    "arena_system": frozenset({"model", "agent"}),
+}
+
+
+def load_json(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def manifest() -> dict:
+    return load_json(REPO_ROOT / "catalog" / "manifest.json")
+
+
+def derived_family_state(feeds: list[dict]) -> str:
+    states = {feed["state"] for feed in feeds}
+    if "active" in states:
+        return "active"
+    if "shadow" in states:
+        return "shadow"
+    if "discovered" in states:
+        return "discovered"
+    return "quarantined"
+
+
+def manifest_semantic_errors(payload: dict) -> list[str]:
+    errors: list[str] = []
+    cell_ids = {row["cell_id"] for row in payload["cells"]}
+    cell_by_id = {row["cell_id"]: row for row in payload["cells"]}
+    group_by_id = {
+        row["ranking_group_id"]: row for row in payload["ranking_groups"]
+    }
+    family_by_id = {
+        row["benchmark_family_id"]: row for row in payload["benchmark_families"]
+    }
+
+    for group in payload["ranking_groups"]:
+        if group["cell_id"] not in cell_ids:
+            errors.append(
+                f"ranking group {group['ranking_group_id']} references unknown cell "
+                f"{group['cell_id']}"
+            )
+        elif (
+            group["state"] == "active"
+            and cell_by_id[group["cell_id"]]["state"] != "active"
+        ):
+            errors.append(
+                f"active ranking group {group['ranking_group_id']} cell is not active"
+            )
+        elif group["entity_kind"] != "unresolved":
+            compatible_public_kinds = PUBLIC_ENTITY_KINDS_BY_CONFIGURATION_KIND[
+                group["entity_kind"]
+            ]
+            declared_public_kinds = set(
+                cell_by_id[group["cell_id"]]["entity_kinds"]
+            )
+            if declared_public_kinds.isdisjoint(compatible_public_kinds):
+                errors.append(
+                    f"ranking group {group['ranking_group_id']} entity kind "
+                    f"{group['entity_kind']} is absent from its cell's public ontology"
+                )
+        if group["state"] == "active":
+            top_set = group["eligibility"]["top_set"]
+            if (
+                top_set is None
+                or group["rank_eligible_count"] is None
+                or group["rank_eligible_count"] < top_set["minimum_overlap"]
+            ):
+                errors.append(
+                    f"active ranking group {group['ranking_group_id']} lacks "
+                    "the configured comparable-configuration overlap"
+                )
+
+    for family in payload["benchmark_families"]:
+        unknown_cells = set(family["candidate_cells"]) - cell_ids
+        if unknown_cells:
+            errors.append(
+                f"benchmark family {family['benchmark_family_id']} references unknown cells "
+                f"{sorted(unknown_cells)}"
+            )
+        if family["state"] == "active":
+            if "unresolved" in family["entity_kinds"]:
+                errors.append(
+                    f"active benchmark family {family['benchmark_family_id']} "
+                    "has unresolved entity identity"
+                )
+            if not isinstance(family["rank_eligible_count"], int) or family[
+                "rank_eligible_count"
+            ] < 1:
+                errors.append(
+                    f"active benchmark family {family['benchmark_family_id']} "
+                    "has no rank-eligible observations"
+                )
+            if (
+                family["correlation_status"] != "validated"
+                or family["correlated_family_group"] is None
+            ):
+                errors.append(
+                    f"active benchmark family {family['benchmark_family_id']} "
+                    "has unvalidated independence"
+                )
+
+    for feed in payload["feeds"]:
+        family = family_by_id.get(feed["benchmark_family_id"])
+        if family is None:
+            errors.append(
+                f"feed {feed['feed_id']} references unknown family "
+                f"{feed['benchmark_family_id']}"
+            )
+            continue
+        if feed["state"] == "active" and feed["entity_kind"] == "unresolved":
+            errors.append(f"active feed {feed['feed_id']} has unresolved identity")
+        if feed["candidate_cells"] != family["candidate_cells"]:
+            errors.append(
+                f"feed {feed['feed_id']} candidate cells differ from family "
+                f"{family['benchmark_family_id']}"
+            )
+        feed_kind_is_family_candidate = (
+            feed["entity_kind"] in family["entity_kinds"]
+            or (
+                feed["entity_kind"] == "unresolved"
+                and len(family["entity_kinds"]) > 1
+            )
+        )
+        if not feed_kind_is_family_candidate:
+            errors.append(
+                f"feed {feed['feed_id']} entity kind is absent from family "
+                f"{family['benchmark_family_id']}"
+            )
+        if (
+            feed["lineage"]["correlated_family_group"]
+            != family["correlated_family_group"]
+        ):
+            errors.append(
+                f"feed {feed['feed_id']} correlation group differs from family "
+                f"{family['benchmark_family_id']}"
+            )
+
+        expected_group_ids = {
+            group["ranking_group_id"]
+            for group in payload["ranking_groups"]
+            if group["cell_id"] in feed["candidate_cells"]
+            and group["entity_kind"] == feed["entity_kind"]
+            and group["interaction_policy"] == feed["interaction_policy"]
+            and group["configuration_passport_class"]
+            == feed["configuration_passport_class"]
+        }
+        actual_group_ids = set(feed["ranking_group_ids"])
+        if actual_group_ids != expected_group_ids:
+            errors.append(
+                f"feed {feed['feed_id']} ranking groups do not match its identity"
+            )
+        unknown_group_ids = actual_group_ids - set(group_by_id)
+        if unknown_group_ids:
+            errors.append(
+                f"feed {feed['feed_id']} references unknown ranking groups "
+                f"{sorted(unknown_group_ids)}"
+            )
+
+    feeds_by_family = {
+        family_id: [
+            feed
+            for feed in payload["feeds"]
+            if feed["benchmark_family_id"] == family_id
+        ]
+        for family_id in family_by_id
+    }
+    for family_id, family_feeds in feeds_by_family.items():
+        if not family_feeds:
+            continue
+        expected_state = derived_family_state(family_feeds)
+        if family_by_id[family_id]["state"] != expected_state:
+            errors.append(
+                f"benchmark family {family_id} state is not the derived feed aggregate"
+            )
+
+    active_group_cell_ids = {
+        group["cell_id"]
+        for group in payload["ranking_groups"]
+        if group["state"] == "active"
+    }
+    for cell in payload["cells"]:
+        if cell["state"] == "active" and cell["cell_id"] not in active_group_cell_ids:
+            errors.append(
+                f"active cell {cell['cell_id']} has no active ranking group"
+            )
+
+    for group in payload["ranking_groups"]:
+        if group["state"] != "active":
+            continue
+        top_set = group["eligibility"]["top_set"]
+        if top_set is None:
+            errors.append(
+                f"active ranking group {group['ranking_group_id']} has no top-set gate"
+            )
+            continue
+        independent_families = {
+            feed["lineage"]["correlated_family_group"]
+            for feed in payload["feeds"]
+            if feed["state"] == "active"
+            and group["ranking_group_id"] in feed["ranking_group_ids"]
+            and feed["lineage"]["correlation_status"] == "validated"
+            and feed["lineage"]["correlated_family_group"] is not None
+        }
+        if len(independent_families) < top_set["minimum_families"]:
+            errors.append(
+                f"active ranking group {group['ranking_group_id']} has "
+                f"{len(independent_families)} independent active families; "
+                f"top-set admission requires {top_set['minimum_families']}"
+            )
+
+    return errors
+
+
+class CatalogManifestTests(unittest.TestCase):
+    def test_manifest_has_unique_cells_ranking_groups_families_and_feeds(self):
+        payload = manifest()
+
+        self.assertEqual("evalrank_manifest", payload["object"])
+        self.assertEqual("1", payload["schema_version"])
+        self.assertEqual("2026-07-09.2", payload["manifest_version"])
+        for key, id_key in (
+            ("cells", "cell_id"),
+            ("ranking_groups", "ranking_group_id"),
+            ("benchmark_families", "benchmark_family_id"),
+            ("feeds", "feed_id"),
+        ):
+            with self.subTest(key=key):
+                ids = [row[id_key] for row in payload[key]]
+                self.assertEqual(len(ids), len(set(ids)))
+
+    def test_manifest_is_the_exact_public_taxonomy(self):
+        payload = manifest()
+        cells = payload["cells"]
+
+        self.assertEqual(EXPECTED_CELL_IDS, tuple(row["cell_id"] for row in cells))
+        self.assertEqual({"coding": "code-generation", "math": "math-reasoning"}, payload["aliases"])
+        self.assertTrue(all(row["state"] == "preview" for row in cells))
+        self.assertTrue(all("rank_eligible_count" not in row for row in cells))
+        self.assertTrue(all("eligibility" not in row for row in cells))
+        self.assertNotIn("safety-robustness", EXPECTED_CELL_IDS)
+        new_cells = {row["cell_id"]: row for row in cells[-3:]}
+        self.assertEqual(
+            {
+                "professional-deliverable-creation": {
+                    "name": "Professional deliverables",
+                    "definition": (
+                        "Create review-ready professional work products from a complete "
+                        "brief, domain context, and reference files."
+                    ),
+                    "entity_kinds": ["model", "agent"],
+                },
+                "machine-learning-engineering": {
+                    "name": "Machine-learning engineering",
+                    "definition": (
+                        "Build, train, and optimize machine-learning solutions from datasets "
+                        "and scored task objectives."
+                    ),
+                    "entity_kinds": ["agent"],
+                },
+                "computational-research-reproduction": {
+                    "name": "Computational research reproduction",
+                    "definition": (
+                        "Reproduce published computational results by implementing or "
+                        "executing experiments from papers, code, data, and environments."
+                    ),
+                    "entity_kinds": ["agent"],
+                },
+            },
+            {
+                cell_id: {
+                    "name": row["name"],
+                    "definition": row["definition"],
+                    "entity_kinds": row["entity_kinds"],
+                }
+                for cell_id, row in new_cells.items()
+            },
+        )
+
+    def test_every_cell_has_explicit_ordered_ranking_group_eligibility(self):
+        payload = manifest()
+        cell_ids = {cell["cell_id"] for cell in payload["cells"]}
+        self.assertEqual(37, len(payload["ranking_groups"]))
+        group_keys = set()
+        covered_cells = set()
+
+        for group in payload["ranking_groups"]:
+            eligibility = group["eligibility"]
+            key = tuple(group[dimension] for dimension in payload["ranking_group_dimensions"])
+            with self.subTest(ranking_group_id=group["ranking_group_id"]):
+                self.assertIn(group["cell_id"], cell_ids)
+                self.assertNotIn(key, group_keys)
+                group_keys.add(key)
+                covered_cells.add(group["cell_id"])
+                unresolved_dimensions = (
+                    group["entity_kind"] == "unresolved",
+                    group["interaction_policy"] == "unresolved",
+                    group["configuration_passport_class"] == "unresolved-v1",
+                )
+                self.assertIn(sum(unresolved_dimensions), {0, 3})
+                if group["state"] == "active":
+                    self.assertEqual("validated", eligibility["calibration_status"])
+                    self.assertGreaterEqual(group["rank_eligible_count"], 1)
+                if group["state"] == "quarantined":
+                    self.assertIsNone(group["rank_eligible_count"])
+                    self.assertTrue(group["quarantine_reason"])
+                else:
+                    self.assertIsNone(group["quarantine_reason"])
+                self.assertGreaterEqual(eligibility["explorer"]["minimum_families"], 1)
+                if any(unresolved_dimensions):
+                    self.assertEqual("explorer", group["claim_ceiling"])
+                if group["claim_ceiling"] == "explorer":
+                    self.assertEqual("explorer", group["claim_ceiling"])
+                    self.assertIsNone(eligibility["top_set"])
+                    self.assertIsNone(eligibility["single_winner"])
+                    self.assertIsNone(eligibility["superiority_threshold"])
+                    self.assertIsNone(eligibility["practical_effect_floor"])
+                    self.assertIsNone(eligibility["leave_one_family_out"])
+                else:
+                    self.assertEqual("single_winner", group["claim_ceiling"])
+                    self.assertGreaterEqual(eligibility["top_set"]["minimum_families"], 3)
+                    self.assertGreaterEqual(eligibility["single_winner"]["minimum_families"], 4)
+                    self.assertGreaterEqual(
+                        eligibility["single_winner"]["minimum_overlap"],
+                        eligibility["top_set"]["minimum_overlap"],
+                    )
+                    self.assertIsNotNone(eligibility["superiority_threshold"])
+                    self.assertIsNotNone(eligibility["practical_effect_floor"])
+                    self.assertIsNotNone(eligibility["leave_one_family_out"])
+                self.assertLess(0, eligibility["bootstrap_coverage_target"])
+                self.assertLess(eligibility["bootstrap_coverage_target"], 1)
+                self.assertGreaterEqual(eligibility["block_bootstrap"]["replicates"], 1_000)
+                self.assertIn("ranking_group_key", eligibility["block_bootstrap"]["seed_derivation"])
+                self.assertIn("native", eligibility["native_effect_policy"])
+                self.assertIn("exclude", eligibility["missing_configuration_policy"])
+                if eligibility["leave_one_family_out"] is not None:
+                    self.assertTrue(eligibility["leave_one_family_out"]["required_for_single_winner"])
+
+        self.assertEqual(cell_ids, covered_cells)
+
+        new_groups = {
+            group["cell_id"]: group
+            for group in payload["ranking_groups"]
+            if group["cell_id"] in set(EXPECTED_CELL_IDS[-3:])
+        }
+        self.assertEqual(set(EXPECTED_CELL_IDS[-3:]), set(new_groups))
+        self.assertEqual(
+            {
+                "professional-deliverable-creation": (
+                    "rg-professional-deliverable-creation-system-configuration-"
+                    "system-system-configuration-v1"
+                ),
+                "machine-learning-engineering": (
+                    "rg-machine-learning-engineering-agent-system-agentic-agent-system-v1"
+                ),
+                "computational-research-reproduction": (
+                    "rg-computational-research-reproduction-agent-system-agentic-"
+                    "agent-system-v1"
+                ),
+            },
+            {
+                cell_id: group["ranking_group_id"]
+                for cell_id, group in new_groups.items()
+            },
+        )
+        self.assertEqual(
+            ("system_configuration", "system", "system-configuration-v1"),
+            tuple(
+                new_groups["professional-deliverable-creation"][key]
+                for key in (
+                    "entity_kind",
+                    "interaction_policy",
+                    "configuration_passport_class",
+                )
+            ),
+        )
+        for cell_id in (
+            "machine-learning-engineering",
+            "computational-research-reproduction",
+        ):
+            self.assertEqual(
+                ("agent_system", "agentic", "agent-system-v1"),
+                tuple(
+                    new_groups[cell_id][key]
+                    for key in (
+                        "entity_kind",
+                        "interaction_policy",
+                        "configuration_passport_class",
+                    )
+                ),
+            )
+        self.assertTrue(
+            all(group["claim_ceiling"] == "explorer" for group in new_groups.values())
+        )
+        self.assertTrue(all(group["state"] == "preview" for group in new_groups.values()))
+        self.assertTrue(
+            all(group["rank_eligible_count"] is None for group in new_groups.values())
+        )
+        self.assertTrue(
+            all(
+                group["eligibility"]["calibration_status"] == "unvalidated"
+                for group in new_groups.values()
+            )
+        )
+
+        feed_states_by_group = {group["ranking_group_id"]: [] for group in payload["ranking_groups"]}
+        for feed in payload["feeds"]:
+            for group_id in feed["ranking_group_ids"]:
+                feed_states_by_group[group_id].append(feed["state"])
+        for group in payload["ranking_groups"]:
+            feed_states = feed_states_by_group[group["ranking_group_id"]]
+            if group["state"] == "quarantined":
+                self.assertTrue(all(state == "quarantined" for state in feed_states))
+            else:
+                self.assertTrue(any(state != "quarantined" for state in feed_states))
+
+    def test_discovery_inventory_does_not_claim_admission(self):
+        families = manifest()["benchmark_families"]
+        family_by_id = {row["benchmark_family_id"]: row for row in families}
+        cell_ids = {row["cell_id"] for row in manifest()["cells"]}
+        quarantined = {
+            family_id
+            for family_id, row in family_by_id.items()
+            if row["state"] == "quarantined"
+        }
+
+        self.assertEqual(
+            {"swe-bench-verified", "swe-bench-pro", "steel-current-composites"},
+            quarantined,
+        )
+        self.assertEqual(77, len(families))
+        self.assertEqual(EXPECTED_FAMILY_IDS, tuple(row["benchmark_family_id"] for row in families))
+        self.assertTrue(all(row["rank_eligible_count"] is None for row in families))
+        self.assertTrue(all(set(row["candidate_cells"]) <= cell_ids for row in families))
+        self.assertTrue(all("saturated" not in row for row in families))
+        self.assertTrue(
+            all(
+                bool(row["quarantine_reason"]) == (row["state"] == "quarantined")
+                for row in families
+            )
+        )
+        self.assertTrue(
+            all(row["state"] == "discovered" for row in families if row["benchmark_family_id"] not in quarantined)
+        )
+        declared_correlations = {
+            row["benchmark_family_id"]: row["correlated_family_group"]
+            for row in families
+            if row["correlation_status"] == "declared"
+        }
+        self.assertEqual(
+            {
+                "tau2-bench": "tau2",
+                "tau-voice": "tau2",
+                "hle-with-tools": "hle",
+                "hle": "hle",
+                "crmarena-pro-service": "crmarena-pro",
+                "crmarena-pro": "crmarena-pro",
+                "healthbench": "healthbench",
+                "healthbench-professional": "healthbench",
+                "core-bench-reproducibility": "core-bench",
+                "itbench": "itbench",
+                "mmlu-pro": "mmlu-lineage",
+                "mmlu-prox": "mmlu-lineage",
+                "global-mmlu": "mmlu-lineage",
+            },
+            declared_correlations,
+        )
+        feeds = manifest()["feeds"]
+        self.assertEqual(79, len(feeds))
+        self.assertEqual(EXPECTED_FEED_IDS, tuple(row["feed_id"] for row in feeds))
+
+    def test_new_research_jobs_are_exact_preview_hypotheses(self):
+        payload = manifest()
+        family_by_id = {
+            row["benchmark_family_id"]: row for row in payload["benchmark_families"]
+        }
+        expected = {
+            "gdpval": (
+                "GDPval",
+                "professional-deliverable-creation",
+                "system_configuration",
+                {
+                    "cross-occupation-mixture",
+                    "one-shot-complete-context",
+                    "tooling-scaffold-sensitive",
+                    "human-pairwise-primary",
+                    "automated-grader-not-independent",
+                },
+            ),
+            "mle-bench": (
+                "MLE-bench",
+                "machine-learning-engineering",
+                "agent_system",
+                {
+                    "leaderboard-submissions-paused",
+                    "v1-known-health-defects",
+                    "v2-pending",
+                    "high-cost",
+                    "scaffold-sensitive",
+                    "competition-lineage",
+                    "contamination-risk",
+                },
+            ),
+            "paperbench": (
+                "PaperBench",
+                "computational-research-reproduction",
+                "agent_system",
+                {
+                    "ml-paper-only",
+                    "from-scratch-implementation",
+                    "judge-model-dependent",
+                    "third-party-assets",
+                    "high-cost",
+                },
+            ),
+            "core-bench-reproducibility": (
+                "CORE-Bench (computational reproducibility)",
+                "computational-research-reproduction",
+                "agent_system",
+                {
+                    "measured-top-cohort-compression",
+                    "active-validity-revision",
+                    "scaffold-sensitive",
+                    "rights-incomplete",
+                    "multidimensional-utility",
+                },
+            ),
+        }
+
+        for family_id, (display_name, cell_id, entity_kind, flags) in expected.items():
+            with self.subTest(family_id=family_id):
+                family = family_by_id[family_id]
+                self.assertEqual(display_name, family["display_name"])
+                self.assertEqual([cell_id], family["candidate_cells"])
+                self.assertEqual([entity_kind], family["entity_kinds"])
+                self.assertEqual("discovered", family["state"])
+                self.assertIsNone(family["rank_eligible_count"])
+                self.assertEqual(flags, set(family["research_flags"]))
+
+        self.assertFalse(
+            any(
+                "judge" in family_id or "rewardbench" in family_id
+                for family_id in family_by_id
+            )
+        )
+
+        feeds = {
+            row["feed_id"]: row
+            for row in payload["feeds"]
+            if row["benchmark_family_id"] in expected
+        }
+        self.assertEqual(set(EXPECTED_FEED_IDS[-5:]), set(feeds))
+        for feed in feeds.values():
+            with self.subTest(feed_id=feed["feed_id"]):
+                family = family_by_id[feed["benchmark_family_id"]]
+                self.assertEqual(family["candidate_cells"], feed["candidate_cells"])
+                self.assertEqual("discovered", feed["state"])
+                self.assertIsNone(feed["adapter_id"])
+                self.assertIsNone(feed["rank_eligible_count"])
+                self.assertEqual("unknown", feed["rights"]["status"])
+                self.assertEqual("unvalidated", feed["cadence"]["status"])
+                self.assertEqual("unknown", feed["lineage"]["validation_status"])
+                self.assertFalse(feed["retention"]["store_artifact_bytes"])
+
+        core_feeds = [
+            row
+            for row in feeds.values()
+            if row["benchmark_family_id"] == "core-bench-reproducibility"
+        ]
+        self.assertEqual(2, len(core_feeds))
+        self.assertEqual(
+            {("declared", "core-bench")},
+            {
+                (
+                    feed["lineage"]["correlation_status"],
+                    feed["lineage"]["correlated_family_group"],
+                )
+                for feed in core_feeds
+            },
+        )
+        self.assertEqual(
+            {tuple(feed["ranking_group_ids"]) for feed in core_feeds},
+            {
+                (
+                    "rg-computational-research-reproduction-agent-system-"
+                    "agentic-agent-system-v1",
+                )
+            },
+        )
+
+    def test_feeds_have_complete_rights_cadence_retention_and_lineage(self):
+        payload = manifest()
+        family_by_id = {
+            row["benchmark_family_id"]: row for row in payload["benchmark_families"]
+        }
+        feed_family_ids = set()
+        rights_keys = {
+            "status",
+            "harness_code_license",
+            "task_data_license",
+            "commercial_use",
+            "result_redistribution",
+            "trajectory_redistribution",
+            "environment_terms",
+            "artifact_retention",
+            "derived_score_publication",
+        }
+
+        for feed in payload["feeds"]:
+            with self.subTest(feed_id=feed["feed_id"]):
+                family = family_by_id[feed["benchmark_family_id"]]
+                feed_family_ids.add(feed["benchmark_family_id"])
+                self.assertEqual(family["candidate_cells"], feed["candidate_cells"])
+                self.assertIsNone(feed["rank_eligible_count"])
+                self.assertTrue(feed["ranking_group_ids"])
+                if feed["state"] == "discovered":
+                    self.assertIsNone(feed["adapter_id"])
+                self.assertEqual(rights_keys, set(feed["rights"]))
+                self.assertEqual("unknown", feed["rights"]["status"])
+                self.assertEqual("unvalidated", feed["cadence"]["status"])
+                self.assertIsNone(feed["cadence"]["mode"])
+                self.assertIsNone(feed["cadence"]["expected_seconds"])
+                self.assertIsNone(feed["cadence"]["stale_after_seconds"])
+                self.assertIsNone(feed["cadence"]["stop_recommending_after_seconds"])
+                self.assertIsNone(feed["cadence"]["as_of"])
+                self.assertIsNone(feed["cadence"]["upstream_version"])
+                self.assertIsInstance(feed["retention"]["store_artifact_bytes"], bool)
+                if feed["rights"]["artifact_retention"] == "unknown":
+                    self.assertFalse(feed["retention"]["store_artifact_bytes"])
+                self.assertIsNone(feed["retention"]["maximum_days"])
+                self.assertEqual("unknown", feed["lineage"]["validation_status"])
+                self.assertIsNone(feed["lineage"]["task_lineage_id"])
+                self.assertIsNone(feed["lineage"]["environment_lineage_id"])
+                self.assertIsNone(feed["lineage"]["grader_lineage_id"])
+                self.assertEqual(
+                    family["correlated_family_group"],
+                    feed["lineage"]["correlated_family_group"],
+                )
+                if family["correlation_status"] == "unknown":
+                    self.assertIsNone(family["correlated_family_group"])
+
+        self.assertEqual(set(family_by_id), feed_family_ids)
+        feed_counts = Counter(feed["benchmark_family_id"] for feed in payload["feeds"])
+        self.assertEqual(2, feed_counts.pop("core-bench-reproducibility"))
+        self.assertEqual(2, feed_counts.pop("itbench"))
+        self.assertTrue(all(count == 1 for count in feed_counts.values()))
+
+        self.assertEqual([], manifest_semantic_errors(payload))
+
+    def test_cross_record_semantic_guard_rejects_broken_links(self):
+        mutations = {
+            "unknown group cell": lambda payload: payload["ranking_groups"][0].update(
+                cell_id="missing-cell"
+            ),
+            "unknown family cell": lambda payload: payload["benchmark_families"][0][
+                "candidate_cells"
+            ].append("missing-cell"),
+            "unknown feed family": lambda payload: payload["feeds"][0].update(
+                benchmark_family_id="missing-family"
+            ),
+            "feed-family candidate mismatch": lambda payload: payload["feeds"][0][
+                "candidate_cells"
+            ].append("factuality"),
+            "feed-family state mismatch": lambda payload: payload["feeds"][0].update(
+                state="shadow"
+            ),
+            "feed-family entity mismatch": lambda payload: payload["feeds"][0].update(
+                entity_kind="unresolved"
+            ),
+            "feed-group identity mismatch": lambda payload: payload["feeds"][0].update(
+                ranking_group_ids=[payload["ranking_groups"][-1]["ranking_group_id"]]
+            ),
+            "feed-family correlation mismatch": lambda payload: payload["feeds"][0][
+                "lineage"
+            ].update(
+                correlation_status="declared",
+                correlated_family_group="wrong-family",
+            ),
+            "active group without admitted families": lambda payload: next(
+                group for group in payload["ranking_groups"] if group["state"] == "preview"
+            ).update(
+                state="active",
+                rank_eligible_count=1,
+                eligibility={
+                    **next(
+                        group
+                        for group in payload["ranking_groups"]
+                        if group["state"] == "preview"
+                    )["eligibility"],
+                    "calibration_status": "validated",
+                },
+            ),
+            "active cell without active group": lambda payload: payload["cells"][0].update(
+                state="active"
+            ),
+            "active family without admission evidence": lambda payload: payload[
+                "benchmark_families"
+            ][0].update(state="active"),
+            "group-cell public entity mismatch": lambda payload: next(
+                cell
+                for cell in payload["cells"]
+                if cell["cell_id"] == "function-calling"
+            ).update(entity_kinds=["model", "tool"]),
+        }
+
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                candidate = manifest()
+                mutate(candidate)
+                self.assertTrue(manifest_semantic_errors(candidate))
+
+    def test_multi_feed_family_lifecycle_is_derived_without_lockstep(self):
+        payload = manifest()
+        family = next(
+            row
+            for row in payload["benchmark_families"]
+            if row["benchmark_family_id"] == "core-bench-reproducibility"
+        )
+        feeds = [
+            row
+            for row in payload["feeds"]
+            if row["benchmark_family_id"] == family["benchmark_family_id"]
+        ]
+        self.assertEqual(2, len(feeds))
+
+        feeds[0]["state"] = "shadow"
+        feeds[0]["adapter_id"] = "core-mainline-v1"
+        family["state"] = "shadow"
+        self.assertEqual([], manifest_semantic_errors(payload))
+
+        feeds[1]["state"] = "quarantined"
+        feeds[1]["quarantine_reason"] = "OOD feed is not yet replayable."
+        self.assertIsNone(family["quarantine_reason"])
+        self.assertEqual([], manifest_semantic_errors(payload))
+
+    def test_active_group_semantics_require_independent_active_families(self):
+        group_id = (
+            "rg-code-generation-model-configuration-direct-prompt-"
+            "model-configuration-v1"
+        )
+
+        def promote(candidate: dict, *, shared_correlation: bool) -> None:
+            group = next(
+                row
+                for row in candidate["ranking_groups"]
+                if row["ranking_group_id"] == group_id
+            )
+            group["state"] = "active"
+            group["rank_eligible_count"] = group["eligibility"]["top_set"][
+                "minimum_overlap"
+            ]
+            group["eligibility"]["calibration_status"] = "validated"
+            minimum_families = group["eligibility"]["top_set"]["minimum_families"]
+            feeds = [
+                feed
+                for feed in candidate["feeds"]
+                if group_id in feed["ranking_group_ids"]
+                and feed["state"] == "discovered"
+            ][:minimum_families]
+            self.assertEqual(minimum_families, len(feeds))
+            family_by_id = {
+                row["benchmark_family_id"]: row
+                for row in candidate["benchmark_families"]
+            }
+            for index, feed in enumerate(feeds):
+                correlation_group = (
+                    "shared-family"
+                    if shared_correlation
+                    else f"independent-family-{index + 1}"
+                )
+                family = family_by_id[feed["benchmark_family_id"]]
+                family["state"] = "active"
+                family["rank_eligible_count"] = 1
+                family["correlation_status"] = "validated"
+                family["correlated_family_group"] = correlation_group
+                feed["state"] = "active"
+                feed["adapter_id"] = f"adapter-{index + 1}"
+                feed["rank_eligible_count"] = 1
+                feed["rights"]["status"] = "approved"
+                feed["cadence"] = {
+                    "status": "validated",
+                    "mode": "periodic",
+                    "expected_seconds": 86_400,
+                    "stale_after_seconds": 172_800,
+                    "stop_recommending_after_seconds": 604_800,
+                    "as_of": None,
+                    "upstream_version": None,
+                }
+                feed["lineage"].update(
+                    validation_status="validated",
+                    task_lineage_id=f"task-{index + 1}",
+                    environment_lineage_id=f"environment-{index + 1}",
+                    grader_lineage_id=f"grader-{index + 1}",
+                    correlation_status="validated",
+                    correlated_family_group=correlation_group,
+                )
+
+        admitted = manifest()
+        promote(admitted, shared_correlation=False)
+        state_errors = manifest_semantic_errors(admitted)
+        self.assertTrue(
+            any("active ranking group" in error and "cell is not active" in error for error in state_errors),
+            state_errors,
+        )
+        next(
+            cell for cell in admitted["cells"] if cell["cell_id"] == "code-generation"
+        )["state"] = "active"
+        self.assertEqual([], manifest_semantic_errors(admitted))
+
+        correlated = manifest()
+        promote(correlated, shared_correlation=True)
+        errors = manifest_semantic_errors(correlated)
+        self.assertTrue(
+            any("independent active families" in error for error in errors),
+            errors,
+        )
+
+    def test_manifest_matches_its_closed_public_schema_surface(self):
+        payload = manifest()
+        schema = load_json(REPO_ROOT / "schemas" / "evalrank-manifest.schema.json")
+
+        self.assertEqual("https://json-schema.org/draft/2020-12/schema", schema["$schema"])
+        self.assertFalse(schema["additionalProperties"])
+        self.assertEqual(set(payload), set(schema["properties"]))
+        self.assertEqual(set(payload), set(schema["required"]))
+        self.assertEqual("1", schema["properties"]["schema_version"]["const"])
+
+        for rows_key, definition_name in (
+            ("cells", "Cell"),
+            ("ranking_groups", "RankingGroup"),
+            ("benchmark_families", "BenchmarkFamily"),
+            ("feeds", "Feed"),
+        ):
+            definition = schema["$defs"][definition_name]
+            self.assertFalse(definition["additionalProperties"])
+            for row in payload[rows_key]:
+                with self.subTest(rows_key=rows_key, row=row):
+                    self.assertEqual(set(row), set(definition["properties"]))
+                    self.assertEqual(set(row), set(definition["required"]))
+
+        for feed in payload["feeds"]:
+            for key, definition_name in (
+                ("rights", "Rights"),
+                ("cadence", "Cadence"),
+                ("retention", "Retention"),
+                ("lineage", "Lineage"),
+            ):
+                definition = schema["$defs"][definition_name]
+                self.assertEqual(set(feed[key]), set(definition["properties"]))
+                self.assertEqual(set(feed[key]), set(definition["required"]))
+
+    def test_core_fixture_is_an_exact_manifest_projection(self):
+        fixture_rows = sample_use_case_catalog().to_dict()["use_cases"]
+        manifest_rows = manifest()["cells"]
+        expected_rows = [
+            {
+                "object": "use_case",
+                "id": row["cell_id"],
+                "name": row["name"],
+                "definition": row["definition"],
+                "entity_kinds": row["entity_kinds"],
+                "rank_policy": "ranked",
+                "is_overlay": False,
+            }
+            for row in manifest_rows
+        ]
+
+        self.assertEqual(expected_rows, fixture_rows)
+
+
+if __name__ == "__main__":
+    unittest.main()

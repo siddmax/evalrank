@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/benchmark-research-provenance.schema.json",
+  "title": "EvalRank Benchmark Research Provenance V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "object",
+    "schema_version",
+    "manifest_version",
+    "families"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/benchmark-research-provenance.schema.json"
+    },
+    "object": {
+      "const": "benchmark_research_provenance"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "manifest_version": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}\\.[1-9]\\d*$"
+    },
+    "families": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/BenchmarkFamilyResearch"
+      }
+    }
+  },
+  "$defs": {
+    "BenchmarkFamilyResearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "benchmark_family_id",
+        "checked_on",
+        "sources",
+        "claims"
+      ],
+      "properties": {
+        "benchmark_family_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "checked_on": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ResearchSource"
+          }
+        },
+        "claims": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ResearchClaim"
+          }
+        }
+      }
+    },
+    "ResearchSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "kind",
+        "url"
+      ],
+      "properties": {
+        "source_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$"
+        },
+        "kind": {
+          "enum": [
+            "official_dataset",
+            "official_leaderboard",
+            "official_repository",
+            "official_site",
+            "primary_paper"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://[^\\s/?#]+(?:[/?#][^\\s]*)?$"
+        }
+      }
+    },
+    "ResearchClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "topic",
+        "research_flag",
+        "basis",
+        "statement",
+        "source_ids"
+      ],
+      "properties": {
+        "topic": {
+          "enum": [
+            "scope",
+            "version_status",
+            "research_flag",
+            "quarantine_reason"
+          ]
+        },
+        "research_flag": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+        },
+        "basis": {
+          "enum": [
+            "direct_source",
+            "evalrank_inference"
+          ]
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "topic": {
+                "const": "research_flag"
+              }
+            },
+            "required": [
+              "topic"
+            ]
+          },
+          "then": {
+            "properties": {
+              "research_flag": {
+                "type": "string"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "research_flag": {
+                "const": null
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

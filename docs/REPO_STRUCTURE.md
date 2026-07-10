@@ -25,11 +25,12 @@ Package directories should keep their own `README.md`, `LICENSE`, `NOTICE`, and 
 
 ## Public Contracts
 
+- `catalog/` owns the canonical public cell, benchmark-family, feed, governance, cadence, lineage, and eligibility manifest.
 - `schemas/` owns public JSON Schema contracts and the public OpenAPI route/error contract.
 - `methods/` owns public methodology notes and exclusion boundaries.
 - `examples/` owns public runnable examples.
 
-Schemas define interoperability payloads, not private storage tables.
+The catalog and schemas define portable interoperability policy, not private storage tables.
 
 ## Project Docs
 

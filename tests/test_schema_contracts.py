@@ -122,6 +122,7 @@ class SchemaContractTests(unittest.TestCase):
 
     def test_schemas_are_draft_2020_12_objects(self):
         for filename in (
+            "evalrank-manifest.schema.json",
             "ranked-entity.schema.json",
             "recommendation.schema.json",
             "exclusion.schema.json",

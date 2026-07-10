@@ -51,6 +51,9 @@ const stages = await client.scoringStages();
 ## Check
 
 ```sh
+npm ci --prefix packages/sdk-ts
 npm run check --prefix packages/sdk-ts
 npm run test --prefix packages/sdk-ts
 ```
+
+Ajv is an exact, lockfile-pinned development dependency used only to validate `catalog/manifest.json` against the Draft 2020-12 schema during tests; it is not part of the SDK runtime surface.

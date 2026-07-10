@@ -1,0 +1,1534 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/evalrank-manifest.schema.json",
+  "title": "EvalRank Manifest V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "object",
+    "schema_version",
+    "manifest_version",
+    "ranking_group_dimensions",
+    "aliases",
+    "cells",
+    "ranking_groups",
+    "benchmark_families",
+    "feeds"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "../schemas/evalrank-manifest.schema.json"
+    },
+    "object": {
+      "const": "evalrank_manifest"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "manifest_version": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}\\.[1-9]\\d*$"
+    },
+    "ranking_group_dimensions": {
+      "const": [
+        "cell_id",
+        "entity_kind",
+        "interaction_policy",
+        "configuration_passport_class"
+      ]
+    },
+    "aliases": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coding",
+        "math"
+      ],
+      "properties": {
+        "coding": {
+          "const": "code-generation"
+        },
+        "math": {
+          "const": "math-reasoning"
+        }
+      }
+    },
+    "cells": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/Cell"
+      }
+    },
+    "ranking_groups": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/RankingGroup"
+      }
+    },
+    "benchmark_families": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/BenchmarkFamily"
+      }
+    },
+    "feeds": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/Feed"
+      }
+    }
+  },
+  "$defs": {
+    "Slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "CatalogState": {
+      "enum": [
+        "active",
+        "preview",
+        "shadow",
+        "quarantined"
+      ]
+    },
+    "EvidenceState": {
+      "enum": [
+        "active",
+        "discovered",
+        "shadow",
+        "quarantined"
+      ]
+    },
+    "QuarantineState": {
+      "type": "object",
+      "if": {
+        "required": [
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "const": "quarantined"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "rank_eligible_count": {
+            "type": "null"
+          },
+          "quarantine_reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "quarantine_reason": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    "EntityKind": {
+      "enum": [
+        "agent_system",
+        "arena_system",
+        "component_configuration",
+        "model_configuration",
+        "system_configuration",
+        "unresolved"
+      ]
+    },
+    "IdentityTriple": {
+      "type": "object",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "unresolved"
+            },
+            "interaction_policy": {
+              "const": "unresolved"
+            },
+            "configuration_passport_class": {
+              "const": "unresolved-v1"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "model_configuration"
+            },
+            "interaction_policy": {
+              "const": "direct_prompt"
+            },
+            "configuration_passport_class": {
+              "const": "model-configuration-v1"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "agent_system"
+            },
+            "interaction_policy": {
+              "const": "agentic"
+            },
+            "configuration_passport_class": {
+              "const": "agent-system-v1"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "system_configuration"
+            },
+            "interaction_policy": {
+              "const": "system"
+            },
+            "configuration_passport_class": {
+              "const": "system-configuration-v1"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "component_configuration"
+            },
+            "interaction_policy": {
+              "const": "retrieval"
+            },
+            "configuration_passport_class": {
+              "const": "component-configuration-v1"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "arena_system"
+            },
+            "interaction_policy": {
+              "const": "crowd_pairwise"
+            },
+            "configuration_passport_class": {
+              "const": "arena-system-v1"
+            }
+          }
+        }
+      ]
+    },
+    "EligibilityStage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_families",
+        "minimum_overlap"
+      ],
+      "properties": {
+        "minimum_families": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "minimum_overlap": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "Eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calibration_status",
+        "explorer",
+        "top_set",
+        "single_winner",
+        "native_effect_policy",
+        "missing_configuration_policy",
+        "block_bootstrap",
+        "bootstrap_coverage_target",
+        "superiority_threshold",
+        "practical_effect_floor",
+        "leave_one_family_out"
+      ],
+      "properties": {
+        "calibration_status": {
+          "enum": [
+            "unvalidated",
+            "validated"
+          ]
+        },
+        "explorer": {
+          "$ref": "#/$defs/EligibilityStage"
+        },
+        "top_set": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/EligibilityStage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "single_winner": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/EligibilityStage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "native_effect_policy": {
+          "const": "family-native-likelihoods-only"
+        },
+        "missing_configuration_policy": {
+          "const": "exclude-from-ranking-group-and-disclose"
+        },
+        "block_bootstrap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "replicates",
+            "seed_derivation"
+          ],
+          "properties": {
+            "replicates": {
+              "type": "integer",
+              "minimum": 1000
+            },
+            "seed_derivation": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "bootstrap_coverage_target": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "superiority_threshold": {
+          "oneOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0.5,
+              "exclusiveMaximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "practical_effect_floor": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "status"
+              ],
+              "properties": {
+                "mode": {
+                  "const": "native-metric-calibrated"
+                },
+                "status": {
+                  "enum": [
+                    "unvalidated",
+                    "validated"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "leave_one_family_out": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "required_for_single_winner",
+                "stable_top_set_required"
+              ],
+              "properties": {
+                "required_for_single_winner": {
+                  "const": true
+                },
+                "stable_top_set_required": {
+                  "const": true
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "Cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_id",
+        "name",
+        "definition",
+        "entity_kinds",
+        "state"
+      ],
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/Slug"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entity_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "agent",
+              "model",
+              "tool"
+            ]
+          }
+        },
+        "state": {
+          "$ref": "#/$defs/CatalogState"
+        }
+      }
+    },
+    "RankingGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ranking_group_id",
+        "cell_id",
+        "entity_kind",
+        "interaction_policy",
+        "configuration_passport_class",
+        "state",
+        "rank_eligible_count",
+        "quarantine_reason",
+        "claim_ceiling",
+        "eligibility"
+      ],
+      "properties": {
+        "ranking_group_id": {
+          "$ref": "#/$defs/Slug"
+        },
+        "cell_id": {
+          "$ref": "#/$defs/Slug"
+        },
+        "entity_kind": {
+          "$ref": "#/$defs/EntityKind"
+        },
+        "interaction_policy": {
+          "$ref": "#/$defs/InteractionPolicy"
+        },
+        "configuration_passport_class": {
+          "$ref": "#/$defs/Slug"
+        },
+        "state": {
+          "$ref": "#/$defs/CatalogState"
+        },
+        "rank_eligible_count": {
+          "description": "Exact evaluated configurations currently eligible in this ranking group after identity and evidence gates.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "quarantine_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "claim_ceiling": {
+          "enum": [
+            "explorer",
+            "single_winner"
+          ]
+        },
+        "eligibility": {
+          "$ref": "#/$defs/Eligibility"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/IdentityTriple"
+        },
+        {
+          "$ref": "#/$defs/QuarantineState"
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "required": [
+                  "entity_kind"
+                ],
+                "properties": {
+                  "entity_kind": {
+                    "const": "unresolved"
+                  }
+                }
+              },
+              {
+                "required": [
+                  "interaction_policy"
+                ],
+                "properties": {
+                  "interaction_policy": {
+                    "const": "unresolved"
+                  }
+                }
+              },
+              {
+                "required": [
+                  "configuration_passport_class"
+                ],
+                "properties": {
+                  "configuration_passport_class": {
+                    "const": "unresolved-v1"
+                  }
+                }
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "claim_ceiling": {
+                "const": "explorer"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "claim_ceiling"
+            ],
+            "properties": {
+              "claim_ceiling": {
+                "const": "explorer"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "eligibility": {
+                "type": "object",
+                "properties": {
+                  "top_set": {
+                    "type": "null"
+                  },
+                  "single_winner": {
+                    "type": "null"
+                  },
+                  "superiority_threshold": {
+                    "type": "null"
+                  },
+                  "practical_effect_floor": {
+                    "type": "null"
+                  },
+                  "leave_one_family_out": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "eligibility": {
+                "type": "object",
+                "properties": {
+                  "top_set": {
+                    "$ref": "#/$defs/EligibilityStage"
+                  },
+                  "single_winner": {
+                    "$ref": "#/$defs/EligibilityStage"
+                  },
+                  "superiority_threshold": {
+                    "type": "number",
+                    "exclusiveMinimum": 0.5,
+                    "exclusiveMaximum": 1
+                  },
+                  "practical_effect_floor": {
+                    "type": "object"
+                  },
+                  "leave_one_family_out": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "active"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "claim_ceiling": {
+                "const": "single_winner"
+              },
+              "rank_eligible_count": {
+                "type": "integer",
+                "minimum": 2
+              },
+              "eligibility": {
+                "type": "object",
+                "required": [
+                  "calibration_status",
+                  "top_set"
+                ],
+                "properties": {
+                  "calibration_status": {
+                    "const": "validated"
+                  },
+                  "top_set": {
+                    "$ref": "#/$defs/EligibilityStage"
+                  },
+                  "practical_effect_floor": {
+                    "type": "object",
+                    "required": [
+                      "status"
+                    ],
+                    "properties": {
+                      "status": {
+                        "const": "validated"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "BenchmarkFamily": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "benchmark_family_id",
+        "display_name",
+        "candidate_cells",
+        "entity_kinds",
+        "state",
+        "rank_eligible_count",
+        "correlation_status",
+        "correlated_family_group",
+        "research_flags",
+        "quarantine_reason"
+      ],
+      "properties": {
+        "benchmark_family_id": {
+          "$ref": "#/$defs/Slug"
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "candidate_cells": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Slug"
+          }
+        },
+        "entity_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/EntityKind"
+          }
+        },
+        "state": {
+          "description": "Derived aggregate of this family's feed states: active, else shadow, else discovered, else quarantined.",
+          "$ref": "#/$defs/EvidenceState"
+        },
+        "rank_eligible_count": {
+          "description": "Validated native observations currently eligible within this benchmark family.",
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "correlation_status": {
+          "$ref": "#/$defs/ValidationStatus"
+        },
+        "correlated_family_group": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Slug"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "research_flags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Slug"
+          }
+        },
+        "quarantine_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/CorrelationState"
+        },
+        {
+          "$ref": "#/$defs/QuarantineState"
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "discovered"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rank_eligible_count": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "active"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rank_eligible_count": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "entity_kinds": {
+                "not": {
+                  "type": "array",
+                  "contains": {
+                    "const": "unresolved"
+                  }
+                }
+              },
+              "correlation_status": {
+                "const": "validated"
+              },
+              "correlated_family_group": {
+                "$ref": "#/$defs/Slug"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Rights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "harness_code_license",
+        "task_data_license",
+        "commercial_use",
+        "result_redistribution",
+        "trajectory_redistribution",
+        "environment_terms",
+        "artifact_retention",
+        "derived_score_publication"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "approved",
+            "blocked",
+            "unknown"
+          ]
+        },
+        "harness_code_license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "task_data_license": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "commercial_use": {
+          "$ref": "#/$defs/RightsDecision"
+        },
+        "result_redistribution": {
+          "$ref": "#/$defs/RightsDecision"
+        },
+        "trajectory_redistribution": {
+          "$ref": "#/$defs/RightsDecision"
+        },
+        "environment_terms": {
+          "$ref": "#/$defs/RightsDecision"
+        },
+        "artifact_retention": {
+          "$ref": "#/$defs/RightsDecision"
+        },
+        "derived_score_publication": {
+          "$ref": "#/$defs/RightsDecision"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "approved"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "harness_code_license": {
+                "type": "string",
+                "minLength": 1
+              },
+              "task_data_license": {
+                "type": "string",
+                "minLength": 1
+              },
+              "commercial_use": {
+                "enum": [
+                  "allowed",
+                  "conditional"
+                ]
+              },
+              "result_redistribution": {
+                "enum": [
+                  "allowed",
+                  "conditional"
+                ]
+              },
+              "environment_terms": {
+                "enum": [
+                  "allowed",
+                  "conditional"
+                ]
+              },
+              "derived_score_publication": {
+                "enum": [
+                  "allowed",
+                  "conditional"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "RightsDecision": {
+      "enum": [
+        "allowed",
+        "blocked",
+        "conditional",
+        "unknown"
+      ]
+    },
+    "Cadence": {
+      "type": "object",
+      "$comment": "When validated: expected_seconds <= stale_after_seconds <= stop_recommending_after_seconds. Draft 2020-12 cannot compare sibling values, so the default Ajv test path enforces this semantic invariant after schema validation.",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "mode",
+        "expected_seconds",
+        "stale_after_seconds",
+        "stop_recommending_after_seconds",
+        "as_of",
+        "upstream_version"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "unvalidated",
+            "validated"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "frozen",
+            "periodic",
+            null
+          ]
+        },
+        "expected_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "stale_after_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "stop_recommending_after_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "as_of": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "upstream_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "unvalidated"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "mode": {
+                "type": "null"
+              },
+              "expected_seconds": {
+                "type": "null"
+              },
+              "stale_after_seconds": {
+                "type": "null"
+              },
+              "stop_recommending_after_seconds": {
+                "type": "null"
+              },
+              "as_of": {
+                "type": "null"
+              },
+              "upstream_version": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "frozen",
+                  "periodic"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "const": "periodic"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "expected_seconds": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "stale_after_seconds": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "stop_recommending_after_seconds": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "as_of": {
+                "type": "null"
+              },
+              "upstream_version": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "mode"
+            ],
+            "properties": {
+              "mode": {
+                "const": "frozen"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "expected_seconds": {
+                "type": "null"
+              },
+              "stale_after_seconds": {
+                "type": "null"
+              },
+              "stop_recommending_after_seconds": {
+                "type": "null"
+              },
+              "as_of": {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+              },
+              "upstream_version": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "store_artifact_bytes",
+        "maximum_days"
+      ],
+      "properties": {
+        "store_artifact_bytes": {
+          "type": "boolean"
+        },
+        "maximum_days": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        }
+      }
+    },
+    "Lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "validation_status",
+        "task_lineage_id",
+        "environment_lineage_id",
+        "grader_lineage_id",
+        "correlation_status",
+        "correlated_family_group"
+      ],
+      "properties": {
+        "validation_status": {
+          "$ref": "#/$defs/ValidationStatus"
+        },
+        "task_lineage_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "environment_lineage_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "grader_lineage_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "correlation_status": {
+          "$ref": "#/$defs/ValidationStatus"
+        },
+        "correlated_family_group": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Slug"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "validation_status"
+            ],
+            "properties": {
+              "validation_status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "task_lineage_id": {
+                "type": "null"
+              },
+              "environment_lineage_id": {
+                "type": "null"
+              },
+              "grader_lineage_id": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "task_lineage_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "environment_lineage_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "grader_lineage_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/CorrelationState"
+        }
+      ]
+    },
+    "Feed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "feed_id",
+        "benchmark_family_id",
+        "adapter_id",
+        "candidate_cells",
+        "ranking_group_ids",
+        "entity_kind",
+        "interaction_policy",
+        "configuration_passport_class",
+        "state",
+        "rank_eligible_count",
+        "quarantine_reason",
+        "rights",
+        "cadence",
+        "retention",
+        "lineage"
+      ],
+      "properties": {
+        "feed_id": {
+          "$ref": "#/$defs/Slug"
+        },
+        "benchmark_family_id": {
+          "$ref": "#/$defs/Slug"
+        },
+        "adapter_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "candidate_cells": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Slug"
+          }
+        },
+        "ranking_group_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Slug"
+          }
+        },
+        "entity_kind": {
+          "$ref": "#/$defs/EntityKind"
+        },
+        "interaction_policy": {
+          "$ref": "#/$defs/InteractionPolicy"
+        },
+        "configuration_passport_class": {
+          "$ref": "#/$defs/Slug"
+        },
+        "state": {
+          "$ref": "#/$defs/EvidenceState"
+        },
+        "rank_eligible_count": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "quarantine_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "rights": {
+          "$ref": "#/$defs/Rights"
+        },
+        "cadence": {
+          "$ref": "#/$defs/Cadence"
+        },
+        "retention": {
+          "$ref": "#/$defs/Retention"
+        },
+        "lineage": {
+          "$ref": "#/$defs/Lineage"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/IdentityTriple"
+        },
+        {
+          "$ref": "#/$defs/QuarantineState"
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "discovered"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "adapter_id": {
+                "type": "null"
+              },
+              "rank_eligible_count": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "enum": [
+                  "active",
+                  "shadow"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "adapter_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "active"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rank_eligible_count": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "entity_kind": {
+                "not": {
+                  "const": "unresolved"
+                }
+              },
+              "rights": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "const": "approved"
+                  }
+                }
+              },
+              "cadence": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "const": "validated"
+                  }
+                }
+              },
+              "lineage": {
+                "type": "object",
+                "required": [
+                  "validation_status",
+                  "correlation_status",
+                  "correlated_family_group"
+                ],
+                "properties": {
+                  "validation_status": {
+                    "const": "validated"
+                  },
+                  "correlation_status": {
+                    "const": "validated"
+                  },
+                  "correlated_family_group": {
+                    "$ref": "#/$defs/Slug"
+                  }
+                }
+              },
+              "retention": {
+                "type": "object",
+                "required": [
+                  "store_artifact_bytes"
+                ],
+                "properties": {
+                  "store_artifact_bytes": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "retention"
+            ],
+            "properties": {
+              "retention": {
+                "type": "object",
+                "required": [
+                  "store_artifact_bytes"
+                ],
+                "properties": {
+                  "store_artifact_bytes": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rights": {
+                "type": "object",
+                "required": [
+                  "artifact_retention"
+                ],
+                "properties": {
+                  "artifact_retention": {
+                    "enum": [
+                      "allowed",
+                      "conditional"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ValidationStatus": {
+      "enum": [
+        "declared",
+        "unknown",
+        "validated"
+      ]
+    },
+    "CorrelationState": {
+      "type": "object",
+      "if": {
+        "required": [
+          "correlation_status"
+        ],
+        "properties": {
+          "correlation_status": {
+            "const": "unknown"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "correlated_family_group": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "correlated_family_group": {
+            "$ref": "#/$defs/Slug"
+          }
+        }
+      }
+    },
+    "InteractionPolicy": {
+      "enum": [
+        "agentic",
+        "crowd_pairwise",
+        "direct_prompt",
+        "retrieval",
+        "system",
+        "unresolved"
+      ]
+    }
+  }
+}
