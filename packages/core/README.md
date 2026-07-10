@@ -10,25 +10,23 @@ Package metadata:
 
 Use `evalrank_core.fixtures.sample_public_fixture(kind)` with `PUBLIC_FIXTURE_KINDS`, or individual fixture helpers such as `sample_problem_details()`, for public examples and contract tests.
 
-Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `ProblemDetails`, `EntityRef`, `materialize_recommendation`, and public vocabulary constants including `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, `EVIDENCE_KINDS`, and `PROBLEM_CODES`.
+Public contract surface: `CapabilityFingerprintInput`, `RawEntry`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `SourceArtifactV1`, `RunProvenanceV1`, `ObservationV1`, `ConfigurationPassportV1`, `EvaluatedConfigurationV1`, `ServingOfferV1`, `EvaluationToOfferLinkV1`, `DecisionQueryV1`, `DecisionReceiptV1`, `RankingGroupSnapshotRefV1`, `SnapshotSetDescriptorV1`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `ProblemDetails`, `EntityRef`, and `materialize_recommendation`. Public vocabulary includes `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, `EVIDENCE_KINDS`, `PROBLEM_CODES`, and `PUBLIC_FIXTURE_KINDS`; `sample_public_fixture` exposes the synthetic fixture bundle. `canonical_json`, `restricted_jcs`, and `sha256_hex` implement the restricted cross-language hash domain. A snapshot-set descriptor hashes the UTF-16-sorted, one-to-one `ranking_group_id`/`publication_snapshot_id` ownership pairs; the read verifiers reject pair swaps, duplicate identities, invalid ranks or intervals, false eligibility gaps, and non-active top-set claims.
 
 Candidate set payloads expose a storage-free list of public `EntityRef` candidates for a request; source adapters and graph lookup stay outside this package.
 
 Stage candidate payloads expose one storage-free Stage-1 candidate row with RRF ranks and retrieval provenance; scorer stages, graph lookup, trust policy, and private tuning stay outside this package.
 
-`materialize_recommendation(...)` is the public reference materializer for storage-free W6 tests. It consumes already-provided `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `ResultRow`, and `Exclusion` values, orders candidates deterministically by Stage-1 fused score with stable tie-breaks, and emits an existing `Recommendation` envelope with `served_from="materialized-cache"` or a public abstention. It does not fetch sources, persist cache rows, call networks, run private scorer weights, tune thresholds, inspect telemetry, or access Syndai-only evidence graphs.
+`materialize_recommendation(...)` is the public storage-free reference materializer. It consumes already-provided request, candidate, Stage-1, evidence, `ObservationV1`, and exclusion values. Only unit-interval proportion/pass-at-k observations with reported 95% intervals are eligible because the existing reference envelope labels the field `ci95`; continuous, pairwise, rank-only, interval-free, differently leveled, and derived-interval inputs cause abstention instead of silent coercion or fabricated confidence bounds. It does not fetch sources, persist rows, call networks, fit scorers, or access private evidence graphs.
 
 Evidence set payloads expose storage-free public `EvidenceItem` rows for a request; live evidence lookup and evidence ledger persistence stay outside this package.
 
 Evidence item `metadata` and evaluation request `constraints` are public JSON objects. Non-object values, non-string keys, and non-JSON values are rejected before serialization.
 
-Entity references, freshness dates, public timestamps, result-run dates, request entity types, ranked-entity ranks, evidence counts, and caveats reject schema-incompatible Python values before serialization. Freshness and result-run dates use calendar-valid `YYYY-MM-DD`; public timestamps use calendar-valid UTC `YYYY-MM-DDTHH:MM:SSZ`. Caveat strings must be non-empty. Request entity types must be unique.
+Entity references, freshness dates, public timestamps, request entity types, ranked-entity ranks, evidence counts, and caveats reject schema-incompatible Python values before serialization. Freshness dates use calendar-valid `YYYY-MM-DD`; public timestamps use calendar-valid UTC `YYYY-MM-DDTHH:MM:SSZ`. Caveat strings must be non-empty. Request entity types must be unique.
 
 Capability fingerprint, raw entry, evidence item, evidence set, candidate set, `the_call`, and abstention public string fields must be actual non-empty strings.
 
-Result row payloads expose storage-free benchmark/result provenance. Source adapters, production rows, private benchmark material, scorer fitting, and storage tables stay outside this package.
-
-Result row `source_url` values must be public HTTP(S) URLs.
+Observations separate immutable source bytes, typed run provenance, exact evaluated-configuration identity, metric kind, counts, and uncertainty. Decimal measurements are canonical strings; counts are safe integers. Mutable URLs and untyped provenance maps are not accepted.
 
 Use case catalog payloads expose public taxonomy metadata only. Benchmark weights, IRT clusters, confidence policy, synthesis rules, and storage tables stay outside this package.
 

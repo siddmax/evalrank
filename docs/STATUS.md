@@ -23,6 +23,8 @@ normative authority or evidence of runtime lineage, rights, or admission.
 
 - Apache-2.0, product-neutral Python contracts and synthetic fixtures.
 - Public JSON Schemas and OpenAPI description.
+- Immutable artifact/run provenance, native observations, exact configuration passports, serving offers, reviewed evaluation-to-offer links, semantic queries, and deterministic receipt identities.
+- Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts with semantic verifiers.
 - Dependency-light Python and TypeScript SDK boundaries.
 - Deterministic CLI and MCP adapters over public contracts.
 - A storage-free reference materializer and fixture example.
@@ -55,11 +57,10 @@ No paired public/private release identifiers are recorded for this manifest vers
 
 ## Next Public Work
 
-1. Add typed source, artifact, native-observation, configuration-passport, publication, query, and receipt contracts.
-2. Pin a public contract digest and prove cross-client fixture parity.
-3. Add the deterministic decision operation and remove the unavailable recommendation vocabulary atomically.
-4. Exercise SDK, CLI, MCP, and the reference server end to end from a clean checkout.
-5. Record paired immutable release identifiers only after each repository lands independently.
+1. Pin this public revision into the hosted build and prove backend/web conformance against its exact bytes.
+2. Implement the deterministic decision operation and remove the unavailable recommendation vocabulary atomically.
+3. Exercise SDK, CLI, MCP, and the reference server end to end from a clean checkout.
+4. Record paired immutable release identifiers only after each repository lands independently.
 
 ## Verification
 

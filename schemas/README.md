@@ -10,7 +10,18 @@ Public EvalRank JSON Schema contracts live here.
 - `recommendation.schema.json` mirrors `Recommendation.to_dict()` and core enum constants.
 - `exclusion.schema.json` mirrors `Exclusion.to_dict()` and is referenced from recommendations.
 - `evidence-item.schema.json` mirrors `EvidenceItem.to_dict()` and core enum constants.
-- `result-row.schema.json` mirrors `ResultRow.to_dict()` for public ingested benchmark/result rows.
+- `source-artifact.schema.json` content-addresses replayable upstream bytes and their canonical source coordinates.
+- `run-provenance.schema.json` records one closed parser/run envelope referencing a source artifact exactly once.
+- `observation.schema.json` defines closed metric and uncertainty unions for one evaluated configuration.
+- `configuration-passport.schema.json` pins one resolved manifest identity and reproducible configuration.
+- `evaluated-configuration.schema.json` content-addresses a configuration passport.
+- `serving-offer.schema.json` separates dated context, availability, and integer-microusd pricing facts.
+- `evaluation-to-offer-link.schema.json` records reviewed exact, incompatible, or unresolved configuration-to-offer evidence.
+- `decision-query.schema.json` defines transport-free semantic decision intent for one exact ranking group.
+- `decision-receipt.schema.json` defines a deterministic, typed top-set or abstention receipt.
+- `leaderboard.schema.json` defines a cell snapshot set with separate ranking-group publication sections. Its content-addressed descriptor carries a closed, UTF-16-sorted list of exact `ranking_group_id`/`publication_snapshot_id` ownership pairs.
+- `entity-detail.schema.json` defines one exact evaluated configuration and ranking projection.
+- `compare-result.schema.json` defines a two-to-four configuration comparison on one group scale.
 - `evidence-set.schema.json` mirrors `EvidenceSet.to_dict()` and reuses `evidence-item.schema.json`.
 - `evaluation-request.schema.json` mirrors `EvaluationRequest.to_dict()`.
 - `candidate-set.schema.json` mirrors `CandidateSet.to_dict()`.
@@ -27,11 +38,13 @@ Generated public hashes use 64-character lowercase hex strings.
 
 Ranked entity schemas require `score_components` to be a public explanation map with non-empty names and 0-1 numeric scores, and `axes.evidence` to carry only public evidence count plus trust-tier coverage. Private weights, formulas, and scorer calibration stay outside this repo.
 
-Ranked entity and result row `ci95` fields are exactly two numeric unit-interval scores: `[low, high]`.
+Ranked entity `ci95` fields are exactly two numeric unit-interval scores: `[low, high]`. Observation uncertainty is a closed typed object and decimal measurements remain canonical strings.
 
 Ranked entity freshness dates use public `YYYY-MM-DD` strings for `last_eval` and `next_refresh`; Python core validation requires calendar-valid dates, while timestamps and private scheduler details stay outside the schema.
 
-Public event timestamp fields use UTC `YYYY-MM-DDTHH:MM:SSZ` strings, and result-row `date_run` uses `YYYY-MM-DD`; private scheduler cadence and runtime refresh policy stay outside the schemas.
+Public event timestamp fields use UTC `YYYY-MM-DDTHH:MM:SSZ` strings; private scheduler cadence and runtime refresh policy stay outside the schemas.
+
+Artifact, evaluated-configuration, semantic-query, and receipt identities use the shared restricted RFC 8785 subset: UTF-16 object-key ordering, UTF-8 without whitespace, safe integers, no floats, valid Unicode, and no normalization. Set-valued query fields reject duplicates and serialize sorted.
 
 Manifest identity triples are one of five explicit versioned resolved combinations (model, agent, system, component, or arena) or exactly `unresolved`/`unresolved`/`unresolved-v1`; mixed or invented combinations are invalid. Unresolved identities must be explorer-only, and resolved identities may also be explorer-only when the evidence policy cannot support a top set. Every explorer ceiling keeps top-set, winner, superiority, practical-effect, and leave-one-family-out fields null; active groups must use the single-winner-capable policy. Discovery keeps adapter IDs, rank counts, cadence thresholds, and task/environment/grader lineage IDs null. Shadow feeds require an adapter. Active feeds require an adapter, a positive rank count, approved rights, validated ordered cadence, validated lineage, and a validated correlation group; active ranking groups require calibrated evidence, a positive rank count, and enough independently counted active families for their top-set gate. Quarantine requires an explicit reason and null rank count, while non-quarantined records keep the reason null. A family may expose multiple feeds, but feeds sharing a declared correlation group count once.
 
@@ -53,19 +66,17 @@ Evidence set schemas allow an empty `evidence_items` array for abstention or no-
 
 Evidence item `metadata` and evaluation request `constraints` are public JSON-object extension points only. Private evidence rows, source-adapter state, and policy internals stay outside this repo.
 
-Result row schemas expose the storage-free provenance envelope for ingested scores. Source adapters, raw production rows, private benchmark material, scorer fitting, and storage tables stay outside this repo.
-
-Result row `source_url` values are limited to public HTTP(S) URLs; local paths and private URI schemes stay outside the public schema.
+Observation schemas never duplicate mutable source URLs or hashes inside run provenance. They preserve proportion, continuous, pass-at-k, pairwise-preference, and rank-only evidence without coercing unlike metrics onto one scale. Unknown, standard-error, and interval uncertainty remain explicit.
 
 Exclusion schemas describe the public row shape only. Stage-0 gate policy, private safety taxonomy, and constraint evaluation stay outside this repo.
 
-Use case catalog schemas expose public taxonomy metadata: slugs, names, one-line definitions, entity-kind spans, and rank policy. The canonical cell inventory and calibrated-gate policy live in `catalog/manifest.json`; evidence synthesis lives in `methods/evidence-synthesis.md`. Private result rows and persistence semantics stay outside this repo.
+Use case catalog schemas expose public taxonomy metadata: slugs, names, one-line definitions, entity-kind spans, and rank policy. The canonical cell inventory and calibrated-gate policy live in `catalog/manifest.json`; evidence synthesis lives in `methods/evidence-synthesis.md`. Private observations and persistence semantics stay outside this repo.
 
 Scoring stage catalog schemas expose only public stage order, contract refs, and boundary notes. Formulas, thresholds, graders, production telemetry, and runtime scorer behavior stay outside this repo.
 
 Problem Details schemas intentionally allow extension members. Public extensions are limited to `code`, `retriable`, `retry_after`, `field`, `request_id`, and `doc_url`; optional `doc_url` values are public HTTP(S) URLs. Private problem types, hosted error internals, auth context, and tenant details stay outside this repo.
 
-The OpenAPI contract includes `GET /v1/use-cases`, `GET /v1/scoring-stages`, and `POST /v1/recommendations`. It reuses response components for malformed requests, validation errors, rate limits, temporary unavailability, and upstream timeouts. `429` responses expose `Retry-After`, `RateLimit`, and `RateLimit-Policy` header contracts; the repo does not implement live throttling.
+The OpenAPI contract includes metadata reads, grouped leaderboard/entity/compare reads, and the staged `POST /v1/recommendations` contract. It reuses response components for malformed requests, unsupported media, validation errors, not-found reads, rate limits, temporary unavailability, and upstream timeouts. `429` responses expose `Retry-After`, `RateLimit`, and `RateLimit-Policy` header contracts; the repo does not implement live throttling.
 
 Run:
 

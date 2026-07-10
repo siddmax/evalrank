@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/evaluated-configuration.schema.json",
+  "title": "EvalRank Evaluated Configuration V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "schema_version",
+    "evaluated_configuration_id",
+    "passport"
+  ],
+  "properties": {
+    "object": {
+      "const": "evaluated_configuration"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "evaluated_configuration_id": {
+      "type": "string",
+      "pattern": "^config_[0-9a-f]{64}$"
+    },
+    "passport": {
+      "$ref": "configuration-passport.schema.json"
+    }
+  }
+}

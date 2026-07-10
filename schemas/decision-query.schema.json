@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/decision-query.schema.json",
+  "title": "EvalRank Decision Query V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "schema_version",
+    "cell_id",
+    "ranking_group_id",
+    "entity_kind",
+    "interaction_policy",
+    "configuration_passport_class",
+    "objective"
+  ],
+  "properties": {
+    "object": { "const": "decision_query" },
+    "schema_version": { "const": "1" },
+    "cell_id": { "$ref": "#/$defs/NonEmptyString" },
+    "ranking_group_id": { "$ref": "#/$defs/NonEmptyString" },
+    "entity_kind": {
+      "enum": ["model_configuration", "agent_system", "system_configuration", "component_configuration", "arena_system"]
+    },
+    "interaction_policy": {
+      "enum": ["direct_prompt", "agentic", "system", "retrieval", "crowd_pairwise"]
+    },
+    "configuration_passport_class": {
+      "enum": ["model-configuration-v1", "agent-system-v1", "system-configuration-v1", "component-configuration-v1", "arena-system-v1"]
+    },
+    "objective": { "enum": ["capability_top_set", "lowest_cost_within_top_set"] },
+    "provider_ids": { "$ref": "#/$defs/NonEmptyStringSet" },
+    "regions": { "$ref": "#/$defs/NonEmptyStringSet" },
+    "minimum_context_tokens": { "$ref": "#/$defs/PositiveSafeInteger" },
+    "input_tokens_per_request": { "$ref": "#/$defs/NonNegativeSafeInteger" },
+    "output_tokens_per_request": { "$ref": "#/$defs/NonNegativeSafeInteger" },
+    "requests_per_month": { "$ref": "#/$defs/PositiveSafeInteger" },
+    "monthly_budget_microusd": { "$ref": "#/$defs/NonNegativeSafeInteger" }
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        { "properties": { "entity_kind": { "const": "model_configuration" }, "interaction_policy": { "const": "direct_prompt" }, "configuration_passport_class": { "const": "model-configuration-v1" } } },
+        { "properties": { "entity_kind": { "const": "agent_system" }, "interaction_policy": { "const": "agentic" }, "configuration_passport_class": { "const": "agent-system-v1" } } },
+        { "properties": { "entity_kind": { "const": "system_configuration" }, "interaction_policy": { "const": "system" }, "configuration_passport_class": { "const": "system-configuration-v1" } } },
+        { "properties": { "entity_kind": { "const": "component_configuration" }, "interaction_policy": { "const": "retrieval" }, "configuration_passport_class": { "const": "component-configuration-v1" } } },
+        { "properties": { "entity_kind": { "const": "arena_system" }, "interaction_policy": { "const": "crowd_pairwise" }, "configuration_passport_class": { "const": "arena-system-v1" } } }
+      ]
+    },
+    {
+      "if": {
+        "required": ["objective"],
+        "properties": { "objective": { "const": "lowest_cost_within_top_set" } }
+      },
+      "then": {
+        "required": ["input_tokens_per_request", "output_tokens_per_request", "requests_per_month"]
+      }
+    }
+  ],
+  "dependentRequired": {
+    "input_tokens_per_request": ["output_tokens_per_request", "requests_per_month"],
+    "output_tokens_per_request": ["input_tokens_per_request", "requests_per_month"],
+    "requests_per_month": ["input_tokens_per_request", "output_tokens_per_request"],
+    "monthly_budget_microusd": ["input_tokens_per_request", "output_tokens_per_request", "requests_per_month"]
+  },
+  "$defs": {
+    "NonEmptyString": { "type": "string", "minLength": 1 },
+    "NonEmptyStringSet": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/NonEmptyString" }
+    },
+    "NonNegativeSafeInteger": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+    "PositiveSafeInteger": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+  }
+}

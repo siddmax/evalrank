@@ -28,7 +28,7 @@ cited source or is an explicit EvalRank inference. A family with an empty
 `claims` array has a discovery source only; no additional source claim is being
 made.
 
-Research provenance is not result-row lineage, an adapter admission report, a
+Research provenance is not observation/run lineage, an adapter admission report, a
 rights grant, a configuration passport, or evidence of ranking readiness. None
 of those states may be inferred from a source URL or claim. The manifest remains
 the authority for fail-closed admission and publication state.

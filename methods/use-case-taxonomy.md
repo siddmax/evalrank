@@ -38,7 +38,7 @@ The manifest also owns aliases, source/feed governance, cadence, retention, line
 
 ## Public Boundary
 
-Publish the taxonomy, manifest policy, schemas, synthetic fixtures, and reproducible method. Keep benchmark task contents, non-public result rows, customer context, production telemetry, credentials, proprietary experiments, and persistence layout outside this repo.
+Publish the taxonomy, manifest policy, schemas, synthetic fixtures, and reproducible method. Keep benchmark task contents, non-public observations, customer context, production telemetry, credentials, proprietary experiments, and persistence layout outside this repo.
 
 ## Update Checklist
 

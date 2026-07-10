@@ -12,10 +12,11 @@ Package metadata:
 
 ## Public Surface
 
-- Public constants for trust tiers, freshness statuses, comparability modes, evidence kinds, result-row vocabulary, use-case vocabulary, `the_call` decisions, public Problem Details codes, and `PUBLIC_FIXTURE_KINDS`.
+- Public constants for trust tiers, freshness statuses, comparability modes, evidence kinds, use-case vocabulary, `the_call` decisions, public Problem Details codes, and `PUBLIC_FIXTURE_KINDS`.
 - Public string-union type `PublicFixtureKind` mirrors the shared fixture kind list.
 - Public helper type `NonEmptyArray<T>` mirrors schema `minItems: 1` arrays at TypeScript compile time.
-- Public TypeScript interfaces and types for `CapabilityFingerprint`, `RawEntry`, `TheCall`, `Abstention`, `ProblemDetails`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceSet`, `Exclusion`, `EvidenceItem`, `ResultRow`, `UseCase`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankedEntity`, `RankingGroup`, `RecommendationCallState`, and `Recommendation`.
+- Public TypeScript interfaces and types include immutable `SourceArtifactV1`, typed `RunProvenanceV1` and `ObservationV1`, exact configuration passports, serving offers and reviewed links, semantic `DecisionQueryV1`, deterministic `DecisionReceiptV1`, pair-owned `RankingGroupSnapshotRefV1` and `SnapshotSetDescriptorV1`, and the existing `CapabilityFingerprint`, `RawEntry`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ScoringStage`, `ScoringStageCatalog`, `UseCase`, `UseCaseCatalog`, `RankingGroup`, `Exclusion`, `Abstention`, `TheCall`, `RankedEntity`, `RecommendationCallState`, and `Recommendation` metadata/reference contracts.
+- `verifyLeaderboardSemantics`, `verifyEntityDetailSemantics`, and `verifyCompareResultSemantics` enforce the same post-schema invariants as Python: exact ranking-group snapshot ownership, unique group and configuration identities, rank and interval validity, truthful eligibility gaps, and no top-set claims on non-active reads.
 - `UseCase` is a discriminated union for the public ranked and veto-overlay branches.
 - `TheCall` is a discriminated union for the public `recommend` and `abstain` branches.
 - `Recommendation` is a discriminated union for the public `single-scale` and `kind-grouped` branches, plus the public `the_call`/`abstention` state; abstaining responses are empty single-scale responses.
@@ -23,6 +24,7 @@ Package metadata:
 - `Recommendation` includes `abstention`, `recommendation_id`, `recommend_id`, and `search_run_id` as public response fields.
 - `ProblemDetails` mirrors the public RFC 9457 error contract plus optional retry extensions; it does not imply a hosted service client.
 - `EvalRankClient` is a dependency-free native `fetch` client for the public metadata and recommendation route contracts. It accepts only explicit HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, can post public `EvaluationRequest` JSON to `POST /v1/recommendations`, and raises `EvalRankApiError` with public Problem Details for non-2xx responses. A successful recommendation body is future contract behavior, not the current hosted behavior.
+- `PUBLIC_FIXTURE_KINDS` and its `PublicFixtureKind` union keep fixture discovery exact, while `NonEmptyArray<T>` carries schema non-emptiness into TypeScript.
 - The hosted legacy recommendation operation is temporarily unavailable and surfaces public code `recommendation_not_published`; callers must preserve that typed state until the deterministic decision operation replaces the legacy route atomically.
 - No auth flow, retries, service discovery, environment-variable defaults, hosted-product behavior, hosted receipt IDs, persistence, or private data access.
 - The npm package is marked private until a built JS distribution and publish flow exist.
@@ -36,7 +38,7 @@ const request: EvaluationRequest = {
   object: "evaluation_request",
   request_id: "req_public_fixture_01",
   use_case: "web-browsing",
-  entity_types: ["mcp_server"],
+  entity_types: ["component_configuration"],
   requested_at: "2026-06-25T00:00:00Z",
   constraints: {},
 };

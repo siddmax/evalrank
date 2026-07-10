@@ -20,7 +20,7 @@ evalrank fixture candidate-set
 evalrank fixture stage-candidate
 evalrank fixture evidence
 evalrank fixture problem
-evalrank fixture result-row
+evalrank fixture observation
 evalrank fixture ranking-group
 evalrank fixture evidence-set
 evalrank fixture exclusion

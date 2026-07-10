@@ -17,13 +17,13 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_evidence_item,
     sample_evidence_set,
     sample_evaluation_request,
+    sample_observation,
     sample_public_fixture,
     sample_problem_details,
     sample_ranked_entity,
     sample_ranking_group,
     sample_raw_entry,
     sample_recommendation,
-    sample_result_row,
     sample_scoring_stage_catalog,
     sample_stage_candidate,
     sample_use_case_catalog,
@@ -39,11 +39,11 @@ class CoreFixtureTests(unittest.TestCase):
                 "evidence-set",
                 "exclusion",
                 "fingerprint",
+                "observation",
                 "problem",
                 "raw-entry",
                 "recommendation",
                 "ranking-group",
-                "result-row",
                 "request",
                 "scoring-stages",
                 "stage-candidate",
@@ -75,7 +75,7 @@ class CoreFixtureTests(unittest.TestCase):
         row = sample_ranked_entity()
         payload = row.to_dict()
 
-        self.assertEqual("tool:public-search-demo", payload["id"])
+        self.assertRegex(payload["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual(PUBLIC_METHODOLOGY_VERSION, payload["methodology_version"])
         self.assertEqual(["capability", "evidence", "freshness"], sorted(payload["score_components"]))
 
@@ -95,8 +95,8 @@ class CoreFixtureTests(unittest.TestCase):
         payload = sample_ranking_group().to_dict()
 
         self.assertEqual("ranking_group", payload["object"])
-        self.assertEqual("mcp_server", payload["group_key"])
-        self.assertEqual("mcp_server", payload["entity_type"])
+        self.assertEqual("component_configuration", payload["group_key"])
+        self.assertEqual("component_configuration", payload["entity_type"])
         self.assertEqual([sample_ranked_entity().to_dict()], payload["ranked"])
         self.assertIn("within", payload["group_rationale"])
 
@@ -105,7 +105,7 @@ class CoreFixtureTests(unittest.TestCase):
         payload = evidence.to_dict()
 
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
-        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertRegex(payload["subject"]["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual("trace", payload["kind"])
         self.assertEqual("public-fixture", payload["source"])
         self.assertEqual(["latency_ms"], sorted(payload["metadata"]))
@@ -122,22 +122,21 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("request_id", payload["field"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
 
-    def test_sample_result_row_is_public_contract_payload(self):
-        row = sample_result_row()
-        payload = row.to_dict()
+    def test_sample_observation_is_typed_and_artifact_linked(self):
+        payload = sample_observation().to_dict()
 
-        self.assertEqual("result_row", payload["object"])
-        self.assertEqual("tool:public-search-demo", payload["entity_id"])
-        self.assertEqual("tool_server", payload["entity_kind"])
-        self.assertEqual("bench_public_search_freshness", payload["benchmark_id"])
-        self.assertEqual("pass_rate", payload["score_unit"])
-        self.assertEqual("verified", payload["verification_state"])
+        self.assertEqual("observation", payload["object"])
+        self.assertRegex(payload["evaluated_configuration_id"], r"^config_[0-9a-f]{64}$")
+        self.assertEqual("proportion", payload["metric"]["kind"])
+        self.assertEqual("0.875", payload["metric"]["value"])
+        self.assertEqual("reported", payload["uncertainty"]["method"])
+        self.assertRegex(payload["provenance"]["source_artifact_id"], r"^artifact_[0-9a-f]{64}$")
 
     def test_sample_exclusion_is_public_contract_payload(self):
         exclusion = sample_exclusion()
         payload = exclusion.to_dict()
 
-        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertRegex(payload["subject"]["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual("unknown_cost", payload["reason"])
         self.assertEqual("cost is unknown for this public fixture", payload["detail"])
 
@@ -158,7 +157,7 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("evaluation_request", payload["object"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
         self.assertEqual("web-browsing", payload["use_case"])
-        self.assertEqual(["mcp_server"], payload["entity_types"])
+        self.assertEqual(["component_configuration"], payload["entity_types"])
 
     def test_sample_request_use_case_is_in_public_catalog(self):
         catalog_ids = {row["id"] for row in sample_use_case_catalog().to_dict()["use_cases"]}
@@ -173,7 +172,8 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("req_public_fixture_01", payload["request_id"])
         self.assertEqual("web-browsing", payload["use_case"])
         self.assertEqual("2026-06-25T00:00:00Z", payload["generated_at"])
-        self.assertEqual([{"entity_type": "mcp_server", "id": "tool:public-search-demo"}], payload["candidates"])
+        self.assertEqual("component_configuration", payload["candidates"][0]["entity_type"])
+        self.assertRegex(payload["candidates"][0]["id"], r"^config_[0-9a-f]{64}$")
 
     def test_sample_stage_candidate_is_public_contract_payload(self):
         candidate = sample_stage_candidate()
@@ -181,7 +181,7 @@ class CoreFixtureTests(unittest.TestCase):
 
         self.assertEqual("stage_candidate", payload["object"])
         self.assertEqual(64, len(payload["candidate_id"]))
-        self.assertEqual("tool:public-search-demo", payload["entity"]["id"])
+        self.assertRegex(payload["entity"]["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual(["graph_rank", "lexical_rank", "semantic_rank"], sorted(payload["rrf_components"]))
         self.assertEqual(["lexical", "semantic"], payload["retrieval_provenance"]["arms"])
 

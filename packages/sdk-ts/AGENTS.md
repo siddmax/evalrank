@@ -8,10 +8,11 @@
 ## Rules
 
 - Do not add private service clients or hosted-product assumptions.
-- Add a package-level test command before adding non-trivial TypeScript implementation.
+- Keep Python/TypeScript identity and receipt behavior byte-identical through the shared golden corpus.
 - Keep schema-derived types traceable to `schemas/`.
 
 ## Checks
 
+- From repo root: `npm run check --prefix packages/sdk-ts`
+- From repo root: `npm run test --prefix packages/sdk-ts`
 - From repo root: `python3 scripts/check_public_boundary.py --root .`
-- From repo root: `python3 -m unittest discover tests`

@@ -19,7 +19,7 @@ Current adapter:
 - `call_tool("evalrank.fixture", {"kind": "stage-candidate"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "evidence"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "problem"})` returns deterministic public fixture JSON text.
-- `call_tool("evalrank.fixture", {"kind": "result-row"})` returns deterministic public fixture JSON text.
+- `call_tool("evalrank.fixture", {"kind": "observation"})` returns deterministic typed observation fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "ranking-group"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "evidence-set"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "exclusion"})` returns deterministic public fixture JSON text.

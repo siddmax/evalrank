@@ -12,9 +12,6 @@ sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import (  # noqa: E402
     EVIDENCE_KINDS,
-    RESULT_ENTITY_KINDS,
-    RESULT_FLAG_KEYS,
-    RESULT_VERIFICATION_STATES,
     THE_CALL_DECISIONS,
     TRUST_TIERS,
     USE_CASE_ENTITY_KINDS,
@@ -37,6 +34,12 @@ PROBLEM_CODES = {
 
 
 class TypeScriptSdkTests(unittest.TestCase):
+    def test_legacy_result_row_vocabulary_is_deleted(self):
+        source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
+        self.assertNotIn("ResultRow", source)
+        self.assertNotIn("result-row", source)
+        self.assertNotIn("RESULT_ENTITY_KINDS", source)
+
     def test_sdk_readme_lists_public_typescript_surface(self):
         text = (SDK_TS / "README.md").read_text(encoding="utf-8")
 
@@ -50,7 +53,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "StageCandidate",
             "EvidenceItem",
             "EvidenceSet",
-            "ResultRow",
+            "ObservationV1",
             "ScoringStage",
             "ScoringStageCatalog",
             "UseCase",
@@ -81,22 +84,24 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertEqual("./src/index.ts", package["types"])
         self.assertEqual("./src/index.ts", package["exports"]["."]["types"])
         self.assertEqual("./src/index.ts", package["exports"]["."]["default"])
-        self.assertEqual("node --experimental-strip-types --check src/index.ts", package["scripts"]["check"])
-        self.assertEqual("node --experimental-strip-types --test src/index.test.ts", package["scripts"]["test"])
+        self.assertEqual(
+            "node --experimental-strip-types --check src/index.ts && "
+            "node --experimental-strip-types --check src/decision-contracts.ts",
+            package["scripts"]["check"],
+        )
+        self.assertEqual(
+            "node --experimental-strip-types --test src/index.test.ts src/decision-contracts.test.ts",
+            package["scripts"]["test"],
+        )
 
     def test_public_constants_match_core_contracts(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
+        self.assertIn('export * from "./decision-contracts.ts";', source)
 
         self.assertEqual(TRUST_TIERS, _exported_string_array(source, "TRUST_TIERS"))
         self.assertEqual(EVIDENCE_KINDS, _exported_string_array(source, "EVIDENCE_KINDS"))
         self.assertEqual(THE_CALL_DECISIONS, _exported_string_array(source, "THE_CALL_DECISIONS"))
         self.assertEqual(PROBLEM_CODES, _exported_string_array(source, "PROBLEM_CODES"))
-        self.assertEqual(RESULT_ENTITY_KINDS, _exported_string_array(source, "RESULT_ENTITY_KINDS"))
-        self.assertEqual(set(RESULT_FLAG_KEYS), _exported_string_array(source, "RESULT_FLAG_KEYS"))
-        self.assertEqual(
-            RESULT_VERIFICATION_STATES,
-            _exported_string_array(source, "RESULT_VERIFICATION_STATES"),
-        )
         self.assertEqual(USE_CASE_ENTITY_KINDS, _exported_string_array(source, "USE_CASE_ENTITY_KINDS"))
         self.assertEqual(USE_CASE_RANK_POLICIES, _exported_string_array(source, "USE_CASE_RANK_POLICIES"))
         self.assertEqual(set(PUBLIC_FIXTURE_KINDS), _exported_string_array(source, "PUBLIC_FIXTURE_KINDS"))
@@ -116,7 +121,6 @@ class TypeScriptSdkTests(unittest.TestCase):
             "RankedEntity",
             "RankingGroup",
             "RawEntry",
-            "ResultRow",
             "ScoringStage",
             "ScoringStageCatalog",
             "StageCandidate",
@@ -180,8 +184,6 @@ class TypeScriptSdkTests(unittest.TestCase):
             "entity_types",
             "requested_at",
             "constraints",
-            "benchmark_id",
-            "benchmark_version",
             "candidates",
             "detail",
             "evidence_items",
@@ -193,16 +195,6 @@ class TypeScriptSdkTests(unittest.TestCase):
             "observed_at",
             "summary",
             "metadata",
-            "harness_version",
-            "is_self_reported",
-            "score_raw",
-            "score_unit",
-            "date_run",
-            "model_version",
-            "provenance",
-            "source_url",
-            "attribution_string",
-            "verification_state",
             "recommendation_id",
             "group_key",
             "group_rationale",
@@ -239,8 +231,6 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("exclusions: Exclusion[];", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
         self.assertIn("export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];", source)
-        self.assertIn("export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];", source)
-        self.assertIn("export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];", source)
         self.assertIn("export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];", source)
         self.assertIn("export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];", source)
         self.assertIn("export type NonEmptyArray<T> = [T, ...T[]];", source)
@@ -260,8 +250,6 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertIn("retriable?: boolean;", source)
         self.assertIn("[key: string]: unknown;", source)
         self.assertIn("coverage: TrustTier;", source)
-        self.assertIn("entity_kind: ResultEntityKind;", source)
-        self.assertIn("verification_state: ResultVerificationState;", source)
         self.assertIn("entity_types: NonEmptyArray<string>;", source)
         self.assertIn("candidates: NonEmptyArray<EntityRef>;", source)
         self.assertIn("arms: NonEmptyArray<string>;", source)

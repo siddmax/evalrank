@@ -35,7 +35,7 @@ def main(argv: list[str] | None = None, *, stdout: TextIO | None = None, stderr:
             stderr.write(str(exc) + "\n")
             return 2
         except EvalRankApiError as exc:
-            stderr.write(json.dumps(exc.problem, sort_keys=True, separators=(",", ":")) + "\n")
+            stderr.write(json.dumps(exc.problem.to_dict(), sort_keys=True, separators=(",", ":")) + "\n")
             return 1
         stdout.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
         return 0
@@ -46,7 +46,7 @@ def main(argv: list[str] | None = None, *, stdout: TextIO | None = None, stderr:
             stderr.write(str(exc) + "\n")
             return 2
         except EvalRankApiError as exc:
-            stderr.write(json.dumps(exc.problem, sort_keys=True, separators=(",", ":")) + "\n")
+            stderr.write(json.dumps(exc.problem.to_dict(), sort_keys=True, separators=(",", ":")) + "\n")
             return 1
         stdout.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
         return 0
@@ -64,7 +64,7 @@ def main(argv: list[str] | None = None, *, stdout: TextIO | None = None, stderr:
         try:
             recommendation = client.recommend(payload)
         except EvalRankApiError as exc:
-            stderr.write(json.dumps(exc.problem, sort_keys=True, separators=(",", ":")) + "\n")
+            stderr.write(json.dumps(exc.problem.to_dict(), sort_keys=True, separators=(",", ":")) + "\n")
             return 1
         stdout.write(json.dumps(recommendation, sort_keys=True, separators=(",", ":")) + "\n")
         return 0

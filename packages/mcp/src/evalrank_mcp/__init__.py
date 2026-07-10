@@ -153,7 +153,7 @@ def _recommend(arguments: dict[str, Any]) -> dict[str, Any]:
     try:
         return _text_result(EvalRankClient(base_url).recommend(request))
     except EvalRankApiError as exc:
-        return _text_result(exc.problem, is_error=True)
+        return _text_result(exc.problem.to_dict(), is_error=True)
 
 
 def _metadata(arguments: dict[str, Any], method: str) -> dict[str, Any]:
@@ -167,7 +167,7 @@ def _metadata(arguments: dict[str, Any], method: str) -> dict[str, Any]:
         if method == "scoring_stages":
             return _text_result(client.scoring_stages())
     except EvalRankApiError as exc:
-        return _text_result(exc.problem, is_error=True)
+        return _text_result(exc.problem.to_dict(), is_error=True)
     raise ValueError(f"unknown metadata method: {method}")
 
 

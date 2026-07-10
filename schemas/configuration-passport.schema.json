@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/configuration-passport.schema.json",
+  "title": "EvalRank Configuration Passport V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "schema_version",
+    "entity_kind",
+    "canonical_name",
+    "revision",
+    "interaction_policy",
+    "configuration_passport_class",
+    "harness",
+    "scaffold",
+    "tools",
+    "quantization",
+    "system_prompt_policy",
+    "environment"
+  ],
+  "properties": {
+    "object": {
+      "const": "configuration_passport"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "entity_kind": {
+      "enum": [
+        "model_configuration",
+        "agent_system",
+        "system_configuration",
+        "component_configuration",
+        "arena_system"
+      ]
+    },
+    "canonical_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interaction_policy": {
+      "enum": [
+        "direct_prompt",
+        "agentic",
+        "system",
+        "retrieval",
+        "crowd_pairwise"
+      ]
+    },
+    "configuration_passport_class": {
+      "enum": [
+        "model-configuration-v1",
+        "agent-system-v1",
+        "system-configuration-v1",
+        "component-configuration-v1",
+        "arena-system-v1"
+      ]
+    },
+    "harness": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "scaffold": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "tools": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "quantization": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "system_prompt_policy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "environment": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    }
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "model_configuration"
+            },
+            "interaction_policy": {
+              "const": "direct_prompt"
+            },
+            "configuration_passport_class": {
+              "const": "model-configuration-v1"
+            }
+          }
+        },
+        {
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "agent_system"
+            },
+            "interaction_policy": {
+              "const": "agentic"
+            },
+            "configuration_passport_class": {
+              "const": "agent-system-v1"
+            }
+          }
+        },
+        {
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "system_configuration"
+            },
+            "interaction_policy": {
+              "const": "system"
+            },
+            "configuration_passport_class": {
+              "const": "system-configuration-v1"
+            }
+          }
+        },
+        {
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "component_configuration"
+            },
+            "interaction_policy": {
+              "const": "retrieval"
+            },
+            "configuration_passport_class": {
+              "const": "component-configuration-v1"
+            }
+          }
+        },
+        {
+          "required": [
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class"
+          ],
+          "properties": {
+            "entity_kind": {
+              "const": "arena_system"
+            },
+            "interaction_policy": {
+              "const": "crowd_pairwise"
+            },
+            "configuration_passport_class": {
+              "const": "arena-system-v1"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "if": {
+        "required": [
+          "entity_kind"
+        ],
+        "properties": {
+          "entity_kind": {
+            "const": "agent_system"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "harness": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scaffold": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  ]
+}

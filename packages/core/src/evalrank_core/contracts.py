@@ -9,14 +9,13 @@ from datetime import date, datetime
 from typing import Any, ClassVar
 from urllib.parse import urlparse
 
+from evalrank_core.canonical_json import MAX_SAFE_INTEGER
+
 
 TRUST_TIERS = {"verified", "standardized", "self-reported", "tracking-only"}
 FRESHNESS_STATUSES = {"fresh", "stale", "recalibrating"}
 COMPARABILITY_MODES = {"single-scale", "kind-grouped"}
 EVIDENCE_KINDS = {"attestation", "benchmark", "documentation", "runtime-observation", "trace"}
-RESULT_ENTITY_KINDS = {"model", "tool_server", "agent"}
-RESULT_VERIFICATION_STATES = {"verified", "provisional"}
-RESULT_FLAG_KEYS = ("saturated", "contaminated", "judge_model_dependent", "scaffold_nonstandard")
 THE_CALL_DECISIONS = {"recommend", "abstain"}
 USE_CASE_ENTITY_KINDS = {"model", "tool", "agent"}
 USE_CASE_RANK_POLICIES = {"ranked", "veto_overlay"}
@@ -50,6 +49,8 @@ _PROBLEM_DETAIL_FIELDS = {
     "request_id",
     "doc_url",
 }
+_URI_REFERENCE_RE = re.compile(r"^[A-Za-z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+$")
+_INVALID_PERCENT_ESCAPE_RE = re.compile(r"%(?![0-9A-Fa-f]{2})")
 
 
 @dataclass(frozen=True)
@@ -413,90 +414,6 @@ class EvidenceItem:
 
 
 @dataclass(frozen=True)
-class ResultRow:
-    object: ClassVar[str] = "result_row"
-
-    entity_id: str
-    entity_kind: str
-    benchmark_id: str
-    benchmark_version: str
-    harness: str
-    harness_version: str
-    is_self_reported: bool
-    n_items: int
-    ci95: ConfidenceInterval
-    score_raw: float
-    score_unit: str
-    date_run: str
-    model_version: str
-    provenance: dict[str, Any]
-    source_url: str
-    attribution_string: str
-    flags: dict[str, bool]
-    verification_state: str
-
-    def __post_init__(self) -> None:
-        for name in (
-            "entity_id",
-            "benchmark_id",
-            "benchmark_version",
-            "harness",
-            "harness_version",
-            "score_unit",
-            "model_version",
-            "attribution_string",
-        ):
-            _require_nonempty_string(name, getattr(self, name))
-        _require_public_date("date_run", self.date_run)
-        _require_http_url("source_url", self.source_url)
-        if self.entity_kind not in RESULT_ENTITY_KINDS:
-            raise ValueError(f"entity_kind must be one of {sorted(RESULT_ENTITY_KINDS)}")
-        if not isinstance(self.is_self_reported, bool):
-            raise ValueError("is_self_reported must be a boolean")
-        if not isinstance(self.n_items, int) or isinstance(self.n_items, bool) or self.n_items < 0:
-            raise ValueError("n_items must be an integer >= 0")
-        if not isinstance(self.ci95, ConfidenceInterval):
-            raise TypeError("ci95 must be a ConfidenceInterval")
-        _require_finite_number("score_raw", self.score_raw)
-        if not isinstance(self.provenance, dict):
-            raise ValueError("provenance must be a JSON object")
-        _require_string_keys("provenance", self.provenance)
-        _normalize_json_object("provenance", self.provenance)
-        if not isinstance(self.flags, dict):
-            raise ValueError("flags must be a JSON object")
-        if set(self.flags) != set(RESULT_FLAG_KEYS):
-            raise ValueError(f"flags must include {', '.join(RESULT_FLAG_KEYS)}")
-        for key, value in self.flags.items():
-            if not isinstance(value, bool):
-                raise ValueError(f"flags.{key} must be a boolean")
-        if self.verification_state not in RESULT_VERIFICATION_STATES:
-            raise ValueError(f"verification_state must be one of {sorted(RESULT_VERIFICATION_STATES)}")
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "object": self.object,
-            "entity_id": self.entity_id,
-            "entity_kind": self.entity_kind,
-            "benchmark_id": self.benchmark_id,
-            "benchmark_version": self.benchmark_version,
-            "harness": self.harness,
-            "harness_version": self.harness_version,
-            "is_self_reported": self.is_self_reported,
-            "n_items": self.n_items,
-            "ci95": self.ci95.to_list(),
-            "score_raw": _round_score(float(self.score_raw)),
-            "score_unit": self.score_unit,
-            "date_run": self.date_run,
-            "model_version": self.model_version,
-            "provenance": _normalize_json_object("provenance", self.provenance),
-            "source_url": self.source_url,
-            "attribution_string": self.attribution_string,
-            "flags": {key: self.flags[key] for key in RESULT_FLAG_KEYS},
-            "verification_state": self.verification_state,
-        }
-
-
-@dataclass(frozen=True)
 class EvidenceSet:
     object: ClassVar[str] = "evidence_set"
 
@@ -785,12 +702,42 @@ class ProblemDetails:
     request_id: str | None = None
     doc_url: str | None = None
 
+    @classmethod
+    def from_dict(cls, payload: dict[str, Any]) -> "ProblemDetails":
+        if not isinstance(payload, dict):
+            raise TypeError("Problem Details payload must be a JSON object")
+        _require_string_keys("Problem Details payload", payload)
+        required = {"type", "title", "status", "detail"}
+        missing = required - set(payload)
+        if missing:
+            raise ValueError(
+                "Problem Details payload is missing " + ", ".join(sorted(missing))
+            )
+        optional = _PROBLEM_DETAIL_FIELDS - required
+        for name in optional & set(payload):
+            if payload[name] is None:
+                raise ValueError(f"{name} must be omitted instead of null")
+        extensions = {
+            key: value
+            for key, value in payload.items()
+            if key not in _PROBLEM_DETAIL_FIELDS
+        }
+        known = {
+            key: payload[key]
+            for key in _PROBLEM_DETAIL_FIELDS
+            if key in payload
+        }
+        return cls(**known, extensions=extensions)
+
     def __post_init__(self) -> None:
-        for name in ("type", "title", "detail"):
+        _require_uri_reference("type", self.type)
+        for name in ("title", "detail"):
             _require_nonempty_string(name, getattr(self, name))
         if not isinstance(self.status, int) or isinstance(self.status, bool) or not 400 <= self.status <= 599:
             raise ValueError("status must be an integer from 400 to 599")
-        for name in ("instance", "field", "request_id"):
+        if self.instance is not None:
+            _require_uri_reference("instance", self.instance)
+        for name in ("field", "request_id"):
             value = getattr(self, name)
             if value is not None:
                 _require_nonempty_string(name, value)
@@ -801,9 +748,11 @@ class ProblemDetails:
         if self.retriable is not None and not isinstance(self.retriable, bool):
             raise ValueError("retriable must be a boolean")
         if self.retry_after is not None and (
-            not isinstance(self.retry_after, int) or isinstance(self.retry_after, bool) or self.retry_after < 0
+            not isinstance(self.retry_after, int)
+            or isinstance(self.retry_after, bool)
+            or not 0 <= self.retry_after <= MAX_SAFE_INTEGER
         ):
-            raise ValueError("retry_after must be an integer >= 0")
+            raise ValueError("retry_after must be a safe integer >= 0")
         if not isinstance(self.extensions, dict):
             raise ValueError("extensions must be a JSON object")
         if set(self.extensions) & _PROBLEM_DETAIL_FIELDS:
@@ -1150,13 +1099,36 @@ def _require_public_timestamp(name: str, value: str) -> None:
 def _require_http_url(name: str, value: str) -> None:
     if not isinstance(value, str):
         raise ValueError(f"{name} must be an http or https URL")
+    _require_uri_reference(name, value)
     parsed = urlparse(value)
-    if (
-        not value.startswith(("http://", "https://"))
-        or parsed.scheme not in {"http", "https"}
-        or not parsed.netloc
-    ):
+    try:
+        hostname = parsed.hostname
+        parsed.port
+    except ValueError as exc:
+        raise ValueError(f"{name} must be an http or https URL") from exc
+    if not value.startswith(("http://", "https://")) or parsed.scheme not in {"http", "https"} or not hostname:
         raise ValueError(f"{name} must be an http or https URL")
+
+
+def _require_uri_reference(name: str, value: Any) -> None:
+    if (
+        not isinstance(value, str)
+        or not value
+        or _URI_REFERENCE_RE.fullmatch(value) is None
+        or _INVALID_PERCENT_ESCAPE_RE.search(value) is not None
+    ):
+        raise ValueError(f"{name} must be a valid URI reference")
+    try:
+        parsed = urlparse(value)
+        if (
+            (value.startswith(("http://", "https://", "//")))
+            and not parsed.netloc
+        ):
+            raise ValueError
+        if parsed.netloc:
+            parsed.port
+    except ValueError as exc:
+        raise ValueError(f"{name} must be a valid URI reference") from exc
 
 
 def _require_contiguous_ranks(name: str, rows: tuple[RankedEntity, ...] | list[RankedEntity]) -> None:
