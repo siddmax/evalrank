@@ -757,6 +757,13 @@ class UsageProfileV1:
                 lambda row: (row.ttl_seconds,),
             ),
         )
+        if not (
+            self.uncached_input_tokens
+            or self.cached_read_tokens
+            or self.output_tokens
+            or self.cache_writes
+        ):
+            raise ValueError("usage profile must describe a non-zero workload")
 
     @property
     def has_cache_usage(self) -> bool:

@@ -24,7 +24,7 @@ normative authority or evidence of runtime lineage, rights, or admission.
 - Parser provenance records the complete sorted, role-typed retained input set. Multi-file upstream releases cannot hide auxiliary bytes in adapter metadata.
 - Apache-2.0, product-neutral Python contracts and synthetic fixtures.
 - Public JSON Schemas and OpenAPI description.
-- Immutable artifact/run provenance, native observations, exact configuration passports, effective-dated serving-offer pricing schedules, evidence-basis evaluation-to-offer links, closed monthly usage queries, baseline and zero-cache projected-cost receipts with hard cross-profile budgets and truthful divergence caveats, and deterministic receipt identities.
+- Immutable artifact/run provenance, native observations, exact configuration passports, effective-dated serving-offer pricing schedules, evidence-basis evaluation-to-offer links, non-zero closed monthly usage queries, baseline and zero-cache projected-cost receipts with hard cross-profile budgets and truthful divergence caveats, and deterministic receipt identities.
 - Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts with semantic verifiers.
 - Dependency-light Python and TypeScript SDK boundaries.
 - Deterministic CLI and MCP adapters over public contracts.

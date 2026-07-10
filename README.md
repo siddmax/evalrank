@@ -26,7 +26,7 @@ EvalRank is a public, product-neutral truth and decision contract for comparing 
 - `POST /v1/decisions`
 - `GET /v1/decisions/{receipt_id}`
 
-`POST /v1/decisions` accepts only `DecisionQueryV1`. The optional `?share=true` parameter is transport policy, not query semantics: it retains an append-only public-safe receipt that anyone with the ID can retrieve. A non-shared result is returned but is not retrievable. `DecisionReceiptV1` pins the semantic query, ranking-group publication, methodology, selected top set or abstention, structured reasons, sensitivities, evidence, and freshness; its ID hashes the full restricted-JCS body.
+`POST /v1/decisions` accepts only `DecisionQueryV1`. A supplied usage profile must describe non-zero work; zero-work cost comparisons are invalid rather than artificial free ties. The optional `?share=true` parameter is transport policy, not query semantics: it retains an append-only public-safe receipt that anyone with the ID can retrieve. A non-shared result is returned but is not retrievable. `DecisionReceiptV1` pins the semantic query, ranking-group publication, methodology, selected top set or abstention, structured reasons, sensitivities, evidence, and freshness; its ID hashes the full restricted-JCS body.
 
 There are no recommendation or scoring-stage route aliases. Legacy paths return `404` in the reference server.
 

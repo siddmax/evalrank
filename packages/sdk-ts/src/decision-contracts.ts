@@ -1367,7 +1367,7 @@ export function parseUsageProfileV1(value: unknown): UsageProfileV1 {
     }),
     "cache_writes",
   );
-  return {
+  const usage = {
     basis: enumValue(payload.basis, ["measured", "estimated"] as const, "basis"),
     uncached_input_tokens: safeInteger(payload.uncached_input_tokens, "uncached_input_tokens", 0),
     cached_read_tokens: safeInteger(payload.cached_read_tokens, "cached_read_tokens", 0),
@@ -1379,6 +1379,15 @@ export function parseUsageProfileV1(value: unknown): UsageProfileV1 {
       0,
     ),
   };
+  if (
+    usage.uncached_input_tokens === 0
+    && usage.cached_read_tokens === 0
+    && usage.output_tokens === 0
+    && usage.cache_writes.length === 0
+  ) {
+    throw new TypeError("usage profile must describe a non-zero workload");
+  }
+  return usage;
 }
 
 export function parsePricingScheduleFactV1(value: unknown): PricingScheduleFactV1 {

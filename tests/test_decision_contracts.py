@@ -341,6 +341,20 @@ class ServingOfferTests(unittest.TestCase):
         self.assertEqual(1, decision_contracts.monthly_cost_microusd(usage, pricing))
         self.assertEqual(pricing, decision_contracts.PricingScheduleFactV1.from_dict(pricing.to_dict()))
 
+    def test_usage_profile_rejects_a_zero_workload(self):
+        for storage in (0, 1):
+            with self.subTest(storage=storage), self.assertRaisesRegex(
+                ValueError, "non-zero workload"
+            ):
+                decision_contracts.UsageProfileV1(
+                    basis="measured",
+                    uncached_input_tokens=0,
+                    cached_read_tokens=0,
+                    output_tokens=0,
+                    cache_writes=(),
+                    cache_storage_token_seconds=storage,
+                )
+
     def test_monthly_cost_fails_closed_for_each_missing_nonzero_cache_rate(self):
         base_usage = decision_contracts.UsageProfileV1(
             basis="measured",
@@ -375,17 +389,17 @@ class ServingOfferTests(unittest.TestCase):
         )
         self.assertIsNone(
             decision_contracts.monthly_cost_microusd(
-                replace(base_usage, cached_read_tokens=0, cache_storage_token_seconds=1),
+                replace(
+                    base_usage,
+                    uncached_input_tokens=1,
+                    cached_read_tokens=0,
+                    cache_storage_token_seconds=1,
+                ),
                 base_pricing,
             )
         )
-        self.assertEqual(
-            0,
-            decision_contracts.monthly_cost_microusd(
-                replace(base_usage, cached_read_tokens=0),
-                base_pricing,
-            ),
-        )
+        with self.assertRaisesRegex(ValueError, "non-zero workload"):
+            replace(base_usage, cached_read_tokens=0)
 
     def test_pricing_effective_at_controls_offer_eligibility(self):
         offer = _serving_offer()
