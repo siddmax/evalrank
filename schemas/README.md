@@ -15,10 +15,10 @@ Public EvalRank JSON Schema contracts live here.
 - `observation.schema.json` defines closed metric and uncertainty unions for one evaluated configuration.
 - `configuration-passport.schema.json` pins one resolved manifest identity and reproducible configuration.
 - `evaluated-configuration.schema.json` content-addresses a configuration passport.
-- `serving-offer.schema.json` separates dated context, availability, and integer-microusd pricing facts.
-- `evaluation-to-offer-link.schema.json` records reviewed exact, incompatible, or unresolved configuration-to-offer evidence.
-- `decision-query.schema.json` defines transport-free semantic decision intent for one exact ranking group.
-- `decision-receipt.schema.json` defines a deterministic, typed top-set or abstention receipt.
+- `serving-offer.schema.json` separates dated context and availability from effective-dated integer-microusd pricing schedules, including nullable cached-read/storage rates and TTL-qualified cache-write rates.
+- `evaluation-to-offer-link.schema.json` records reviewed exact, incompatible, or unresolved configuration-to-offer evidence with an explicit evidence basis; inferred links are never decision-eligible.
+- `decision-query.schema.json` defines transport-free semantic decision intent for one exact ranking group and a closed monthly usage profile. Estimated cache usage requires an explicit zero-cache profile; measured usage forbids one.
+- `decision-receipt.schema.json` defines a deterministic, typed top-set or abstention receipt, including nullable baseline and zero-cache projected monthly costs on every selection.
 - `leaderboard.schema.json` defines a cell snapshot set with separate ranking-group publication sections. Its content-addressed descriptor carries a closed, UTF-16-sorted list of exact `ranking_group_id`/`publication_snapshot_id` ownership pairs.
 - `entity-detail.schema.json` defines one exact evaluated configuration and ranking projection.
 - `compare-result.schema.json` defines a two-to-four configuration comparison on one group scale.
@@ -45,6 +45,8 @@ Ranked entity freshness dates use public `YYYY-MM-DD` strings for `last_eval` an
 Public event timestamp fields use UTC `YYYY-MM-DDTHH:MM:SSZ` strings; private scheduler cadence and runtime refresh policy stay outside the schemas.
 
 Artifact, evaluated-configuration, semantic-query, and receipt identities use the shared restricted RFC 8785 subset: UTF-16 object-key ordering, UTF-8 without whitespace, safe integers, no floats, valid Unicode, and no normalization. Set-valued query fields reject duplicates and serialize sorted.
+
+Monthly cost is computed from uncached input, cached reads, output, exact-TTL cache writes, and cache-storage token-seconds using integer arithmetic over one common denominator and one final ceiling. A missing rate for any nonzero component is an abstention condition, never a zero-price default. The receipt calls these values projections under declared profiles, requires a hard monthly budget to cover both the baseline and any declared zero-cache profile, and discloses `cost_sensitive_to_usage` whenever estimated projections differ. Cross-field total-input/output equality, duplicate TTL rejection, exact cost recomputation, cross-profile budget comparison, caveat truth, and pricing `effective_at` validity are enforced by the Python and TypeScript semantic validators where JSON Schema cannot express them.
 
 Manifest identity triples are one of five explicit versioned resolved combinations (model, agent, system, component, or arena) or exactly `unresolved`/`unresolved`/`unresolved-v1`; mixed or invented combinations are invalid. Unresolved identities must be explorer-only, and resolved identities may also be explorer-only when the evidence policy cannot support a top set. Every explorer ceiling keeps top-set, winner, superiority, practical-effect, and leave-one-family-out fields null; active groups must use the single-winner-capable policy. Discovery keeps adapter IDs, rank counts, cadence thresholds, and task/environment/grader lineage IDs null. Shadow feeds require an adapter. Active feeds require an adapter, a positive rank count, approved rights, validated ordered cadence, validated lineage, and a validated correlation group; active ranking groups require calibrated evidence, a positive rank count, and enough independently counted active families for their top-set gate. Quarantine requires an explicit reason and null rank count, while non-quarantined records keep the reason null. A family may expose multiple feeds, but feeds sharing a declared correlation group count once.
 

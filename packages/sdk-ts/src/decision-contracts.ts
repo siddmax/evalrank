@@ -188,9 +188,32 @@ export interface AvailabilityFactV1 extends DatedFactV1 {
   status: "available" | "limited" | "unavailable";
 }
 
-export interface PricingFactV1 extends DatedFactV1 {
-  input_microusd_per_million_tokens: number;
+export interface CacheWriteUsageV1 {
+  ttl_seconds: number;
+  tokens: number;
+}
+
+export interface UsageProfileV1 {
+  basis: "measured" | "estimated";
+  uncached_input_tokens: number;
+  cached_read_tokens: number;
+  output_tokens: number;
+  cache_writes: CacheWriteUsageV1[];
+  cache_storage_token_seconds: number;
+}
+
+export interface CacheWriteRateV1 {
+  ttl_seconds: number;
+  microusd_per_million_tokens: number;
+}
+
+export interface PricingScheduleFactV1 extends DatedFactV1 {
+  uncached_input_microusd_per_million_tokens: number;
+  cached_read_microusd_per_million_tokens: number | null;
   output_microusd_per_million_tokens: number;
+  cache_write_rates: CacheWriteRateV1[];
+  cache_storage_microusd_per_million_token_hours: number | null;
+  effective_at: string;
 }
 
 export interface ServingOfferV1 {
@@ -202,7 +225,7 @@ export interface ServingOfferV1 {
   region: string;
   context: ContextFactV1;
   availability: AvailabilityFactV1;
-  pricing: PricingFactV1;
+  pricing: PricingScheduleFactV1;
 }
 
 export interface EvaluationToOfferLinkV1 {
@@ -212,6 +235,7 @@ export interface EvaluationToOfferLinkV1 {
   evaluated_configuration_id: string;
   serving_offer_id: string;
   compatibility: "exact" | "incompatible" | "unresolved";
+  evidence_basis: "benchmark_exact" | "provider_attested" | "operator_reviewed" | "inferred";
   evidence_source_artifact_id: string;
   observed_at: string;
   expires_at: string;
@@ -230,9 +254,8 @@ export interface DecisionQueryV1 {
   provider_ids?: string[];
   regions?: string[];
   minimum_context_tokens?: number;
-  input_tokens_per_request?: number;
-  output_tokens_per_request?: number;
-  requests_per_month?: number;
+  usage_profile?: UsageProfileV1;
+  zero_cache_sensitivity_usage_profile?: UsageProfileV1;
   monthly_budget_microusd?: number;
 }
 
@@ -247,7 +270,8 @@ export interface DecisionSelectionV1 {
   evaluated_configuration_id: string;
   serving_offer_id: string | null;
   capability_rank: number;
-  estimated_monthly_cost_microusd: number | null;
+  projected_monthly_cost_microusd: number | null;
+  zero_cache_sensitivity_projected_monthly_cost_microusd: number | null;
 }
 
 export interface DecisionExclusionV1 {
@@ -271,8 +295,8 @@ export interface DecisionReasonV1 {
   code:
     | "strongest_capability_evidence"
     | "within_capability_top_set"
-    | "lowest_verified_cost"
-    | "budget_constraint_met"
+    | "lowest_cost_under_usage_profile"
+    | "budget_fit_under_declared_profiles"
     | "provider_constraint_match"
     | "region_constraint_match"
     | "context_requirement_met"
@@ -950,14 +974,14 @@ export function parseServingOfferV1(value: unknown): ServingOfferV1 {
     region: nonEmptyString(payload.region, "region"),
     context: parseContextFact(payload.context),
     availability: parseAvailabilityFact(payload.availability),
-    pricing: parsePricingFact(payload.pricing),
+    pricing: parsePricingScheduleFactV1(payload.pricing),
   };
 }
 
 export function parseEvaluationToOfferLinkV1(value: unknown): EvaluationToOfferLinkV1 {
   const payload = closed(value, [
     "object", "schema_version", "evaluation_to_offer_link_id", "evaluated_configuration_id",
-    "serving_offer_id", "compatibility", "evidence_source_artifact_id", "observed_at", "expires_at", "review_state",
+    "serving_offer_id", "compatibility", "evidence_basis", "evidence_source_artifact_id", "observed_at", "expires_at", "review_state",
   ]);
   envelope(payload, "evaluation_to_offer_link");
   const observed = timestamp(payload.observed_at, "observed_at");
@@ -972,6 +996,11 @@ export function parseEvaluationToOfferLinkV1(value: unknown): EvaluationToOfferL
     evaluated_configuration_id: patternString(payload.evaluated_configuration_id, configurationIdPattern, "evaluated_configuration_id"),
     serving_offer_id: prefixString(payload.serving_offer_id, "offer_", "serving_offer_id"),
     compatibility: enumValue(payload.compatibility, ["exact", "incompatible", "unresolved"] as const, "compatibility"),
+    evidence_basis: enumValue(
+      payload.evidence_basis,
+      ["benchmark_exact", "provider_attested", "operator_reviewed", "inferred"] as const,
+      "evidence_basis",
+    ),
     evidence_source_artifact_id: patternString(payload.evidence_source_artifact_id, artifactIdPattern, "evidence_source_artifact_id"),
     observed_at: observed,
     expires_at: expires,
@@ -979,25 +1008,50 @@ export function parseEvaluationToOfferLinkV1(value: unknown): EvaluationToOfferL
   };
 }
 
-export function isEvaluationToOfferLinkEligible(link: EvaluationToOfferLinkV1, asOf: string): boolean {
-  const instant = timestamp(asOf, "as_of");
-  return link.compatibility === "exact"
-    && link.review_state === "approved"
-    && link.observed_at <= instant
-    && instant < link.expires_at;
+export function isEvaluationToOfferLinkEligible(link: unknown, asOf: unknown): boolean {
+  try {
+    return normalizedLinkIsEligible(
+      parseEvaluationToOfferLinkV1(link),
+      timestamp(asOf, "as_of"),
+    );
+  } catch {
+    return false;
+  }
 }
 
 export function isServingOfferDecisionEligible(
-  offer: ServingOfferV1,
-  link: EvaluationToOfferLinkV1,
-  asOf: string,
+  offer: unknown,
+  link: unknown,
+  asOf: unknown,
 ): boolean {
-  const instant = timestamp(asOf, "as_of");
-  if (link.serving_offer_id !== offer.serving_offer_id || offer.availability.status !== "available") return false;
-  if (!isEvaluationToOfferLinkEligible(link, instant)) return false;
-  return [offer.context, offer.availability, offer.pricing].every(
-    (fact) => fact.observed_at <= instant && instant < fact.expires_at,
-  );
+  try {
+    const normalizedOffer = parseServingOfferV1(offer);
+    const normalizedLink = parseEvaluationToOfferLinkV1(link);
+    const instant = timestamp(asOf, "as_of");
+    if (
+      normalizedLink.serving_offer_id !== normalizedOffer.serving_offer_id
+      || normalizedOffer.availability.status !== "available"
+      || !normalizedLinkIsEligible(normalizedLink, instant)
+    ) return false;
+    return [normalizedOffer.context, normalizedOffer.availability].every(
+      (fact) => fact.observed_at <= instant && instant < fact.expires_at,
+    ) && normalizedOffer.pricing.observed_at <= instant
+      && normalizedOffer.pricing.effective_at <= instant
+      && instant < normalizedOffer.pricing.expires_at;
+  } catch {
+    return false;
+  }
+}
+
+function normalizedLinkIsEligible(
+  link: EvaluationToOfferLinkV1,
+  instant: string,
+): boolean {
+  return link.compatibility === "exact"
+    && link.review_state === "approved"
+    && link.evidence_basis !== "inferred"
+    && link.observed_at <= instant
+    && instant < link.expires_at;
 }
 
 export function parseDecisionQueryV1(value: unknown): DecisionQueryV1 {
@@ -1006,8 +1060,8 @@ export function parseDecisionQueryV1(value: unknown): DecisionQueryV1 {
     "configuration_passport_class", "objective",
   ];
   const optional = [
-    "provider_ids", "regions", "minimum_context_tokens", "input_tokens_per_request",
-    "output_tokens_per_request", "requests_per_month", "monthly_budget_microusd",
+    "provider_ids", "regions", "minimum_context_tokens", "usage_profile",
+    "zero_cache_sensitivity_usage_profile", "monthly_budget_microusd",
   ];
   const payload = closed(value, required, optional);
   envelope(payload, "decision_query");
@@ -1027,21 +1081,60 @@ export function parseDecisionQueryV1(value: unknown): DecisionQueryV1 {
   if ("provider_ids" in payload) query.provider_ids = normalizedStringSet(payload.provider_ids, "provider_ids");
   if ("regions" in payload) query.regions = normalizedStringSet(payload.regions, "regions");
   if ("minimum_context_tokens" in payload) query.minimum_context_tokens = safeInteger(payload.minimum_context_tokens, "minimum_context_tokens", 1);
-  if ("input_tokens_per_request" in payload) query.input_tokens_per_request = safeInteger(payload.input_tokens_per_request, "input_tokens_per_request", 0);
-  if ("output_tokens_per_request" in payload) query.output_tokens_per_request = safeInteger(payload.output_tokens_per_request, "output_tokens_per_request", 0);
-  if ("requests_per_month" in payload) query.requests_per_month = safeInteger(payload.requests_per_month, "requests_per_month", 1);
+  if ("usage_profile" in payload) query.usage_profile = parseUsageProfileV1(payload.usage_profile);
+  if ("zero_cache_sensitivity_usage_profile" in payload) {
+    query.zero_cache_sensitivity_usage_profile = parseUsageProfileV1(payload.zero_cache_sensitivity_usage_profile);
+  }
   if ("monthly_budget_microusd" in payload) query.monthly_budget_microusd = safeInteger(payload.monthly_budget_microusd, "monthly_budget_microusd", 0);
-  const usage = [query.input_tokens_per_request, query.output_tokens_per_request, query.requests_per_month];
-  if (usage.some((item) => item !== undefined) && usage.some((item) => item === undefined)) {
-    throw new TypeError("input_tokens_per_request, output_tokens_per_request, and requests_per_month must be supplied together");
+  if (query.objective === "lowest_cost_within_top_set" && query.usage_profile === undefined) {
+    throw new TypeError("lowest_cost_within_top_set requires usage_profile");
   }
-  if (query.objective === "lowest_cost_within_top_set" && usage.some((item) => item === undefined)) {
-    throw new TypeError("lowest_cost_within_top_set requires input_tokens_per_request, output_tokens_per_request, and requests_per_month");
+  if (query.monthly_budget_microusd !== undefined && query.usage_profile === undefined) {
+    throw new TypeError("monthly_budget_microusd requires usage_profile");
   }
-  if (query.monthly_budget_microusd !== undefined && usage.some((item) => item === undefined)) {
-    throw new TypeError("monthly_budget_microusd requires input_tokens_per_request, output_tokens_per_request, and requests_per_month");
-  }
+  validateZeroCacheSensitivity(query);
   return query;
+}
+
+function validateZeroCacheSensitivity(query: DecisionQueryV1): void {
+  const usage = query.usage_profile;
+  const sensitivity = query.zero_cache_sensitivity_usage_profile;
+  const hasCacheUsage = usage !== undefined && (
+    usage.cached_read_tokens !== 0
+    || usage.cache_writes.length !== 0
+    || usage.cache_storage_token_seconds !== 0
+  );
+  const required = usage?.basis === "estimated" && hasCacheUsage;
+  if (required && sensitivity === undefined) {
+    throw new TypeError("estimated cached usage requires zero_cache_sensitivity_usage_profile");
+  }
+  if (!required && sensitivity !== undefined) {
+    const basis = usage?.basis === "measured" ? "measured" : "uncached";
+    throw new TypeError(`zero_cache_sensitivity_usage_profile is not allowed for ${basis} usage`);
+  }
+  if (usage === undefined || sensitivity === undefined) return;
+  if (sensitivity.basis !== "estimated") {
+    throw new TypeError("zero_cache_sensitivity_usage_profile must be estimated");
+  }
+  if (
+    sensitivity.cached_read_tokens !== 0
+    || sensitivity.cache_writes.length !== 0
+    || sensitivity.cache_storage_token_seconds !== 0
+  ) {
+    throw new TypeError("zero_cache_sensitivity_usage_profile must contain no cache usage");
+  }
+  if (totalInputTokens(sensitivity) !== totalInputTokens(usage)) {
+    throw new TypeError("zero_cache_sensitivity_usage_profile must preserve total input tokens");
+  }
+  if (sensitivity.output_tokens !== usage.output_tokens) {
+    throw new TypeError("zero_cache_sensitivity_usage_profile must preserve output tokens");
+  }
+}
+
+function totalInputTokens(usage: UsageProfileV1): bigint {
+  return BigInt(usage.uncached_input_tokens)
+    + BigInt(usage.cached_read_tokens)
+    + usage.cache_writes.reduce((total, row) => total + BigInt(row.tokens), 0n);
 }
 
 export async function parseDecisionReceiptV1(value: unknown): Promise<DecisionReceiptV1> {
@@ -1229,16 +1322,90 @@ function parseAvailabilityFact(value: unknown): AvailabilityFactV1 {
   };
 }
 
-function parsePricingFact(value: unknown): PricingFactV1 {
+export function parseUsageProfileV1(value: unknown): UsageProfileV1 {
   const payload = closed(value, [
-    "input_microusd_per_million_tokens", "output_microusd_per_million_tokens",
-    "observed_at", "expires_at", "source_artifact_id",
+    "basis", "uncached_input_tokens", "cached_read_tokens", "output_tokens",
+    "cache_writes", "cache_storage_token_seconds",
   ]);
+  const cacheWrites = normalizeTtlRecords(
+    array(payload.cache_writes, "cache_writes").map((row) => {
+      const item = closed(row, ["ttl_seconds", "tokens"]);
+      return {
+        ttl_seconds: safeInteger(item.ttl_seconds, "ttl_seconds", 1),
+        tokens: safeInteger(item.tokens, "tokens", 1),
+      };
+    }),
+    "cache_writes",
+  );
   return {
-    input_microusd_per_million_tokens: safeInteger(payload.input_microusd_per_million_tokens, "input_microusd_per_million_tokens", 0),
-    output_microusd_per_million_tokens: safeInteger(payload.output_microusd_per_million_tokens, "output_microusd_per_million_tokens", 0),
-    ...datedFact(payload),
+    basis: enumValue(payload.basis, ["measured", "estimated"] as const, "basis"),
+    uncached_input_tokens: safeInteger(payload.uncached_input_tokens, "uncached_input_tokens", 0),
+    cached_read_tokens: safeInteger(payload.cached_read_tokens, "cached_read_tokens", 0),
+    output_tokens: safeInteger(payload.output_tokens, "output_tokens", 0),
+    cache_writes: cacheWrites,
+    cache_storage_token_seconds: safeInteger(
+      payload.cache_storage_token_seconds,
+      "cache_storage_token_seconds",
+      0,
+    ),
   };
+}
+
+export function parsePricingScheduleFactV1(value: unknown): PricingScheduleFactV1 {
+  const payload = closed(value, [
+    "uncached_input_microusd_per_million_tokens", "cached_read_microusd_per_million_tokens",
+    "output_microusd_per_million_tokens", "cache_write_rates",
+    "cache_storage_microusd_per_million_token_hours", "observed_at", "effective_at",
+    "expires_at", "source_artifact_id",
+  ]);
+  const fact = datedFact(payload);
+  const effectiveAt = timestamp(payload.effective_at, "effective_at");
+  if (fact.expires_at <= effectiveAt) throw new TypeError("expires_at must be after effective_at");
+  const cacheWriteRates = normalizeTtlRecords(
+    array(payload.cache_write_rates, "cache_write_rates").map((row) => {
+      const item = closed(row, ["ttl_seconds", "microusd_per_million_tokens"]);
+      return {
+        ttl_seconds: safeInteger(item.ttl_seconds, "ttl_seconds", 1),
+        microusd_per_million_tokens: safeInteger(
+          item.microusd_per_million_tokens,
+          "microusd_per_million_tokens",
+          0,
+        ),
+      };
+    }),
+    "cache_write_rates",
+  );
+  return {
+    uncached_input_microusd_per_million_tokens: safeInteger(
+      payload.uncached_input_microusd_per_million_tokens,
+      "uncached_input_microusd_per_million_tokens",
+      0,
+    ),
+    cached_read_microusd_per_million_tokens: nullableSafeInteger(
+      payload.cached_read_microusd_per_million_tokens,
+      "cached_read_microusd_per_million_tokens",
+      0,
+    ),
+    output_microusd_per_million_tokens: safeInteger(payload.output_microusd_per_million_tokens, "output_microusd_per_million_tokens", 0),
+    cache_write_rates: cacheWriteRates,
+    cache_storage_microusd_per_million_token_hours: nullableSafeInteger(
+      payload.cache_storage_microusd_per_million_token_hours,
+      "cache_storage_microusd_per_million_token_hours",
+      0,
+    ),
+    effective_at: effectiveAt,
+    ...fact,
+  };
+}
+
+function normalizeTtlRecords<T extends { ttl_seconds: number }>(values: T[], name: string): T[] {
+  const ttls = values.map((row) => row.ttl_seconds);
+  if (new Set(ttls).size !== ttls.length) throw new TypeError(`${name} must be unique`);
+  return [...values].sort((left, right) => {
+    const leftKey = canonicalJson([left.ttl_seconds]);
+    const rightKey = canonicalJson([right.ttl_seconds]);
+    return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
+  });
 }
 
 function datedFact(payload: Record<string, unknown>): DatedFactV1 {
@@ -1264,16 +1431,26 @@ function parsePublicationSnapshot(value: unknown): PublicationSnapshotRefV1 {
 
 function parseSelection(value: unknown): DecisionSelectionV1 {
   const payload = closed(value, [
-    "evaluated_configuration_id", "serving_offer_id", "capability_rank", "estimated_monthly_cost_microusd",
+    "evaluated_configuration_id", "serving_offer_id", "capability_rank",
+    "projected_monthly_cost_microusd", "zero_cache_sensitivity_projected_monthly_cost_microusd",
   ]);
   const selection: DecisionSelectionV1 = {
     evaluated_configuration_id: patternString(payload.evaluated_configuration_id, configurationIdPattern, "evaluated_configuration_id"),
     serving_offer_id: payload.serving_offer_id === null ? null : prefixString(payload.serving_offer_id, "offer_", "serving_offer_id"),
     capability_rank: safeInteger(payload.capability_rank, "capability_rank", 1),
-    estimated_monthly_cost_microusd: nullableSafeInteger(payload.estimated_monthly_cost_microusd, "estimated_monthly_cost_microusd", 0),
+    projected_monthly_cost_microusd: nullableSafeInteger(payload.projected_monthly_cost_microusd, "projected_monthly_cost_microusd", 0),
+    zero_cache_sensitivity_projected_monthly_cost_microusd: nullableSafeInteger(
+      payload.zero_cache_sensitivity_projected_monthly_cost_microusd,
+      "zero_cache_sensitivity_projected_monthly_cost_microusd",
+      0,
+    ),
   };
-  if (selection.estimated_monthly_cost_microusd !== null && selection.serving_offer_id === null) {
-    throw new TypeError("serving_offer_id is required when estimated_monthly_cost_microusd is present");
+  if (
+    (selection.projected_monthly_cost_microusd !== null
+      || selection.zero_cache_sensitivity_projected_monthly_cost_microusd !== null)
+    && selection.serving_offer_id === null
+  ) {
+    throw new TypeError("serving_offer_id is required when a monthly cost is present");
   }
   return selection;
 }
@@ -1305,7 +1482,7 @@ function parseReason(value: unknown): DecisionReasonV1 {
   const reason: DecisionReasonV1 = {
     reason_type: enumValue(payload.reason_type, ["best_when", "avoid_when"] as const, "reason_type"),
     code: enumValue(payload.code, [
-      "strongest_capability_evidence", "within_capability_top_set", "lowest_verified_cost", "budget_constraint_met",
+      "strongest_capability_evidence", "within_capability_top_set", "lowest_cost_under_usage_profile", "budget_fit_under_declared_profiles",
       "provider_constraint_match", "region_constraint_match", "context_requirement_met", "insufficient_evidence",
       "serving_offer_unverified", "budget_exceeded", "stale_evidence",
     ] as const, "code"),
@@ -1331,8 +1508,8 @@ function parseReason(value: unknown): DecisionReasonV1 {
     within_capability_top_set: ["capability", "score", "within_top_set"],
     provider_constraint_match: ["provider", "provider_id", "eq"],
     region_constraint_match: ["region", "region_id", "eq"],
-    lowest_verified_cost: ["monthly_cost", "microusd_per_month", "eq"],
-    budget_constraint_met: ["monthly_cost", "microusd_per_month", "lte"],
+    lowest_cost_under_usage_profile: ["monthly_cost", "microusd_per_month", "eq"],
+    budget_fit_under_declared_profiles: ["monthly_cost", "microusd_per_month", "lte"],
     budget_exceeded: ["monthly_cost", "microusd_per_month", "gt"],
     context_requirement_met: ["context", "tokens", "gte"],
     insufficient_evidence: ["capability", "status", "unavailable"],
@@ -1350,8 +1527,8 @@ function parseReason(value: unknown): DecisionReasonV1 {
     throw new TypeError(`${reason.predicate} predicate requires a null threshold`);
   }
   const positive = new Set<DecisionReasonV1["code"]>([
-    "strongest_capability_evidence", "within_capability_top_set", "lowest_verified_cost",
-    "budget_constraint_met", "provider_constraint_match", "region_constraint_match", "context_requirement_met",
+    "strongest_capability_evidence", "within_capability_top_set", "lowest_cost_under_usage_profile",
+    "budget_fit_under_declared_profiles", "provider_constraint_match", "region_constraint_match", "context_requirement_met",
   ]);
   if (positive.has(reason.code) !== (reason.reason_type === "best_when")) {
     throw new TypeError(`${reason.code} requires reason_type=${positive.has(reason.code) ? "best_when" : "avoid_when"}`);
@@ -1431,12 +1608,25 @@ function validateReceiptSemantics(receipt: Omit<DecisionReceiptV1, "receipt_id">
   if (receipt.outcome === "top_set" && receipt.query.objective === "lowest_cost_within_top_set") {
     for (const selection of receipt.selections) {
       if (selection.serving_offer_id === null) throw new TypeError("lowest_cost_within_top_set requires serving_offer_id for every selection");
-      if (selection.estimated_monthly_cost_microusd === null) throw new TypeError("lowest_cost_within_top_set requires estimated_monthly_cost_microusd for every selection");
-      if (receipt.query.monthly_budget_microusd !== undefined && selection.estimated_monthly_cost_microusd > receipt.query.monthly_budget_microusd) {
+      if (selection.projected_monthly_cost_microusd === null) throw new TypeError("lowest_cost_within_top_set requires projected_monthly_cost_microusd for every selection");
+      if (receipt.query.monthly_budget_microusd !== undefined && selection.projected_monthly_cost_microusd > receipt.query.monthly_budget_microusd) {
         throw new TypeError("selection cost must not exceed monthly_budget_microusd");
       }
+      if (
+        receipt.query.monthly_budget_microusd !== undefined
+        && receipt.query.zero_cache_sensitivity_usage_profile !== undefined
+        && (
+          selection.zero_cache_sensitivity_projected_monthly_cost_microusd === null
+          || selection.zero_cache_sensitivity_projected_monthly_cost_microusd
+            > receipt.query.monthly_budget_microusd
+        )
+      ) {
+        throw new TypeError(
+          "zero-cache sensitivity projected monthly cost must not exceed monthly_budget_microusd",
+        );
+      }
     }
-    if (new Set(receipt.selections.map((row) => row.estimated_monthly_cost_microusd)).size !== 1) {
+    if (new Set(receipt.selections.map((row) => row.projected_monthly_cost_microusd)).size !== 1) {
       throw new TypeError("lowest_cost_within_top_set selections must share one equal minimum cost");
     }
   }
@@ -1535,6 +1725,7 @@ function validateSelectedDecisionEvidence(receipt: Omit<DecisionReceiptV1, "rece
       || query.provider_ids !== undefined
       || query.regions !== undefined
       || query.minimum_context_tokens !== undefined
+      || query.usage_profile !== undefined
       || query.monthly_budget_microusd !== undefined;
     if (!offerRequired) continue;
     if (selection.serving_offer_id === null) throw new TypeError("selected configuration requires serving_offer_id for applied offer constraints");
@@ -1551,7 +1742,7 @@ function validateSelectedDecisionEvidence(receipt: Omit<DecisionReceiptV1, "rece
     const offer = offerEvidence.serving_offer;
     const link = linkEvidence.evaluation_to_offer_link;
     if (!isServingOfferDecisionEligible(offer, link, receipt.decided_at)) {
-      throw new TypeError("selected offer and link must be exact, approved, available, and current at decided_at");
+      throw new TypeError("selected offer and link must be exact, approved, non-inferred, available, and current at decided_at");
     }
     if (query.provider_ids && !query.provider_ids.includes(offer.provider_id)) throw new TypeError("selected offer provider must satisfy provider_ids");
     if (query.regions && !query.regions.includes(offer.region)) throw new TypeError("selected offer region must satisfy regions");
@@ -1559,25 +1750,92 @@ function validateSelectedDecisionEvidence(receipt: Omit<DecisionReceiptV1, "rece
       throw new TypeError("selected offer must satisfy minimum_context_tokens");
     }
     let computedCost: number | null = null;
-    if (query.input_tokens_per_request !== undefined) {
-      computedCost = monthlyCostMicrousd(query, offer);
-      if (selection.estimated_monthly_cost_microusd !== computedCost) {
-        throw new TypeError("estimated_monthly_cost_microusd must equal the computed monthly cost");
+    if (query.usage_profile !== undefined) {
+      computedCost = monthlyCostMicrousd(query.usage_profile, offer.pricing);
+      if (computedCost === null) {
+        throw new TypeError("pricing schedule lacks a rate for nonzero usage; decision must abstain");
+      }
+      if (selection.projected_monthly_cost_microusd !== computedCost) {
+        throw new TypeError("projected_monthly_cost_microusd must equal the computed monthly cost");
       }
       if (query.monthly_budget_microusd !== undefined && computedCost > query.monthly_budget_microusd) {
         throw new TypeError("computed monthly cost must not exceed monthly_budget_microusd");
       }
-    } else if (selection.estimated_monthly_cost_microusd !== null) {
-      throw new TypeError("estimated_monthly_cost_microusd must be null when query usage is omitted");
+    } else if (selection.projected_monthly_cost_microusd !== null) {
+      throw new TypeError("projected_monthly_cost_microusd must be null when query usage is omitted");
+    }
+    const sensitivity = query.zero_cache_sensitivity_usage_profile;
+    let sensitivityCost: number | null = null;
+    if (sensitivity !== undefined) {
+      sensitivityCost = monthlyCostMicrousd(sensitivity, offer.pricing);
+      if (sensitivityCost === null) {
+        throw new TypeError("pricing schedule lacks a rate for zero-cache sensitivity usage; decision must abstain");
+      }
+      if (selection.zero_cache_sensitivity_projected_monthly_cost_microusd !== sensitivityCost) {
+        throw new TypeError("zero_cache_sensitivity_projected_monthly_cost_microusd must equal the computed sensitivity cost");
+      }
+      if (
+        query.monthly_budget_microusd !== undefined
+        && sensitivityCost > query.monthly_budget_microusd
+      ) {
+        throw new TypeError(
+          "zero-cache sensitivity projected monthly cost must not exceed monthly_budget_microusd",
+        );
+      }
+    } else if (selection.zero_cache_sensitivity_projected_monthly_cost_microusd !== null) {
+      throw new TypeError("zero_cache_sensitivity_projected_monthly_cost_microusd must be null when query sensitivity is omitted");
     }
     const requiredIds = new Set([offerEvidence.evidence_id, linkEvidence.evidence_id]);
-    const observedAt = [offer.context.observed_at, offer.availability.observed_at, offer.pricing.observed_at, link.observed_at].sort().at(-1)!;
+    const observedAt = [
+      offer.context.observed_at,
+      offer.availability.observed_at,
+      offer.pricing.observed_at,
+      offer.pricing.effective_at,
+      link.observed_at,
+    ].sort().at(-1)!;
     const expiresAt = [offer.context.expires_at, offer.availability.expires_at, offer.pricing.expires_at, link.expires_at].sort()[0];
+    const costSensitiveToUsage = query.usage_profile?.basis === "estimated"
+      && sensitivityCost !== null
+      && computedCost !== sensitivityCost;
+    if (costSensitiveToUsage && !receipt.reasons.some(
+      (reason) => reason.caveat_codes.includes("cost_sensitive_to_usage")
+        && (
+          reason.subject_id === selection.evaluated_configuration_id
+          || reason.subject_id === selection.serving_offer_id
+        ),
+    )) {
+      throw new TypeError(
+        "differing estimated profile costs require cost_sensitive_to_usage on a matching selected configuration or offer reason",
+      );
+    }
     if (query.objective === "lowest_cost_within_top_set") {
-      requireOfferReason(receipt, selection, "lowest_verified_cost", String(computedCost), String(computedCost), requiredIds, observedAt, expiresAt);
+      requireOfferReason(
+        receipt,
+        selection,
+        "lowest_cost_under_usage_profile",
+        String(computedCost),
+        String(computedCost),
+        requiredIds,
+        observedAt,
+        expiresAt,
+        costSensitiveToUsage,
+      );
     }
     if (query.monthly_budget_microusd !== undefined) {
-      requireOfferReason(receipt, selection, "budget_constraint_met", String(computedCost), String(query.monthly_budget_microusd), requiredIds, observedAt, expiresAt);
+      const declaredProfileCost = Math.max(
+        ...[computedCost, sensitivityCost].filter((cost): cost is number => cost !== null),
+      );
+      requireOfferReason(
+        receipt,
+        selection,
+        "budget_fit_under_declared_profiles",
+        String(declaredProfileCost),
+        String(query.monthly_budget_microusd),
+        requiredIds,
+        observedAt,
+        expiresAt,
+        costSensitiveToUsage,
+      );
     }
     if (query.provider_ids) requireOfferReason(receipt, selection, "provider_constraint_match", offer.provider_id, offer.provider_id, requiredIds, observedAt, expiresAt);
     if (query.regions) requireOfferReason(receipt, selection, "region_constraint_match", offer.region, offer.region, requiredIds, observedAt, expiresAt);
@@ -1604,6 +1862,7 @@ function requireOfferReason(
   evidenceIds: Set<string>,
   observedAt: string,
   expiresAt: string,
+  requireCostSensitiveCaveat = false,
 ): void {
   const reason = receipt.reasons.find((row) => row.code === code && row.subject_id === selection.serving_offer_id);
   if (!reason) throw new TypeError(`applied query constraint requires ${code} reason`);
@@ -1616,14 +1875,57 @@ function requireOfferReason(
   if (reason.freshness.observed_at !== observedAt || reason.freshness.expires_at !== expiresAt) {
     throw new TypeError(`${code} freshness must equal the selected offer/link validity intersection`);
   }
+  if (requireCostSensitiveCaveat && !reason.caveat_codes.includes("cost_sensitive_to_usage")) {
+    throw new TypeError(
+      `${code} requires cost_sensitive_to_usage when estimated profile costs differ`,
+    );
+  }
 }
 
-function monthlyCostMicrousd(query: DecisionQueryV1, offer: ServingOfferV1): number {
-  const numerator = BigInt(query.requests_per_month!) * (
-    BigInt(query.input_tokens_per_request!) * BigInt(offer.pricing.input_microusd_per_million_tokens)
-    + BigInt(query.output_tokens_per_request!) * BigInt(offer.pricing.output_microusd_per_million_tokens)
+export function monthlyCostMicrousd(
+  usage: UsageProfileV1,
+  pricing: PricingScheduleFactV1,
+): number | null {
+  const normalizedUsage = parseUsageProfileV1(usage);
+  const normalizedPricing = parsePricingScheduleFactV1(pricing);
+  if (
+    normalizedUsage.cached_read_tokens !== 0
+    && normalizedPricing.cached_read_microusd_per_million_tokens === null
+  ) {
+    return null;
+  }
+  const cacheWriteRates = new Map(
+    normalizedPricing.cache_write_rates.map((row) => [row.ttl_seconds, row.microusd_per_million_tokens]),
   );
-  const divisor = 1_000_000n;
+  if (normalizedUsage.cache_writes.some((row) => !cacheWriteRates.has(row.ttl_seconds))) return null;
+  if (
+    normalizedUsage.cache_storage_token_seconds !== 0
+    && normalizedPricing.cache_storage_microusd_per_million_token_hours === null
+  ) {
+    return null;
+  }
+  const cachedReadCostNumerator = normalizedUsage.cached_read_tokens === 0
+    ? 0n
+    : BigInt(normalizedUsage.cached_read_tokens)
+      * BigInt(normalizedPricing.cached_read_microusd_per_million_tokens!);
+  const storageCostNumerator = normalizedUsage.cache_storage_token_seconds === 0
+    ? 0n
+    : BigInt(normalizedUsage.cache_storage_token_seconds)
+      * BigInt(normalizedPricing.cache_storage_microusd_per_million_token_hours!);
+  const tokenRateMicrousd =
+    BigInt(normalizedUsage.uncached_input_tokens)
+      * BigInt(normalizedPricing.uncached_input_microusd_per_million_tokens)
+    + cachedReadCostNumerator
+    + BigInt(normalizedUsage.output_tokens)
+      * BigInt(normalizedPricing.output_microusd_per_million_tokens)
+    + normalizedUsage.cache_writes.reduce(
+      (total, row) => total
+        + BigInt(row.tokens) * BigInt(cacheWriteRates.get(row.ttl_seconds)!),
+      0n,
+    );
+  const numerator = tokenRateMicrousd * 3_600n
+    + storageCostNumerator;
+  const divisor = 3_600_000_000n;
   const value = (numerator + divisor - 1n) / divisor;
   const result = Number(value);
   if (!Number.isSafeInteger(result)) throw new TypeError("computed monthly cost must be a safe integer");

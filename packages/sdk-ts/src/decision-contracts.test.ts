@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
+import * as contracts from "./decision-contracts.ts";
 
 import {
   canonicalJson,
@@ -144,16 +145,22 @@ test("query decoding canonicalizes unordered sets and rejects transport metadata
     () => parseDecisionQueryV1({ ...input, provider_ids: ["provider-a", "provider-a"] }),
     /unique/,
   );
-  assert.throws(
-    () => parseDecisionQueryV1({
-      ...input,
-      objective: "capability_top_set",
-      input_tokens_per_request: undefined,
-      output_tokens_per_request: undefined,
-      requests_per_month: undefined,
-    }),
-    /safe integer|monthly_budget_microusd/,
-  );
+  const withoutUsage = structuredClone(input);
+  withoutUsage.objective = "capability_top_set";
+  delete withoutUsage.usage_profile;
+  delete withoutUsage.zero_cache_sensitivity_usage_profile;
+  assert.throws(() => parseDecisionQueryV1(withoutUsage), /monthly_budget_microusd/);
+
+  const missingZeroCache = structuredClone(input);
+  delete missingZeroCache.zero_cache_sensitivity_usage_profile;
+  assert.throws(() => parseDecisionQueryV1(missingZeroCache), /zero_cache_sensitivity/);
+  const wrongZeroCache = structuredClone(input);
+  (wrongZeroCache.zero_cache_sensitivity_usage_profile as Record<string, unknown>).uncached_input_tokens = 19_999_999;
+  assert.throws(() => parseDecisionQueryV1(wrongZeroCache), /total input/);
+  const measured = structuredClone(input);
+  (measured.usage_profile as Record<string, unknown>).basis = "measured";
+  delete measured.zero_cache_sensitivity_usage_profile;
+  assert.equal(parseDecisionQueryV1(measured).usage_profile?.basis, "measured");
 });
 
 test("typed provenance and observations fail closed", () => {
@@ -213,12 +220,14 @@ test("offer-link eligibility is exact, approved, and evaluated at the caller's a
     evaluated_configuration_id: `config_${"b".repeat(64)}`,
     serving_offer_id: "offer_public-demo",
     compatibility: "exact" as const,
+    evidence_basis: "benchmark_exact" as const,
     evidence_source_artifact_id: `artifact_${"a".repeat(64)}`,
     observed_at: "2026-07-09T00:00:00Z",
     expires_at: "2026-07-10T00:00:00Z",
     review_state: "approved" as const,
   };
   assert.equal(isEvaluationToOfferLinkEligible(link, "2026-07-09T12:00:00Z"), true);
+  assert.equal(isEvaluationToOfferLinkEligible({ ...link, evidence_basis: "inferred" }, "2026-07-09T12:00:00Z"), false);
   assert.equal(isEvaluationToOfferLinkEligible({ ...link, review_state: "pending" }, "2026-07-09T12:00:00Z"), false);
   assert.equal(isEvaluationToOfferLinkEligible(link, "2026-07-10T00:00:00Z"), false);
   assert.equal("eligible" in link, false);
@@ -238,17 +247,112 @@ test("offer-link eligibility is exact, approved, and evaluated at the caller's a
     context: { context_window_tokens: 128000, ...fact },
     availability: { status: "available", ...fact },
     pricing: {
-      input_microusd_per_million_tokens: 1000000,
+      uncached_input_microusd_per_million_tokens: 1000000,
+      cached_read_microusd_per_million_tokens: 200000,
       output_microusd_per_million_tokens: 4800000,
+      cache_write_rates: [{ ttl_seconds: 300, microusd_per_million_tokens: 1200000 }],
+      cache_storage_microusd_per_million_token_hours: 100000,
+      effective_at: "2026-07-09T01:00:00Z",
       ...fact,
     },
   });
   assert.equal(isServingOfferDecisionEligible(offer, link, "2026-07-09T12:00:00Z"), true);
+  assert.equal(isServingOfferDecisionEligible(offer, link, "2026-07-09T00:30:00Z"), false);
   assert.equal(
     isServingOfferDecisionEligible({ ...offer, availability: { ...offer.availability, status: "unavailable" } }, link, "2026-07-09T12:00:00Z"),
     false,
   );
   assert.equal(isServingOfferDecisionEligible(offer, link, "2026-07-10T00:00:00Z"), false);
+});
+
+test("eligibility helpers fail closed for malformed runtime input", () => {
+  const link = {
+    object: "evaluation_to_offer_link",
+    schema_version: "1",
+    evaluation_to_offer_link_id: "link_public-demo",
+    evaluated_configuration_id: `config_${"b".repeat(64)}`,
+    serving_offer_id: "offer_public-demo",
+    compatibility: "exact",
+    evidence_basis: "benchmark_exact",
+    evidence_source_artifact_id: `artifact_${"a".repeat(64)}`,
+    observed_at: "2026-07-09T00:00:00Z",
+    expires_at: "2026-07-10T00:00:00Z",
+    review_state: "approved",
+  } satisfies Record<string, unknown>;
+  const fact = {
+    observed_at: "2026-07-09T00:00:00Z",
+    expires_at: "2026-07-10T00:00:00Z",
+    source_artifact_id: `artifact_${"a".repeat(64)}`,
+  };
+  const offer = {
+    object: "serving_offer",
+    schema_version: "1",
+    serving_offer_id: "offer_public-demo",
+    provider_id: "provider-public",
+    sku: "public-demo",
+    region: "us-west",
+    context: { context_window_tokens: 128000, ...fact },
+    availability: { status: "available", ...fact },
+    pricing: {
+      uncached_input_microusd_per_million_tokens: 1000000,
+      cached_read_microusd_per_million_tokens: 200000,
+      output_microusd_per_million_tokens: 4800000,
+      cache_write_rates: [{ ttl_seconds: 300, microusd_per_million_tokens: 1200000 }],
+      cache_storage_microusd_per_million_token_hours: 100000,
+      effective_at: "2026-07-09T01:00:00Z",
+      ...fact,
+    },
+  } satisfies Record<string, unknown>;
+
+  for (const malformed of [
+    { ...link, evidence_basis: "invented" },
+    { ...link, evidence_source_artifact_id: "mutable-latest" },
+    { ...link, observed_at: "not-a-timestamp" },
+  ]) {
+    assert.equal(isEvaluationToOfferLinkEligible(malformed, "2026-07-09T12:00:00Z"), false);
+    assert.equal(isServingOfferDecisionEligible(offer, malformed, "2026-07-09T12:00:00Z"), false);
+  }
+  assert.equal(isEvaluationToOfferLinkEligible(link, "not-a-timestamp"), false);
+  assert.equal(
+    isServingOfferDecisionEligible(
+      { ...offer, pricing: { ...(offer.pricing as Record<string, unknown>), effective_at: "bad" } },
+      link,
+      "2026-07-09T12:00:00Z",
+    ),
+    false,
+  );
+});
+
+test("monthly schedule pricing uses BigInt, one final ceiling, and fails closed", () => {
+  assert.equal("monthlyCostMicrousd" in contracts, true);
+  const usage = {
+    basis: "measured" as const,
+    uncached_input_tokens: 1,
+    cached_read_tokens: 1,
+    output_tokens: 1,
+    cache_writes: [{ ttl_seconds: 300, tokens: 1 }],
+    cache_storage_token_seconds: 1,
+  };
+  const pricing = {
+    uncached_input_microusd_per_million_tokens: 1,
+    cached_read_microusd_per_million_tokens: 1,
+    output_microusd_per_million_tokens: 1,
+    cache_write_rates: [{ ttl_seconds: 300, microusd_per_million_tokens: 1 }],
+    cache_storage_microusd_per_million_token_hours: 1,
+    observed_at: "2026-07-09T00:00:00Z",
+    effective_at: "2026-07-09T01:00:00Z",
+    expires_at: "2026-07-10T00:00:00Z",
+    source_artifact_id: `artifact_${"a".repeat(64)}`,
+  };
+
+  assert.equal(contracts.monthlyCostMicrousd(usage, pricing), 1);
+  assert.equal(
+    contracts.monthlyCostMicrousd(
+      { ...usage, uncached_input_tokens: 0, cached_read_tokens: 1, output_tokens: 0, cache_writes: [], cache_storage_token_seconds: 0 },
+      { ...pricing, cached_read_microusd_per_million_tokens: null },
+    ),
+    null,
+  );
 });
 
 test("receipt parsing verifies the full-body hash", async () => {
@@ -277,7 +381,7 @@ test("receipt parsing verifies the full-body hash", async () => {
     /decided_at|current/,
   );
   const wrongCost = structuredClone(wire);
-  (wrongCost.selections as Array<Record<string, unknown>>)[0].estimated_monthly_cost_microusd = 43000000;
+  (wrongCost.selections as Array<Record<string, unknown>>)[0].projected_monthly_cost_microusd = 43000000;
   await assert.rejects(() => parseDecisionReceiptV1(wrongCost), /computed monthly cost/);
   const missingLinkEvidence = structuredClone(wire);
   missingLinkEvidence.evidence = (missingLinkEvidence.evidence as Array<Record<string, unknown>>)
@@ -289,7 +393,8 @@ test("receipt parsing verifies the full-body hash", async () => {
     evaluated_configuration_id: `config_${"c".repeat(64)}`,
     serving_offer_id: "offer_public-demo-two",
     capability_rank: 2,
-    estimated_monthly_cost_microusd: 45000000,
+    projected_monthly_cost_microusd: 45000000,
+    zero_cache_sensitivity_projected_monthly_cost_microusd: 48000000,
   });
   await assert.rejects(() => parseDecisionReceiptV1(unequalCosts), /equal minimum cost/);
 
@@ -299,6 +404,92 @@ test("receipt parsing verifies the full-body hash", async () => {
     serving_offer_id: "offer_public-demo-two",
   });
   await assert.rejects(() => parseDecisionReceiptV1(duplicateConfiguration), /selections must be unique/);
+});
+
+test("receipt cost fields and reasons describe projections under declared profiles", () => {
+  const selection = (golden.receipt.body.selections as Array<Record<string, unknown>>)[0];
+  assert.equal("projected_monthly_cost_microusd" in selection, true);
+  assert.equal("zero_cache_sensitivity_projected_monthly_cost_microusd" in selection, true);
+  assert.equal(`${"estimated"}_monthly_cost_microusd` in selection, false);
+  assert.equal(`${"zero_cache_sensitivity"}_monthly_cost_microusd` in selection, false);
+  const codes = new Set(
+    (golden.receipt.body.reasons as Array<Record<string, unknown>>)
+      .map((reason) => reason.code),
+  );
+  assert.equal(codes.has("lowest_cost_under_usage_profile"), true);
+  assert.equal(codes.has("budget_fit_under_declared_profiles"), true);
+  assert.equal(codes.has(`${"lowest"}_verified_cost`), false);
+  assert.equal(codes.has(`${"budget"}_constraint_met`), false);
+});
+
+test("hard budgets cover every declared profile and differing estimated projections are caveated", async () => {
+  const uncaveated = structuredClone(golden.receipt.body);
+  for (const reason of uncaveated.reasons as Array<Record<string, unknown>>) {
+    if (["lowest_cost_under_usage_profile", "budget_fit_under_declared_profiles"].includes(String(reason.code))) {
+      reason.caveat_codes = (reason.caveat_codes as unknown[])
+        .filter((code) => code !== "cost_sensitive_to_usage");
+    }
+  }
+  const uncaveatedReceipt = {
+    ...uncaveated,
+    receipt_id: golden.receipt.receipt_id,
+  };
+  await assert.rejects(
+    () => parseDecisionReceiptV1(uncaveatedReceipt),
+    /cost_sensitive_to_usage/,
+  );
+
+  const overBudgetSensitivity = structuredClone(golden.receipt.body);
+  (overBudgetSensitivity.query as Record<string, unknown>).monthly_budget_microusd = 42_000_000;
+  for (const reason of overBudgetSensitivity.reasons as Array<Record<string, unknown>>) {
+    if (reason.code === "budget_fit_under_declared_profiles") reason.threshold = "42000000";
+  }
+  const overBudgetSensitivityReceipt = {
+    ...overBudgetSensitivity,
+    receipt_id: golden.receipt.receipt_id,
+  };
+  await assert.rejects(
+    () => parseDecisionReceiptV1(overBudgetSensitivityReceipt),
+    /zero-cache sensitivity.*budget/,
+  );
+});
+
+test("capability receipts still disclose differing projected costs", async () => {
+  const capabilityBody = structuredClone(golden.receipt.body);
+  const query = capabilityBody.query as Record<string, unknown>;
+  query.objective = "capability_top_set";
+  for (const field of [
+    "provider_ids",
+    "regions",
+    "minimum_context_tokens",
+    "monthly_budget_microusd",
+  ]) delete query[field];
+  capabilityBody.reasons = (capabilityBody.reasons as Array<Record<string, unknown>>)
+    .filter((reason) => reason.code === "within_capability_top_set");
+  capabilityBody.sensitivity = (capabilityBody.sensitivity as Array<Record<string, unknown>>)
+    .filter((row) => row.scenario === "leave_one_family_out");
+  capabilityBody.freshness = {
+    observed_at: "2026-07-09T00:00:00Z",
+    expires_at: "2026-07-10T00:00:00Z",
+  };
+
+  const uncaveatedCapabilityReceipt = {
+    ...capabilityBody,
+    receipt_id: golden.receipt.receipt_id,
+  };
+  await assert.rejects(
+    () => parseDecisionReceiptV1(uncaveatedCapabilityReceipt),
+    /cost_sensitive_to_usage/,
+  );
+
+  (capabilityBody.reasons as Array<Record<string, unknown>>)[0].caveat_codes = [
+    "cost_sensitive_to_usage",
+  ];
+  const receipt = await parseDecisionReceiptV1({
+    ...capabilityBody,
+    receipt_id: await receiptId(capabilityBody),
+  });
+  assert.deepEqual(receipt.reasons[0].caveat_codes, ["cost_sensitive_to_usage"]);
 });
 
 test("snapshot-set IDs hash one normalized float-free descriptor", async () => {
@@ -612,6 +803,8 @@ test("Draft 2020 schemas enforce the portable semantic shapes they can express",
   const queryValidator = ajv.getSchema("https://evalrank.ai/schemas/decision-query.schema.json")!;
   const receiptValidator = ajv.getSchema("https://evalrank.ai/schemas/decision-receipt.schema.json")!;
   const observationValidator = ajv.getSchema("https://evalrank.ai/schemas/observation.schema.json")!;
+  const offerValidator = ajv.getSchema("https://evalrank.ai/schemas/serving-offer.schema.json")!;
+  const linkValidator = ajv.getSchema("https://evalrank.ai/schemas/evaluation-to-offer-link.schema.json")!;
   assert.equal(queryValidator(golden.query.input), true, ajv.errorsText(queryValidator.errors));
   assert.equal(
     receiptValidator({ ...golden.receipt.body, receipt_id: golden.receipt.receipt_id }),
@@ -620,11 +813,46 @@ test("Draft 2020 schemas enforce the portable semantic shapes they can express",
   );
 
   const partialUsage = structuredClone(golden.query.input);
-  delete partialUsage.output_tokens_per_request;
+  delete (partialUsage.usage_profile as Record<string, unknown>).output_tokens;
   assert.equal(queryValidator(partialUsage), false);
+  const missingZeroCache = structuredClone(golden.query.input);
+  delete missingZeroCache.zero_cache_sensitivity_usage_profile;
+  assert.equal(queryValidator(missingZeroCache), false);
+  const measured = structuredClone(golden.query.input);
+  (measured.usage_profile as Record<string, unknown>).basis = "measured";
+  delete measured.zero_cache_sensitivity_usage_profile;
+  assert.equal(queryValidator(measured), true, ajv.errorsText(queryValidator.errors));
+
+  const evidence = golden.receipt.body.evidence as Array<Record<string, unknown>>;
+  const offer = structuredClone(evidence.find((row) => row.kind === "serving_offer")!.serving_offer);
+  const link = structuredClone(evidence.find((row) => row.kind === "evaluation_to_offer_link")!.evaluation_to_offer_link);
+  assert.equal(offerValidator(offer), true, ajv.errorsText(offerValidator.errors));
+  assert.equal(linkValidator(link), true, ajv.errorsText(linkValidator.errors));
+  delete (link as Record<string, unknown>).evidence_basis;
+  assert.equal(linkValidator(link), false);
+  const legacyPricing = structuredClone(offer) as Record<string, unknown>;
+  legacyPricing.pricing = {
+    input_microusd_per_million_tokens: 1,
+    output_microusd_per_million_tokens: 1,
+    observed_at: "2026-07-09T00:00:00Z",
+    expires_at: "2026-07-10T00:00:00Z",
+    source_artifact_id: `artifact_${"a".repeat(64)}`,
+  };
+  assert.equal(offerValidator(legacyPricing), false);
 
   const emptyReasons = { ...golden.receipt.body, receipt_id: golden.receipt.receipt_id, reasons: [] };
   assert.equal(receiptValidator(emptyReasons), false);
+  const removedCostVocabulary = structuredClone({
+    ...golden.receipt.body,
+    receipt_id: golden.receipt.receipt_id,
+  });
+  const removedSelection = (
+    removedCostVocabulary.selections as Array<Record<string, unknown>>
+  )[0];
+  removedSelection[`${"estimated"}_monthly_cost_microusd`] =
+    removedSelection.projected_monthly_cost_microusd;
+  delete removedSelection.projected_monthly_cost_microusd;
+  assert.equal(receiptValidator(removedCostVocabulary), false);
   const missingLeaveOneOut = structuredClone({ ...golden.receipt.body, receipt_id: golden.receipt.receipt_id });
   missingLeaveOneOut.sensitivity = (missingLeaveOneOut.sensitivity as Array<Record<string, unknown>>)
     .filter((row) => row.scenario !== "leave_one_family_out");

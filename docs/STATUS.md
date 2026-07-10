@@ -1,6 +1,6 @@
 # EvalRank Public Status
 
-Last updated: 2026-07-09
+Last updated: 2026-07-10
 
 Hosted contract status: the legacy `POST /v1/recommendations` operation is temporarily unavailable and returns the product-neutral RFC 9457 code `recommendation_not_published`. The public contract must not claim a request-specific answer until the deterministic decision operation replaces it atomically.
 
@@ -23,7 +23,7 @@ normative authority or evidence of runtime lineage, rights, or admission.
 
 - Apache-2.0, product-neutral Python contracts and synthetic fixtures.
 - Public JSON Schemas and OpenAPI description.
-- Immutable artifact/run provenance, native observations, exact configuration passports, serving offers, reviewed evaluation-to-offer links, semantic queries, and deterministic receipt identities.
+- Immutable artifact/run provenance, native observations, exact configuration passports, effective-dated serving-offer pricing schedules, evidence-basis evaluation-to-offer links, closed monthly usage queries, baseline and zero-cache projected-cost receipts with hard cross-profile budgets and truthful divergence caveats, and deterministic receipt identities.
 - Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts with semantic verifiers.
 - Dependency-light Python and TypeScript SDK boundaries.
 - Deterministic CLI and MCP adapters over public contracts.

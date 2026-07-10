@@ -93,7 +93,7 @@
                 {
                   "properties": {
                     "serving_offer_id": { "type": "string" },
-                    "estimated_monthly_cost_microusd": { "type": "integer" }
+                    "projected_monthly_cost_microusd": { "type": "integer" }
                   }
                 }
               ]
@@ -149,9 +149,42 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "required": ["query"],
+        "properties": {
+          "query": {
+            "type": "object",
+            "required": ["zero_cache_sensitivity_usage_profile"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "selections": {
+            "items": {
+              "properties": {
+                "zero_cache_sensitivity_projected_monthly_cost_microusd": { "type": "integer" }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "selections": {
+            "items": {
+              "properties": {
+                "zero_cache_sensitivity_projected_monthly_cost_microusd": { "type": "null" }
+              }
+            }
+          }
+        }
+      }
     }
   ],
-  "$comment": "Semantic validation recomputes receipt_id and cost, binds decided_at to exact evidence windows, requires unique selected configuration and evidence targets, exact subject-consistent citations, equal-cost in-budget ties, applied-constraint reasons, and sensitivity sets over known candidates.",
+  "$comment": "Semantic validation recomputes receipt_id and every projected monthly cost; binds decided_at to exact evidence windows including pricing effective_at; requires unique selected configuration and evidence targets, exact subject-consistent citations, equal-cost ties, hard-budget fit across the baseline and declared zero-cache profile, cost-sensitive caveats when estimated projections differ, applied-constraint reasons, and sensitivity sets over known candidates.",
   "$defs": {
     "Timestamp": {
       "type": "string",
@@ -184,16 +217,21 @@
     "Selection": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["evaluated_configuration_id", "serving_offer_id", "capability_rank", "estimated_monthly_cost_microusd"],
+      "required": ["evaluated_configuration_id", "serving_offer_id", "capability_rank", "projected_monthly_cost_microusd", "zero_cache_sensitivity_projected_monthly_cost_microusd"],
       "properties": {
         "evaluated_configuration_id": { "$ref": "#/$defs/ConfigurationId" },
         "serving_offer_id": { "type": ["string", "null"], "pattern": "^offer_.+$" },
         "capability_rank": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
-        "estimated_monthly_cost_microusd": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991 }
+        "projected_monthly_cost_microusd": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991 },
+        "zero_cache_sensitivity_projected_monthly_cost_microusd": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991 }
       },
       "allOf": [
         {
-          "if": { "required": ["estimated_monthly_cost_microusd"], "properties": { "estimated_monthly_cost_microusd": { "type": "integer" } } },
+          "if": { "required": ["projected_monthly_cost_microusd"], "properties": { "projected_monthly_cost_microusd": { "type": "integer" } } },
+          "then": { "properties": { "serving_offer_id": { "type": "string" } } }
+        },
+        {
+          "if": { "required": ["zero_cache_sensitivity_projected_monthly_cost_microusd"], "properties": { "zero_cache_sensitivity_projected_monthly_cost_microusd": { "type": "integer" } } },
           "then": { "properties": { "serving_offer_id": { "type": "string" } } }
         }
       ]
@@ -223,7 +261,7 @@
       "required": ["reason_type", "code", "subject_id", "predicate", "axis", "observed_value", "unit", "threshold", "evidence_ids", "freshness", "caveat_codes"],
       "properties": {
         "reason_type": { "enum": ["best_when", "avoid_when"] },
-        "code": { "enum": ["strongest_capability_evidence", "within_capability_top_set", "lowest_verified_cost", "budget_constraint_met", "provider_constraint_match", "region_constraint_match", "context_requirement_met", "insufficient_evidence", "serving_offer_unverified", "budget_exceeded", "stale_evidence"] },
+        "code": { "enum": ["strongest_capability_evidence", "within_capability_top_set", "lowest_cost_under_usage_profile", "budget_fit_under_declared_profiles", "provider_constraint_match", "region_constraint_match", "context_requirement_met", "insufficient_evidence", "serving_offer_unverified", "budget_exceeded", "stale_evidence"] },
         "subject_id": { "type": "string", "minLength": 1 },
         "predicate": { "enum": ["eq", "ne", "lt", "lte", "gt", "gte", "within_top_set", "unavailable"] },
         "axis": { "enum": ["capability", "monthly_cost", "context", "availability", "freshness", "provider", "region"] },
@@ -288,11 +326,11 @@
           "then": { "properties": { "reason_type": { "const": "best_when" }, "axis": { "const": "region" }, "unit": { "const": "region_id" }, "predicate": { "const": "eq" }, "threshold": { "type": "string" } } }
         },
         {
-          "if": { "required": ["code"], "properties": { "code": { "const": "lowest_verified_cost" } } },
+          "if": { "required": ["code"], "properties": { "code": { "const": "lowest_cost_under_usage_profile" } } },
           "then": { "properties": { "reason_type": { "const": "best_when" }, "axis": { "const": "monthly_cost" }, "unit": { "const": "microusd_per_month" }, "predicate": { "const": "eq" }, "threshold": { "type": "string" } } }
         },
         {
-          "if": { "required": ["code"], "properties": { "code": { "const": "budget_constraint_met" } } },
+          "if": { "required": ["code"], "properties": { "code": { "const": "budget_fit_under_declared_profiles" } } },
           "then": { "properties": { "reason_type": { "const": "best_when" }, "axis": { "const": "monthly_cost" }, "unit": { "const": "microusd_per_month" }, "predicate": { "const": "lte" }, "threshold": { "type": "string" } } }
         },
         {

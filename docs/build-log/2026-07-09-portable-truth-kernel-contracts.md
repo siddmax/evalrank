@@ -5,7 +5,9 @@ The public core now defines the storage-free interoperability boundary needed by
 - immutable source artifacts and run provenance;
 - native observations without the legacy model-centric result row;
 - exact evaluated-configuration passports separated from serving offers;
-- reviewed, dated evaluation-to-offer links;
+- reviewed, dated evaluation-to-offer links with explicit evidence basis;
+- closed monthly measured/estimated usage and effective-dated pricing schedules with exact-TTL cache rates;
+- fail-closed one-ceiling cost computation plus explicit zero-cache sensitivity for estimated cached usage, projected-cost vocabulary, cross-profile budget enforcement, and mandatory divergence caveats;
 - normalized semantic decision queries and deterministic full-body receipt identities;
 - content-addressed grouped leaderboard, entity-detail, and compare reads; and
 - strict, extension-preserving Problem Details decoding.
