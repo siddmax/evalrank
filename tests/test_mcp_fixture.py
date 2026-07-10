@@ -118,7 +118,7 @@ class McpFixtureTests(unittest.TestCase):
         self.assertFalse(result["isError"])
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
-        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertRegex(payload["subject"]["id"], r"^config_[0-9a-f]{64}$")
 
     def test_call_tool_returns_public_problem_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "problem"})
@@ -129,21 +129,21 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual(422, payload["status"])
         self.assertEqual("validation", payload["code"])
 
-    def test_call_tool_returns_public_result_row_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "result-row"})
+    def test_call_tool_returns_public_observation_fixture_text(self):
+        result = call_tool("evalrank.fixture", {"kind": "observation"})
 
         self.assertFalse(result["isError"])
         payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("result_row", payload["object"])
-        self.assertEqual("bench_public_search_freshness", payload["benchmark_id"])
-        self.assertEqual("verified", payload["verification_state"])
+        self.assertEqual("observation", payload["object"])
+        self.assertEqual("proportion", payload["metric"]["kind"])
+        self.assertEqual("reported", payload["uncertainty"]["method"])
 
     def test_call_tool_returns_public_exclusion_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "exclusion"})
 
         self.assertFalse(result["isError"])
         payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertRegex(payload["subject"]["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual("unknown_cost", payload["reason"])
 
     def test_call_tool_returns_public_request_fixture_text(self):
@@ -160,7 +160,7 @@ class McpFixtureTests(unittest.TestCase):
         self.assertFalse(result["isError"])
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("candidate_set", payload["object"])
-        self.assertEqual("tool:public-search-demo", payload["candidates"][0]["id"])
+        self.assertRegex(payload["candidates"][0]["id"], r"^config_[0-9a-f]{64}$")
 
     def test_call_tool_returns_public_evidence_set_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "evidence-set"})
@@ -176,7 +176,7 @@ class McpFixtureTests(unittest.TestCase):
         self.assertFalse(result["isError"])
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("stage_candidate", payload["object"])
-        self.assertEqual("tool:public-search-demo", payload["entity"]["id"])
+        self.assertRegex(payload["entity"]["id"], r"^config_[0-9a-f]{64}$")
 
     def test_call_tool_returns_public_raw_entry_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "raw-entry"})
@@ -206,7 +206,7 @@ class McpFixtureTests(unittest.TestCase):
         self.assertFalse(result["isError"])
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("ranking_group", payload["object"])
-        self.assertEqual("mcp_server", payload["group_key"])
+        self.assertEqual("component_configuration", payload["group_key"])
 
     def test_call_tool_returns_public_scoring_stages_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "scoring-stages"})
@@ -230,7 +230,7 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual("/v1/recommendations", server.path)
         self.assertEqual(sample_evaluation_request().to_dict(), server.request_json)
         self.assertEqual("application/json", server.headers["content-type"])
-        self.assertEqual("application/json", server.headers["accept"])
+        self.assertEqual("application/json, application/problem+json", server.headers["accept"])
 
     def test_call_tool_gets_public_use_case_catalog(self):
         with LocalApiServer(200, sample_use_case_catalog().to_dict()) as server:
@@ -242,7 +242,7 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual("GET", server.method)
         self.assertEqual("/v1/use-cases", server.path)
         self.assertIsNone(server.request_json)
-        self.assertEqual("application/json", server.headers["accept"])
+        self.assertEqual("application/json, application/problem+json", server.headers["accept"])
 
     def test_call_tool_gets_public_scoring_stage_catalog(self):
         with LocalApiServer(200, sample_scoring_stage_catalog().to_dict()) as server:
@@ -254,7 +254,7 @@ class McpFixtureTests(unittest.TestCase):
         self.assertEqual("GET", server.method)
         self.assertEqual("/v1/scoring-stages", server.path)
         self.assertIsNone(server.request_json)
-        self.assertEqual("application/json", server.headers["accept"])
+        self.assertEqual("application/json, application/problem+json", server.headers["accept"])
 
     def test_call_tool_returns_problem_details_as_tool_error(self):
         problem = {

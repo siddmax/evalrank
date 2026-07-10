@@ -1,3 +1,4 @@
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -6,6 +7,9 @@ from pathlib import Path
 CORE_SRC = Path(__file__).resolve().parents[1] / "packages" / "core" / "src"
 sys.path.insert(0, str(CORE_SRC))
 CORE_README = CORE_SRC.parents[0] / "README.md"
+PROBLEM_DETAILS_URI_GOLDEN = (
+    Path(__file__).resolve().parents[1] / "examples" / "problem-details-uri-v1.golden.json"
+)
 
 import evalrank_core.contracts as contracts  # noqa: E402
 from evalrank_core.contracts import (  # noqa: E402
@@ -24,7 +28,6 @@ from evalrank_core.contracts import (  # noqa: E402
     Recommendation,
     RankedEntity,
     RankingGroup,
-    ResultRow,
     ScoringStage,
     ScoringStageCatalog,
     StageCandidate,
@@ -39,6 +42,15 @@ PUBLIC_CAPABILITY_FINGERPRINT = "da617b2b113a59a734acb6166c305086d9a850bac2a40c8
 
 
 class CoreContractTests(unittest.TestCase):
+    def test_legacy_result_row_surface_is_deleted(self):
+        for name in (
+            "ResultRow",
+            "RESULT_ENTITY_KINDS",
+            "RESULT_FLAG_KEYS",
+            "RESULT_VERIFICATION_STATES",
+        ):
+            self.assertFalse(hasattr(contracts, name), name)
+
     def test_problem_codes_include_honest_legacy_unavailability(self):
         self.assertIn("recommendation_not_published", PROBLEM_CODES)
         self.assertIn("invalid_evaluation_request", PROBLEM_CODES)
@@ -59,7 +71,7 @@ class CoreContractTests(unittest.TestCase):
             "FRESHNESS_STATUSES",
             "ProblemDetails",
             "PROBLEM_CODES",
-            "ResultRow",
+            "ObservationV1",
             "UseCaseCatalog",
             "ScoringStage",
             "ScoringStageCatalog",
@@ -154,6 +166,8 @@ class CoreContractTests(unittest.TestCase):
 
         for field, value in (
             ("type", ""),
+            ("type", "not a uri reference"),
+            ("type", "http://"),
             ("title", 123),
             ("status", 200),
             ("status", True),
@@ -162,6 +176,8 @@ class CoreContractTests(unittest.TestCase):
             ("retriable", "yes"),
             ("retry_after", -1),
             ("retry_after", True),
+            ("retry_after", 2**53),
+            ("instance", "bad uri reference"),
             ("field", ""),
             ("request_id", 123),
             ("doc_url", ""),
@@ -175,6 +191,78 @@ class CoreContractTests(unittest.TestCase):
             with self.subTest(field=field):
                 with self.assertRaises((TypeError, ValueError)):
                     ProblemDetails(**{**valid, field: value})
+
+    def test_problem_details_matches_shared_uri_regression_vectors(self):
+        vectors = json.loads(PROBLEM_DETAILS_URI_GOLDEN.read_text(encoding="utf-8"))
+        valid = {
+            "title": "Validation failed",
+            "status": 422,
+            "detail": "request_id is required",
+        }
+
+        for value in vectors["uri_references"]["valid"]:
+            with self.subTest(kind="valid URI reference", value=value):
+                ProblemDetails(type=value, **valid)
+        for value in vectors["uri_references"]["invalid"]:
+            with self.subTest(kind="invalid URI reference", value=value):
+                with self.assertRaises((TypeError, ValueError)):
+                    ProblemDetails(type=value, **valid)
+        for value in vectors["http_urls"]["valid"]:
+            with self.subTest(kind="valid HTTP URL", value=value):
+                ProblemDetails(type="about:blank", doc_url=value, **valid)
+        for value in vectors["http_urls"]["invalid"]:
+            with self.subTest(kind="invalid HTTP URL", value=value):
+                with self.assertRaises((TypeError, ValueError)):
+                    ProblemDetails(type="about:blank", doc_url=value, **valid)
+
+    def test_problem_details_from_dict_preserves_unknown_rfc9457_extensions(self):
+        payload = {
+            "type": "https://evalrank.ai/problems/rate-limited",
+            "title": "Rate limited",
+            "status": 429,
+            "detail": "retry after the advertised delay",
+            "code": "rate_limited",
+            "retriable": True,
+            "retry_after": 30,
+            "quota_bucket": "public",
+            "vendor": {"limit": 100, "windows": [60, 3600]},
+        }
+
+        problem = ProblemDetails.from_dict(payload)
+
+        self.assertEqual(
+            {
+                "quota_bucket": "public",
+                "vendor": {"limit": 100, "windows": [60, 3600]},
+            },
+            problem.extensions,
+        )
+        self.assertEqual(payload, problem.to_dict())
+
+    def test_problem_details_from_dict_rejects_malformed_known_members(self):
+        valid = {
+            "type": "about:blank",
+            "title": "Validation failed",
+            "status": 422,
+            "detail": "request_id is required",
+        }
+        invalid_payloads = (
+            {**valid, "status": "422"},
+            {**valid, "type": "not a uri reference"},
+            {**valid, "type": "http://"},
+            {**valid, "instance": "bad uri reference"},
+            {**valid, "code": None},
+            {**valid, "retriable": None},
+            {**valid, "retry_after": 1.5},
+            {**valid, "retry_after": 2**53},
+            {**valid, "doc_url": "file:///private"},
+            {key: value for key, value in valid.items() if key != "detail"},
+            [valid],
+        )
+        for payload in invalid_payloads:
+            with self.subTest(payload=payload):
+                with self.assertRaises((TypeError, ValueError)):
+                    ProblemDetails.from_dict(payload)
 
     def test_capability_fingerprint_rejects_missing_or_non_json_shape_keys(self):
         with self.assertRaisesRegex(ValueError, "canonical_id"):
@@ -700,35 +788,6 @@ class CoreContractTests(unittest.TestCase):
                 with self.subTest(name=name, value=value):
                     with self.assertRaisesRegex(ValueError, "YYYY-MM-DDTHH:MM:SSZ"):
                         factory(value)
-
-        for value in ("20260625", "2026-06-25T00:00:00Z", "2026-13-25"):
-            with self.subTest(name="result_row.date_run", value=value):
-                with self.assertRaisesRegex(ValueError, "YYYY-MM-DD"):
-                    ResultRow(
-                        entity_id="tool:public-search-demo",
-                        entity_kind="tool_server",
-                        benchmark_id="bench_public_search",
-                        benchmark_version="2026-06-25",
-                        harness="public-fixture-harness",
-                        harness_version="2026-06-25.1",
-                        is_self_reported=False,
-                        n_items=40,
-                        ci95=ConfidenceInterval(low=0.80, high=0.88),
-                        score_raw=0.875,
-                        score_unit="pass_rate",
-                        date_run=value,
-                        model_version="public-search-demo@2026-06-25",
-                        provenance={"source": "public-fixture"},
-                        source_url="https://example.com/evalrank/public-search-demo",
-                        attribution_string="Synthetic public fixture",
-                        flags={
-                            "saturated": False,
-                            "contaminated": False,
-                            "judge_model_dependent": False,
-                            "scaffold_nonstandard": False,
-                        },
-                        verification_state="verified",
-                    )
 
     def test_ranked_entity_rejects_bare_or_invalid_scores(self):
         with self.assertRaisesRegex(ValueError, "capability_score"):
@@ -1315,122 +1374,6 @@ class CoreContractTests(unittest.TestCase):
             with self.subTest(field=field):
                 with self.assertRaisesRegex(ValueError, field):
                     EvidenceItem(**{**valid, field: 123})
-
-    def test_result_row_serializes_public_provenance_envelope(self):
-        row = ResultRow(
-            entity_id="tool:public-search-demo",
-            entity_kind="tool_server",
-            benchmark_id="bench_public_search_freshness",
-            benchmark_version="2026-06-25",
-            harness="public-fixture-harness",
-            harness_version="2026-06-25.1",
-            is_self_reported=False,
-            n_items=40,
-            ci95=ConfidenceInterval(low=0.80, high=0.88),
-            score_raw=0.8754321,
-            score_unit="pass_rate",
-            date_run="2026-06-25",
-            model_version="public-search-demo@2026-06-25",
-            provenance={
-                "raw_snapshot_uri": "https://example.com/evalrank/public-search-demo/raw.json",
-                "source": "public-fixture",
-            },
-            source_url="https://example.com/evalrank/public-search-demo",
-            attribution_string="Synthetic public fixture",
-            flags={
-                "saturated": False,
-                "contaminated": False,
-                "judge_model_dependent": False,
-                "scaffold_nonstandard": False,
-            },
-            verification_state="verified",
-        )
-
-        payload = row.to_dict()
-
-        self.assertEqual("result_row", payload["object"])
-        self.assertEqual("tool:public-search-demo", payload["entity_id"])
-        self.assertEqual("tool_server", payload["entity_kind"])
-        self.assertEqual([0.8, 0.88], payload["ci95"])
-        self.assertEqual(0.875432, payload["score_raw"])
-        self.assertEqual(["raw_snapshot_uri", "source"], sorted(payload["provenance"]))
-        self.assertEqual(
-            {
-                "contaminated": False,
-                "judge_model_dependent": False,
-                "saturated": False,
-                "scaffold_nonstandard": False,
-            },
-            payload["flags"],
-        )
-        self.assertEqual("verified", payload["verification_state"])
-
-    def test_result_row_rejects_invalid_public_shape(self):
-        valid = {
-            "entity_id": "tool:public-search-demo",
-            "entity_kind": "tool_server",
-            "benchmark_id": "bench_public_search_freshness",
-            "benchmark_version": "2026-06-25",
-            "harness": "public-fixture-harness",
-            "harness_version": "2026-06-25.1",
-            "is_self_reported": False,
-            "n_items": 40,
-            "ci95": ConfidenceInterval(low=0.80, high=0.88),
-            "score_raw": 0.8754321,
-            "score_unit": "pass_rate",
-            "date_run": "2026-06-25",
-            "model_version": "public-search-demo@2026-06-25",
-            "provenance": {"source": "public-fixture"},
-            "source_url": "https://example.com/evalrank/public-search-demo",
-            "attribution_string": "Synthetic public fixture",
-            "flags": {
-                "saturated": False,
-                "contaminated": False,
-                "judge_model_dependent": False,
-                "scaffold_nonstandard": False,
-            },
-            "verification_state": "verified",
-        }
-
-        with self.assertRaisesRegex(ValueError, "entity_kind"):
-            ResultRow(**{**valid, "entity_kind": "mcp_server"})
-
-        with self.assertRaisesRegex(ValueError, "n_items"):
-            ResultRow(**{**valid, "n_items": -1})
-
-        with self.assertRaisesRegex(ValueError, "score_raw"):
-            ResultRow(**{**valid, "score_raw": float("nan")})
-
-        with self.assertRaisesRegex(ValueError, "source_url"):
-            ResultRow(**{**valid, "source_url": 123})
-
-        for source_url in (
-            "file:///tmp/private.json",
-            "/local/result.json",
-            "example.com/result.json",
-            "HTTPS://example.com/result.json",
-        ):
-            with self.subTest(source_url=source_url):
-                with self.assertRaisesRegex(ValueError, "source_url"):
-                    ResultRow(**{**valid, "source_url": source_url})
-
-        with self.assertRaisesRegex(ValueError, "provenance"):
-            ResultRow(**{**valid, "provenance": {1: "not-public-json-key"}})
-
-        with self.assertRaisesRegex(ValueError, "flags"):
-            ResultRow(**{**valid, "flags": ["saturated"]})
-
-        with self.assertRaisesRegex(ValueError, "flags"):
-            ResultRow(**{**valid, "flags": {"saturated": False}})
-
-        with self.assertRaisesRegex(ValueError, "flags"):
-            ResultRow(**{**valid, "flags": {**valid["flags"], "extra": False}})
-
-        with self.assertRaisesRegex(ValueError, "flags"):
-            ResultRow(**{**valid, "flags": {**valid["flags"], "saturated": "false"}})
-
-        with self.assertRaisesRegex(ValueError, "verification_state"):
-            ResultRow(**{**valid, "verification_state": "unverified"})
 
     def test_exclusion_serializes_public_subject_and_reason(self):
         exclusion = Exclusion(

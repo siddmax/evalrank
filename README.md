@@ -47,9 +47,12 @@ The public route contracts live in `schemas/openapi.json`.
 
 - `GET /v1/use-cases` returns the storage-free `UseCaseCatalog` taxonomy contract.
 - `GET /v1/scoring-stages` returns the storage-free `ScoringStageCatalog` method-stage contract.
+- `GET /v1/leaderboard/{use_case}` returns a cell snapshot set whose ranking groups remain separate scales.
+- `GET /v1/entities/{entity_type}/{slug}` returns one exact evaluated configuration and its pinned ranking.
+- `GET /v1/compare` compares two to four configurations within one exact ranking-group publication.
 - `POST /v1/recommendations` accepts `EvaluationRequest` JSON and defines the eventual `Recommendation` response shape. The hosted legacy operation is temporarily unavailable and returns RFC 9457 `application/problem+json` with code `recommendation_not_published`; it will be replaced atomically by the deterministic decision contract rather than returning a cached answer that ignores request semantics.
 
-The public error contract includes optional retry fields and reusable `Retry-After`, `RateLimit`, and `RateLimit-Policy` header definitions. This is a contract only. Hosted auth, scorer runtime, benchmark weights, rate-limit enforcement, persistence, receipt IDs, private problem types, and deployment wiring stay outside this public repo.
+The public error contract includes optional retry fields and reusable `Retry-After`, `RateLimit`, and `RateLimit-Policy` header definitions. Immutable artifact, observation, configuration, serving-offer, semantic-query, and decision-receipt contracts are public; hosted auth, scorer runtime, benchmark weights, rate-limit enforcement, persistence, private problem types, and deployment wiring stay outside this repo.
 
 ## Public Fixture Surfaces
 
@@ -61,7 +64,7 @@ Runnable example:
 python3 examples/public_fixture.py
 ```
 
-The example prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, evidence set, Problem Details, result row, use-case catalog, scoring stage catalog, exclusion, and recommendation.
+The example prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, evidence set, typed observation, Problem Details, use-case catalog, scoring stage catalog, exclusion, and recommendation.
 
 CLI:
 
@@ -73,7 +76,7 @@ PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m
 PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture stage-candidate
 PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture evidence
 PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture problem
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture result-row
+PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture observation
 PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture ranking-group
 PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
 PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
@@ -94,13 +97,13 @@ PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m
 Python SDK:
 
 ```python
-from evalrank_sdk import EvalRankClient, sample_candidate_set, sample_evidence_set, sample_evaluation_request, sample_exclusion, sample_problem_details, sample_ranking_group, sample_recommendation, sample_result_row, sample_scoring_stage_catalog, sample_stage_candidate, sample_use_case_catalog
+from evalrank_sdk import EvalRankClient, sample_candidate_set, sample_evidence_set, sample_evaluation_request, sample_exclusion, sample_observation, sample_problem_details, sample_ranking_group, sample_recommendation, sample_scoring_stage_catalog, sample_stage_candidate, sample_use_case_catalog
 
 use_cases = sample_use_case_catalog().to_dict()
 stages = sample_scoring_stage_catalog().to_dict()
 candidate_set = sample_candidate_set().to_dict()
 stage_candidate = sample_stage_candidate().to_dict()
-result_row = sample_result_row().to_dict()
+observation = sample_observation().to_dict()
 ranking_group = sample_ranking_group().to_dict()
 evidence_set = sample_evidence_set().to_dict()
 exclusion = sample_exclusion().to_dict()
@@ -129,13 +132,13 @@ result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
 TypeScript SDK:
 
 ```ts
-import { EvalRankClient, type Abstention, type CandidateSet, type EvaluationRequest, type EvidenceSet, type Exclusion, type ProblemDetails, type RankingGroup, type ResultRow, type ScoringStageCatalog, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
+import { EvalRankClient, type Abstention, type CandidateSet, type EvaluationRequest, type EvidenceSet, type Exclusion, type ObservationV1, type ProblemDetails, type RankingGroup, type ScoringStageCatalog, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
 
 const useCases: UseCaseCatalog["use_cases"] = [];
 const stages: ScoringStageCatalog["stages"] = [];
-const candidates: CandidateSet["candidates"] = [{ entity_type: "mcp_server", id: "tool:public-search-demo" }];
+const candidates: CandidateSet["candidates"] = [{ entity_type: "component_configuration", id: `config_${"a".repeat(64)}` }];
 const arms: StageCandidate["retrieval_provenance"]["arms"] = ["lexical", "semantic"];
-const verification: ResultRow["verification_state"] = "verified";
+const observationMetric: ObservationV1["metric"]["kind"] = "proportion";
 const grouped: RankingGroup["ranked"] = [];
 const evidence: EvidenceSet["evidence_items"] = [];
 const exclusion: Exclusion["reason"] = "unknown_cost";
@@ -146,7 +149,7 @@ const request: EvaluationRequest = {
   object: "evaluation_request",
   request_id: "req_public_fixture_01",
   use_case: "web-browsing",
-  entity_types: ["mcp_server"],
+  entity_types: ["component_configuration"],
   requested_at: "2026-06-25T00:00:00Z",
   constraints: {},
 };

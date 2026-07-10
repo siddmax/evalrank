@@ -13,8 +13,8 @@
     }
   },
   "scripts": {
-    "check": "node --experimental-strip-types --check src/index.ts",
-    "test": "node --experimental-strip-types --test src/index.test.ts"
+    "check": "node --experimental-strip-types --check src/index.ts && node --experimental-strip-types --check src/decision-contracts.ts",
+    "test": "node --experimental-strip-types --test src/index.test.ts src/decision-contracts.test.ts"
   },
   "devDependencies": {
     "ajv": "8.20.0"

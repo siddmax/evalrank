@@ -1,0 +1,522 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/leaderboard.schema.json",
+  "title": "EvalRank Grouped Leaderboard",
+  "description": "One cell-level explorer snapshot whose ranking groups remain independent scales.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "schema_version",
+    "cell_id",
+    "cell_state",
+    "manifest_version",
+    "methodology_version",
+    "snapshot_set_id",
+    "snapshot_set_descriptor",
+    "generated_at",
+    "ranking_groups"
+  ],
+  "properties": {
+    "object": {
+      "const": "leaderboard"
+    },
+    "schema_version": {
+      "const": "1"
+    },
+    "cell_id": {
+      "$ref": "evalrank-manifest.schema.json#/$defs/Slug"
+    },
+    "cell_state": {
+      "$ref": "evalrank-manifest.schema.json#/$defs/CatalogState"
+    },
+    "manifest_version": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}\\.[1-9]\\d*$"
+    },
+    "methodology_version": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}\\.[1-9]\\d*\\.([a-z0-9]+-)*[a-z0-9]+$"
+    },
+    "snapshot_set_id": {
+      "description": "snapshot_set_ plus sha256(restricted_jcs(snapshot_set_descriptor)); leaderboard floating-point display fields are not hash input.",
+      "type": "string",
+      "pattern": "^snapshot_set_[0-9a-f]{64}$"
+    },
+    "snapshot_set_descriptor": {
+      "$ref": "#/$defs/SnapshotSetDescriptor"
+    },
+    "generated_at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+    },
+    "ranking_groups": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/RankingGroup"
+      }
+    }
+  },
+  "$defs": {
+    "PublicationSnapshotId": {
+      "type": "string",
+      "pattern": "^snapshot_[0-9a-f]{64}$"
+    },
+    "EvaluatedConfigurationId": {
+      "type": "string",
+      "pattern": "^config_[0-9a-f]{64}$"
+    },
+    "SnapshotSetDescriptor": {
+      "description": "The exact float-free restricted-JCS preimage for snapshot_set_id. ranking_group_snapshots is one-to-one and UTF-16 sorted by ranking_group_id then publication_snapshot_id on the wire.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "object",
+        "schema_version",
+        "cell_id",
+        "manifest_version",
+        "methodology_version",
+        "ranking_group_snapshots"
+      ],
+      "properties": {
+        "object": {"const": "snapshot_set_descriptor"},
+        "schema_version": {"const": "1"},
+        "cell_id": {"$ref": "evalrank-manifest.schema.json#/$defs/Slug"},
+        "manifest_version": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}\\.[1-9]\\d*$"
+        },
+        "methodology_version": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}\\.[1-9]\\d*\\.([a-z0-9]+-)*[a-z0-9]+$"
+        },
+        "ranking_group_snapshots": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/RankingGroupSnapshotRef"}
+        }
+      }
+    },
+    "RankingGroupSnapshotRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ranking_group_id", "publication_snapshot_id"],
+      "properties": {
+        "ranking_group_id": {
+          "$ref": "evalrank-manifest.schema.json#/$defs/Slug"
+        },
+        "publication_snapshot_id": {
+          "$ref": "#/$defs/PublicationSnapshotId"
+        }
+      }
+    },
+    "EligibilitySummary": {
+      "description": "Typed evidence gap data for explorer UX; counts and gaps are derived from the pinned manifest and publication snapshot.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "published_claim",
+        "rank_eligible_configuration_count",
+        "current_independent_family_count",
+        "required_independent_family_count",
+        "current_overlap_count",
+        "required_overlap_count",
+        "calibration_status",
+        "gap_codes"
+      ],
+      "properties": {
+        "published_claim": {"enum": ["explorer", "top_set"]},
+        "rank_eligible_configuration_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "current_independent_family_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "required_independent_family_count": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "current_overlap_count": {"type": "integer", "minimum": 0, "maximum": 9007199254740991},
+        "required_overlap_count": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "calibration_status": {"enum": ["unvalidated", "validated"]},
+        "gap_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "calibration_unvalidated",
+              "evidence_stale",
+              "insufficient_configuration_overlap",
+              "insufficient_independent_families",
+              "no_rank_eligible_configurations",
+              "quarantined",
+              "unresolved_identity"
+            ]
+          }
+        }
+      }
+    },
+    "RankingGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ranking_group_id",
+        "entity_kind",
+        "interaction_policy",
+        "configuration_passport_class",
+        "state",
+        "publication_snapshot_id",
+        "eligibility_summary",
+        "entries",
+        "citations"
+      ],
+      "properties": {
+        "ranking_group_id": {
+          "$ref": "evalrank-manifest.schema.json#/$defs/Slug"
+        },
+        "entity_kind": {
+          "enum": [
+            "agent_system",
+            "arena_system",
+            "component_configuration",
+            "model_configuration",
+            "system_configuration",
+            "unresolved"
+          ]
+        },
+        "interaction_policy": {
+          "enum": [
+            "agentic",
+            "crowd_pairwise",
+            "direct_prompt",
+            "retrieval",
+            "system",
+            "unresolved"
+          ]
+        },
+        "configuration_passport_class": {
+          "enum": [
+            "agent-system-v1",
+            "arena-system-v1",
+            "component-configuration-v1",
+            "model-configuration-v1",
+            "system-configuration-v1",
+            "unresolved-v1"
+          ]
+        },
+        "state": {
+          "$ref": "evalrank-manifest.schema.json#/$defs/CatalogState"
+        },
+        "publication_snapshot_id": {
+          "$ref": "#/$defs/PublicationSnapshotId"
+        },
+        "eligibility_summary": {
+          "$ref": "#/$defs/EligibilitySummary"
+        },
+        "entries": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/LeaderboardEntry"
+          }
+        },
+        "citations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Citation"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "evalrank-manifest.schema.json#/$defs/IdentityTriple"
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "active"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entries": {
+                "type": "array",
+                "minItems": 1,
+                "contains": {
+                  "type": "object",
+                  "required": ["ranking"],
+                  "properties": {
+                    "ranking": {
+                      "type": "object",
+                      "required": ["in_top_set"],
+                      "properties": {"in_top_set": {"const": true}}
+                    }
+                  }
+                },
+                "minContains": 1
+              },
+              "citations": {
+                "type": "array",
+                "minItems": 1
+              },
+              "eligibility_summary": {
+                "type": "object",
+                "properties": {
+                  "published_claim": {"const": "top_set"},
+                  "calibration_status": {"const": "validated"},
+                  "gap_codes": {"type": "array", "maxItems": 0}
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["entity_kind"],
+            "properties": {"entity_kind": {"const": "unresolved"}}
+          },
+          "then": {
+            "properties": {
+              "entries": {"type": "array", "maxItems": 0},
+              "eligibility_summary": {
+                "type": "object",
+                "properties": {
+                  "gap_codes": {
+                    "type": "array",
+                    "contains": {"const": "unresolved_identity"},
+                    "minContains": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["state"],
+            "properties": {
+              "state": {"enum": ["preview", "shadow", "quarantined"]}
+            }
+          },
+          "then": {
+            "properties": {
+              "eligibility_summary": {
+                "type": "object",
+                "properties": {
+                  "published_claim": {"const": "explorer"},
+                  "gap_codes": {"type": "array", "minItems": 1}
+                }
+              },
+              "entries": {
+                "type": "array",
+                "not": {
+                  "contains": {
+                    "type": "object",
+                    "required": ["ranking"],
+                    "properties": {
+                      "ranking": {
+                        "type": "object",
+                        "required": ["in_top_set"],
+                        "properties": {"in_top_set": {"const": true}}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "entries"
+            ],
+            "properties": {
+              "entries": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "citations": {
+                "type": "array",
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "quarantined"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entries": {
+                "type": "array",
+                "maxItems": 0
+              },
+              "eligibility_summary": {
+                "type": "object",
+                "properties": {
+                  "gap_codes": {
+                    "type": "array",
+                    "contains": {"const": "quarantined"},
+                    "minContains": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "LeaderboardEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluated_configuration_id",
+        "ranking"
+      ],
+      "properties": {
+        "evaluated_configuration_id": {
+          "$ref": "#/$defs/EvaluatedConfigurationId"
+        },
+        "ranking": {
+          "$ref": "#/$defs/EntityRanking"
+        }
+      }
+    },
+    "EntityRanking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank",
+        "display_name",
+        "capability_score",
+        "uncertainty",
+        "in_top_set",
+        "evidence_family_count",
+        "caveat_codes"
+      ],
+      "properties": {
+        "rank": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capability_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "uncertainty": {
+          "$ref": "#/$defs/Uncertainty"
+        },
+        "in_top_set": {
+          "type": "boolean"
+        },
+        "evidence_family_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "caveat_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:(?:-|_)[a-z0-9]+)*$"
+          }
+        }
+      }
+    },
+    "Uncertainty": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unknown"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "level",
+            "lower",
+            "upper"
+          ],
+          "properties": {
+            "kind": {
+              "const": "interval"
+            },
+            "level": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1
+            },
+            "lower": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "upper": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      ]
+    },
+    "Citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_artifact_id",
+        "benchmark_family_id",
+        "title",
+        "url"
+      ],
+      "properties": {
+        "source_artifact_id": {
+          "type": "string",
+          "pattern": "^artifact_[0-9a-f]{64}$"
+        },
+        "benchmark_family_id": {
+          "$ref": "evalrank-manifest.schema.json#/$defs/Slug"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://[^\\s]+$"
+        }
+      }
+    }
+  }
+}

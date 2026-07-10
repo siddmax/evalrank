@@ -28,7 +28,7 @@ Historical status notes and build logs are context, not alternate authorities.
 
 - Credentials, environment files, live project identifiers, deployment configuration, and operator procedures.
 - Customer or tenant data, private prompts, usage events, account operations, and production traces.
-- Non-public benchmark tasks, answers, graders, trajectories, result rows, and proprietary experiments.
+- Non-public benchmark tasks, answers, graders, trajectories, observations, and proprietary experiments.
 - Evaluator task suites and judge traces used for future grader calibration; these do not enter the capability-family inventory.
 - Runtime-specific persistence, source ingestion, scheduling, evaluation execution, and service integration.
 - Private product integrations or customer-specific policy.

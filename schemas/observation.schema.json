@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://evalrank.ai/schemas/observation.schema.json",
+  "title": "EvalRank Observation V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "object",
+    "schema_version",
+    "observation_id",
+    "evaluated_configuration_id",
+    "metric",
+    "uncertainty",
+    "provenance"
+  ],
+  "properties": {
+    "object": { "const": "observation" },
+    "schema_version": { "const": "1" },
+    "observation_id": {
+      "type": "string",
+      "pattern": "^obs_[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "evaluated_configuration_id": {
+      "type": "string",
+      "pattern": "^config_[0-9a-f]{64}$"
+    },
+    "metric": {
+      "oneOf": [
+        { "$ref": "#/$defs/ProportionMetric" },
+        { "$ref": "#/$defs/ContinuousMetric" },
+        { "$ref": "#/$defs/PassAtKMetric" },
+        { "$ref": "#/$defs/PairwisePreferenceMetric" },
+        { "$ref": "#/$defs/RankOnlyMetric" }
+      ]
+    },
+    "uncertainty": {
+      "oneOf": [
+        { "$ref": "#/$defs/UnknownUncertainty" },
+        { "$ref": "#/$defs/StandardErrorUncertainty" },
+        { "$ref": "#/$defs/IntervalUncertainty" }
+      ]
+    },
+    "provenance": { "$ref": "run-provenance.schema.json" }
+  },
+  "$comment": "Semantic validation additionally enforces proportion values rounded half-even from authoritative counts at the value's declared decimal scale, with at least six fractional digits when the ratio is not exactly representable; it also enforces low <= high, rank <= candidate_count, and interval containment of the native metric value.",
+  "allOf": [
+    {
+      "if": {
+        "required": ["metric"],
+        "properties": {
+          "metric": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": { "kind": { "const": "rank_only" } }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "uncertainty": {
+            "type": "object",
+            "required": ["kind"],
+            "properties": { "kind": { "const": "unknown" } }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "Decimal": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d*[1-9])?$|^-(?:0\\.\\d*[1-9]|[1-9]\\d*(?:\\.\\d*[1-9])?)$"
+    },
+    "UnitDecimal": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^(?:0(?:\\.\\d*[1-9])?|1)$"
+    },
+    "PositiveUnitDecimal": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^(?:0\\.\\d*[1-9]|1)$"
+    },
+    "NonNegativeDecimal": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^(?:0|[1-9]\\d*)(?:\\.\\d*[1-9])?$"
+    },
+    "NullableNonNegativeCount": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "NullablePositiveCount": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "ProportionMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "numerator", "denominator"],
+      "properties": {
+        "kind": { "const": "proportion" },
+        "value": { "$ref": "#/$defs/UnitDecimal" },
+        "numerator": { "$ref": "#/$defs/NullableNonNegativeCount" },
+        "denominator": { "$ref": "#/$defs/NullablePositiveCount" }
+      },
+      "oneOf": [
+        { "properties": { "numerator": { "type": "null" }, "denominator": { "type": "null" } } },
+        { "properties": { "numerator": { "type": "integer" }, "denominator": { "type": "integer" } } }
+      ]
+    },
+    "ContinuousMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "unit", "n_items"],
+      "properties": {
+        "kind": { "const": "continuous" },
+        "value": { "$ref": "#/$defs/Decimal" },
+        "unit": { "type": "string", "minLength": 1 },
+        "n_items": { "$ref": "#/$defs/NullablePositiveCount" }
+      }
+    },
+    "PassAtKMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "k", "successful_items", "evaluated_items"],
+      "properties": {
+        "kind": { "const": "pass_at_k" },
+        "value": { "$ref": "#/$defs/UnitDecimal" },
+        "k": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "successful_items": { "$ref": "#/$defs/NullableNonNegativeCount" },
+        "evaluated_items": { "$ref": "#/$defs/NullablePositiveCount" }
+      },
+      "oneOf": [
+        { "properties": { "successful_items": { "type": "null" }, "evaluated_items": { "type": "null" } } },
+        { "properties": { "successful_items": { "type": "integer" }, "evaluated_items": { "type": "integer" } } }
+      ]
+    },
+    "PairwisePreferenceMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value", "scale", "comparison_count"],
+      "properties": {
+        "kind": { "const": "pairwise_preference" },
+        "value": { "$ref": "#/$defs/Decimal" },
+        "scale": { "enum": ["probability", "elo", "margin"] },
+        "comparison_count": { "$ref": "#/$defs/NullablePositiveCount" }
+      },
+      "allOf": [
+        {
+          "if": { "required": ["scale"], "properties": { "scale": { "const": "probability" } } },
+          "then": { "properties": { "value": { "$ref": "#/$defs/UnitDecimal" } } }
+        }
+      ]
+    },
+    "RankOnlyMetric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "rank", "candidate_count"],
+      "properties": {
+        "kind": { "const": "rank_only" },
+        "rank": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "candidate_count": { "$ref": "#/$defs/NullablePositiveCount" }
+      }
+    },
+    "UnknownUncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": { "kind": { "const": "unknown" } }
+    },
+    "StandardErrorUncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": { "const": "standard_error" },
+        "value": { "$ref": "#/$defs/NonNegativeDecimal" }
+      }
+    },
+    "IntervalUncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "low", "high", "confidence_level", "method"],
+      "properties": {
+        "kind": { "const": "interval" },
+        "low": { "$ref": "#/$defs/Decimal" },
+        "high": { "$ref": "#/$defs/Decimal" },
+        "confidence_level": { "$ref": "#/$defs/PositiveUnitDecimal" },
+        "method": {
+          "enum": [
+            "reported",
+            "bootstrap_percentile",
+            "bootstrap_bca",
+            "clopper_pearson",
+            "wilson",
+            "normal_approximation",
+            "credible_interval"
+          ]
+        }
+      }
+    }
+  }
+}

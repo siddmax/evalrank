@@ -15,13 +15,21 @@ from evalrank_core.contracts import (
     RankedEntity,
     Recommendation,
     RankingGroup,
-    ResultRow,
     ScoringStage,
     ScoringStageCatalog,
     StageCandidate,
     TheCall,
     UseCase,
     UseCaseCatalog,
+)
+from evalrank_core.canonical_json import sha256_hex
+from evalrank_core.decision_contracts import (
+    ConfigurationPassportV1,
+    EvaluatedConfigurationV1,
+    IntervalUncertaintyV1,
+    ObservationV1,
+    ProportionMetricV1,
+    RunProvenanceV1,
 )
 
 
@@ -36,11 +44,11 @@ PUBLIC_FIXTURE_KINDS = (
     "evidence-set",
     "exclusion",
     "fingerprint",
+    "observation",
     "problem",
     "raw-entry",
     "recommendation",
     "ranking-group",
-    "result-row",
     "request",
     "scoring-stages",
     "stage-candidate",
@@ -172,7 +180,7 @@ _SCORING_STAGE_ROWS = (
         "Evidence attachment",
         "Attach public evidence and ingested result provenance to candidates",
         ("CandidateSet", "StageCandidate"),
-        ("EvidenceSet", "EvidenceItem", "ResultRow"),
+        ("EvidenceSet", "EvidenceItem", "ObservationV1"),
         "public evidence rows only; live evidence lookup and ledgers stay private",
     ),
     (
@@ -180,7 +188,7 @@ _SCORING_STAGE_ROWS = (
         4,
         "Component scoring",
         "Expose named public score components on a 0-1 scale",
-        ("EvidenceSet", "ResultRow"),
+        ("EvidenceSet", "ObservationV1"),
         ("RankedEntity",),
         "component names and ranges only; weights, formulas, and calibration stay private",
     ),
@@ -226,8 +234,8 @@ def sample_scoring_stage_catalog() -> ScoringStageCatalog:
 
 def sample_ranked_entity() -> RankedEntity:
     return RankedEntity(
-        entity_type="mcp_server",
-        entity_id="tool:public-search-demo",
+        entity_type="component_configuration",
+        entity_id=_sample_evaluated_configuration().evaluated_configuration_id,
         rank=1,
         capability_score=0.84,
         confidence=0.86,
@@ -246,15 +254,18 @@ def sample_ranked_entity() -> RankedEntity:
 
 def sample_ranking_group() -> RankingGroup:
     return RankingGroup(
-        group_key="mcp_server",
-        entity_type="mcp_server",
+        group_key="component_configuration",
+        entity_type="component_configuration",
         ranked=(sample_ranked_entity(),),
-        group_rationale="ranked within mcp_server only; no cross-kind score comparison",
+        group_rationale="ranked within component_configuration only; no cross-kind score comparison",
     )
 
 
 def sample_entity_ref() -> EntityRef:
-    return EntityRef(entity_type="mcp_server", entity_id="tool:public-search-demo")
+    return EntityRef(
+        entity_type="component_configuration",
+        entity_id=_sample_evaluated_configuration().evaluated_configuration_id,
+    )
 
 
 def sample_exclusion() -> Exclusion:
@@ -292,34 +303,52 @@ def sample_problem_details() -> ProblemDetails:
     )
 
 
-def sample_result_row() -> ResultRow:
-    return ResultRow(
-        entity_id="tool:public-search-demo",
-        entity_kind="tool_server",
-        benchmark_id="bench_public_search_freshness",
-        benchmark_version="2026-06-25",
-        harness="public-fixture-harness",
-        harness_version="2026-06-25.1",
-        is_self_reported=False,
-        n_items=40,
-        ci95=ConfidenceInterval(low=0.80, high=0.88),
-        score_raw=0.8754321,
-        score_unit="pass_rate",
-        date_run="2026-06-25",
-        model_version="public-search-demo@2026-06-25",
-        provenance={
-            "source": "public-fixture",
-            "raw_snapshot_uri": "https://example.com/evalrank/public-search-demo/raw.json",
-        },
-        source_url="https://example.com/evalrank/public-search-demo",
-        attribution_string="Synthetic public fixture",
-        flags={
-            "saturated": False,
-            "contaminated": False,
-            "judge_model_dependent": False,
-            "scaffold_nonstandard": False,
-        },
-        verification_state="verified",
+def _sample_configuration_passport() -> ConfigurationPassportV1:
+    return ConfigurationPassportV1(
+        entity_kind="component_configuration",
+        canonical_name="io.evalrank.public-search-demo",
+        revision="2026-06-25",
+        interaction_policy="retrieval",
+        configuration_passport_class="component-configuration-v1",
+        harness=None,
+        scaffold=None,
+        tools=("search",),
+        quantization=None,
+        system_prompt_policy=None,
+        environment=None,
+    )
+
+
+def _sample_evaluated_configuration() -> EvaluatedConfigurationV1:
+    passport = _sample_configuration_passport()
+    return EvaluatedConfigurationV1(
+        evaluated_configuration_id=f"config_{sha256_hex(passport.to_dict())}",
+        passport=passport,
+    )
+
+
+def sample_observation() -> ObservationV1:
+    return ObservationV1(
+        observation_id="obs_public_demo_01",
+        evaluated_configuration_id=_sample_evaluated_configuration().evaluated_configuration_id,
+        metric=ProportionMetricV1(value="0.875", numerator=35, denominator=40),
+        uncertainty=IntervalUncertaintyV1(
+            low="0.8",
+            high="0.88",
+            confidence_level="0.95",
+            method="reported",
+        ),
+        provenance=RunProvenanceV1(
+            run_id="run_public_demo_01",
+            benchmark_family_id="public-search-freshness",
+            feed_id="public-search-freshness-official",
+            source_artifact_id=f"artifact_{'a' * 64}",
+            parser_id="public-fixture-parser",
+            parser_version="1",
+            started_at="2026-06-25T00:00:00Z",
+            completed_at="2026-06-25T00:00:01Z",
+            harness_version="2026-06-25.1",
+        ),
     )
 
 
@@ -336,7 +365,7 @@ def sample_evaluation_request() -> EvaluationRequest:
     return EvaluationRequest(
         request_id="req_public_fixture_01",
         use_case=PUBLIC_USE_CASE_ID,
-        entity_types=("mcp_server",),
+        entity_types=("component_configuration",),
         requested_at=PUBLIC_GENERATED_AT,
         constraints={"requires_citations": True},
     )
@@ -388,6 +417,8 @@ def sample_public_fixture(kind: str) -> dict:
         return sample_exclusion().to_dict()
     if kind == "fingerprint":
         return sample_capability_fingerprint_input().to_dict()
+    if kind == "observation":
+        return sample_observation().to_dict()
     if kind == "problem":
         return sample_problem_details().to_dict()
     if kind == "raw-entry":
@@ -396,8 +427,6 @@ def sample_public_fixture(kind: str) -> dict:
         return sample_recommendation().to_dict()
     if kind == "ranking-group":
         return sample_ranking_group().to_dict()
-    if kind == "result-row":
-        return sample_result_row().to_dict()
     if kind == "request":
         return sample_evaluation_request().to_dict()
     if kind == "scoring-stages":

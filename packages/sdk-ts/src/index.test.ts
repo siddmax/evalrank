@@ -7,6 +7,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import {
   EvalRankApiError,
   EvalRankClient,
+  parseProblemDetails,
   type EvaluationRequest,
   type ProblemDetails,
   type Recommendation,
@@ -537,7 +538,7 @@ test("EvalRankClient posts a public recommendation request", async () => {
     assert.equal(server.method, "POST");
     assert.equal(server.path, "/v1/recommendations");
     assert.equal(server.headers["content-type"], "application/json");
-    assert.equal(server.headers.accept, "application/json");
+    assert.equal(server.headers.accept, "application/json, application/problem+json");
     assert.deepEqual(server.requestJson, requestPayload());
   } finally {
     await server.close();
@@ -606,6 +607,78 @@ test("EvalRankClient treats malformed Retry-After as absent", async () => {
   }
 });
 
+test("Problem Details decoding preserves unknown RFC 9457 extensions", () => {
+  const payload = {
+    type: "https://evalrank.ai/problems/rate-limited",
+    title: "Rate limited",
+    status: 429,
+    detail: "too many requests",
+    code: "rate_limited",
+    retriable: true,
+    provider_window: { limit: 100, seconds: 60 },
+  };
+
+  assert.deepEqual(parseProblemDetails(payload), payload);
+});
+
+test("Problem Details decoding rejects malformed known members", () => {
+  const valid = {
+    type: "about:blank",
+    title: "Validation failed",
+    status: 422,
+    detail: "request_id is required",
+  };
+  for (const payload of [
+    { ...valid, status: "422" },
+    { ...valid, type: "not a uri reference" },
+    { ...valid, type: "http://" },
+    { ...valid, instance: "bad uri reference" },
+    { ...valid, code: null },
+    { ...valid, retriable: null },
+    { ...valid, retry_after: 1.5 },
+    { ...valid, retry_after: 2 ** 53 },
+    { ...valid, doc_url: "file:///private" },
+    { ...valid, doc_url: "http://" },
+    { type: valid.type, title: valid.title, status: valid.status },
+    [valid],
+  ]) {
+    assert.throws(() => parseProblemDetails(payload), /Problem Details/);
+  }
+});
+
+test("Problem Details matches shared URI regression vectors", () => {
+  const vectors = JSON.parse(
+    readFileSync(
+      new URL("../../../examples/problem-details-uri-v1.golden.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  const valid = {
+    title: "Validation failed",
+    status: 422,
+    detail: "request_id is required",
+  };
+
+  for (const type of vectors.uri_references.valid) {
+    assert.deepEqual(parseProblemDetails({ ...valid, type }), { ...valid, type });
+  }
+  for (const type of vectors.uri_references.invalid) {
+    assert.throws(() => parseProblemDetails({ ...valid, type }), /Problem Details/);
+  }
+  for (const doc_url of vectors.http_urls.valid) {
+    assert.deepEqual(
+      parseProblemDetails({ ...valid, type: "about:blank", doc_url }),
+      { ...valid, type: "about:blank", doc_url },
+    );
+  }
+  for (const doc_url of vectors.http_urls.invalid) {
+    assert.throws(
+      () => parseProblemDetails({ ...valid, type: "about:blank", doc_url }),
+      /Problem Details/,
+    );
+  }
+});
+
 test("EvalRankClient fetches public use-case catalog metadata", async () => {
   const server = await startServer(200, useCaseCatalogPayload());
 
@@ -616,7 +689,7 @@ test("EvalRankClient fetches public use-case catalog metadata", async () => {
     assert.deepEqual(catalog.use_cases, manifestUseCases());
     assert.equal(server.method, "GET");
     assert.equal(server.path, "/v1/use-cases");
-    assert.equal(server.headers.accept, "application/json");
+    assert.equal(server.headers.accept, "application/json, application/problem+json");
     assert.equal(server.requestBody, "");
   } finally {
     await server.close();
@@ -632,7 +705,7 @@ test("EvalRankClient fetches public scoring-stage catalog metadata", async () =>
     assert.equal(catalog.object, "scoring_stage_catalog");
     assert.equal(server.method, "GET");
     assert.equal(server.path, "/v1/scoring-stages");
-    assert.equal(server.headers.accept, "application/json");
+    assert.equal(server.headers.accept, "application/json, application/problem+json");
     assert.equal(server.requestBody, "");
   } finally {
     await server.close();

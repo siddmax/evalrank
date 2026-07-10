@@ -6,10 +6,13 @@
 | --- | --- | --- |
 | `GET /v1/use-cases` | `schemas/openapi.json` | Public contract only; returns `UseCaseCatalog` on `200` and reusable RFC 9457 Problem Details responses for `429` and `503`; no live server is declared here. |
 | `GET /v1/scoring-stages` | `schemas/openapi.json` | Public contract only; returns `ScoringStageCatalog` on `200` and reusable RFC 9457 Problem Details responses for `429` and `503`; no live server is declared here. |
-| `POST /v1/recommendations` | `schemas/openapi.json` | Public contract only; returns `Recommendation` on `200` and reusable RFC 9457 Problem Details responses for `400`, `422`, `429`, `503`, and `504`; no live server is declared here. |
+| `GET /v1/leaderboard/{use_case}` | `schemas/openapi.json` | Public contract only; returns one content-addressed cell snapshot set with separately scaled ranking groups. |
+| `GET /v1/entities/{entity_type}/{slug}` | `schemas/openapi.json` | Public contract only; returns one exact evaluated-configuration projection pinned to its publication snapshot. |
+| `GET /v1/compare` | `schemas/openapi.json` | Public contract only; compares two to four exact configurations within one ranking-group publication. |
+| `POST /v1/recommendations` | `schemas/openapi.json` | Legacy public contract only; strict request/media validation is defined, while hosted success remains unavailable until the operation is atomically replaced by decisions. |
 
 ## Update Rules
 
 - Update this file when public API routes, UI routes, deeplinks, or navigation-critical docs change.
-- Keep hosted auth, tenant logic, private receipt IDs, persistence, and deploy details out of this file unless they become public contracts.
+- Keep hosted auth, tenant logic, receipt persistence, and deploy details out of this file unless they become public contracts.
 - Run `python3 -m unittest tests.test_openapi_contract` after route-contract changes.

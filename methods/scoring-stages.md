@@ -6,7 +6,7 @@ This note names the public EvalRank scoring pipeline and mirrors the storage-fre
 
 1. `request-normalization`: convert a public use case into comparable entity types and constraints.
 2. `candidate-resolution`: identify a public `CandidateSet` of `EntityRef` rows that can be evaluated for the request; Stage-1 retrieval can expose each storage-free `StageCandidate` row with RRF ranks and retrieval provenance; excluded candidates surface as public `Exclusion` rows with reasons.
-3. `evidence-attachment`: collect a public `EvidenceSet` of `EvidenceItem` rows with source, kind, observation time, summary, optional score, and metadata; ingested benchmark results can expose a storage-free `ResultRow` provenance envelope.
+3. `evidence-attachment`: collect a public `EvidenceSet` and typed `ObservationV1` rows that reference immutable source artifacts, exact evaluated configurations, closed metric kinds, and explicit uncertainty.
 4. `component-scoring`: produce named `score_components` on a 0-1 scale.
 5. `ranking-or-abstention`: return ranked entities when evidence is sufficient; return a public `Abstention` reason/detail or exclusions-with-reasons when it is not.
 6. `freshness-trust-labeling`: attach freshness, trust tier, caveats, and evidence counts to make the score inspectable.

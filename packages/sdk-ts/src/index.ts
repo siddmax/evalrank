@@ -24,24 +24,6 @@ export const EVIDENCE_KINDS = [
   "trace",
 ] as const;
 
-export const RESULT_ENTITY_KINDS = [
-  "model",
-  "tool_server",
-  "agent",
-] as const;
-
-export const RESULT_VERIFICATION_STATES = [
-  "verified",
-  "provisional",
-] as const;
-
-export const RESULT_FLAG_KEYS = [
-  "saturated",
-  "contaminated",
-  "judge_model_dependent",
-  "scaffold_nonstandard",
-] as const;
-
 export const THE_CALL_DECISIONS = [
   "abstain",
   "recommend",
@@ -77,11 +59,11 @@ export const PUBLIC_FIXTURE_KINDS = [
   "evidence-set",
   "exclusion",
   "fingerprint",
+  "observation",
   "problem",
   "raw-entry",
   "recommendation",
   "ranking-group",
-  "result-row",
   "request",
   "scoring-stages",
   "stage-candidate",
@@ -92,8 +74,6 @@ export type TrustTier = (typeof TRUST_TIERS)[number];
 export type FreshnessStatus = (typeof FRESHNESS_STATUSES)[number];
 export type ComparabilityMode = (typeof COMPARABILITY_MODES)[number];
 export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];
-export type ResultEntityKind = (typeof RESULT_ENTITY_KINDS)[number];
-export type ResultVerificationState = (typeof RESULT_VERIFICATION_STATES)[number];
 export type TheCallDecision = (typeof THE_CALL_DECISIONS)[number];
 export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];
 export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];
@@ -196,33 +176,6 @@ export interface EvidenceItem {
   metadata: Record<string, unknown>;
 }
 
-export interface ResultRow {
-  object: "result_row";
-  entity_id: string;
-  entity_kind: ResultEntityKind;
-  benchmark_id: string;
-  benchmark_version: string;
-  harness: string;
-  harness_version: string;
-  is_self_reported: boolean;
-  n_items: number;
-  ci95: [number, number];
-  score_raw: number;
-  score_unit: string;
-  date_run: string;
-  model_version: string;
-  provenance: Record<string, unknown>;
-  source_url: string;
-  attribution_string: string;
-  flags: {
-    saturated: boolean;
-    contaminated: boolean;
-    judge_model_dependent: boolean;
-    scaffold_nonstandard: boolean;
-  };
-  verification_state: ResultVerificationState;
-}
-
 export interface UseCaseBase {
   object: "use_case";
   id: string;
@@ -296,6 +249,54 @@ export interface ProblemDetails {
   request_id?: string;
   doc_url?: string;
   [key: string]: unknown;
+}
+
+export function parseProblemDetails(value: unknown): ProblemDetails {
+  if (!isRecord(value)) {
+    throw new TypeError("Problem Details must be a JSON object");
+  }
+  for (const name of ["title", "detail"] as const) {
+    if (typeof value[name] !== "string" || value[name].length === 0) {
+      throw new TypeError(`Problem Details ${name} must be a non-empty string`);
+    }
+  }
+  uriReference(value.type, "type");
+  if (!Number.isInteger(value.status) || (value.status as number) < 400 || (value.status as number) > 599) {
+    throw new TypeError("Problem Details status must be an integer from 400 to 599");
+  }
+  if ("instance" in value) {
+    uriReference(value.instance, "instance");
+  }
+  for (const name of ["field", "request_id"] as const) {
+    if (name in value && (typeof value[name] !== "string" || value[name].length === 0)) {
+      throw new TypeError(`Problem Details ${name} must be a non-empty string`);
+    }
+  }
+  if (
+    "code" in value &&
+    (typeof value.code !== "string" || !PROBLEM_CODES.includes(value.code as ProblemCode))
+  ) {
+    throw new TypeError("Problem Details code is not public");
+  }
+  if ("retriable" in value && typeof value.retriable !== "boolean") {
+    throw new TypeError("Problem Details retriable must be a boolean");
+  }
+  if (
+    "retry_after" in value &&
+    (!Number.isSafeInteger(value.retry_after) || (value.retry_after as number) < 0)
+  ) {
+    throw new TypeError("Problem Details retry_after must be a safe integer >= 0");
+  }
+  if (
+    "doc_url" in value &&
+    !isHttpUrl(value.doc_url)
+  ) {
+    throw new TypeError("Problem Details doc_url must be an http or https URL");
+  }
+  if (!isJsonValue(value)) {
+    throw new TypeError("Problem Details extensions must be valid JSON");
+  }
+  return value as ProblemDetails;
 }
 
 export interface RankedEntity {
@@ -441,16 +442,71 @@ export class EvalRankClient {
     const response = await fetch(`${this.baseUrl}${path}`, {
       ...init,
       headers: {
-        Accept: "application/json",
+        Accept: "application/json, application/problem+json",
         ...init.headers,
       },
     });
-    const body = await response.json();
+    const body: unknown = await response.json();
     if (!response.ok) {
-      throw new EvalRankApiError(response.status, body as ProblemDetails, retryAfter(response.headers));
+      const problem = parseProblemDetails(body);
+      if (problem.status !== response.status) {
+        throw new TypeError("Problem Details status does not match the HTTP response");
+      }
+      throw new EvalRankApiError(response.status, problem, retryAfter(response.headers));
     }
     return body as T;
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function uriReference(value: unknown, name: string): string {
+  if (
+    typeof value !== "string"
+    || !/^[A-Za-z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+$/.test(value)
+    || /%(?![0-9A-Fa-f]{2})/.test(value)
+  ) {
+    throw new TypeError(`Problem Details ${name} must be a valid URI reference`);
+  }
+  try {
+    const parsed = new URL(value, "https://evalrank.invalid");
+    if ((/^https?:\/\//.test(value) || value.startsWith("//")) && parsed.host.length === 0) {
+      throw new TypeError();
+    }
+  } catch {
+    throw new TypeError(`Problem Details ${name} must be a valid URI reference`);
+  }
+  return value;
+}
+
+function isHttpUrl(value: unknown): value is string {
+  if (typeof value !== "string" || !/^https?:\/\//.test(value)) {
+    return false;
+  }
+  try {
+    const parsed = new URL(value);
+    return ["http:", "https:"].includes(parsed.protocol) && parsed.host.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+function isJsonValue(value: unknown): boolean {
+  if (value === null || typeof value === "string" || typeof value === "boolean") {
+    return true;
+  }
+  if (typeof value === "number") {
+    return Number.isFinite(value);
+  }
+  if (Array.isArray(value)) {
+    return value.every(isJsonValue);
+  }
+  if (isRecord(value)) {
+    return Object.values(value).every(isJsonValue);
+  }
+  return false;
 }
 
 function retryAfter(headers: Headers): number | null {
@@ -465,3 +521,5 @@ function retryAfter(headers: Headers): number | null {
   const parsed = Number.parseInt(trimmed, 10);
   return Number.isSafeInteger(parsed) ? parsed : null;
 }
+
+export * from "./decision-contracts.ts";

@@ -71,7 +71,7 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual(0, exit_code)
         payload = json.loads(stdout.getvalue())
         self.assertEqual("ev_public_trace_01", payload["evidence_id"])
-        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertRegex(payload["subject"]["id"], r"^config_[0-9a-f]{64}$")
 
     def test_fixture_problem_writes_public_json(self):
         stdout = StringIO()
@@ -84,16 +84,16 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual(422, payload["status"])
         self.assertEqual("validation", payload["code"])
 
-    def test_fixture_result_row_writes_public_json(self):
+    def test_fixture_observation_writes_public_json(self):
         stdout = StringIO()
 
-        exit_code = main(["fixture", "result-row"], stdout=stdout, stderr=StringIO())
+        exit_code = main(["fixture", "observation"], stdout=stdout, stderr=StringIO())
 
         self.assertEqual(0, exit_code)
         payload = json.loads(stdout.getvalue())
-        self.assertEqual("result_row", payload["object"])
-        self.assertEqual("bench_public_search_freshness", payload["benchmark_id"])
-        self.assertEqual("verified", payload["verification_state"])
+        self.assertEqual("observation", payload["object"])
+        self.assertEqual("proportion", payload["metric"]["kind"])
+        self.assertEqual("reported", payload["uncertainty"]["method"])
 
     def test_fixture_exclusion_writes_public_json(self):
         stdout = StringIO()
@@ -102,7 +102,7 @@ class CliFixtureTests(unittest.TestCase):
 
         self.assertEqual(0, exit_code)
         payload = json.loads(stdout.getvalue())
-        self.assertEqual("tool:public-search-demo", payload["subject"]["id"])
+        self.assertRegex(payload["subject"]["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual("unknown_cost", payload["reason"])
         self.assertEqual("cost is unknown for this public fixture", payload["detail"])
 
@@ -124,7 +124,7 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual(0, exit_code)
         payload = json.loads(stdout.getvalue())
         self.assertEqual("evaluation_request", payload["object"])
-        self.assertEqual(["mcp_server"], payload["entity_types"])
+        self.assertEqual(["component_configuration"], payload["entity_types"])
 
     def test_fixture_candidate_set_writes_public_json(self):
         stdout = StringIO()
@@ -135,7 +135,7 @@ class CliFixtureTests(unittest.TestCase):
         payload = json.loads(stdout.getvalue())
         self.assertEqual("candidate_set", payload["object"])
         self.assertEqual("req_public_fixture_01", payload["request_id"])
-        self.assertEqual("tool:public-search-demo", payload["candidates"][0]["id"])
+        self.assertRegex(payload["candidates"][0]["id"], r"^config_[0-9a-f]{64}$")
 
     def test_fixture_evidence_set_writes_public_json(self):
         stdout = StringIO()
@@ -156,7 +156,7 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual(0, exit_code)
         payload = json.loads(stdout.getvalue())
         self.assertEqual("stage_candidate", payload["object"])
-        self.assertEqual("tool:public-search-demo", payload["entity"]["id"])
+        self.assertRegex(payload["entity"]["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual(["lexical", "semantic"], payload["retrieval_provenance"]["arms"])
 
     def test_fixture_raw_entry_writes_public_json(self):
@@ -193,7 +193,7 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual(0, exit_code)
         payload = json.loads(stdout.getvalue())
         self.assertEqual("ranking_group", payload["object"])
-        self.assertEqual("mcp_server", payload["entity_type"])
+        self.assertEqual("component_configuration", payload["entity_type"])
 
     def test_fixture_scoring_stages_writes_public_json(self):
         stdout = StringIO()
@@ -271,7 +271,7 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual("scoring_stage_catalog", json.loads(stdout.getvalue())["object"])
 
     def test_metadata_command_writes_problem_details_to_stderr(self):
-        problem = sample_problem_details().to_dict()
+        problem = {**sample_problem_details().to_dict(), "status": 503}
         server = _CliTestServer(response_status=503, response_body=problem)
         stderr = StringIO()
         try:
@@ -342,7 +342,7 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual("recommendation", json.loads(stdout.getvalue())["object"])
 
     def test_recommend_writes_problem_details_to_stderr(self):
-        problem = sample_problem_details().to_dict()
+        problem = {**sample_problem_details().to_dict(), "status": 429}
         server = _CliTestServer(response_status=429, response_body=problem)
         stderr = StringIO()
         try:

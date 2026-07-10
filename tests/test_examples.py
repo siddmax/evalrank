@@ -25,11 +25,11 @@ class PublicExampleTests(unittest.TestCase):
                 "evidence",
                 "evidence_set",
                 "exclusion",
+                "observation",
                 "problem",
                 "raw_entry",
                 "recommendation",
                 "request",
-                "result_row",
                 "scoring_stages",
                 "stage_candidate",
                 "use_cases",
@@ -42,13 +42,13 @@ class PublicExampleTests(unittest.TestCase):
         self.assertEqual("candidate_set", payload["candidate_set"]["object"])
         self.assertEqual("stage_candidate", payload["stage_candidate"]["object"])
         self.assertEqual("evidence_set", payload["evidence_set"]["object"])
-        self.assertEqual("result_row", payload["result_row"]["object"])
+        self.assertEqual("observation", payload["observation"]["object"])
         self.assertEqual("scoring_stage_catalog", payload["scoring_stages"]["object"])
         self.assertEqual("raw_entry", payload["raw_entry"]["object"])
         self.assertEqual("use_case_catalog", payload["use_cases"]["object"])
         self.assertEqual("unknown_cost", payload["exclusion"]["reason"])
         self.assertEqual("ev_public_trace_01", payload["evidence"]["evidence_id"])
-        self.assertEqual("tool:public-search-demo", payload["evidence"]["subject"]["id"])
+        self.assertRegex(payload["evidence"]["subject"]["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual("validation", payload["problem"]["code"])
 
     def test_public_fixture_readme_lists_current_output_keys(self):

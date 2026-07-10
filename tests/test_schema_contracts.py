@@ -20,9 +20,6 @@ from evalrank_core.contracts import (  # noqa: E402
     PROBLEM_CODES,
     Recommendation,
     RankedEntity,
-    RESULT_ENTITY_KINDS,
-    RESULT_FLAG_KEYS,
-    RESULT_VERIFICATION_STATES,
     THE_CALL_DECISIONS,
     TRUST_TIERS,
     USE_CASE_ENTITY_KINDS,
@@ -35,7 +32,6 @@ from evalrank_core.fixtures import (  # noqa: E402
     sample_evidence_set,
     sample_evaluation_request,
     sample_raw_entry,
-    sample_result_row,
     sample_scoring_stage_catalog,
     sample_stage_candidate,
     sample_use_case_catalog,
@@ -45,6 +41,9 @@ from evalrank_core.fixtures import (  # noqa: E402
 METHODOLOGY_VERSION_PATTERN = r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$"
 
 class SchemaContractTests(unittest.TestCase):
+    def test_legacy_result_row_schema_is_deleted(self):
+        self.assertFalse((SCHEMAS / "result-row.schema.json").exists())
+
     def test_schema_readme_lists_public_schema_files_and_string_guards(self):
         text = (SCHEMAS / "README.md").read_text(encoding="utf-8")
         documented = set(re.findall(r"`([^`]*(?:\.schema\.json|openapi\.json))`", text))
@@ -68,7 +67,6 @@ class SchemaContractTests(unittest.TestCase):
         candidate_set_schema = _schema("candidate-set.schema.json")
         fingerprint_schema = _schema("capability-fingerprint.schema.json")
         raw_entry_schema = _schema("raw-entry.schema.json")
-        result_row_schema = _schema("result-row.schema.json")
         scoring_stage_catalog_schema = _schema("scoring-stage-catalog.schema.json")
         use_case_catalog_schema = _schema("use-case-catalog.schema.json")
 
@@ -110,9 +108,6 @@ class SchemaContractTests(unittest.TestCase):
         raw_entry_payload = sample_raw_entry().to_dict()
         self.assertEqual(set(raw_entry_payload), set(raw_entry_schema["properties"]))
         self.assertLessEqual(set(raw_entry_schema["required"]), set(raw_entry_payload))
-        result_row_payload = sample_result_row().to_dict()
-        self.assertEqual(set(result_row_payload), set(result_row_schema["properties"]))
-        self.assertLessEqual(set(result_row_schema["required"]), set(result_row_payload))
         scoring_stage_catalog_payload = sample_scoring_stage_catalog().to_dict()
         self.assertEqual(set(scoring_stage_catalog_payload), set(scoring_stage_catalog_schema["properties"]))
         self.assertLessEqual(set(scoring_stage_catalog_schema["required"]), set(scoring_stage_catalog_payload))
@@ -133,7 +128,6 @@ class SchemaContractTests(unittest.TestCase):
             "candidate-set.schema.json",
             "capability-fingerprint.schema.json",
             "raw-entry.schema.json",
-            "result-row.schema.json",
             "scoring-stage-catalog.schema.json",
             "use-case-catalog.schema.json",
             "problem.schema.json",
@@ -164,12 +158,6 @@ class SchemaContractTests(unittest.TestCase):
         )
         evidence_schema = _schema("evidence-item.schema.json")
         self.assertEqual(EVIDENCE_KINDS, set(evidence_schema["properties"]["kind"]["enum"]))
-        result_row_schema = _schema("result-row.schema.json")
-        self.assertEqual(RESULT_ENTITY_KINDS, set(result_row_schema["properties"]["entity_kind"]["enum"]))
-        self.assertEqual(
-            RESULT_VERIFICATION_STATES,
-            set(result_row_schema["properties"]["verification_state"]["enum"]),
-        )
         use_case_catalog_schema = _schema("use-case-catalog.schema.json")
         use_case_schema = use_case_catalog_schema["$defs"]["UseCase"]
         self.assertEqual(USE_CASE_ENTITY_KINDS, set(use_case_schema["properties"]["entity_kinds"]["items"]["enum"]))
@@ -220,9 +208,6 @@ class SchemaContractTests(unittest.TestCase):
             with self.subTest(filename=filename, field_name=field_name):
                 schema = _schema(filename)
                 self.assertEqual(timestamp_pattern, schema["properties"][field_name]["pattern"])
-
-        result_row_schema = _schema("result-row.schema.json")
-        self.assertEqual(r"^\d{4}-\d{2}-\d{2}$", result_row_schema["properties"]["date_run"]["pattern"])
 
     def test_ranked_entity_schema_pins_non_empty_caveats(self):
         ranked_schema = _schema("ranked-entity.schema.json")
@@ -510,6 +495,7 @@ class SchemaContractTests(unittest.TestCase):
         self.assertEqual("boolean", properties["retriable"]["type"])
         self.assertEqual("integer", properties["retry_after"]["type"])
         self.assertEqual(0, properties["retry_after"]["minimum"])
+        self.assertEqual(9007199254740991, properties["retry_after"]["maximum"])
         self.assertEqual("string", properties["field"]["type"])
         self.assertEqual(1, properties["field"]["minLength"])
         self.assertEqual("string", properties["request_id"]["type"])
@@ -557,45 +543,8 @@ class SchemaContractTests(unittest.TestCase):
         self.assertNotIn("minItems", evidence_items)
         self.assertEqual("evidence-item.schema.json", evidence_items["items"]["$ref"])
 
-    def test_result_row_schema_pins_public_provenance_envelope(self):
-        result_row_schema = _schema("result-row.schema.json")
-
-        self.assertEqual("result_row", result_row_schema["properties"]["object"]["const"])
-        self.assertEqual(
-            {
-                "object",
-                "entity_id",
-                "entity_kind",
-                "benchmark_id",
-                "benchmark_version",
-                "harness",
-                "harness_version",
-                "is_self_reported",
-                "n_items",
-                "ci95",
-                "score_raw",
-                "score_unit",
-                "date_run",
-                "model_version",
-                "provenance",
-                "source_url",
-                "attribution_string",
-                "flags",
-                "verification_state",
-            },
-            set(result_row_schema["required"]),
-        )
-        flags = result_row_schema["properties"]["flags"]
-        self.assertFalse(flags["additionalProperties"])
-        self.assertEqual(set(RESULT_FLAG_KEYS), set(flags["required"]))
-        for key in RESULT_FLAG_KEYS:
-            self.assertEqual("boolean", flags["properties"][key]["type"])
-        self.assertEqual(0, result_row_schema["properties"]["n_items"]["minimum"])
-        self.assertEqual("uri-reference", result_row_schema["properties"]["source_url"]["format"])
-        self.assertEqual("^https?://", result_row_schema["properties"]["source_url"]["pattern"])
-
     def test_confidence_interval_schemas_pin_two_unit_scores(self):
-        for filename in ("ranked-entity.schema.json", "result-row.schema.json"):
+        for filename in ("ranked-entity.schema.json",):
             with self.subTest(filename=filename):
                 ci95 = _schema(filename)["properties"]["ci95"]
 

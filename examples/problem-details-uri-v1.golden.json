@@ -1,0 +1,44 @@
+{
+  "uri_references": {
+    "valid": [
+      "about:blank",
+      "/v1/recommendations/req_01",
+      "http:/foo",
+      "http:foo",
+      "https://example.com/problems/validation",
+      "//example.com/problems/validation",
+      "?request_id=req_01",
+      "#validation"
+    ],
+    "invalid": [
+      "",
+      "not a uri reference",
+      "http://",
+      "https://",
+      "//",
+      "http://bad host/a",
+      "http://example.com:abc/",
+      "http://example.com:99999/",
+      "%ZZ"
+    ]
+  },
+  "http_urls": {
+    "valid": [
+      "http://example.com",
+      "https://example.com/docs/errors#validation",
+      "http://localhost:8080/errors",
+      "http://[::1]:8080/errors"
+    ],
+    "invalid": [
+      "http:/foo",
+      "http:foo",
+      "http://",
+      "http://bad host/a",
+      "http://example.com:abc/",
+      "http://example.com:99999/",
+      "HTTPS://example.com/errors",
+      "file:///tmp/errors",
+      "/docs/errors"
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 import hashlib
 import sys
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 
@@ -9,14 +10,20 @@ sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import (  # noqa: E402
     CandidateSet,
-    ConfidenceInterval,
     EntityRef,
     EvaluationRequest,
     EvidenceItem,
     EvidenceSet,
     Exclusion,
-    ResultRow,
     StageCandidate,
+)
+from evalrank_core.decision_contracts import (  # noqa: E402
+    ContinuousMetricV1,
+    IntervalUncertaintyV1,
+    ObservationV1,
+    ProportionMetricV1,
+    RunProvenanceV1,
+    UnknownUncertaintyV1,
 )
 from evalrank_core.fixtures import PUBLIC_GENERATED_AT, PUBLIC_METHODOLOGY_VERSION  # noqa: E402
 from evalrank_core.materializer import materialize_recommendation  # noqa: E402
@@ -31,7 +38,10 @@ def _fingerprint(value: str) -> str:
 
 
 def _entity(entity_id: str) -> EntityRef:
-    return EntityRef(entity_type="model", entity_id=entity_id)
+    return EntityRef(
+        entity_type="model_configuration",
+        entity_id=f"config_{_fingerprint(entity_id)}",
+    )
 
 
 def _stage(entity: EntityRef, fused_score: float, *, lexical_rank: int) -> StageCandidate:
@@ -58,31 +68,40 @@ def _evidence(entity: EntityRef, index: int, *, score: float = 0.8) -> EvidenceI
     )
 
 
-def _result(entity: EntityRef, score: float, *, date_run: str = "2026-06-25") -> ResultRow:
-    return ResultRow(
-        entity_id=entity.entity_id,
-        entity_kind="model",
-        benchmark_id=f"bench_{entity.entity_id.replace(':', '_')}",
-        benchmark_version="2026-06-25",
-        harness="public-materializer-fixture",
-        harness_version="2026-06-25.1",
-        is_self_reported=False,
-        n_items=40,
-        ci95=ConfidenceInterval(low=max(0.0, score - 0.04), high=min(1.0, score + 0.04)),
-        score_raw=score,
-        score_unit="pass_rate",
-        date_run=date_run,
-        model_version=f"{entity.entity_id}@2026-06-25",
-        provenance={"source": "public-fixture"},
-        source_url=f"https://example.com/evalrank/{entity.entity_id.replace(':', '-')}",
-        attribution_string="Synthetic public materializer fixture",
-        flags={
-            "saturated": False,
-            "contaminated": False,
-            "judge_model_dependent": False,
-            "scaffold_nonstandard": False,
-        },
-        verification_state="verified",
+def _observation(
+    entity: EntityRef,
+    score: float,
+    *,
+    date_run: str = "2026-06-25",
+    metric: object | None = None,
+    uncertainty: object | None = None,
+) -> ObservationV1:
+    value = format(score, ".6g")
+    low = format(max(0.0, score - 0.04), ".6g")
+    high = format(min(1.0, score + 0.04), ".6g")
+    short_id = entity.entity_id.removeprefix("config_")[:16]
+    return ObservationV1(
+        observation_id=f"obs_{short_id}",
+        evaluated_configuration_id=entity.entity_id,
+        metric=metric or ProportionMetricV1(value=value, numerator=None, denominator=None),
+        uncertainty=uncertainty
+        or IntervalUncertaintyV1(
+            low=low,
+            high=high,
+            confidence_level="0.95",
+            method="reported",
+        ),
+        provenance=RunProvenanceV1(
+            run_id="run_public_materializer_01",
+            benchmark_family_id="public-materializer-family",
+            feed_id="public-materializer-feed",
+            source_artifact_id=f"artifact_{'a' * 64}",
+            parser_id="public-materializer-parser",
+            parser_version="1",
+            started_at=f"{date_run}T00:00:00Z",
+            completed_at=f"{date_run}T00:00:01Z",
+            harness_version="2026-06-25.1",
+        ),
     )
 
 
@@ -94,7 +113,7 @@ class CoreMaterializerTests(unittest.TestCase):
         request = EvaluationRequest(
             request_id=REQUEST_ID,
             use_case=USE_CASE,
-            entity_types=("model",),
+            entity_types=("model_configuration",),
             requested_at=PUBLIC_GENERATED_AT,
         )
         candidate_set = CandidateSet(
@@ -131,7 +150,7 @@ class CoreMaterializerTests(unittest.TestCase):
             candidate_set=candidate_set,
             stage_candidates=stage_candidates,
             evidence_set=evidence_set,
-            result_rows=(_result(alpha, 0.84), _result(beta, 0.83), _result(excluded, 0.99)),
+            observations=(_observation(alpha, 0.84), _observation(beta, 0.83)),
             exclusions=exclusions,
             methodology_version=PUBLIC_METHODOLOGY_VERSION,
             generated_at=PUBLIC_GENERATED_AT,
@@ -141,33 +160,31 @@ class CoreMaterializerTests(unittest.TestCase):
             candidate_set=candidate_set,
             stage_candidates=stage_candidates,
             evidence_set=evidence_set,
-            result_rows=(_result(alpha, 0.84), _result(beta, 0.83), _result(excluded, 0.99)),
+            observations=(_observation(alpha, 0.84), _observation(beta, 0.83)),
             exclusions=exclusions,
             methodology_version=PUBLIC_METHODOLOGY_VERSION,
             generated_at=PUBLIC_GENERATED_AT,
         )
 
-        ranked_stage_candidates = [
-            stage
-            for stage in sorted(stage_candidates, key=lambda stage: (-stage.fused_score, stage.candidate_id))
-            if stage.entity != excluded
-        ]
-        self.assertEqual([stage.entity.entity_id for stage in ranked_stage_candidates], [row.entity_id for row in recommendation.ranked])
+        self.assertEqual([alpha.entity_id, beta.entity_id], [row.entity_id for row in recommendation.ranked])
         self.assertEqual("single-scale", recommendation.comparability)
         self.assertEqual("materialized-cache", recommendation.served_from)
         self.assertEqual(PUBLIC_METHODOLOGY_VERSION, recommendation.methodology_version)
         self.assertEqual(PUBLIC_GENERATED_AT, recommendation.generated_at)
         self.assertTrue(recommendation.result_usable)
-        self.assertEqual("recommend", recommendation.the_call.decision)
+        self.assertIsNone(recommendation.the_call)
+        self.assertTrue(recommendation.degraded)
         self.assertEqual(recommendation.recommendation_id, repeated.recommendation_id)
         self.assertEqual([excluded], [exclusion.subject for exclusion in recommendation.exclusions])
-        self.assertNotIn("model:excluded", [row.entity_id for row in recommendation.ranked])
+        self.assertNotIn(excluded.entity_id, [row.entity_id for row in recommendation.ranked])
         self.assertEqual([1, 2], [row.rank for row in recommendation.ranked])
         for row in recommendation.ranked:
             self.assertEqual(PUBLIC_METHODOLOGY_VERSION, row.methodology_version)
             self.assertEqual(2, row.evidence_count)
+            self.assertEqual("stale", row.freshness.status)
+            self.assertIn("confidence_is_reported_interval_level", row.caveats)
             self.assertEqual(
-                {"evidence_coverage", "result_score", "stage1_fused"},
+                {"reported_observation"},
                 set(row.score_components),
             )
 
@@ -176,7 +193,7 @@ class CoreMaterializerTests(unittest.TestCase):
         request = EvaluationRequest(
             request_id=REQUEST_ID,
             use_case=USE_CASE,
-            entity_types=("model",),
+            entity_types=("model_configuration",),
             requested_at=PUBLIC_GENERATED_AT,
         )
 
@@ -195,7 +212,7 @@ class CoreMaterializerTests(unittest.TestCase):
                 evidence_items=(),
                 generated_at=PUBLIC_GENERATED_AT,
             ),
-            result_rows=(),
+            observations=(),
             exclusions=(),
             methodology_version=PUBLIC_METHODOLOGY_VERSION,
             generated_at=PUBLIC_GENERATED_AT,
@@ -212,7 +229,7 @@ class CoreMaterializerTests(unittest.TestCase):
         request = EvaluationRequest(
             request_id=REQUEST_ID,
             use_case=USE_CASE,
-            entity_types=("model",),
+            entity_types=("model_configuration",),
             requested_at=PUBLIC_GENERATED_AT,
         )
         candidate_set = CandidateSet(
@@ -268,16 +285,169 @@ class CoreMaterializerTests(unittest.TestCase):
                 generated_at=PUBLIC_GENERATED_AT,
             )
 
-        with self.assertRaisesRegex(ValueError, "result_rows"):
+        with self.assertRaisesRegex(ValueError, "observations"):
             materialize_recommendation(
                 request=request,
                 candidate_set=candidate_set,
                 stage_candidates=(_stage(model, 0.4, lexical_rank=1),),
                 evidence_set=evidence_set,
-                result_rows=(_result(_entity("model:not-a-candidate"), 0.4),),
+                observations=(_observation(_entity("model:not-a-candidate"), 0.4),),
                 methodology_version=PUBLIC_METHODOLOGY_VERSION,
                 generated_at=PUBLIC_GENERATED_AT,
             )
+
+    def test_materializer_does_not_coerce_incomparable_or_interval_free_observations(self):
+        model = _entity("model:alpha")
+        request = EvaluationRequest(
+            request_id=REQUEST_ID,
+            use_case=USE_CASE,
+            entity_types=("model_configuration",),
+            requested_at=PUBLIC_GENERATED_AT,
+        )
+        candidate_set = CandidateSet(
+            request_id=REQUEST_ID,
+            use_case=USE_CASE,
+            candidates=(model,),
+            generated_at=PUBLIC_GENERATED_AT,
+        )
+        evidence_set = EvidenceSet(
+            request_id=REQUEST_ID,
+            use_case=USE_CASE,
+            evidence_items=(_evidence(model, 1),),
+            generated_at=PUBLIC_GENERATED_AT,
+        )
+        invalid_for_unit_ranking = (
+            _observation(
+                model,
+                0.84,
+                metric=ContinuousMetricV1(value="84", unit="points", n_items=40),
+                uncertainty=IntervalUncertaintyV1(
+                    low="80",
+                    high="88",
+                    confidence_level="0.95",
+                    method="reported",
+                ),
+            ),
+            _observation(model, 0.84, uncertainty=UnknownUncertaintyV1()),
+            _observation(
+                model,
+                0.84,
+                uncertainty=IntervalUncertaintyV1(
+                    low="0.8",
+                    high="0.88",
+                    confidence_level="0.95",
+                    method="wilson",
+                ),
+            ),
+            _observation(
+                model,
+                0.84,
+                uncertainty=IntervalUncertaintyV1(
+                    low="0.8",
+                    high="0.88",
+                    confidence_level="0.9",
+                    method="reported",
+                ),
+            ),
+        )
+
+        for observation in invalid_for_unit_ranking:
+            with self.subTest(metric=type(observation.metric).__name__, uncertainty=type(observation.uncertainty).__name__):
+                recommendation = materialize_recommendation(
+                    request=request,
+                    candidate_set=candidate_set,
+                    stage_candidates=(_stage(model, 0.4, lexical_rank=1),),
+                    evidence_set=evidence_set,
+                    observations=(observation,),
+                    methodology_version=PUBLIC_METHODOLOGY_VERSION,
+                    generated_at=PUBLIC_GENERATED_AT,
+                )
+
+                self.assertFalse(recommendation.result_usable)
+                self.assertEqual("abstain", recommendation.the_call.decision)
+
+    def test_materializer_abstains_on_cross_scale_or_duplicate_observations(self):
+        alpha = _entity("model:alpha")
+        beta = _entity("model:beta")
+        request = EvaluationRequest(
+            request_id=REQUEST_ID,
+            use_case=USE_CASE,
+            entity_types=("model_configuration",),
+            requested_at=PUBLIC_GENERATED_AT,
+        )
+        candidate_set = CandidateSet(
+            request_id=REQUEST_ID,
+            use_case=USE_CASE,
+            candidates=(alpha, beta),
+            generated_at=PUBLIC_GENERATED_AT,
+        )
+        stages = (_stage(alpha, 0.4, lexical_rank=1), _stage(beta, 0.3, lexical_rank=2))
+        evidence = EvidenceSet(
+            request_id=REQUEST_ID,
+            use_case=USE_CASE,
+            evidence_items=(),
+            generated_at=PUBLIC_GENERATED_AT,
+        )
+        alpha_observation = _observation(alpha, 0.84)
+        beta_observation = _observation(beta, 0.83)
+        other_feed = replace(
+            beta_observation,
+            provenance=replace(beta_observation.provenance, feed_id="different-feed"),
+        )
+        other_scorer = replace(
+            beta_observation,
+            provenance=replace(beta_observation.provenance, scorer_version="different-scorer"),
+        )
+        duplicate = replace(alpha_observation, observation_id="obs_alpha_second")
+        mixed_entity_type = EntityRef(
+            entity_type="agent_system",
+            entity_id=f"config_{_fingerprint('agent:beta')}",
+        )
+
+        for observations in (
+            (alpha_observation, other_feed),
+            (alpha_observation, other_scorer),
+            (alpha_observation, duplicate, beta_observation),
+        ):
+            with self.subTest(observation_count=len(observations)):
+                recommendation = materialize_recommendation(
+                    request=request,
+                    candidate_set=candidate_set,
+                    stage_candidates=stages,
+                    evidence_set=evidence,
+                    observations=observations,
+                    methodology_version=PUBLIC_METHODOLOGY_VERSION,
+                    generated_at=PUBLIC_GENERATED_AT,
+                )
+
+                self.assertFalse(recommendation.result_usable)
+                self.assertEqual("abstain", recommendation.the_call.decision)
+
+        mixed_request = EvaluationRequest(
+            request_id=REQUEST_ID,
+            use_case=USE_CASE,
+            entity_types=("model_configuration", "agent_system"),
+            requested_at=PUBLIC_GENERATED_AT,
+        )
+        mixed_recommendation = materialize_recommendation(
+            request=mixed_request,
+            candidate_set=CandidateSet(
+                request_id=REQUEST_ID,
+                use_case=USE_CASE,
+                candidates=(alpha, mixed_entity_type),
+                generated_at=PUBLIC_GENERATED_AT,
+            ),
+            stage_candidates=(
+                _stage(alpha, 0.4, lexical_rank=1),
+                _stage(mixed_entity_type, 0.3, lexical_rank=2),
+            ),
+            evidence_set=evidence,
+            observations=(alpha_observation, _observation(mixed_entity_type, 0.83)),
+            methodology_version=PUBLIC_METHODOLOGY_VERSION,
+            generated_at=PUBLIC_GENERATED_AT,
+        )
+        self.assertFalse(mixed_recommendation.result_usable)
+        self.assertEqual("abstain", mixed_recommendation.the_call.decision)
 
 
 if __name__ == "__main__":
