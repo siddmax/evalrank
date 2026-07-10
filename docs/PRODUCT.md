@@ -32,7 +32,7 @@ A **ServingOffer** is a separately dated, provider-specific purchasable or runna
 
 ## Catalog And Publication
 
-[`catalog/manifest.json`](../catalog/manifest.json) is the canonical public registry for cells, aliases, candidate benchmark families, feeds, rights state, cadence, retention policy, lineage, and publication eligibility. It contains exactly 26 cells. Every cell begins in `preview` and every research lead begins in `discovered` unless explicitly `quarantined`.
+[`catalog/manifest.json`](../catalog/manifest.json) is the canonical public registry for cells, candidate benchmark families, feeds, explicit higher/lower native-metric direction, rights state, cadence, retention policy, lineage, and publication eligibility. It contains exactly 26 canonical cells and no compatibility aliases. Every cell begins in `preview` and every research lead begins in `discovered` unless explicitly `quarantined`.
 
 Catalog membership means “EvalRank understands this decision question.” It does not mean the cell is ranked, launch-ready, or supported by enough independent evidence. A publication snapshot may expose a top set only after the exact ranking group clears rights, identity, overlap, health, calibration, freshness, replay, and sensitivity gates. Thin cells disclose the missing-family gap instead of emitting a thin ranking.
 

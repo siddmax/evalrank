@@ -7,11 +7,16 @@ import Ajv2020 from "ajv/dist/2020.js";
 import {
   EvalRankApiError,
   EvalRankClient,
+  canonicalJson,
+  evaluatedConfigurationId,
+  parseSnapshotSetDescriptorV1,
   parseProblemDetails,
-  type EvaluationRequest,
+  snapshotSetId,
+  verifyBenchmarkHealthSemantics,
+  type BenchmarkHealth,
+  type DecisionQueryV1,
+  type DecisionReceiptV1,
   type ProblemDetails,
-  type Recommendation,
-  type ScoringStageCatalog,
   type UseCaseCatalog,
 } from "./index.ts";
 
@@ -377,21 +382,37 @@ test("Ajv 2020 enforces fail-closed family and feed admission states", () => {
   assert.equal(acceptsManifest(discoveredFeedWithCount), false);
 
   const shadowFeedWithoutAdapter = structuredClone(manifest);
-  shadowFeedWithoutAdapter.feeds.find((feed) => feed.state === "discovered")!.state = "shadow";
+  const missingAdapter = shadowFeedWithoutAdapter.feeds.find((feed) => feed.state === "discovered")!;
+  missingAdapter.state = "shadow";
+  missingAdapter.metric_direction = "higher";
   assert.equal(acceptsManifest(shadowFeedWithoutAdapter), false);
+
+  const shadowFeedWithoutDirection = structuredClone(manifest);
+  const missingDirection = shadowFeedWithoutDirection.feeds.find((feed) => feed.state === "discovered")!;
+  missingDirection.state = "shadow";
+  missingDirection.adapter_id = "adapter-v1";
+  assert.equal(acceptsManifest(shadowFeedWithoutDirection), false);
 
   const validShadowFeed = structuredClone(manifest);
   const shadowFeed = validShadowFeed.feeds.find((feed) => feed.state === "discovered");
   assert.ok(shadowFeed);
   shadowFeed.state = "shadow";
   shadowFeed.adapter_id = "adapter-v1";
+  shadowFeed.metric_direction = "higher";
   assert.equal(acceptsManifest(validShadowFeed), true, ajv.errorsText(validate.errors));
+
+  const shadowFeedWithRankEligibleCount = structuredClone(validShadowFeed);
+  shadowFeedWithRankEligibleCount.feeds.find(
+    (feed) => feed.feed_id === shadowFeed.feed_id,
+  )!.rank_eligible_count = 1;
+  assert.equal(acceptsManifest(shadowFeedWithRankEligibleCount), false);
 
   const validActiveFeed = structuredClone(manifest);
   const admittedFeed = validActiveFeed.feeds.find((feed) => feed.state === "discovered");
   assert.ok(admittedFeed);
   admittedFeed.state = "active";
   admittedFeed.adapter_id = "adapter-v1";
+  admittedFeed.metric_direction = "higher";
   admittedFeed.rank_eligible_count = 1;
   admittedFeed.retention.store_artifact_bytes = true;
   admittedFeed.rights = {
@@ -528,18 +549,22 @@ test("Ajv 2020 enforces fail-closed family and feed admission states", () => {
   assert.equal(acceptsManifest(discoveredFeedWithReason), false);
 });
 
-test("EvalRankClient posts a public recommendation request", async () => {
-  const server = await startServer(200, recommendationPayload());
+test("EvalRankClient posts a canonical public decision query", async () => {
+  const server = await startServer(200, decisionReceiptPayload());
 
   try {
-    const recommendation = await new EvalRankClient(server.baseUrl).recommend(requestPayload());
+    const receipt = await new EvalRankClient(server.baseUrl).decide(
+      decisionQuery(),
+      { share: true },
+    );
 
-    assert.equal(recommendation.object, "recommendation");
+    assert.deepEqual(receipt, decisionReceiptPayload());
     assert.equal(server.method, "POST");
-    assert.equal(server.path, "/v1/recommendations");
+    assert.equal(server.path, "/v1/decisions?share=true");
     assert.equal(server.headers["content-type"], "application/json");
     assert.equal(server.headers.accept, "application/json, application/problem+json");
-    assert.deepEqual(server.requestJson, requestPayload());
+    assert.deepEqual(server.requestJson, decisionQuery());
+    assert.equal(server.requestBody, canonicalJson(decisionQuery()));
   } finally {
     await server.close();
   }
@@ -562,7 +587,7 @@ test("EvalRankClient raises public Problem Details errors", async () => {
 
   try {
     await assert.rejects(
-      () => new EvalRankClient(server.baseUrl).recommend(requestPayload()),
+      () => new EvalRankClient(server.baseUrl).decide(decisionQuery()),
       (error: unknown) => {
         assert.ok(error instanceof EvalRankApiError);
         assert.equal(error.status, 429);
@@ -593,7 +618,7 @@ test("EvalRankClient treats malformed Retry-After as absent", async () => {
 
   try {
     await assert.rejects(
-      () => new EvalRankClient(server.baseUrl).recommend(requestPayload()),
+      () => new EvalRankClient(server.baseUrl).decide(decisionQuery()),
       (error: unknown) => {
         assert.ok(error instanceof EvalRankApiError);
         assert.equal(error.status, 429);
@@ -696,19 +721,102 @@ test("EvalRankClient fetches public use-case catalog metadata", async () => {
   }
 });
 
-test("EvalRankClient fetches public scoring-stage catalog metadata", async () => {
-  const server = await startServer(200, scoringStageCatalogPayload());
+test("EvalRankClient fetches public benchmark health", async () => {
+  const server = await startServer(200, benchmarkHealthPayload());
 
   try {
-    const catalog = await new EvalRankClient(server.baseUrl).scoringStages();
+    const health = await new EvalRankClient(server.baseUrl).benchmarkHealth();
 
-    assert.equal(catalog.object, "scoring_stage_catalog");
+    assert.equal(health.object, "benchmark_health");
     assert.equal(server.method, "GET");
-    assert.equal(server.path, "/v1/scoring-stages");
+    assert.equal(server.path, "/v1/benchmark-health");
     assert.equal(server.headers.accept, "application/json, application/problem+json");
     assert.equal(server.requestBody, "");
   } finally {
     await server.close();
+  }
+});
+
+test("benchmark health verification rejects false status and impossible counts", () => {
+  const health = benchmarkHealthPayload();
+  assert.equal(verifyBenchmarkHealthSemantics(health), health);
+
+  const falseStatus = structuredClone(health);
+  falseStatus.cells[0].status = "active";
+  assert.throws(() => verifyBenchmarkHealthSemantics(falseStatus), /status/);
+
+  const impossibleCounts = structuredClone(health);
+  impossibleCounts.cells[0].admitted_feed_count = 3;
+  assert.throws(() => verifyBenchmarkHealthSemantics(impossibleCounts), /counts/);
+
+  const invalidTimestamp = structuredClone(health);
+  invalidTimestamp.generated_at = "2026-02-30T00:00:00Z";
+  assert.throws(() => verifyBenchmarkHealthSemantics(invalidTimestamp), /envelope/);
+
+  const yearZero = structuredClone(health);
+  yearZero.generated_at = "0000-01-01T00:00:00Z";
+  assert.throws(() => verifyBenchmarkHealthSemantics(yearZero), /envelope/);
+});
+
+test("EvalRankClient retrieves a shared decision receipt", async () => {
+  const receipt = decisionReceiptPayload();
+  const server = await startServer(200, receipt);
+  try {
+    assert.deepEqual(
+      await new EvalRankClient(server.baseUrl).decisionReceipt(receipt.receipt_id),
+      receipt,
+    );
+    assert.equal(server.path, `/v1/decisions/${receipt.receipt_id}`);
+  } finally {
+    await server.close();
+  }
+});
+
+test("EvalRankClient exercises leaderboard, entity, and compare reads", async () => {
+  const payloads = await clientReadPayloads();
+  const leaderboardServer = await startServer(200, payloads.leaderboard);
+  try {
+    assert.deepEqual(
+      await new EvalRankClient(leaderboardServer.baseUrl).leaderboard("code-generation"),
+      payloads.leaderboard,
+    );
+    assert.equal(leaderboardServer.path, "/v1/leaderboard/code-generation");
+  } finally {
+    await leaderboardServer.close();
+  }
+
+  const entityServer = await startServer(200, payloads.entity);
+  try {
+    assert.deepEqual(
+      await new EvalRankClient(entityServer.baseUrl).entity(
+        "model_configuration",
+        "reference-model-a",
+      ),
+      payloads.entity,
+    );
+    assert.equal(
+      entityServer.path,
+      "/v1/entities/model_configuration/reference-model-a",
+    );
+  } finally {
+    await entityServer.close();
+  }
+
+  const compareServer = await startServer(200, payloads.compare);
+  try {
+    assert.deepEqual(
+      await new EvalRankClient(compareServer.baseUrl).compare(
+        "code-generation",
+        payloads.entityRefs,
+      ),
+      payloads.compare,
+    );
+    assert.equal(
+      compareServer.path,
+      `/v1/compare?use_case=code-generation&entities=${encodeURIComponent(payloads.entityRefs.join(","))}`,
+    );
+  } finally {
+    await compareServer.close();
   }
 });
 
@@ -748,6 +856,12 @@ test("EvalRankClient rejects non-http base URLs", () => {
     () => new EvalRankClient("file:///tmp/evalrank"),
     /baseUrl must be an http or https URL/,
   );
+});
+
+test("EvalRankClient exposes no legacy route aliases", () => {
+  const client = new EvalRankClient("https://evalrank.example");
+  assert.equal("recommend" in client, false);
+  assert.equal("scoringStages" in client, false);
 });
 
 async function startServer(
@@ -805,8 +919,8 @@ async function startServer(
 function useCaseCatalogPayload(): UseCaseCatalog {
   return {
     object: "use_case_catalog",
-    methodology_version: "2026-07-09.3.catalog-manifest-v1",
-    generated_at: "2026-07-09T00:00:00Z",
+    methodology_version: "2026-07-10.1.catalog-manifest-v1",
+    generated_at: "2026-07-10T00:00:00Z",
     use_cases: manifestUseCases(),
   };
 }
@@ -856,6 +970,7 @@ type ManifestFamily = CatalogManifest["benchmark_families"][number];
 type ManifestFeed = {
   feed_id: string;
   adapter_id: string | null;
+  metric_direction: "higher" | "lower" | null;
   entity_kind: string;
   interaction_policy: string;
   configuration_passport_class: string;
@@ -954,22 +1069,23 @@ function cadencesAreOrdered(manifest: CatalogManifest): boolean {
   });
 }
 
-function scoringStageCatalogPayload(): ScoringStageCatalog {
+function benchmarkHealthPayload(): BenchmarkHealth {
   return {
-    object: "scoring_stage_catalog",
-    methodology_version: "2026-06-25.1.public-fixture-v1",
-    generated_at: "2026-06-25T00:00:00Z",
-    stages: [
-      {
-        id: "candidate-retrieval",
-        ordinal: 1,
-        name: "Candidate retrieval",
-        description: "Build a public candidate set.",
-        input_contracts: ["EvaluationRequest"],
-        output_contracts: ["CandidateSet"],
-        public_boundary: "storage-free public contract",
-      },
-    ],
+    object: "benchmark_health",
+    schema_version: "1",
+    manifest_version: "2026-07-10.1",
+    generated_at: "2026-07-10T00:00:00Z",
+    cells: [{
+      cell_id: "code-generation",
+      status: "preview",
+      ranking_group_count: 2,
+      published_ranking_group_count: 0,
+      benchmark_family_count: 3,
+      candidate_feed_count: 3,
+      implemented_feed_count: 2,
+      admitted_feed_count: 0,
+      rank_eligible_feed_count: 0,
+    }],
   };
 }
 
@@ -985,45 +1101,143 @@ function readBody(request: http.IncomingMessage): Promise<string> {
   });
 }
 
-function requestPayload(): EvaluationRequest {
-  return {
-    object: "evaluation_request",
-    request_id: "req_public_fixture_01",
-    use_case: "web-browsing",
-    entity_types: ["mcp_server"],
-    requested_at: "2026-06-25T00:00:00Z",
-    constraints: {},
-  };
+function decisionCorpus() {
+  return JSON.parse(
+    readFileSync(
+      new URL("../../../examples/decision-contract-v1.golden.json", import.meta.url),
+      "utf8",
+    ),
+  );
 }
 
-function recommendationPayload(): Recommendation {
+function decisionQuery(): DecisionQueryV1 {
+  return decisionCorpus().receipt.body.query as DecisionQueryV1;
+}
+
+function decisionReceiptPayload(): DecisionReceiptV1 {
+  const corpus = decisionCorpus();
   return {
-    object: "recommendation",
-    use_case: "web-browsing",
-    shortlist_depth: 1,
-    depth_rationale: "public fixture",
-    degraded: false,
-    served_from: "public-fixture",
-    base_snapshot_lag_ms: 0,
-    methodology_version: "2026-06-25.1.public-fixture-v1",
-    generated_at: "2026-06-25T00:00:00Z",
-    comparability: "single-scale",
-    ranked: [],
-    groups: null,
-    the_call: {
-      decision: "abstain",
-      confidence: null,
-      reason: "insufficient_evidence",
-      abstention_reason: "insufficient_evidence",
+    ...corpus.receipt.body,
+    receipt_id: corpus.receipt.receipt_id,
+  } as DecisionReceiptV1;
+}
+
+async function clientReadPayloads() {
+  const passport = {
+    object: "configuration_passport" as const,
+    schema_version: "1" as const,
+    entity_kind: "model_configuration" as const,
+    canonical_name: "reference-model-a",
+    revision: "2026-07-10",
+    interaction_policy: "direct_prompt" as const,
+    configuration_passport_class: "model-configuration-v1" as const,
+    harness: null,
+    scaffold: null,
+    tools: [],
+    quantization: null,
+    system_prompt_policy: null,
+    environment: null,
+  };
+  const firstId = await evaluatedConfigurationId(passport);
+  const secondId = `config_${"e".repeat(64)}`;
+  const rankingGroupId = "rg-code-generation-model-configuration-direct-prompt-model-configuration-v1";
+  const publicationSnapshotId = `snapshot_${"b".repeat(64)}`;
+  const descriptor = parseSnapshotSetDescriptorV1({
+    object: "snapshot_set_descriptor",
+    schema_version: "1",
+    cell_id: "code-generation",
+    manifest_version: "2026-07-10.1",
+    methodology_version: "2026-07-10.1.reference-server-v1",
+    ranking_group_snapshots: [{
+      ranking_group_id: rankingGroupId,
+      publication_snapshot_id: publicationSnapshotId,
+    }],
+  });
+  const eligibility = {
+    published_claim: "top_set",
+    rank_eligible_configuration_count: 2,
+    current_independent_family_count: 3,
+    required_independent_family_count: 3,
+    current_overlap_count: 2,
+    required_overlap_count: 2,
+    calibration_status: "validated",
+    gap_codes: [] as string[],
+  };
+  const rankings = [{
+    rank: 1,
+    display_name: "Reference model A",
+    capability_score: 1,
+    uncertainty: { kind: "interval", level: 1, lower: 1, upper: 1 },
+    in_top_set: true,
+  }, {
+    rank: 2,
+    display_name: "Reference model B",
+    capability_score: 0,
+    uncertainty: { kind: "interval", level: 1, lower: 0, upper: 0 },
+    in_top_set: false,
+  }];
+  const common = {
+    schema_version: "1" as const,
+    cell_id: "code-generation",
+    manifest_version: descriptor.manifest_version,
+    methodology_version: descriptor.methodology_version,
+    snapshot_set_id: await snapshotSetId(descriptor),
+    snapshot_set_descriptor: descriptor,
+    generated_at: "2026-07-10T00:00:00Z",
+  };
+  const group = {
+    ranking_group_id: rankingGroupId,
+    entity_kind: "model_configuration",
+    state: "active",
+    publication_snapshot_id: publicationSnapshotId,
+    eligibility_summary: eligibility,
+    entries: [firstId, secondId].map((id, index) => ({
+      evaluated_configuration_id: id,
+      ranking: rankings[index],
+    })),
+  };
+  const leaderboard = {
+    object: "leaderboard" as const,
+    ...common,
+    cell_state: "active",
+    ranking_groups: [group],
+  };
+  const entity = {
+    object: "entity_detail" as const,
+    ...common,
+    ranking_group_id: rankingGroupId,
+    state: "active",
+    publication_snapshot_id: publicationSnapshotId,
+    eligibility_summary: eligibility,
+    entity: {
+      evaluated_configuration: {
+        object: "evaluated_configuration",
+        schema_version: "1",
+        evaluated_configuration_id: firstId,
+        passport,
+      },
+      ranking: rankings[0],
     },
-    abstention: {
-      reason: "insufficient_evidence",
-      detail: "fixture-only response",
-    },
-    exclusions: [],
-    recommendation_id: "rec_public_fixture_01",
-    recommend_id: "rec_public_fixture_01",
-    search_run_id: "rec_public_fixture_01",
-    request_id: "req_public_fixture_01",
+  };
+  const compare = {
+    object: "compare_result" as const,
+    ...common,
+    ranking_group_id: rankingGroupId,
+    entity_kind: "model_configuration",
+    interaction_policy: "direct_prompt",
+    configuration_passport_class: "model-configuration-v1",
+    state: "active",
+    publication_snapshot_id: publicationSnapshotId,
+    eligibility_summary: eligibility,
+    entities: [firstId, secondId].map((id, index) => ({
+      evaluated_configuration_id: id,
+      ranking: rankings[index],
+    })),
+  };
+  return {
+    leaderboard,
+    entity,
+    compare,
+    entityRefs: [firstId, secondId].map((id) => `model_configuration:${id}`),
   };
 }

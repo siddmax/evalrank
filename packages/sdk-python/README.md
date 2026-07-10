@@ -1,6 +1,6 @@
 # EvalRank Python SDK
 
-Python SDK package boundary for public EvalRank APIs.
+Dependency-light Python client and public contract re-export boundary.
 
 Package metadata:
 
@@ -9,24 +9,27 @@ Package metadata:
 - Runtime dependency: `evalrank-core==0.0.0`
 - License: `Apache-2.0`
 
-The SDK re-exports the public core: `CapabilityFingerprintInput`, `RawEntry`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `SourceArtifactV1`, `RunProvenanceV1`, `ObservationV1`, `ConfigurationPassportV1`, `EvaluatedConfigurationV1`, `UsageProfileV1`, `PricingScheduleFactV1`, `ServingOfferV1`, `EvaluationToOfferLinkV1`, `DecisionQueryV1`, `DecisionReceiptV1`, `RankingGroupSnapshotRefV1`, `SnapshotSetDescriptorV1`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `ProblemDetails`, `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, `EVIDENCE_KINDS`, `PROBLEM_CODES`, `PUBLIC_FIXTURE_KINDS`, `sample_problem_details`, and `sample_public_fixture`. It also exports `monthly_cost_microusd`, restricted canonical JSON helpers, semantic read verifiers, and the `sample_observation` fixture. Snapshot-set verification binds every publication snapshot to its owning ranking group rather than accepting an unowned set of snapshot IDs.
+The SDK re-exports the portable core, including `CapabilityFingerprintInput`, `RawEntry`, `ObservationV1`, `DecisionQueryV1`, `DecisionReceiptV1`, `UseCaseCatalog`, `ProblemDetails`, `PROBLEM_CODES`, `PUBLIC_FIXTURE_KINDS`, and `sample_public_fixture`. Identity helpers such as `aggregation_input_document`, `derive_aggregation_input_digest`, `bootstrap_seed_document`, and `derive_bootstrap_seed` are the exact `evalrank_core` implementations, not forks.
 
-The SDK re-exports `aggregation_input_document`, `derive_aggregation_input_digest`, `bootstrap_seed_document`, and `derive_bootstrap_seed` directly from `evalrank_core`; it does not maintain a second Python implementation.
+`EvalRankClient` and `EvalRankApiError` cover all seven launch routes:
 
-Parser provenance also re-exports `RunInputArtifactV1`; `RunProvenanceV1.source_artifacts` is the exact role-typed retained input set.
+- `use_cases()` and `benchmark_health()`
+- `leaderboard(use_case)`, `entity(entity_type, slug)`, and `compare(use_case, entities)` with semantic verification
+- `decide(query, share=False)` with local `DecisionQueryV1` validation and `DecisionReceiptV1` hash verification
+- `decision_receipt(receipt_id)` for an explicitly shared immutable receipt
 
-`EvalRankClient` is a dependency-free stdlib client for the public metadata and recommendation route contracts. It accepts only HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, and can post `EvaluationRequest` JSON to `POST /v1/recommendations`. Non-2xx Problem Details responses raise `EvalRankApiError`; a successful recommendation body is future contract behavior, not the current hosted behavior.
-
-The hosted legacy recommendation operation is temporarily unavailable and currently raises `EvalRankApiError` with public code `recommendation_not_published`. Keeping that typed failure visible prevents clients from treating a cached use-case lookup as a decision over the full request.
+There are no `recommend` or `scoring_stages` compatibility methods.
 
 ```python
-from evalrank_sdk import EvalRankClient, sample_evaluation_request
+import json
+from evalrank_sdk import EvalRankClient
 
 client = EvalRankClient("https://evalrank.example")
-use_cases = client.use_cases()
-stages = client.scoring_stages()
-# The current hosted call raises recommendation_not_published.
-# recommendation = client.recommend(sample_evaluation_request())
+query = json.load(open("query.json", encoding="utf-8"))
+receipt = client.decide(query)
+shared = client.decide(query, share=True)
+replayed = client.decision_receipt(shared["receipt_id"])
+health = client.benchmark_health()
 ```
 
-The client does not add auth, retries, service discovery, environment-variable defaults, hosted receipt IDs, tenant context, private DTOs, local file URLs, production evidence lookup, or any private hosted behavior.
+The client accepts only explicit HTTP(S) base URLs and sends no auth, installation identity, retries, service discovery, environment defaults, or private DTOs.

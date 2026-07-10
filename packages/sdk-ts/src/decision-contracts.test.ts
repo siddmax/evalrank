@@ -355,6 +355,10 @@ test("typed provenance and observations fail closed", () => {
     /unique/,
   );
   assert.throws(() => parseRunProvenanceV1({ ...provenance, source: "mutable-latest" }), /unknown fields/);
+  assert.throws(
+    () => parseRunProvenanceV1({ ...provenance, started_at: "0000-01-01T00:00:00Z" }),
+    /valid UTC timestamp/,
+  );
 
   const observation = {
     object: "observation",

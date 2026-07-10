@@ -1,6 +1,6 @@
 # EvalRank CLI
 
-Command-line boundary for public EvalRank workflows.
+Scriptable command-line boundary for public EvalRank workflows.
 
 Package metadata:
 
@@ -15,31 +15,23 @@ Fixture commands:
 ```sh
 evalrank fixture fingerprint
 evalrank fixture raw-entry
-evalrank fixture request
-evalrank fixture candidate-set
-evalrank fixture stage-candidate
-evalrank fixture evidence
 evalrank fixture problem
 evalrank fixture observation
-evalrank fixture ranking-group
-evalrank fixture evidence-set
-evalrank fixture exclusion
 evalrank fixture use-cases
-evalrank fixture scoring-stages
-evalrank fixture recommendation
 ```
 
-These commands write deterministic public JSON fixtures and perform no network or database work.
+The fixture commands are deterministic and perform no network or database work.
 
-Legacy recommendation command:
+Launch API commands:
 
 ```sh
 evalrank use-cases --base-url https://evalrank.example
-evalrank scoring-stages --base-url https://evalrank.example
-evalrank recommend --base-url https://evalrank.example --request request.json
-evalrank recommend --base-url https://evalrank.example --request -
+evalrank benchmark-health --base-url https://evalrank.example
+evalrank decide --base-url https://evalrank.example --query query.json
+evalrank decide --base-url https://evalrank.example --query - --share
+evalrank receipt --base-url https://evalrank.example --receipt-id receipt_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 ```
 
-These commands call explicit public route contracts. `use-cases` fetches `GET /v1/use-cases`, `scoring-stages` fetches `GET /v1/scoring-stages`, and `recommend` posts an explicit public `EvaluationRequest` JSON payload to `POST /v1/recommendations`. They accept only HTTP(S) base URLs; successful public JSON would go to stdout, while the current hosted call writes typed Problem Details to stderr and exits nonzero. They do not add auth, retries, service discovery, environment-variable defaults, private DTOs, or database work.
+`decide` validates `DecisionQueryV1` before posting. `--share` is explicit transport policy: it asks the server to retain an append-only public receipt that anyone with its ID can retrieve. Successful JSON goes to stdout, RFC 9457 Problem Details goes to stderr, contract/input errors exit `2`, and API errors exit `1`.
 
-The hosted legacy `recommend` operation is temporarily unavailable and exits with the typed public Problem Details code `recommendation_not_published`. This is intentional until the deterministic decision operation replaces it atomically.
+There are no `recommend` or `scoring-stages` compatibility commands. The CLI adds no auth, retries, service discovery, environment defaults, private DTOs, or database work.

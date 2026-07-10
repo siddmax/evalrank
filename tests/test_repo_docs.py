@@ -220,7 +220,7 @@ class RepoDocsTests(unittest.TestCase):
 
         self.assertEqual([], offenders)
 
-    def test_public_route_docs_do_not_promise_a_legacy_recommendation(self):
+    def test_public_route_docs_describe_only_the_receipt_first_contract(self):
         checked_paths = (
             "README.md",
             "packages/sdk-python/README.md",
@@ -232,38 +232,28 @@ class RepoDocsTests(unittest.TestCase):
         )
 
         for relative_path in checked_paths:
-            with self.subTest(relative_path=relative_path):
-                text = (REPO_ROOT / relative_path).read_text(encoding="utf-8")
-                self.assertIn("temporarily unavailable", text)
-                self.assertIn("recommendation_not_published", text)
-
-        stale_claims = {
-            "packages/sdk-python/README.md": (
-                "and returns public JSON. Non-2xx",
-                r"(?m)^\s*recommendation\s*=\s*client\.recommend",
-            ),
-            "packages/sdk-ts/README.md": (
-                "returns public JSON, and raises",
-                r"(?m)^\s*const recommendation\s*=\s*await client\.recommend",
-            ),
-            "packages/cli/README.md": (
-                "write public JSON to stdout, write public Problem Details JSON",
-            ),
-            "packages/mcp/README.md": (
-                "and returns recommendation JSON text.",
-            ),
-        }
-        for relative_path, forbidden_patterns in stale_claims.items():
             text = (REPO_ROOT / relative_path).read_text(encoding="utf-8")
-            for pattern in forbidden_patterns:
-                with self.subTest(relative_path=relative_path, pattern=pattern):
-                    self.assertIsNone(re.search(pattern, text))
+            with self.subTest(relative_path=relative_path):
+                for retired in (
+                    "/v1/recommendations",
+                    "/v1/scoring-stages",
+                    "recommendation_not_published",
+                    "invalid_evaluation_request",
+                ):
+                    self.assertNotIn(retired, text)
 
-    def test_tests_map_uses_current_abstention_contract_name(self):
+        root = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("POST /v1/decisions", root)
+        self.assertIn("GET /v1/benchmark-health", root)
+        self.assertIn("GET /v1/decisions/{receipt_id}", root)
+        self.assertIn("?share=true", root)
+
+    def test_tests_map_uses_current_decision_receipt_contract(self):
         text = (REPO_ROOT / "TESTS.md").read_text(encoding="utf-8")
 
-        self.assertIn("abstention-as-empty-single-scale", text)
-        self.assertNotIn("abstention-as-empty-ranking", text)
+        self.assertIn("DecisionQueryV1", text)
+        self.assertIn("DecisionReceiptV1", text)
+        self.assertIn("tests/test_reference_server_e2e.py", text)
 
 
 if __name__ == "__main__":

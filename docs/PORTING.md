@@ -2,14 +2,14 @@
 
 This Apache-2.0 repository contains portable EvalRank contracts and method. A port is acceptable only when it remains understandable, reproducible, and testable without a private service, credential, customer, or non-public dataset.
 
-Last reviewed: 2026-07-09
+Last reviewed: 2026-07-10
 
-Hosted contract status: the legacy `POST /v1/recommendations` operation is temporarily unavailable and returns the product-neutral RFC 9457 code `recommendation_not_published`. The portable contract will change atomically when a deterministic decision operation is ready across every client.
+Portable contract status: deterministic decisions, benchmark health, explicit shared-receipt retrieval, and all grouped explorer reads now share one seven-path public contract. A private hosted runtime must conform to this exact contract before deployment; no compatibility route is public.
 
 ## Authorities
 
 - `docs/PRODUCT.md`: product job, ontology, receipt behavior, demand boundary, and exclusions.
-- `catalog/manifest.json`: cells, aliases, benchmark families, feeds, governance, cadence, retention, lineage, and eligibility.
+- `catalog/manifest.json`: canonical cells, ranking groups, benchmark families, feeds, native-metric direction, governance, cadence, retention, lineage, and eligibility. Transitional cell aliases are retired.
 - `methods/evidence-synthesis.md`: native-metric synthesis, uncertainty, staged eligibility, sensitivity, and publication.
 - `schemas/`: versioned portable interoperability payloads.
 

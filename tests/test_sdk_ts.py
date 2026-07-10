@@ -11,74 +11,59 @@ SDK_TS = REPO_ROOT / "packages" / "sdk-ts"
 sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.contracts import (  # noqa: E402
-    EVIDENCE_KINDS,
-    THE_CALL_DECISIONS,
-    TRUST_TIERS,
+    PROBLEM_CODES,
     USE_CASE_ENTITY_KINDS,
     USE_CASE_RANK_POLICIES,
 )
 from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
 
-PROBLEM_CODES = {
-    "invalid_evaluation_request",
-    "recommendation_not_published",
-    "rate_limited",
-    "upstream_timeout",
-    "validation",
-    "not_found",
-    "methodology_stale",
-    "internal",
-    "unauthorized",
-    "forbidden",
-}
-
 
 class TypeScriptSdkTests(unittest.TestCase):
-    def test_legacy_result_row_vocabulary_is_deleted(self):
+    def test_retired_route_and_result_vocabulary_is_absent(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
-        self.assertNotIn("ResultRow", source)
-        self.assertNotIn("result-row", source)
-        self.assertNotIn("RESULT_ENTITY_KINDS", source)
-
-    def test_sdk_readme_lists_public_typescript_surface(self):
-        text = (SDK_TS / "README.md").read_text(encoding="utf-8")
-
-        for name in (
-            "Abstention",
-            "CapabilityFingerprint",
-            "RawEntry",
-            "EntityRef",
-            "EvaluationRequest",
-            "CandidateSet",
-            "StageCandidate",
-            "EvidenceItem",
-            "EvidenceSet",
-            "ObservationV1",
-            "ScoringStage",
+        for retired in (
+            "ResultRow",
+            "result-row",
+            "/v1/recommendations",
+            "/v1/scoring-stages",
+            "async recommend(",
+            "async scoringStages(",
+            "RecommendationBase",
             "ScoringStageCatalog",
-            "UseCase",
-            "UseCaseCatalog",
-            "RankingGroup",
-            "Exclusion",
-            "TheCall",
-            "RankedEntity",
-            "RecommendationCallState",
-            "Recommendation",
-            "ProblemDetails",
+            "EvaluationRequest",
+            "COMPARABILITY_MODES",
+            "THE_CALL_DECISIONS",
+            "interface Abstention",
+            "recommendation_not_published",
+            "invalid_evaluation_request",
+            "interface CandidateSet",
+            "interface EvidenceItem",
+            "interface EvidenceSet",
+            "interface Exclusion",
+            "interface RankedEntity",
+            "interface RankingGroup",
+            "interface StageCandidate",
+        ):
+            self.assertNotIn(retired, source)
+
+    def test_sdk_readme_lists_current_decision_and_read_surface(self):
+        text = (SDK_TS / "README.md").read_text(encoding="utf-8")
+        for name in (
+            "DecisionQueryV1",
+            "DecisionReceiptV1",
+            "BenchmarkHealth",
+            "Leaderboard",
+            "EntityDetail",
+            "CompareResult",
             "EvalRankClient",
             "EvalRankApiError",
             "PUBLIC_FIXTURE_KINDS",
-            "PublicFixtureKind",
-            "NonEmptyArray",
             "AggregationInputDocument",
-            "BootstrapSeedDocument",
-            "RankingGroupIdentity",
-            "aggregationInputDocument",
-            "bootstrapSeedDocument",
             "deriveAggregationInputDigest",
-            "deriveBootstrapSeed",
         ):
             self.assertIn(name, text)
+        self.assertNotIn("recommendation_not_published", text)
+        self.assertNotRegex(text, r"(?m)\.recommend\(")
 
     def test_package_metadata_exposes_public_typescript_entrypoint(self):
         package = json.loads((SDK_TS / "package.json").read_text(encoding="utf-8"))
@@ -91,187 +76,64 @@ class TypeScriptSdkTests(unittest.TestCase):
         self.assertEqual("./src/index.ts", package["types"])
         self.assertEqual("./src/index.ts", package["exports"]["."]["types"])
         self.assertEqual("./src/index.ts", package["exports"]["."]["default"])
-        self.assertEqual(
-            "node --experimental-strip-types --check src/index.ts && "
-            "node --experimental-strip-types --check src/decision-contracts.ts && "
-            "node --experimental-strip-types --check src/aggregation-identity.ts",
-            package["scripts"]["check"],
-        )
-        self.assertEqual(
-            "node --experimental-strip-types --test src/index.test.ts src/decision-contracts.test.ts",
-            package["scripts"]["test"],
-        )
+        self.assertIn("decision-contracts.ts", package["scripts"]["check"])
+        self.assertIn("index.test.ts", package["scripts"]["test"])
 
     def test_public_constants_match_core_contracts(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
         self.assertIn('export * from "./decision-contracts.ts";', source)
         self.assertIn('export * from "./aggregation-identity.ts";', source)
 
-        self.assertEqual(TRUST_TIERS, _exported_string_array(source, "TRUST_TIERS"))
-        self.assertEqual(EVIDENCE_KINDS, _exported_string_array(source, "EVIDENCE_KINDS"))
-        self.assertEqual(THE_CALL_DECISIONS, _exported_string_array(source, "THE_CALL_DECISIONS"))
         self.assertEqual(PROBLEM_CODES, _exported_string_array(source, "PROBLEM_CODES"))
         self.assertEqual(USE_CASE_ENTITY_KINDS, _exported_string_array(source, "USE_CASE_ENTITY_KINDS"))
         self.assertEqual(USE_CASE_RANK_POLICIES, _exported_string_array(source, "USE_CASE_RANK_POLICIES"))
         self.assertEqual(set(PUBLIC_FIXTURE_KINDS), _exported_string_array(source, "PUBLIC_FIXTURE_KINDS"))
 
-    def test_public_interfaces_cover_schema_payloads(self):
+    def test_public_interfaces_and_client_cover_all_launch_routes(self):
         source = (SDK_TS / "src" / "index.ts").read_text(encoding="utf-8")
+        decision_source = (SDK_TS / "src" / "decision-contracts.ts").read_text(encoding="utf-8")
 
         for name in (
-            "Abstention",
-            "CandidateSet",
-            "CapabilityFingerprint",
-            "EntityRef",
-            "Exclusion",
-            "EvidenceSet",
-            "EvaluationRequest",
-            "EvidenceItem",
-            "RankedEntity",
-            "RankingGroup",
-            "RawEntry",
-            "ScoringStage",
-            "ScoringStageCatalog",
-            "StageCandidate",
+            "BenchmarkHealth",
+            "Leaderboard",
+            "EntityDetail",
+            "CompareResult",
             "ProblemDetails",
             "UseCaseCatalog",
         ):
             self.assertIn(f"export interface {name}", source)
+        for name in ("DecisionQueryV1", "DecisionReceiptV1"):
+            self.assertIn(f"export interface {name}", decision_source)
 
-        self.assertIn("export interface UseCaseBase", source)
-        self.assertIn("export interface RankedUseCase extends UseCaseBase", source)
-        self.assertIn("export interface OverlayUseCase extends UseCaseBase", source)
-        self.assertIn("export type UseCase = RankedUseCase | OverlayUseCase;", source)
-        self.assertIn("export interface RecommendCall", source)
-        self.assertIn("export interface AbstainCall", source)
-        self.assertIn("export type TheCall = RecommendCall | AbstainCall;", source)
-        self.assertIn("export interface RecommendationBase", source)
-        self.assertIn("export interface RecommendationWithoutCall", source)
-        self.assertIn("export interface RecommendationWithRecommendCall", source)
-        self.assertIn("export interface RecommendationWithAbstainCall", source)
-        self.assertIn(
-            "export type RecommendationCallState =\n"
-            "  | RecommendationWithoutCall\n"
-            "  | RecommendationWithRecommendCall\n"
-            "  | RecommendationWithAbstainCall;",
-            source,
-        )
-        self.assertIn("export interface EmptySingleScaleAbstentionRecommendation", source)
-        self.assertIn("export interface SingleScaleRecommendationBase extends RecommendationBase", source)
-        self.assertIn("export interface KindGroupedRecommendationBase extends RecommendationBase", source)
-        self.assertIn(
-            "export type SingleScaleRecommendation =\n"
-            "  | (SingleScaleRecommendationBase & (RecommendationWithoutCall | RecommendationWithRecommendCall))\n"
-            "  | EmptySingleScaleAbstentionRecommendation;",
-            source,
-        )
-        self.assertIn(
-            "export type KindGroupedRecommendation = KindGroupedRecommendationBase &\n"
-            "  (RecommendationWithoutCall | RecommendationWithRecommendCall);",
-            source,
-        )
-        self.assertIn("export type Recommendation = SingleScaleRecommendation | KindGroupedRecommendation;", source)
-        self.assertIn("export class EvalRankApiError extends Error", source)
-        self.assertIn("export class EvalRankClient", source)
-        self.assertIn("async useCases(): Promise<UseCaseCatalog>", source)
-        self.assertIn("async scoringStages(): Promise<ScoringStageCatalog>", source)
-        self.assertIn("async recommend(request: EvaluationRequest): Promise<Recommendation>", source)
-        self.assertIn("/v1/use-cases", source)
-        self.assertIn("/v1/scoring-stages", source)
-        self.assertIn("/v1/recommendations", source)
-
-        for field in (
-            "capability_fingerprint",
-            "id_scheme",
-            "canonical_id",
-            "declared_capability_shape",
-            "raw_metadata",
-            "source_id",
-            "fetched_at",
-            "content_hash",
-            "request_id",
-            "entity_types",
-            "requested_at",
-            "constraints",
-            "candidates",
-            "detail",
-            "evidence_items",
-            "generated_at",
-            "evidence_id",
-            "subject",
-            "kind",
-            "source",
-            "observed_at",
-            "summary",
-            "metadata",
-            "recommendation_id",
-            "group_key",
-            "group_rationale",
-            "recommend_id",
-            "search_run_id",
-            "rrf_components",
-            "retrieval_provenance",
-            "abstention",
-            "abstention_reason",
-            "axes",
-            "coverage",
-            "retry_after",
-            "request_id",
-            "doc_url",
-            "entity_kinds",
-            "rank_policy",
-            "is_overlay",
-            "use_cases",
-            "input_contracts",
-            "output_contracts",
-            "public_boundary",
-            "stages",
+        for method in (
+            "async useCases(): Promise<UseCaseCatalog>",
+            "async benchmarkHealth(): Promise<BenchmarkHealth>",
+            "async leaderboard(useCase: string): Promise<Leaderboard>",
+            "async entity(",
+            "async compare(useCase: string, entities: string[]): Promise<CompareResult>",
+            "async decide(",
+            "async decisionReceipt(receiptId: string): Promise<DecisionReceiptV1>",
         ):
-            self.assertRegex(source, rf"\b{field}\??:")
+            self.assertIn(method, source)
+        for path in (
+            "/v1/use-cases",
+            "/v1/benchmark-health",
+            "/v1/leaderboard/",
+            "/v1/entities/",
+            "/v1/compare?",
+            "/v1/decisions",
+        ):
+            self.assertIn(path, source)
 
-        self.assertIn("the_call: null;", source)
-        self.assertIn("the_call: RecommendCall;", source)
-        self.assertIn("the_call: AbstainCall;", source)
-        self.assertIn("abstention: null;", source)
-        self.assertIn("abstention: Abstention;", source)
-        self.assertIn("shortlist_depth: 0;", source)
-        self.assertIn("ranked: [];", source)
-        self.assertIn("groups: null;", source)
-        self.assertIn("exclusions: Exclusion[];", source)
+        self.assertIn("parseDecisionQueryV1(query)", source)
+        self.assertIn("parseDecisionReceiptV1(response)", source)
+        self.assertIn("verifyLeaderboardSemantics(response)", source)
+        self.assertIn("verifyEntityDetailSemantics(response)", source)
+        self.assertIn("verifyCompareResultSemantics(response)", source)
+        self.assertIn("verifyBenchmarkHealthSemantics(", source)
         self.assertIn("export type ProblemCode = (typeof PROBLEM_CODES)[number];", source)
         self.assertIn("export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];", source)
-        self.assertIn("export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];", source)
-        self.assertIn("export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];", source)
         self.assertIn("export type NonEmptyArray<T> = [T, ...T[]];", source)
-        self.assertIn('decision: "recommend";', source)
-        self.assertIn("confidence: number;", source)
-        self.assertIn("abstention_reason: null;", source)
-        self.assertIn('decision: "abstain";', source)
-        self.assertIn("confidence: null;", source)
-        self.assertIn("abstention_reason: string;", source)
-        self.assertIn('comparability: "single-scale";', source)
-        self.assertIn("ranked: RankedEntity[];", source)
-        self.assertIn("groups: null;", source)
-        self.assertIn('comparability: "kind-grouped";', source)
-        self.assertIn("ranked: [];", source)
-        self.assertIn("groups: NonEmptyArray<RankingGroup>;", source)
-        self.assertIn("code?: ProblemCode;", source)
-        self.assertIn("retriable?: boolean;", source)
-        self.assertIn("[key: string]: unknown;", source)
-        self.assertIn("coverage: TrustTier;", source)
-        self.assertIn("entity_types: NonEmptyArray<string>;", source)
-        self.assertIn("candidates: NonEmptyArray<EntityRef>;", source)
-        self.assertIn("arms: NonEmptyArray<string>;", source)
-        self.assertIn("entity_kinds: NonEmptyArray<UseCaseEntityKind>;", source)
-        self.assertIn("use_cases: NonEmptyArray<UseCase>;", source)
-        self.assertIn("input_contracts: NonEmptyArray<string>;", source)
-        self.assertIn("output_contracts: NonEmptyArray<string>;", source)
-        self.assertIn("stages: NonEmptyArray<ScoringStage>;", source)
-        self.assertIn("ranked: NonEmptyArray<RankedEntity>;", source)
-        self.assertIn('rank_policy: "ranked";', source)
-        self.assertIn("is_overlay: false;", source)
-        self.assertIn('rank_policy: "veto_overlay";', source)
-        self.assertIn("is_overlay: true;", source)
 
 
 def _exported_string_array(source: str, name: str) -> set[str]:

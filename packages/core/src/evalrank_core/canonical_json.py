@@ -77,4 +77,3 @@ def _utf16_sort_key(value: str) -> bytes:
 def _require_valid_unicode(value: str, *, path: str) -> None:
     if any(0xD800 <= ord(character) <= 0xDFFF for character in value):
         raise ValueError(f"{path} contains a lone surrogate")
-

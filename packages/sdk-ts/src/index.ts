@@ -1,33 +1,14 @@
-export const TRUST_TIERS = [
-  "verified",
-  "standardized",
-  "self-reported",
-  "tracking-only",
-] as const;
-
-export const FRESHNESS_STATUSES = [
-  "fresh",
-  "stale",
-  "recalibrating",
-] as const;
-
-export const COMPARABILITY_MODES = [
-  "single-scale",
-  "kind-grouped",
-] as const;
-
-export const EVIDENCE_KINDS = [
-  "attestation",
-  "benchmark",
-  "documentation",
-  "runtime-observation",
-  "trace",
-] as const;
-
-export const THE_CALL_DECISIONS = [
-  "abstain",
-  "recommend",
-] as const;
+import {
+  canonicalJson,
+  parseDecisionQueryV1,
+  parseDecisionReceiptV1,
+  type DecisionQueryV1,
+  type DecisionReceiptV1,
+  type SnapshotSetDescriptorV1,
+  verifyCompareResultSemantics,
+  verifyEntityDetailSemantics,
+  verifyLeaderboardSemantics,
+} from "./decision-contracts.ts";
 
 export const USE_CASE_ENTITY_KINDS = [
   "agent",
@@ -41,8 +22,6 @@ export const USE_CASE_RANK_POLICIES = [
 ] as const;
 
 export const PROBLEM_CODES = [
-  "invalid_evaluation_request",
-  "recommendation_not_published",
   "rate_limited",
   "upstream_timeout",
   "validation",
@@ -54,54 +33,18 @@ export const PROBLEM_CODES = [
 ] as const;
 
 export const PUBLIC_FIXTURE_KINDS = [
-  "candidate-set",
-  "evidence",
-  "evidence-set",
-  "exclusion",
   "fingerprint",
   "observation",
   "problem",
   "raw-entry",
-  "recommendation",
-  "ranking-group",
-  "request",
-  "scoring-stages",
-  "stage-candidate",
   "use-cases",
 ] as const;
 
-export type TrustTier = (typeof TRUST_TIERS)[number];
-export type FreshnessStatus = (typeof FRESHNESS_STATUSES)[number];
-export type ComparabilityMode = (typeof COMPARABILITY_MODES)[number];
-export type EvidenceKind = (typeof EVIDENCE_KINDS)[number];
-export type TheCallDecision = (typeof THE_CALL_DECISIONS)[number];
 export type UseCaseEntityKind = (typeof USE_CASE_ENTITY_KINDS)[number];
 export type UseCaseRankPolicy = (typeof USE_CASE_RANK_POLICIES)[number];
 export type ProblemCode = (typeof PROBLEM_CODES)[number];
 export type PublicFixtureKind = (typeof PUBLIC_FIXTURE_KINDS)[number];
 export type NonEmptyArray<T> = [T, ...T[]];
-
-export interface Freshness {
-  last_eval: string;
-  next_refresh: string;
-  status: FreshnessStatus;
-}
-
-export interface EntityRef {
-  entity_type: string;
-  id: string;
-}
-
-export interface Exclusion {
-  subject: EntityRef;
-  reason: string;
-  detail: string;
-}
-
-export interface Abstention {
-  reason: string;
-  detail: string;
-}
 
 export interface CapabilityFingerprint {
   object: "capability_fingerprint";
@@ -110,47 +53,6 @@ export interface CapabilityFingerprint {
   entity_kind: string;
   declared_capability_shape: Record<string, unknown>;
   capability_fingerprint: string;
-}
-
-export interface EvaluationRequest {
-  object: "evaluation_request";
-  request_id: string;
-  use_case: string;
-  entity_types: NonEmptyArray<string>;
-  requested_at: string;
-  constraints: Record<string, unknown>;
-}
-
-export interface CandidateSet {
-  object: "candidate_set";
-  request_id: string;
-  use_case: string;
-  candidates: NonEmptyArray<EntityRef>;
-  generated_at: string;
-}
-
-export interface StageCandidate {
-  object: "stage_candidate";
-  candidate_id: string;
-  entity: EntityRef;
-  fused_score: number;
-  rrf_components: {
-    lexical_rank: number | null;
-    semantic_rank: number | null;
-    graph_rank: number | null;
-  };
-  retrieval_provenance: {
-    arms: NonEmptyArray<string>;
-    use_case: string;
-  };
-}
-
-export interface EvidenceSet {
-  object: "evidence_set";
-  request_id: string;
-  use_case: string;
-  evidence_items: EvidenceItem[];
-  generated_at: string;
 }
 
 export interface RawEntry {
@@ -163,17 +65,6 @@ export interface RawEntry {
   declared_capability_shape: Record<string, unknown>;
   fetched_at: string;
   content_hash: string;
-}
-
-export interface EvidenceItem {
-  evidence_id: string;
-  subject: EntityRef;
-  kind: EvidenceKind;
-  source: string;
-  observed_at: string;
-  summary: string;
-  score: number | null;
-  metadata: Record<string, unknown>;
 }
 
 export interface UseCaseBase {
@@ -203,38 +94,137 @@ export interface UseCaseCatalog {
   use_cases: NonEmptyArray<UseCase>;
 }
 
-export interface ScoringStage {
-  id: string;
-  ordinal: number;
-  name: string;
-  description: string;
-  input_contracts: NonEmptyArray<string>;
-  output_contracts: NonEmptyArray<string>;
-  public_boundary: string;
+export interface BenchmarkHealthCell {
+  cell_id: string;
+  status: "active" | "preview" | "unavailable";
+  ranking_group_count: number;
+  published_ranking_group_count: number;
+  benchmark_family_count: number;
+  candidate_feed_count: number;
+  implemented_feed_count: number;
+  admitted_feed_count: number;
+  rank_eligible_feed_count: number;
 }
 
-export interface ScoringStageCatalog {
-  object: "scoring_stage_catalog";
-  methodology_version: string;
+export interface BenchmarkHealth {
+  object: "benchmark_health";
+  schema_version: "1";
+  manifest_version: string;
   generated_at: string;
-  stages: NonEmptyArray<ScoringStage>;
+  cells: BenchmarkHealthCell[];
 }
 
-export interface RecommendCall {
-  decision: "recommend";
-  confidence: number;
-  reason: string;
-  abstention_reason: null;
+export function verifyBenchmarkHealthSemantics(value: unknown): BenchmarkHealth {
+  if (!isRecord(value)) {
+    throw new TypeError("benchmark health must be a JSON object");
+  }
+  const envelopeFields = ["object", "schema_version", "manifest_version", "generated_at", "cells"];
+  if (!hasExactFields(value, envelopeFields)) {
+    throw new TypeError("benchmark health fields are invalid");
+  }
+  if (
+    value.object !== "benchmark_health"
+    || value.schema_version !== "1"
+    || typeof value.manifest_version !== "string"
+    || !/^\d{4}-\d{2}-\d{2}\.[1-9]\d*$/.test(value.manifest_version)
+    || !isUtcSecondTimestamp(value.generated_at)
+    || !Array.isArray(value.cells)
+    || value.cells.length === 0
+  ) {
+    throw new TypeError("benchmark health envelope is invalid");
+  }
+  const countFields = [
+    "ranking_group_count",
+    "published_ranking_group_count",
+    "benchmark_family_count",
+    "candidate_feed_count",
+    "implemented_feed_count",
+    "admitted_feed_count",
+    "rank_eligible_feed_count",
+  ] as const;
+  const cellFields = ["cell_id", "status", ...countFields];
+  const cellIds = new Set<string>();
+  for (const cell of value.cells) {
+    if (!isRecord(cell) || !hasExactFields(cell, cellFields)) {
+      throw new TypeError("benchmark health cell fields are invalid");
+    }
+    if (
+      typeof cell.cell_id !== "string"
+      || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(cell.cell_id)
+      || cellIds.has(cell.cell_id)
+    ) {
+      throw new TypeError("benchmark health cell_id values must be unique canonical slugs");
+    }
+    cellIds.add(cell.cell_id);
+    for (const field of countFields) {
+      if (!Number.isSafeInteger(cell[field]) || (cell[field] as number) < 0) {
+        throw new TypeError(`benchmark health ${field} must be a safe nonnegative integer`);
+      }
+    }
+    const published = cell.published_ranking_group_count as number;
+    const groups = cell.ranking_group_count as number;
+    const candidate = cell.candidate_feed_count as number;
+    const implemented = cell.implemented_feed_count as number;
+    const admitted = cell.admitted_feed_count as number;
+    const eligible = cell.rank_eligible_feed_count as number;
+    if (published > groups || !(eligible <= admitted && admitted <= implemented && implemented <= candidate)) {
+      throw new TypeError("benchmark health counts are inconsistent");
+    }
+    const expectedStatus = published > 0 ? "active" : implemented > 0 ? "preview" : "unavailable";
+    if (cell.status !== expectedStatus) {
+      throw new TypeError("benchmark health status must match publication and implementation counts");
+    }
+  }
+  return value as unknown as BenchmarkHealth;
 }
 
-export interface AbstainCall {
-  decision: "abstain";
-  confidence: null;
-  reason: string;
-  abstention_reason: string;
+export interface Leaderboard {
+  object: "leaderboard";
+  schema_version: "1";
+  cell_id: string;
+  cell_state: string;
+  manifest_version: string;
+  methodology_version: string;
+  snapshot_set_id: string;
+  snapshot_set_descriptor: SnapshotSetDescriptorV1;
+  generated_at: string;
+  ranking_groups: Array<Record<string, unknown>>;
 }
 
-export type TheCall = RecommendCall | AbstainCall;
+export interface EntityDetail {
+  object: "entity_detail";
+  schema_version: "1";
+  cell_id: string;
+  manifest_version: string;
+  methodology_version: string;
+  snapshot_set_id: string;
+  snapshot_set_descriptor: SnapshotSetDescriptorV1;
+  ranking_group_id: string;
+  state: string;
+  publication_snapshot_id: string;
+  eligibility_summary: Record<string, unknown>;
+  generated_at: string;
+  entity: Record<string, unknown>;
+}
+
+export interface CompareResult {
+  object: "compare_result";
+  schema_version: "1";
+  cell_id: string;
+  manifest_version: string;
+  methodology_version: string;
+  snapshot_set_id: string;
+  snapshot_set_descriptor: SnapshotSetDescriptorV1;
+  ranking_group_id: string;
+  entity_kind: string;
+  interaction_policy: string;
+  configuration_passport_class: string;
+  state: string;
+  publication_snapshot_id: string;
+  eligibility_summary: Record<string, unknown>;
+  generated_at: string;
+  entities: Array<Record<string, unknown>>;
+}
 
 export interface ProblemDetails {
   type: string;
@@ -299,99 +289,6 @@ export function parseProblemDetails(value: unknown): ProblemDetails {
   return value as ProblemDetails;
 }
 
-export interface RankedEntity {
-  entity_type: string;
-  id: string;
-  rank: number;
-  capability_score: number;
-  confidence: number;
-  ci95: [number, number];
-  methodology_version: string;
-  trust_tier: TrustTier;
-  score_components: Record<string, number>;
-  axes: {
-    evidence: {
-      n_items: number;
-      coverage: TrustTier;
-    };
-  };
-  freshness: Freshness;
-  caveats: string[];
-}
-
-export interface RankingGroup {
-  object: "ranking_group";
-  group_key: string;
-  entity_type: string;
-  ranked: NonEmptyArray<RankedEntity>;
-  group_rationale: string;
-}
-
-export interface RecommendationBase {
-  object: "recommendation";
-  use_case: string;
-  shortlist_depth: number;
-  depth_rationale: string;
-  degraded: boolean;
-  served_from: string;
-  base_snapshot_lag_ms: number;
-  methodology_version: string;
-  generated_at: string;
-  exclusions: Exclusion[];
-  recommendation_id: string;
-  recommend_id: string;
-  search_run_id: string;
-  request_id: string;
-}
-
-export interface RecommendationWithoutCall {
-  the_call: null;
-  abstention: null;
-}
-
-export interface RecommendationWithRecommendCall {
-  the_call: RecommendCall;
-  abstention: null;
-}
-
-export interface RecommendationWithAbstainCall {
-  the_call: AbstainCall;
-  abstention: Abstention;
-}
-
-export type RecommendationCallState =
-  | RecommendationWithoutCall
-  | RecommendationWithRecommendCall
-  | RecommendationWithAbstainCall;
-
-export interface SingleScaleRecommendationBase extends RecommendationBase {
-  comparability: "single-scale";
-  ranked: RankedEntity[];
-  groups: null;
-}
-
-export interface KindGroupedRecommendationBase extends RecommendationBase {
-  comparability: "kind-grouped";
-  ranked: [];
-  groups: NonEmptyArray<RankingGroup>;
-}
-
-export interface EmptySingleScaleAbstentionRecommendation
-  extends RecommendationBase,
-    RecommendationWithAbstainCall {
-  comparability: "single-scale";
-  shortlist_depth: 0;
-  ranked: [];
-  groups: null;
-}
-
-export type SingleScaleRecommendation =
-  | (SingleScaleRecommendationBase & (RecommendationWithoutCall | RecommendationWithRecommendCall))
-  | EmptySingleScaleAbstentionRecommendation;
-export type KindGroupedRecommendation = KindGroupedRecommendationBase &
-  (RecommendationWithoutCall | RecommendationWithRecommendCall);
-export type Recommendation = SingleScaleRecommendation | KindGroupedRecommendation;
-
 export class EvalRankApiError extends Error {
   readonly status: number;
   readonly problem: ProblemDetails;
@@ -421,18 +318,89 @@ export class EvalRankClient {
     return this.requestJson<UseCaseCatalog>("/v1/use-cases");
   }
 
-  async scoringStages(): Promise<ScoringStageCatalog> {
-    return this.requestJson<ScoringStageCatalog>("/v1/scoring-stages");
+  async benchmarkHealth(): Promise<BenchmarkHealth> {
+    return verifyBenchmarkHealthSemantics(
+      await this.requestJson<unknown>("/v1/benchmark-health"),
+    );
   }
 
-  async recommend(request: EvaluationRequest): Promise<Recommendation> {
-    return this.requestJson<Recommendation>("/v1/recommendations", {
+  async leaderboard(useCase: string): Promise<Leaderboard> {
+    requireSlug(useCase, "useCase");
+    const response = await this.requestJson<Leaderboard>(`/v1/leaderboard/${useCase}`);
+    await verifyLeaderboardSemantics(response);
+    return response;
+  }
+
+  async entity(
+    entityType: "agent_system" | "arena_system" | "component_configuration" | "model_configuration" | "system_configuration",
+    slug: string,
+  ): Promise<EntityDetail> {
+    if (![
+      "agent_system",
+      "arena_system",
+      "component_configuration",
+      "model_configuration",
+      "system_configuration",
+    ].includes(entityType)) {
+      throw new TypeError("entityType is not a public evaluated-configuration kind");
+    }
+    if (!/^[a-z0-9]+(?:[._:-][a-z0-9]+)*$/.test(slug)) {
+      throw new TypeError("slug must be a canonical public entity slug or configuration ID");
+    }
+    const response = await this.requestJson<EntityDetail>(
+      `/v1/entities/${entityType}/${slug}`,
+    );
+    await verifyEntityDetailSemantics(response);
+    return response;
+  }
+
+  async compare(useCase: string, entities: string[]): Promise<CompareResult> {
+    requireSlug(useCase, "useCase");
+    if (!Array.isArray(entities) || entities.length < 2 || entities.length > 4) {
+      throw new TypeError("entities must contain two to four references");
+    }
+    if (new Set(entities).size !== entities.length) {
+      throw new TypeError("entities must be unique");
+    }
+    if (entities.some((entity) => !/^(agent_system|arena_system|component_configuration|model_configuration|system_configuration):[a-z0-9]+(?:[._:-][a-z0-9]+)*$/.test(entity))) {
+      throw new TypeError("entities contains an invalid evaluated-configuration reference");
+    }
+    const search = new URLSearchParams({
+      use_case: useCase,
+      entities: entities.join(","),
+    });
+    const response = await this.requestJson<CompareResult>(`/v1/compare?${search}`);
+    await verifyCompareResultSemantics(response);
+    return response;
+  }
+
+  async decide(
+    query: DecisionQueryV1,
+    options: { share?: boolean } = {},
+  ): Promise<DecisionReceiptV1> {
+    if (options.share !== undefined && typeof options.share !== "boolean") {
+      throw new TypeError("share must be a boolean");
+    }
+    const parsed = parseDecisionQueryV1(query);
+    const response = await this.requestJson<unknown>(
+      options.share ? "/v1/decisions?share=true" : "/v1/decisions",
+      {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(request),
-    });
+      body: canonicalJson(parsed),
+      },
+    );
+    return parseDecisionReceiptV1(response);
+  }
+
+  async decisionReceipt(receiptId: string): Promise<DecisionReceiptV1> {
+    if (!/^receipt_[0-9a-f]{64}$/.test(receiptId)) {
+      throw new TypeError("receiptId must be receipt_<64 lowercase hex characters>");
+    }
+    const response = await this.requestJson<unknown>(`/v1/decisions/${receiptId}`);
+    return parseDecisionReceiptV1(response);
   }
 
   private async requestJson<T>(
@@ -460,6 +428,20 @@ export class EvalRankClient {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasExactFields(value: Record<string, unknown>, fields: readonly string[]): boolean {
+  const actual = Object.keys(value).sort();
+  const expected = [...fields].sort();
+  return actual.length === expected.length && actual.every((field, index) => field === expected[index]);
+}
+
+function isUtcSecondTimestamp(value: unknown): value is string {
+  if (typeof value !== "string" || value.startsWith("0000-") || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)) {
+    return false;
+  }
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.valueOf()) && parsed.toISOString() === `${value.slice(0, -1)}.000Z`;
 }
 
 function uriReference(value: unknown, name: string): string {
@@ -520,6 +502,12 @@ function retryAfter(headers: Headers): number | null {
   }
   const parsed = Number.parseInt(trimmed, 10);
   return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
+function requireSlug(value: string, name: string): void {
+  if (typeof value !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+    throw new TypeError(`${name} must be a canonical slug`);
+  }
 }
 
 export * from "./decision-contracts.ts";

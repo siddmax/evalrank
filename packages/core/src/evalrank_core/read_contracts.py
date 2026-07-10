@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any, ClassVar
 
-from evalrank_core.canonical_json import sha256_hex
+from evalrank_core.canonical_json import MAX_SAFE_INTEGER, sha256_hex
 from evalrank_core.decision_contracts import EvaluatedConfigurationV1
 
 
@@ -18,6 +19,82 @@ _METHODOLOGY_VERSION_RE = re.compile(
 _SNAPSHOT_ID_RE = re.compile(r"^snapshot_[0-9a-f]{64}$")
 _CONFIGURATION_ID_RE = re.compile(r"^config_[0-9a-f]{64}$")
 _CELL_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+_TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+
+
+def verify_benchmark_health_semantics(payload: Any) -> dict[str, Any]:
+    """Verify closed per-cell health rows and their count-derived status."""
+
+    if not isinstance(payload, dict):
+        raise TypeError("benchmark health must be a JSON object")
+    expected = {"object", "schema_version", "manifest_version", "generated_at", "cells"}
+    if set(payload) != expected:
+        raise ValueError("benchmark health fields are invalid")
+    if payload["object"] != "benchmark_health" or payload["schema_version"] != "1":
+        raise ValueError("benchmark health envelope is invalid")
+    if not isinstance(payload["manifest_version"], str) or not _MANIFEST_VERSION_RE.fullmatch(
+        payload["manifest_version"]
+    ):
+        raise ValueError("benchmark health manifest_version is invalid")
+    if not isinstance(payload["generated_at"], str) or not _TIMESTAMP_RE.fullmatch(
+        payload["generated_at"]
+    ):
+        raise ValueError("benchmark health generated_at is invalid")
+    try:
+        datetime.fromisoformat(payload["generated_at"].removesuffix("Z") + "+00:00")
+    except ValueError as error:
+        raise ValueError("benchmark health generated_at is invalid") from error
+    cells = payload["cells"]
+    if not isinstance(cells, list) or not cells:
+        raise ValueError("benchmark health cells must be a non-empty array")
+    cell_ids: set[str] = set()
+    count_fields = (
+        "ranking_group_count",
+        "published_ranking_group_count",
+        "benchmark_family_count",
+        "candidate_feed_count",
+        "implemented_feed_count",
+        "admitted_feed_count",
+        "rank_eligible_feed_count",
+    )
+    row_fields = {"cell_id", "status", *count_fields}
+    for row in cells:
+        if not isinstance(row, dict) or set(row) != row_fields:
+            raise ValueError("benchmark health cell fields are invalid")
+        cell_id = row["cell_id"]
+        if not isinstance(cell_id, str) or not _CELL_ID_RE.fullmatch(cell_id):
+            raise ValueError("benchmark health cell_id is invalid")
+        if cell_id in cell_ids:
+            raise ValueError("benchmark health cell_id values must be unique")
+        cell_ids.add(cell_id)
+        for field in count_fields:
+            value = row[field]
+            if (
+                not isinstance(value, int)
+                or isinstance(value, bool)
+                or value < 0
+                or value > MAX_SAFE_INTEGER
+            ):
+                raise ValueError(f"benchmark health {field} must be a safe nonnegative integer")
+        if row["published_ranking_group_count"] > row["ranking_group_count"]:
+            raise ValueError("published ranking groups cannot exceed ranking groups")
+        if not (
+            row["rank_eligible_feed_count"]
+            <= row["admitted_feed_count"]
+            <= row["implemented_feed_count"]
+            <= row["candidate_feed_count"]
+        ):
+            raise ValueError("benchmark health feed counts must be monotonically nested")
+        expected_status = (
+            "active"
+            if row["published_ranking_group_count"] > 0
+            else "preview"
+            if row["implemented_feed_count"] > 0
+            else "unavailable"
+        )
+        if row["status"] != expected_status:
+            raise ValueError("benchmark health status must match publication and implementation counts")
+    return payload
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

@@ -2,7 +2,7 @@
   "uri_references": {
     "valid": [
       "about:blank",
-      "/v1/recommendations/req_01",
+      "/v1/decisions/receipt_01",
       "http:/foo",
       "http:foo",
       "https://example.com/problems/validation",

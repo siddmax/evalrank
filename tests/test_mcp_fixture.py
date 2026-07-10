@@ -1,5 +1,5 @@
-import json
 import http.server
+import json
 import re
 import sys
 import threading
@@ -8,255 +8,152 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-CORE_SRC = REPO_ROOT / "packages" / "core" / "src"
-SDK_SRC = REPO_ROOT / "packages" / "sdk-python" / "src"
-MCP_SRC = REPO_ROOT / "packages" / "mcp" / "src"
-sys.path.insert(0, str(CORE_SRC))
-sys.path.insert(0, str(SDK_SRC))
-sys.path.insert(0, str(MCP_SRC))
+for source in (
+    REPO_ROOT / "packages" / "core" / "src",
+    REPO_ROOT / "packages" / "sdk-python" / "src",
+    REPO_ROOT / "packages" / "mcp" / "src",
+):
+    sys.path.insert(0, str(source))
 
-from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
-from evalrank_core.fixtures import sample_evaluation_request  # noqa: E402
-from evalrank_core.fixtures import sample_recommendation  # noqa: E402
-from evalrank_core.fixtures import sample_scoring_stage_catalog  # noqa: E402
-from evalrank_core.fixtures import sample_use_case_catalog  # noqa: E402
+from evalrank_core.fixtures import (  # noqa: E402
+    PUBLIC_FIXTURE_KINDS,
+    sample_public_fixture,
+    sample_use_case_catalog,
+)
 from evalrank_mcp import call_tool, list_tools  # noqa: E402
 
-def _manifest_use_cases() -> list[dict]:
-    cells = json.loads((REPO_ROOT / "catalog" / "manifest.json").read_text(encoding="utf-8"))["cells"]
-    return [
-        {
-            "object": "use_case",
-            "id": cell["cell_id"],
-            "name": cell["name"],
-            "definition": cell["definition"],
-            "entity_kinds": cell["entity_kinds"],
-            "rank_policy": "ranked",
-            "is_overlay": False,
-        }
-        for cell in cells
-    ]
+
+def _decision_vector() -> tuple[dict, dict]:
+    corpus = json.loads(
+        (REPO_ROOT / "examples" / "decision-contract-v1.golden.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    return corpus["receipt"]["body"]["query"], {
+        **corpus["receipt"]["body"],
+        "receipt_id": corpus["receipt"]["receipt_id"],
+    }
 
 
 class McpFixtureTests(unittest.TestCase):
-    def test_mcp_readme_lists_all_public_fixture_kinds(self):
+    def test_mcp_readme_lists_exact_fixture_kinds_and_launch_tools(self):
         text = (REPO_ROOT / "packages" / "mcp" / "README.md").read_text(encoding="utf-8")
-        documented = set(re.findall(r'"kind": "([a-z-]+)"', text))
+        documented_fixtures = set(re.findall(r'"kind": "([a-z-]+)"', text))
+        documented_tools = set(re.findall(r'call_tool\("(evalrank\.[a-z_]+)"', text))
 
-        self.assertEqual(set(PUBLIC_FIXTURE_KINDS), documented)
-        for kind in PUBLIC_FIXTURE_KINDS:
-            with self.subTest(kind=kind):
-                self.assertIn(f'"kind": "{kind}"', text)
-
-    def test_mcp_readme_documents_recommend_tool(self):
-        text = (REPO_ROOT / "packages" / "mcp" / "README.md").read_text(encoding="utf-8")
-
-        self.assertIn("evalrank.recommend", text)
-        self.assertIn("base_url", text)
-        self.assertIn("request", text)
-
-    def test_mcp_readme_documents_metadata_tools(self):
-        text = (REPO_ROOT / "packages" / "mcp" / "README.md").read_text(encoding="utf-8")
-        documented = set(re.findall(r'call_tool\("(evalrank\.[a-z_]+)"', text))
-
-        self.assertIn("evalrank.fixture", documented)
-        self.assertIn("evalrank.use_cases", text)
-        self.assertIn("evalrank.scoring_stages", text)
-        self.assertIn("base_url", text)
+        self.assertEqual(set(PUBLIC_FIXTURE_KINDS), documented_fixtures)
         self.assertEqual(
-            {"evalrank.fixture", "evalrank.recommend", "evalrank.use_cases", "evalrank.scoring_stages"},
-            documented,
+            {
+                "evalrank.fixture",
+                "evalrank.decide",
+                "evalrank.decision_receipt",
+                "evalrank.use_cases",
+                "evalrank.benchmark_health",
+            },
+            documented_tools,
         )
+        self.assertNotIn("evalrank.recommend", text)
+        self.assertNotIn("evalrank.scoring_stages", text)
 
-    def test_list_tools_exposes_public_fixture_tool(self):
+    def test_list_tools_exposes_closed_decision_and_receipt_inputs(self):
         tools = list_tools()
-
         self.assertEqual(
-            ["evalrank.fixture", "evalrank.recommend", "evalrank.use_cases", "evalrank.scoring_stages"],
+            [
+                "evalrank.fixture",
+                "evalrank.decide",
+                "evalrank.decision_receipt",
+                "evalrank.use_cases",
+                "evalrank.benchmark_health",
+            ],
             [tool["name"] for tool in tools],
         )
-        self.assertEqual(["kind"], tools[0]["inputSchema"]["required"])
-        self.assertEqual(list(PUBLIC_FIXTURE_KINDS), tools[0]["inputSchema"]["properties"]["kind"]["enum"])
-        self.assertEqual(["base_url", "request"], tools[1]["inputSchema"]["required"])
-        self.assertEqual(["base_url"], tools[2]["inputSchema"]["required"])
-        self.assertEqual(["base_url"], tools[3]["inputSchema"]["required"])
-        request_schema = tools[1]["inputSchema"]["properties"]["request"]
-        self.assertFalse(request_schema["additionalProperties"])
+        decide = tools[1]["inputSchema"]
+        self.assertEqual(["base_url", "query"], decide["required"])
+        self.assertFalse(decide["additionalProperties"])
+        query = decide["properties"]["query"]
+        self.assertFalse(query["additionalProperties"])
+        self.assertEqual("decision_query", query["properties"]["object"]["const"])
+        self.assertIn("ranking_group_id", query["required"])
+        self.assertEqual("boolean", decide["properties"]["share"]["type"])
+        receipt = tools[2]["inputSchema"]
+        self.assertEqual(["base_url", "receipt_id"], receipt["required"])
         self.assertEqual(
-            ["object", "request_id", "use_case", "entity_types", "requested_at", "constraints"],
-            request_schema["required"],
+            "^receipt_[0-9a-f]{64}$",
+            receipt["properties"]["receipt_id"]["pattern"],
         )
-        self.assertEqual("evaluation_request", request_schema["properties"]["object"]["const"])
-        self.assertEqual(1, request_schema["properties"]["request_id"]["minLength"])
-        self.assertEqual(1, request_schema["properties"]["use_case"]["minLength"])
-        self.assertEqual(1, request_schema["properties"]["entity_types"]["minItems"])
-        self.assertTrue(request_schema["properties"]["entity_types"]["uniqueItems"])
-        self.assertEqual(1, request_schema["properties"]["entity_types"]["items"]["minLength"])
-        self.assertEqual(
-            "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
-            request_schema["properties"]["requested_at"]["pattern"],
-        )
-        self.assertTrue(request_schema["properties"]["constraints"]["additionalProperties"])
         for tool in tools[1:]:
-            with self.subTest(tool=tool["name"]):
-                base_url = tool["inputSchema"]["properties"]["base_url"]
-                self.assertEqual("string", base_url["type"])
-                self.assertEqual(1, base_url["minLength"])
-                self.assertEqual("^https?://", base_url["pattern"])
+            base_url = tool["inputSchema"]["properties"]["base_url"]
+            self.assertEqual(("string", "^https?://"), (base_url["type"], base_url["pattern"]))
 
-    def test_call_tool_returns_public_fingerprint_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
+    def test_every_fixture_tool_result_matches_core_dispatch(self):
+        for kind in PUBLIC_FIXTURE_KINDS:
+            with self.subTest(kind=kind):
+                result = call_tool("evalrank.fixture", {"kind": kind})
+                self.assertFalse(result["isError"])
+                self.assertEqual(
+                    sample_public_fixture(kind),
+                    json.loads(result["content"][0]["text"]),
+                )
 
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("capability_fingerprint", payload["object"])
-        self.assertEqual("io.evalrank.public-search-demo", payload["canonical_id"])
-
-    def test_call_tool_returns_public_evidence_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "evidence"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("ev_public_trace_01", payload["evidence_id"])
-        self.assertRegex(payload["subject"]["id"], r"^config_[0-9a-f]{64}$")
-
-    def test_call_tool_returns_public_problem_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "problem"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("https://evalrank.ai/problems/validation", payload["type"])
-        self.assertEqual(422, payload["status"])
-        self.assertEqual("validation", payload["code"])
-
-    def test_call_tool_returns_public_observation_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "observation"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("observation", payload["object"])
-        self.assertEqual("proportion", payload["metric"]["kind"])
-        self.assertEqual("reported", payload["uncertainty"]["method"])
-
-    def test_call_tool_returns_public_exclusion_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "exclusion"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertRegex(payload["subject"]["id"], r"^config_[0-9a-f]{64}$")
-        self.assertEqual("unknown_cost", payload["reason"])
-
-    def test_call_tool_returns_public_request_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "request"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("evaluation_request", payload["object"])
-        self.assertEqual("req_public_fixture_01", payload["request_id"])
-
-    def test_call_tool_returns_public_candidate_set_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "candidate-set"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("candidate_set", payload["object"])
-        self.assertRegex(payload["candidates"][0]["id"], r"^config_[0-9a-f]{64}$")
-
-    def test_call_tool_returns_public_evidence_set_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "evidence-set"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("evidence_set", payload["object"])
-        self.assertEqual("ev_public_trace_01", payload["evidence_items"][0]["evidence_id"])
-
-    def test_call_tool_returns_public_stage_candidate_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "stage-candidate"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("stage_candidate", payload["object"])
-        self.assertRegex(payload["entity"]["id"], r"^config_[0-9a-f]{64}$")
-
-    def test_call_tool_returns_public_raw_entry_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "raw-entry"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("raw_entry", payload["object"])
-        self.assertEqual("public-fixture:search-demo:2026-06-25", payload["source_id"])
-
-    def test_call_tool_returns_public_use_cases_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "use-cases"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("use_case_catalog", payload["object"])
-        self.assertEqual(26, len(payload["use_cases"]))
-        self.assertEqual(
-            "computational-research-reproduction",
-            payload["use_cases"][-1]["id"],
-        )
-        self.assertTrue(all(row["rank_policy"] == "ranked" for row in payload["use_cases"]))
-        self.assertEqual(_manifest_use_cases(), payload["use_cases"])
-
-    def test_call_tool_returns_public_ranking_group_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "ranking-group"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("ranking_group", payload["object"])
-        self.assertEqual("component_configuration", payload["group_key"])
-
-    def test_call_tool_returns_public_scoring_stages_fixture_text(self):
-        result = call_tool("evalrank.fixture", {"kind": "scoring-stages"})
-
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("scoring_stage_catalog", payload["object"])
-        self.assertEqual("freshness-trust-labeling", payload["stages"][-1]["id"])
-
-    def test_call_tool_posts_public_recommendation_request(self):
-        with LocalApiServer(200, sample_recommendation().to_dict()) as server:
+    def test_decide_posts_query_and_returns_exact_receipt_text(self):
+        query, receipt = _decision_vector()
+        with LocalApiServer(200, receipt) as server:
             result = call_tool(
-                "evalrank.recommend",
-                {"base_url": server.base_url, "request": sample_evaluation_request().to_dict()},
+                "evalrank.decide",
+                {"base_url": server.base_url, "query": query, "share": True},
             )
 
         self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("recommendation", payload["object"])
-        self.assertEqual("POST", server.method)
-        self.assertEqual("/v1/recommendations", server.path)
-        self.assertEqual(sample_evaluation_request().to_dict(), server.request_json)
-        self.assertEqual("application/json", server.headers["content-type"])
-        self.assertEqual("application/json, application/problem+json", server.headers["accept"])
+        self.assertEqual(receipt, json.loads(result["content"][0]["text"]))
+        self.assertEqual(("POST", "/v1/decisions?share=true"), (server.method, server.path))
+        self.assertEqual(query, server.request_json)
 
-    def test_call_tool_gets_public_use_case_catalog(self):
-        with LocalApiServer(200, sample_use_case_catalog().to_dict()) as server:
-            result = call_tool("evalrank.use_cases", {"base_url": server.base_url})
-
+    def test_decision_receipt_gets_exact_retained_receipt(self):
+        _, receipt = _decision_vector()
+        with LocalApiServer(200, receipt) as server:
+            result = call_tool(
+                "evalrank.decision_receipt",
+                {"base_url": server.base_url, "receipt_id": receipt["receipt_id"]},
+            )
         self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("use_case_catalog", payload["object"])
-        self.assertEqual("GET", server.method)
-        self.assertEqual("/v1/use-cases", server.path)
-        self.assertIsNone(server.request_json)
-        self.assertEqual("application/json, application/problem+json", server.headers["accept"])
+        self.assertEqual(receipt, json.loads(result["content"][0]["text"]))
+        self.assertEqual(f"/v1/decisions/{receipt['receipt_id']}", server.path)
 
-    def test_call_tool_gets_public_scoring_stage_catalog(self):
-        with LocalApiServer(200, sample_scoring_stage_catalog().to_dict()) as server:
-            result = call_tool("evalrank.scoring_stages", {"base_url": server.base_url})
+    def test_metadata_tools_get_use_cases_and_benchmark_health(self):
+        cases = (
+            ("evalrank.use_cases", "/v1/use-cases", sample_use_case_catalog().to_dict()),
+            (
+                "evalrank.benchmark_health",
+                "/v1/benchmark-health",
+                {
+                    "object": "benchmark_health",
+                    "schema_version": "1",
+                    "manifest_version": "2026-07-09.3",
+                    "generated_at": "2026-07-09T00:00:00Z",
+                    "cells": [{
+                        "cell_id": "code-generation",
+                        "status": "unavailable",
+                        "ranking_group_count": 1,
+                        "published_ranking_group_count": 0,
+                        "benchmark_family_count": 1,
+                        "candidate_feed_count": 1,
+                        "implemented_feed_count": 0,
+                        "admitted_feed_count": 0,
+                        "rank_eligible_feed_count": 0,
+                    }],
+                },
+            ),
+        )
+        for tool, path, payload in cases:
+            with self.subTest(tool=tool):
+                with LocalApiServer(200, payload) as server:
+                    result = call_tool(tool, {"base_url": server.base_url})
+                self.assertFalse(result["isError"])
+                self.assertEqual(payload, json.loads(result["content"][0]["text"]))
+                self.assertEqual(("GET", path), (server.method, server.path))
 
-        self.assertFalse(result["isError"])
-        payload = json.loads(result["content"][0]["text"])
-        self.assertEqual("scoring_stage_catalog", payload["object"])
-        self.assertEqual("GET", server.method)
-        self.assertEqual("/v1/scoring-stages", server.path)
-        self.assertIsNone(server.request_json)
-        self.assertEqual("application/json, application/problem+json", server.headers["accept"])
-
-    def test_call_tool_returns_problem_details_as_tool_error(self):
+    def test_problem_details_are_returned_as_mcp_errors(self):
+        query, _ = _decision_vector()
         problem = {
             "type": "https://evalrank.ai/problems/rate-limited",
             "title": "Rate limited",
@@ -268,47 +165,28 @@ class McpFixtureTests(unittest.TestCase):
         }
         with LocalApiServer(429, problem, {"Retry-After": "3"}) as server:
             result = call_tool(
-                "evalrank.recommend",
-                {"base_url": server.base_url, "request": sample_evaluation_request().to_dict()},
+                "evalrank.decide",
+                {"base_url": server.base_url, "query": query},
             )
-
         self.assertTrue(result["isError"])
         self.assertEqual(problem, json.loads(result["content"][0]["text"]))
 
-    def test_call_tool_returns_metadata_problem_details_as_tool_error(self):
-        problem = {
-            "type": "https://evalrank.ai/problems/upstream-timeout",
-            "title": "Upstream timeout",
-            "status": 503,
-            "detail": "catalog temporarily unavailable",
-            "code": "upstream_timeout",
-            "retriable": True,
-            "retry_after": 5,
-        }
-        with LocalApiServer(503, problem, {"Retry-After": "5"}) as server:
-            result = call_tool("evalrank.use_cases", {"base_url": server.base_url})
-
-        self.assertTrue(result["isError"])
-        self.assertEqual("GET", server.method)
-        self.assertEqual(problem, json.loads(result["content"][0]["text"]))
-
-    def test_call_tool_rejects_invalid_recommend_arguments(self):
+    def test_tools_reject_invalid_arguments_and_legacy_names(self):
+        query, _ = _decision_vector()
         with self.assertRaisesRegex(ValueError, "arguments must be an object"):
-            call_tool("evalrank.recommend", [])
+            call_tool("evalrank.decide", [])
         with self.assertRaisesRegex(ValueError, "base_url is required"):
-            call_tool("evalrank.recommend", {"request": sample_evaluation_request().to_dict()})
-        with self.assertRaisesRegex(ValueError, "request must be an object"):
-            call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": []})
-
-    def test_call_tool_rejects_invalid_metadata_arguments(self):
-        with self.assertRaisesRegex(ValueError, "base_url is required"):
-            call_tool("evalrank.use_cases", {})
-        with self.assertRaisesRegex(ValueError, "base_url is required"):
-            call_tool("evalrank.scoring_stages", {"base_url": ""})
-
-    def test_call_tool_rejects_unknown_tool(self):
-        with self.assertRaisesRegex(ValueError, "unknown tool"):
-            call_tool("evalrank.unknown", {"kind": "evidence"})
+            call_tool("evalrank.decide", {"query": query})
+        with self.assertRaisesRegex(ValueError, "query must be an object"):
+            call_tool("evalrank.decide", {"base_url": "https://evalrank.example", "query": []})
+        with self.assertRaisesRegex(ValueError, "share must be a boolean"):
+            call_tool(
+                "evalrank.decide",
+                {"base_url": "https://evalrank.example", "query": query, "share": "yes"},
+            )
+        for name in ("evalrank.recommend", "evalrank.scoring_stages", "evalrank.unknown"):
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, "unknown tool"):
+                call_tool(name, {})
 
 
 class LocalApiServer:

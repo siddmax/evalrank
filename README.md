@@ -1,160 +1,78 @@
 # EvalRank
 
-EvalRank is the public core for evidence-ranked evaluation primitives. This repository holds the open schemas, scoring method interfaces, SDK boundaries, examples, and CI gates that keep the core independent from any private Syndai application code.
+EvalRank is a public, product-neutral truth and decision contract for comparing exact model or agent configurations with reproducible evidence. It separates benchmark exploration from publishable claims and returns typed, content-addressed decision receipts instead of opaque recommendations.
 
 ## Repository Layout
 
-- `AGENTS.md` - Root agent guide and evolution rules.
-- `TESTS.md` - Current test commands and test map.
-- `docs/STATUS.md` - Living build progress tracker.
-- `docs/REPO_STRUCTURE.md` - Directory ownership map.
-- `docs/PORTING.md` - Public/private porting decisions and workstream ownership.
-- `NAVIGATION.md` - Public route contract entrypoints.
-- `packages/core` - Python reference package for evidence, candidate, and scoring contracts.
-- `packages/mcp` - Public MCP adapter for fixture, metadata-route, and recommendation-route tools.
-- `packages/cli` - Command-line entrypoints that call the public APIs.
-- `packages/sdk-python` - Python SDK packaging boundary.
-- `packages/sdk-ts` - TypeScript SDK packaging boundary.
-- `methods` - Public method notes and implementation boundaries.
-- `schemas` - Public JSON schema contracts.
-- `examples` - Minimal runnable examples.
+- `catalog/` — canonical cells, ranking groups, benchmark families, feeds, rights, cadence, lineage, retention, and eligibility.
+- `methods/` — native-metric evidence synthesis and publication rules.
+- `schemas/` — JSON Schemas and the public OpenAPI contract.
+- `packages/core` — portable Python contracts, canonical identities, and semantic verifiers.
+- `packages/sdk-python` and `packages/sdk-ts` — dependency-light clients.
+- `packages/cli` and `packages/mcp` — scriptable adapters.
+- `scripts/reference_server.py` — stdlib-only synthetic HTTP contract exerciser.
+- `examples/` — public fixtures and the cross-language decision golden.
+- `docs/STATUS.md`, `docs/PRODUCT.md`, and `docs/PORTING.md` — current product and ownership state.
 
-## What Is Not Open
+## Public API Contract
 
-The hosted product, private Syndai application integrations, private benchmark fixtures, held-out eval data, production telemetry, customer data, and proprietary ranking experiments are not part of this repository. Public packages must not import private Syndai namespaces or depend on private services.
+`schemas/openapi.json` owns exactly seven launch paths:
 
-Use `docs/PORTING.md` before moving any private work into this repo.
+- `GET /v1/use-cases`
+- `GET /v1/leaderboard/{use_case}`
+- `GET /v1/entities/{entity_type}/{slug}`
+- `GET /v1/compare`
+- `GET /v1/benchmark-health`
+- `POST /v1/decisions`
+- `GET /v1/decisions/{receipt_id}`
 
-## Database Boundary
+`POST /v1/decisions` accepts only `DecisionQueryV1`. The optional `?share=true` parameter is transport policy, not query semantics: it retains an append-only public-safe receipt that anyone with the ID can retrieve. A non-shared result is returned but is not retrievable. `DecisionReceiptV1` pins the semantic query, ranking-group publication, methodology, selected top set or abstention, structured reasons, sensitivities, evidence, and freshness; its ID hashes the full restricted-JCS body.
 
-During incubation, EvalRank uses the existing Finn/Supabase project with a private `evalrank` schema. The schema migrations and live DB bootstrap are kept in the Syndai repo because Syndai currently owns the shared Finn/Supabase deploy path and guardrails.
+There are no recommendation or scoring-stage route aliases. Legacy paths return `404` in the reference server.
 
-Move database migrations into this repo only when EvalRank owns its own deploy/release path or moves to its own Supabase project. When that happens, update `AGENTS.md`, `TESTS.md`, and this README in the same change.
+## Local Contract Exerciser
 
-## Boundary Contract
+The stdlib reference server validates the complete query, exposes schema-valid synthetic reads for all launch GET shapes, and returns the exact golden receipt only for its published synthetic query.
 
-Run:
+```sh
+PYTHONPATH=packages/core/src python3 scripts/reference_server.py --port 8000
+```
+
+Use `examples/decision-contract-v1.golden.json` as the request/receipt reference and run:
+
+```sh
+python3 -m unittest tests.test_reference_server_e2e
+```
+
+## Portable Clients
+
+```python
+import json
+from evalrank_sdk import EvalRankClient
+
+client = EvalRankClient("http://127.0.0.1:8000")
+query = json.load(open("query.json", encoding="utf-8"))
+receipt = client.decide(query, share=True)
+assert client.decision_receipt(receipt["receipt_id"]) == receipt
+```
+
+```sh
+evalrank use-cases --base-url http://127.0.0.1:8000
+evalrank benchmark-health --base-url http://127.0.0.1:8000
+evalrank decide --base-url http://127.0.0.1:8000 --query query.json --share
+evalrank receipt --base-url http://127.0.0.1:8000 --receipt-id receipt_...
+```
+
+Fixture commands remain available for ingestion and evidence primitives, but recommendation and scoring-stage fixture kinds are retired.
+
+## Public/Private Boundary
+
+The hosted runtime, persistence, scheduler, private source adapters, held-out evals, customer data, telemetry, credentials, deployment configuration, and proprietary experiments stay outside this Apache-2.0 repo. During private incubation, migrations remain in Syndai's dedicated private `evalrank` schema because Syndai owns the shared deploy path. A private runtime must pin an immutable public EvalRank revision and may not fork the taxonomy or wire contract.
+
+## Verification
 
 ```sh
 make check
 ```
 
-The target installs the lockfile-pinned, dev-only Draft 2020-12 validator when the TypeScript dependency stamp is absent or stale. The boundary gate rejects private imports, Smithery coupling, Min-K% implementation markers, secret files, high-signal secret values, private data paths, and public packages missing license or notice files.
-
-## Public API Contract
-
-The public route contracts live in `schemas/openapi.json`.
-
-- `GET /v1/use-cases` returns the storage-free `UseCaseCatalog` taxonomy contract.
-- `GET /v1/scoring-stages` returns the storage-free `ScoringStageCatalog` method-stage contract.
-- `GET /v1/leaderboard/{use_case}` returns a cell snapshot set whose ranking groups remain separate scales.
-- `GET /v1/entities/{entity_type}/{slug}` returns one exact evaluated configuration and its pinned ranking.
-- `GET /v1/compare` compares two to four configurations within one exact ranking-group publication.
-- `POST /v1/recommendations` accepts `EvaluationRequest` JSON and defines the eventual `Recommendation` response shape. The hosted legacy operation is temporarily unavailable and returns RFC 9457 `application/problem+json` with code `recommendation_not_published`; it will be replaced atomically by the deterministic decision contract rather than returning a cached answer that ignores request semantics.
-
-The public error contract includes optional retry fields and reusable `Retry-After`, `RateLimit`, and `RateLimit-Policy` header definitions. Immutable artifact, observation, configuration, serving-offer, semantic-query, and decision-receipt contracts are public; hosted auth, scorer runtime, benchmark weights, rate-limit enforcement, persistence, private problem types, and deployment wiring stay outside this repo.
-
-## Public Fixture Surfaces
-
-These examples use local checkout paths until the packages are published.
-
-Runnable example:
-
-```sh
-python3 examples/public_fixture.py
-```
-
-The example prints the current synthetic public fixture bundle: raw entry, request, candidate set, stage candidate, evidence item, evidence set, typed observation, Problem Details, use-case catalog, scoring stage catalog, exclusion, and recommendation.
-
-CLI:
-
-```sh
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture fingerprint
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture raw-entry
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture request
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture candidate-set
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture stage-candidate
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture evidence
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture problem
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture observation
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture ranking-group
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture evidence-set
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture exclusion
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture use-cases
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture scoring-stages
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli fixture recommendation
-```
-
-The CLI also exposes explicit public recommendation API plumbing:
-
-```sh
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli use-cases --base-url https://evalrank.example
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli scoring-stages --base-url https://evalrank.example
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli recommend --base-url https://evalrank.example --request request.json
-PYTHONPATH=packages/core/src:packages/sdk-python/src:packages/cli/src python3 -m evalrank_cli recommend --base-url https://evalrank.example --request -
-```
-
-Python SDK:
-
-```python
-from evalrank_sdk import EvalRankClient, sample_candidate_set, sample_evidence_set, sample_evaluation_request, sample_exclusion, sample_observation, sample_problem_details, sample_ranking_group, sample_recommendation, sample_scoring_stage_catalog, sample_stage_candidate, sample_use_case_catalog
-
-use_cases = sample_use_case_catalog().to_dict()
-stages = sample_scoring_stage_catalog().to_dict()
-candidate_set = sample_candidate_set().to_dict()
-stage_candidate = sample_stage_candidate().to_dict()
-observation = sample_observation().to_dict()
-ranking_group = sample_ranking_group().to_dict()
-evidence_set = sample_evidence_set().to_dict()
-exclusion = sample_exclusion().to_dict()
-payload = sample_recommendation().to_dict()
-call = payload["the_call"]
-abstention = payload["abstention"]
-problem = sample_problem_details().to_dict()
-
-client = EvalRankClient("https://evalrank.example")
-# live_use_cases = client.use_cases()
-# live_stages = client.scoring_stages()
-# recommendation = client.recommend(sample_evaluation_request())
-```
-
-MCP adapter:
-
-```python
-from evalrank_mcp import call_tool
-
-result = call_tool("evalrank.fixture", {"kind": "fingerprint"})
-# use_cases = call_tool("evalrank.use_cases", {"base_url": "https://evalrank.example"})
-# stages = call_tool("evalrank.scoring_stages", {"base_url": "https://evalrank.example"})
-# recommendation = call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": {...}})
-```
-
-TypeScript SDK:
-
-```ts
-import { EvalRankClient, type Abstention, type CandidateSet, type EvaluationRequest, type EvidenceSet, type Exclusion, type ObservationV1, type ProblemDetails, type RankingGroup, type ScoringStageCatalog, type StageCandidate, type TheCall, type UseCaseCatalog } from "@evalrank/sdk";
-
-const useCases: UseCaseCatalog["use_cases"] = [];
-const stages: ScoringStageCatalog["stages"] = [];
-const candidates: CandidateSet["candidates"] = [{ entity_type: "component_configuration", id: `config_${"a".repeat(64)}` }];
-const arms: StageCandidate["retrieval_provenance"]["arms"] = ["lexical", "semantic"];
-const observationMetric: ObservationV1["metric"]["kind"] = "proportion";
-const grouped: RankingGroup["ranked"] = [];
-const evidence: EvidenceSet["evidence_items"] = [];
-const exclusion: Exclusion["reason"] = "unknown_cost";
-const call: TheCall["decision"] = "recommend";
-const abstention: Abstention | null = null;
-const problem: ProblemDetails["code"] = "rate_limited";
-const request: EvaluationRequest = {
-  object: "evaluation_request",
-  request_id: "req_public_fixture_01",
-  use_case: "web-browsing",
-  entity_types: ["component_configuration"],
-  requested_at: "2026-06-25T00:00:00Z",
-  constraints: {},
-};
-const client = new EvalRankClient("https://evalrank.example");
-// const liveUseCases = await client.useCases();
-// const liveStages = await client.scoringStages();
-// const recommendation = await client.recommend(request);
-```
+The gate runs the public-boundary scanner, Python suites, TypeScript syntax/runtime suites, schema drift checks, and cross-client reference-server E2E without network access or private credentials.
