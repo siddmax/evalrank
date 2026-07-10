@@ -18,7 +18,7 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official leaderboard page selects performances_generation.json as the current release_v6 data artifact.",
-          "source_ids": ["leaderboard", "current-data"]
+          "source_ids": ["repository", "leaderboard", "current-data"]
         }
       ]
     },
@@ -66,7 +66,14 @@
           "topic": "scope",
           "research_flag": null,
           "basis": "direct_source",
-          "statement": "The Apache-2.0 official repository contains the pinned 89-task methodology and merged aggregate submission JSON; Harbor trajectories are outside this retained aggregate scope.",
+          "statement": "The Apache-2.0 official repository contains the pinned 89-task methodology and merged aggregate submission JSON.",
+          "source_ids": ["repository"]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "EvalRank retains the repository aggregate artifacts and excludes Harbor trajectories from this adapter's scope.",
           "source_ids": ["repository"]
         }
       ]
