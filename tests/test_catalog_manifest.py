@@ -474,8 +474,11 @@ class CatalogManifestTests(unittest.TestCase):
                     self.assertIsNotNone(eligibility["leave_one_family_out"])
                 self.assertLess(0, eligibility["bootstrap_coverage_target"])
                 self.assertLess(eligibility["bootstrap_coverage_target"], 1)
-                self.assertGreaterEqual(eligibility["block_bootstrap"]["replicates"], 1_000)
-                self.assertIn("ranking_group_key", eligibility["block_bootstrap"]["seed_derivation"])
+                self.assertEqual(10_000, eligibility["block_bootstrap"]["replicates"])
+                self.assertEqual(
+                    "sha256(aggregation_input_digest,methodology_version)",
+                    eligibility["block_bootstrap"]["seed_derivation"],
+                )
                 self.assertIn("native", eligibility["native_effect_policy"])
                 self.assertIn("exclude", eligibility["missing_configuration_policy"])
                 if eligibility["leave_one_family_out"] is not None:
