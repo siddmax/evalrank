@@ -529,6 +529,28 @@ test("monthly schedule pricing uses BigInt, one final ceiling, and fails closed"
     ),
     null,
   );
+  assert.throws(
+    () => contracts.parseUsageProfileV1({
+      basis: "measured",
+      uncached_input_tokens: 0,
+      cached_read_tokens: 0,
+      output_tokens: 0,
+      cache_writes: [],
+      cache_storage_token_seconds: 0,
+    }),
+    /non-zero workload/,
+  );
+  assert.throws(
+    () => contracts.parseUsageProfileV1({
+      basis: "measured",
+      uncached_input_tokens: 0,
+      cached_read_tokens: 0,
+      output_tokens: 0,
+      cache_writes: [],
+      cache_storage_token_seconds: 1,
+    }),
+    /non-zero workload/,
+  );
 });
 
 test("receipt parsing verifies the full-body hash", async () => {
@@ -999,6 +1021,18 @@ test("Draft 2020 schemas enforce the portable semantic shapes they can express",
   (measured.usage_profile as Record<string, unknown>).basis = "measured";
   delete measured.zero_cache_sensitivity_usage_profile;
   assert.equal(queryValidator(measured), true, ajv.errorsText(queryValidator.errors));
+  const zeroUsage = structuredClone(measured);
+  zeroUsage.usage_profile = {
+    basis: "measured",
+    uncached_input_tokens: 0,
+    cached_read_tokens: 0,
+    output_tokens: 0,
+    cache_writes: [],
+    cache_storage_token_seconds: 0,
+  };
+  assert.equal(queryValidator(zeroUsage), false);
+  (zeroUsage.usage_profile as Record<string, unknown>).cache_storage_token_seconds = 1;
+  assert.equal(queryValidator(zeroUsage), false);
 
   const evidence = golden.receipt.body.evidence as Array<Record<string, unknown>>;
   const offer = structuredClone(evidence.find((row) => row.kind === "serving_offer")!.serving_offer);

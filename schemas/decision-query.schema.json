@@ -123,7 +123,13 @@
           "items": { "$ref": "#/$defs/CacheWriteUsage" }
         },
         "cache_storage_token_seconds": { "$ref": "#/$defs/NonNegativeSafeInteger" }
-      }
+      },
+      "anyOf": [
+        { "properties": { "uncached_input_tokens": { "minimum": 1 } }, "required": ["uncached_input_tokens"] },
+        { "properties": { "cached_read_tokens": { "minimum": 1 } }, "required": ["cached_read_tokens"] },
+        { "properties": { "output_tokens": { "minimum": 1 } }, "required": ["output_tokens"] },
+        { "properties": { "cache_writes": { "minItems": 1 } }, "required": ["cache_writes"] }
+      ]
     },
     "CacheWriteUsage": {
       "type": "object",
