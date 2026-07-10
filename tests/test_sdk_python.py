@@ -14,57 +14,31 @@ sys.path.insert(0, str(SDK_SRC))
 
 from evalrank_core import contracts as core_contracts  # noqa: E402
 from evalrank_core.contracts import CapabilityFingerprintInput as CoreCapabilityFingerprintInput  # noqa: E402
-from evalrank_core.contracts import CandidateSet as CoreCandidateSet  # noqa: E402
-from evalrank_core.contracts import Exclusion as CoreExclusion  # noqa: E402
-from evalrank_core.contracts import EvidenceItem as CoreEvidenceItem  # noqa: E402
-from evalrank_core.contracts import EvidenceSet as CoreEvidenceSet  # noqa: E402
-from evalrank_core.contracts import EvaluationRequest as CoreEvaluationRequest  # noqa: E402
 from evalrank_core.contracts import ProblemDetails as CoreProblemDetails  # noqa: E402
 from evalrank_core.contracts import RawEntry as CoreRawEntry  # noqa: E402
-from evalrank_core.contracts import RankingGroup as CoreRankingGroup  # noqa: E402
 from evalrank_core.decision_contracts import ObservationV1 as CoreObservationV1  # noqa: E402
-from evalrank_core.contracts import ScoringStage as CoreScoringStage  # noqa: E402
-from evalrank_core.contracts import ScoringStageCatalog as CoreScoringStageCatalog  # noqa: E402
-from evalrank_core.contracts import StageCandidate as CoreStageCandidate  # noqa: E402
-from evalrank_core.contracts import TheCall as CoreTheCall  # noqa: E402
 from evalrank_core.contracts import UseCaseCatalog as CoreUseCaseCatalog  # noqa: E402
 from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS as CorePublicFixtureKinds  # noqa: E402
 from evalrank_core.fixtures import sample_public_fixture as core_sample_public_fixture  # noqa: E402
 from evalrank_core.fixtures import sample_problem_details as core_sample_problem_details  # noqa: E402
 from evalrank_sdk import (  # noqa: E402
     CapabilityFingerprintInput,
-    CandidateSet,
+    DecisionQueryV1,
+    DecisionReceiptV1,
     EvalRankApiError,
     EvalRankClient,
-    Exclusion,
-    EvaluationRequest,
-    EvidenceItem,
-    EvidenceSet,
     ObservationV1,
     ProblemDetails,
     RawEntry,
-    RankingGroup,
-    ScoringStage,
-    ScoringStageCatalog,
-    StageCandidate,
-    TheCall,
     UseCaseCatalog,
     PUBLIC_FIXTURE_KINDS,
     sample_capability_fingerprint_input,
-    sample_candidate_set,
-    sample_exclusion,
-    sample_evidence_item,
-    sample_evidence_set,
-    sample_evaluation_request,
     sample_observation,
     sample_public_fixture,
     sample_problem_details,
     sample_raw_entry,
-    sample_recommendation,
-    sample_ranking_group,
-    sample_scoring_stage_catalog,
-    sample_stage_candidate,
     sample_use_case_catalog,
+    restricted_jcs,
 )
 
 def _manifest_use_cases() -> list[dict]:
@@ -81,6 +55,20 @@ def _manifest_use_cases() -> list[dict]:
         }
         for cell in cells
     ]
+
+
+def _decision_vector() -> tuple[DecisionQueryV1, dict]:
+    corpus = json.loads(
+        (REPO_ROOT / "examples" / "decision-contract-v1.golden.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    receipt = {
+        **corpus["receipt"]["body"],
+        "receipt_id": corpus["receipt"]["receipt_id"],
+    }
+    DecisionReceiptV1.from_dict(receipt)
+    return DecisionQueryV1.from_dict(receipt["query"]), receipt
 
 
 class PythonSdkTests(unittest.TestCase):
@@ -119,30 +107,14 @@ class PythonSdkTests(unittest.TestCase):
         text = (REPO_ROOT / "packages" / "sdk-python" / "README.md").read_text(encoding="utf-8")
 
         for name in (
-            "Abstention",
-            "COMPARABILITY_MODES",
-            "EVIDENCE_KINDS",
-            "FRESHNESS_STATUSES",
             "CapabilityFingerprintInput",
             "RawEntry",
-            "EvaluationRequest",
-            "CandidateSet",
-            "StageCandidate",
-            "EvidenceItem",
-            "EvidenceSet",
             "ObservationV1",
             "UseCaseCatalog",
-            "ScoringStage",
-            "ScoringStageCatalog",
-            "RankingGroup",
-            "Exclusion",
-            "TheCall",
-            "TRUST_TIERS",
-            "RankedEntity",
-            "Recommendation",
+            "DecisionQueryV1",
+            "DecisionReceiptV1",
             "ProblemDetails",
             "PROBLEM_CODES",
-            "EntityRef",
             "EvalRankClient",
             "EvalRankApiError",
             "PUBLIC_FIXTURE_KINDS",
@@ -157,7 +129,33 @@ class PythonSdkTests(unittest.TestCase):
     def test_sdk_re_exports_public_fixture_dispatch(self):
         self.assertIs(PUBLIC_FIXTURE_KINDS, CorePublicFixtureKinds)
         self.assertIs(sample_public_fixture, core_sample_public_fixture)
-        self.assertEqual("recommendation", sample_public_fixture("recommendation")["object"])
+        self.assertNotIn("recommendation", PUBLIC_FIXTURE_KINDS)
+        self.assertNotIn("request", PUBLIC_FIXTURE_KINDS)
+        self.assertNotIn("scoring-stages", PUBLIC_FIXTURE_KINDS)
+
+    def test_sdk_does_not_reexport_superseded_recommendation_pipeline(self):
+        import evalrank_sdk  # noqa: PLC0415
+
+        for name in (
+            "Abstention",
+            "CandidateSet",
+            "COMPARABILITY_MODES",
+            "EntityRef",
+            "EvaluationRequest",
+            "EvidenceItem",
+            "EvidenceSet",
+            "Exclusion",
+            "RankedEntity",
+            "RankingGroup",
+            "Recommendation",
+            "ScoringStage",
+            "ScoringStageCatalog",
+            "StageCandidate",
+            "THE_CALL_DECISIONS",
+            "TheCall",
+            "materialize_recommendation",
+        ):
+            self.assertFalse(hasattr(evalrank_sdk, name), name)
 
     def test_sdk_re_exports_public_problem_fixture(self):
         self.assertIs(sample_problem_details, core_sample_problem_details)
@@ -166,22 +164,9 @@ class PythonSdkTests(unittest.TestCase):
     def test_sdk_re_exports_public_vocabulary_constants(self):
         import evalrank_sdk  # noqa: PLC0415
 
-        for name in (
-            "COMPARABILITY_MODES",
-            "EVIDENCE_KINDS",
-            "FRESHNESS_STATUSES",
-            "PROBLEM_CODES",
-            "TRUST_TIERS",
-        ):
+        for name in ("PROBLEM_CODES",):
             with self.subTest(name=name):
                 self.assertIs(getattr(evalrank_sdk, name), getattr(core_contracts, name))
-
-    def test_sdk_re_exports_core_abstention_contract(self):
-        self.assertTrue(hasattr(core_contracts, "Abstention"))
-        import evalrank_sdk  # noqa: PLC0415
-
-        self.assertTrue(hasattr(evalrank_sdk, "Abstention"))
-        self.assertIs(evalrank_sdk.Abstention, core_contracts.Abstention)
 
     def test_sdk_re_exports_core_capability_fingerprint_contracts(self):
         fingerprint_input = sample_capability_fingerprint_input()
@@ -189,20 +174,6 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(CapabilityFingerprintInput, CoreCapabilityFingerprintInput)
         self.assertIsInstance(fingerprint_input, CoreCapabilityFingerprintInput)
         self.assertEqual(64, len(fingerprint_input.to_dict()["capability_fingerprint"]))
-
-    def test_sdk_re_exports_core_evidence_contracts(self):
-        evidence = sample_evidence_item()
-
-        self.assertIs(EvidenceItem, CoreEvidenceItem)
-        self.assertIsInstance(evidence, CoreEvidenceItem)
-        self.assertRegex(evidence.to_dict()["subject"]["id"], r"^config_[0-9a-f]{64}$")
-
-    def test_sdk_re_exports_core_request_contracts(self):
-        request = sample_evaluation_request()
-
-        self.assertIs(EvaluationRequest, CoreEvaluationRequest)
-        self.assertIsInstance(request, CoreEvaluationRequest)
-        self.assertEqual("web-browsing", request.to_dict()["use_case"])
 
     def test_sdk_re_exports_core_problem_details_contract(self):
         problem = ProblemDetails(
@@ -215,27 +186,6 @@ class PythonSdkTests(unittest.TestCase):
 
         self.assertIs(ProblemDetails, CoreProblemDetails)
         self.assertEqual("validation", problem.to_dict()["code"])
-
-    def test_sdk_re_exports_core_candidate_set_contracts(self):
-        candidate_set = sample_candidate_set()
-
-        self.assertIs(CandidateSet, CoreCandidateSet)
-        self.assertIsInstance(candidate_set, CoreCandidateSet)
-        self.assertRegex(candidate_set.to_dict()["candidates"][0]["id"], r"^config_[0-9a-f]{64}$")
-
-    def test_sdk_re_exports_core_exclusion_contracts(self):
-        exclusion = sample_exclusion()
-
-        self.assertIs(Exclusion, CoreExclusion)
-        self.assertIsInstance(exclusion, CoreExclusion)
-        self.assertEqual("unknown_cost", exclusion.to_dict()["reason"])
-
-    def test_sdk_re_exports_core_evidence_set_contracts(self):
-        evidence_set = sample_evidence_set()
-
-        self.assertIs(EvidenceSet, CoreEvidenceSet)
-        self.assertIsInstance(evidence_set, CoreEvidenceSet)
-        self.assertEqual("ev_public_trace_01", evidence_set.to_dict()["evidence_items"][0]["evidence_id"])
 
     def test_sdk_re_exports_core_raw_entry_contracts(self):
         entry = sample_raw_entry()
@@ -251,33 +201,6 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIsInstance(observation, CoreObservationV1)
         self.assertEqual("observation", observation.to_dict()["object"])
 
-    def test_sdk_re_exports_core_ranking_group_contracts(self):
-        group = sample_ranking_group()
-
-        self.assertIs(RankingGroup, CoreRankingGroup)
-        self.assertIsInstance(group, CoreRankingGroup)
-        self.assertEqual("ranking_group", group.to_dict()["object"])
-
-    def test_sdk_re_exports_core_scoring_stage_catalog_contracts(self):
-        catalog = sample_scoring_stage_catalog()
-
-        self.assertIs(ScoringStage, CoreScoringStage)
-        self.assertIs(ScoringStageCatalog, CoreScoringStageCatalog)
-        self.assertIsInstance(catalog, CoreScoringStageCatalog)
-        self.assertEqual("scoring_stage_catalog", catalog.to_dict()["object"])
-        self.assertEqual(6, len(catalog.to_dict()["stages"]))
-
-    def test_sdk_re_exports_core_stage_candidate_contracts(self):
-        candidate = sample_stage_candidate()
-
-        self.assertIs(StageCandidate, CoreStageCandidate)
-        self.assertIsInstance(candidate, CoreStageCandidate)
-        self.assertEqual("stage_candidate", candidate.to_dict()["object"])
-
-    def test_sdk_re_exports_core_the_call_contract(self):
-        self.assertIs(TheCall, CoreTheCall)
-        self.assertEqual("recommend", TheCall.recommend(confidence=0.86, reason="clear top set").decision)
-
     def test_sdk_re_exports_core_use_case_catalog_contracts(self):
         catalog = sample_use_case_catalog()
 
@@ -292,20 +215,23 @@ class PythonSdkTests(unittest.TestCase):
         self.assertTrue(all(row["rank_policy"] == "ranked" for row in catalog.to_dict()["use_cases"]))
         self.assertEqual(_manifest_use_cases(), catalog.to_dict()["use_cases"])
 
-    def test_recommend_posts_public_request_and_returns_recommendation_json(self):
-        server = _SdkTestServer(response_status=200, response_body=sample_recommendation().to_dict())
+    def test_decide_posts_canonical_query_and_returns_validated_receipt(self):
+        query, receipt = _decision_vector()
+        server = _SdkTestServer(response_status=200, response_body=receipt)
         try:
-            response = EvalRankClient(server.base_url).recommend(sample_evaluation_request())
+            response = EvalRankClient(server.base_url).decide(query, share=True)
         finally:
             server.close()
 
-        self.assertEqual("recommendation", response["object"])
-        self.assertEqual("/v1/recommendations", server.path)
+        self.assertEqual(receipt, response)
+        self.assertEqual("/v1/decisions?share=true", server.path)
         self.assertEqual("application/json", server.headers["Content-Type"])
         self.assertEqual("application/json, application/problem+json", server.headers["Accept"])
-        self.assertEqual(sample_evaluation_request().to_dict(), server.request_json)
+        self.assertEqual(query.to_dict(), server.request_json)
+        self.assertEqual(restricted_jcs(query.to_dict()), server.request_body)
 
-    def test_recommend_raises_public_problem_details_error(self):
+    def test_decide_raises_public_problem_details_error(self):
+        query, _ = _decision_vector()
         problem = {**core_sample_problem_details().to_dict(), "status": 429}
         server = _SdkTestServer(
             response_status=429,
@@ -314,7 +240,7 @@ class PythonSdkTests(unittest.TestCase):
         )
         try:
             with self.assertRaises(EvalRankApiError) as raised:
-                EvalRankClient(server.base_url).recommend(sample_evaluation_request())
+                EvalRankClient(server.base_url).decide(query)
         finally:
             server.close()
 
@@ -323,7 +249,8 @@ class PythonSdkTests(unittest.TestCase):
         self.assertEqual(problem, raised.exception.problem.to_dict())
         self.assertEqual(3, raised.exception.retry_after)
 
-    def test_recommend_treats_malformed_retry_after_as_absent(self):
+    def test_decide_treats_malformed_retry_after_as_absent(self):
+        query, _ = _decision_vector()
         problem = {**core_sample_problem_details().to_dict(), "status": 429}
         server = _SdkTestServer(
             response_status=429,
@@ -332,7 +259,7 @@ class PythonSdkTests(unittest.TestCase):
         )
         try:
             with self.assertRaises(EvalRankApiError) as raised:
-                EvalRankClient(server.base_url).recommend(sample_evaluation_request())
+                EvalRankClient(server.base_url).decide(query)
         finally:
             server.close()
 
@@ -352,17 +279,54 @@ class PythonSdkTests(unittest.TestCase):
         self.assertEqual("application/json, application/problem+json", server.headers["Accept"])
         self.assertIsNone(server.request_json)
 
-    def test_scoring_stages_gets_public_catalog_json(self):
-        server = _SdkTestServer(response_status=200, response_body=sample_scoring_stage_catalog().to_dict())
+    def test_benchmark_health_gets_public_health_json(self):
+        health = {
+            "object": "benchmark_health",
+            "schema_version": "1",
+            "manifest_version": "2026-07-09.3",
+            "generated_at": "2026-07-09T00:00:00Z",
+            "cells": [
+                {
+                    "cell_id": "code-generation",
+                    "status": "unavailable",
+                    "ranking_group_count": 1,
+                    "published_ranking_group_count": 0,
+                    "benchmark_family_count": 1,
+                    "candidate_feed_count": 1,
+                    "implemented_feed_count": 0,
+                    "admitted_feed_count": 0,
+                    "rank_eligible_feed_count": 0,
+                }
+            ],
+        }
+        server = _SdkTestServer(response_status=200, response_body=health)
         try:
-            response = EvalRankClient(server.base_url).scoring_stages()
+            response = EvalRankClient(server.base_url).benchmark_health()
         finally:
             server.close()
 
-        self.assertEqual("scoring_stage_catalog", response["object"])
-        self.assertEqual("/v1/scoring-stages", server.path)
+        self.assertEqual("benchmark_health", response["object"])
+        self.assertEqual("/v1/benchmark-health", server.path)
         self.assertEqual("application/json, application/problem+json", server.headers["Accept"])
         self.assertIsNone(server.request_json)
+
+    def test_decision_receipt_get_validates_id_and_response(self):
+        _, receipt = _decision_vector()
+        server = _SdkTestServer(response_status=200, response_body=receipt)
+        try:
+            response = EvalRankClient(server.base_url).decision_receipt(receipt["receipt_id"])
+        finally:
+            server.close()
+
+        self.assertEqual(receipt, response)
+        self.assertEqual(f"/v1/decisions/{receipt['receipt_id']}", server.path)
+        with self.assertRaisesRegex(ValueError, "receipt_id"):
+            EvalRankClient("https://evalrank.example").decision_receipt("bad")
+
+    def test_client_has_no_legacy_route_methods(self):
+        client = EvalRankClient("https://evalrank.example")
+        self.assertFalse(hasattr(client, "recommend"))
+        self.assertFalse(hasattr(client, "scoring_stages"))
 
     def test_metadata_route_raises_public_problem_details_error(self):
         problem = {**core_sample_problem_details().to_dict(), "status": 503}
@@ -413,7 +377,7 @@ class PythonSdkTests(unittest.TestCase):
 
     def test_client_rejects_non_http_base_url(self):
         with self.assertRaisesRegex(ValueError, "base_url must be an http or https URL"):
-            EvalRankClient("file:///tmp/evalrank").recommend(sample_evaluation_request())
+            EvalRankClient("file:///tmp/evalrank")
 
 
 class _SdkTestServer:
@@ -425,6 +389,7 @@ class _SdkTestServer:
         response_headers: dict[str, str] | None = None,
     ) -> None:
         self.request_json: dict | None = None
+        self.request_body: bytes | None = None
         self.headers: dict[str, str] = {}
         self.path = ""
 
@@ -435,6 +400,7 @@ class _SdkTestServer:
                 owner.path = self.path
                 owner.headers = {key: self.headers[key] for key in self.headers}
                 body = self.rfile.read(int(self.headers.get("Content-Length", "0")))
+                owner.request_body = body
                 owner.request_json = json.loads(body.decode("utf-8"))
                 self._write_json()
 
@@ -442,6 +408,7 @@ class _SdkTestServer:
                 owner.path = self.path
                 owner.headers = {key: self.headers[key] for key in self.headers}
                 owner.request_json = None
+                owner.request_body = None
                 self._write_json()
 
             def _write_json(self) -> None:

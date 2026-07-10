@@ -9,6 +9,7 @@
 
 - Keep every cell, family, and feed ID unique and stable.
 - Treat `discovered` as research inventory, `shadow` as successfully replayed adapter evidence, `active` as publication-eligible evidence, and `quarantined` as explicitly blocked.
+- Keep `metric_direction` null in discovery; require explicit `higher` or `lower` from the replayed feed contract before `shadow` or `active`. Never infer it from labels or observed values.
 - Never infer rights, independence, configuration identity, cadence, retention permission, or admission from a project name or repository license.
 - Keep unvalidated cadence and lineage values null; a descriptive candidate name is not lineage evidence.
 - Unresolved identity is explorer-only and cannot carry top-set or single-winner eligibility.

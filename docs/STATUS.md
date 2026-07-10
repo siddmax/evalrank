@@ -2,14 +2,14 @@
 
 Last updated: 2026-07-10
 
-Hosted contract status: the legacy `POST /v1/recommendations` operation is temporarily unavailable and returns the product-neutral RFC 9457 code `recommendation_not_published`. The public contract must not claim a request-specific answer until the deterministic decision operation replaces it atomically.
+Portable contract status: the seven-path receipt-first launch contract, Python/TypeScript clients, CLI, MCP adapter, schemas, and stdlib reference server are implemented locally. Hosted runtime conformance and deployment remain private release-candidate work; this repo does not claim a live service.
 
 ## Product Contract
 
 Three documents are normative:
 
 - `docs/PRODUCT.md` defines the user job, entity ontology, receipt experience, demand boundary, and exclusions.
-- `catalog/manifest.json` defines the canonical 26-cell/37-ranking-group inventory, aliases, 77-family/79-feed research queue, governance, cadence, lineage, retention, and eligibility.
+- `catalog/manifest.json` defines the canonical 26-cell/37-ranking-group inventory, 77-family/79-feed research queue, native-metric direction, governance, cadence, lineage, retention, and eligibility. Retired `coding` and `math` aliases are absent.
 - `methods/evidence-synthesis.md` defines native-metric synthesis, top and tie sets, uncertainty, sensitivity, abstention, and challenger promotion.
 
 Older build logs record historical work. They are non-normative when they conflict with these authorities.
@@ -28,7 +28,8 @@ normative authority or evidence of runtime lineage, rights, or admission.
 - Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts with semantic verifiers.
 - Dependency-light Python and TypeScript SDK boundaries.
 - Deterministic CLI and MCP adapters over public contracts.
-- A storage-free reference materializer and fixture example.
+- A seven-route stdlib reference server and portable fixture example.
+- One receipt-first API vocabulary: benchmark health, deterministic decisions, and explicit shared-receipt retrieval. Recommendation and scoring-stage routes, clients, tools, commands, fixture kinds, and route-only problem codes are absent.
 - Boundary, schema, package, documentation, client, and parity checks under `make check`.
 
 The public repo owns portable contracts and method. Private runtime integrations, credentials, non-public data, and deployment behavior remain outside this repository.
@@ -36,7 +37,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 ## Evidence State
 
 - All 26 cells are `preview`; catalog presence is not a ranking-readiness claim.
-- Candidate families remain `discovered` until an adapter replays exact official bytes. BFCL V4, LiveCodeBench, LiveBench reasoning, and Terminal-Bench 2.1 are now `shadow`: their repaired official-surface adapters replay successfully, but `rank_eligible_count` remains null and none is admitted until rights, identity, lineage, overlap, health, cadence, uncertainty, and marginal decision value pass.
+- Candidate families remain `discovered` until an adapter replays exact official bytes. BFCL V4, LiveCodeBench, LiveBench reasoning, and Terminal-Bench 2.1 are now `shadow`: their repaired official-surface adapters replay successfully and declare `metric_direction: higher`, but `rank_eligible_count` remains null and none is admitted until rights, identity, lineage, overlap, health, cadence, uncertainty, and marginal decision value pass. Discovery feeds keep direction null so parsers cannot guess it.
 - Scraper recovery is mandatory before retirement. The four shadow adapters resolve official HTML-linked CSV/JSON, same-release artifact sets, or licensed repository archives; API/feed/raw-file failure alone is not benchmark-death evidence.
 - Every candidate family has a dated primary or official discovery source in the manifest-version-locked research companion. Source coverage documents the research basis only and does not advance admission state.
 - Professional deliverables, machine-learning engineering, and computational research reproduction are new explorer-only research jobs. GDPval, MLE-bench, PaperBench, and CORE-Bench remain discovery hypotheses and do not confer product readiness.
@@ -60,8 +61,8 @@ No paired public/private release identifiers are recorded for this manifest vers
 ## Next Public Work
 
 1. Pin this public revision into the hosted build and prove backend/web conformance against its exact bytes.
-2. Implement the deterministic decision operation and remove the unavailable recommendation vocabulary atomically.
-3. Exercise SDK, CLI, MCP, and the reference server end to end from a clean checkout.
+2. Exercise the hosted implementation against the exact public OpenAPI and golden receipt bytes.
+3. Prove desktop/mobile UX, CORS, errors, share disclosure, and immutable receipt replay in the private release candidate.
 4. Record paired immutable release identifiers only after each repository lands independently.
 
 ## Verification

@@ -255,6 +255,21 @@ def manifest_semantic_errors(payload: dict) -> list[str]:
             continue
         if feed["state"] == "active" and feed["entity_kind"] == "unresolved":
             errors.append(f"active feed {feed['feed_id']} has unresolved identity")
+        if feed["state"] in {"active", "shadow"} and feed["metric_direction"] not in {
+            "higher",
+            "lower",
+        }:
+            errors.append(
+                f"implemented feed {feed['feed_id']} has no metric direction"
+            )
+        if feed["state"] == "discovered" and feed["metric_direction"] is not None:
+            errors.append(
+                f"discovered feed {feed['feed_id']} claims an unverified metric direction"
+            )
+        if feed["state"] != "active" and feed["rank_eligible_count"] is not None:
+            errors.append(
+                f"non-active feed {feed['feed_id']} claims rank-eligible observations"
+            )
         if feed["candidate_cells"] != family["candidate_cells"]:
             errors.append(
                 f"feed {feed['feed_id']} candidate cells differ from family "
@@ -367,6 +382,8 @@ class CatalogManifestTests(unittest.TestCase):
             "identical-mirror",
             "semantic observation",
             "conflict",
+            "metric_direction",
+            "must never infer direction",
         ):
             self.assertIn(phrase, text)
 
@@ -375,7 +392,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         self.assertEqual("evalrank_manifest", payload["object"])
         self.assertEqual("1", payload["schema_version"])
-        self.assertEqual("2026-07-09.3", payload["manifest_version"])
+        self.assertEqual("2026-07-10.1", payload["manifest_version"])
         for key, id_key in (
             ("cells", "cell_id"),
             ("ranking_groups", "ranking_group_id"),
@@ -391,7 +408,7 @@ class CatalogManifestTests(unittest.TestCase):
         cells = payload["cells"]
 
         self.assertEqual(EXPECTED_CELL_IDS, tuple(row["cell_id"] for row in cells))
-        self.assertEqual({"coding": "code-generation", "math": "math-reasoning"}, payload["aliases"])
+        self.assertNotIn("aliases", payload)
         self.assertTrue(all(row["state"] == "preview" for row in cells))
         self.assertTrue(all("rank_eligible_count" not in row for row in cells))
         self.assertTrue(all("eligibility" not in row for row in cells))
@@ -787,6 +804,9 @@ class CatalogManifestTests(unittest.TestCase):
                 self.assertTrue(feed["ranking_group_ids"])
                 if feed["state"] == "discovered":
                     self.assertIsNone(feed["adapter_id"])
+                    self.assertIsNone(feed["metric_direction"])
+                if feed["state"] in {"active", "shadow"}:
+                    self.assertIn(feed["metric_direction"], {"higher", "lower"})
                 self.assertEqual(rights_keys, set(feed["rights"]))
                 self.assertEqual("unknown", feed["rights"]["status"])
                 self.assertEqual("unvalidated", feed["cadence"]["status"])
@@ -812,6 +832,20 @@ class CatalogManifestTests(unittest.TestCase):
                     self.assertIsNone(family["correlated_family_group"])
 
         self.assertEqual(set(family_by_id), feed_family_ids)
+        recovered_directions = {
+            feed["feed_id"]: feed["metric_direction"]
+            for feed in payload["feeds"]
+            if feed["metric_direction"] is not None
+        }
+        self.assertEqual(
+            {
+                "bfcl-v4-discovery": "higher",
+                "livebench-reasoning-discovery": "higher",
+                "livecodebench-discovery": "higher",
+                "terminal-bench-2-1-discovery": "higher",
+            },
+            recovered_directions,
+        )
         feed_counts = Counter(feed["benchmark_family_id"] for feed in payload["feeds"])
         self.assertEqual(2, feed_counts.pop("core-bench-reproducibility"))
         self.assertEqual(2, feed_counts.pop("itbench"))
@@ -836,6 +870,12 @@ class CatalogManifestTests(unittest.TestCase):
             "feed-family state mismatch": lambda payload: payload["feeds"][0].update(
                 state="active"
             ),
+            "implemented feed without metric direction": lambda payload: payload[
+                "feeds"
+            ][0].update(metric_direction=None),
+            "shadow feed with rank-eligible observations": lambda payload: payload[
+                "feeds"
+            ][0].update(rank_eligible_count=1),
             "feed-family entity mismatch": lambda payload: payload["feeds"][0].update(
                 entity_kind="unresolved"
             ),
@@ -897,6 +937,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         feeds[0]["state"] = "shadow"
         feeds[0]["adapter_id"] = "core-mainline-v1"
+        feeds[0]["metric_direction"] = "higher"
         family["state"] = "shadow"
         self.assertEqual([], manifest_semantic_errors(payload))
 
@@ -947,6 +988,7 @@ class CatalogManifestTests(unittest.TestCase):
                 family["correlated_family_group"] = correlation_group
                 feed["state"] = "active"
                 feed["adapter_id"] = f"adapter-{index + 1}"
+                feed["metric_direction"] = "higher"
                 feed["rank_eligible_count"] = 1
                 feed["rights"]["status"] = "approved"
                 feed["cadence"] = {

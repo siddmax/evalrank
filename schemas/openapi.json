@@ -7,8 +7,8 @@
   },
   "tags": [
     {
-      "name": "recommendations",
-      "description": "Evaluate a public request payload and return a recommendation payload."
+      "name": "decisions",
+      "description": "Evaluate a closed DecisionQueryV1 and return a reproducible DecisionReceiptV1."
     },
     {
       "name": "metadata",
@@ -48,21 +48,21 @@
         }
       }
     },
-    "/v1/scoring-stages": {
+    "/v1/benchmark-health": {
       "get": {
         "tags": [
           "metadata"
         ],
-        "operationId": "listScoringStages",
-        "summary": "List public scoring stages",
-        "description": "Contract-only public scoring-stage catalog route. Formulas, thresholds, scorer behavior, storage, and hosted deployment details are intentionally outside this file.",
+        "operationId": "getBenchmarkHealth",
+        "summary": "Read benchmark admission and publication health",
+        "description": "Report catalog, implementation, admission, publication, and rank-eligibility counts without treating discovered or shadow feeds as published evidence.",
         "responses": {
           "200": {
-            "description": "Public scoring-stage catalog.",
+            "description": "Public benchmark health.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ScoringStageCatalog"
+                  "$ref": "#/components/schemas/BenchmarkHealth"
                 }
               }
             }
@@ -248,37 +248,49 @@
         }
       }
     },
-    "/v1/recommendations": {
+    "/v1/decisions": {
       "post": {
         "tags": [
-          "recommendations"
+          "decisions"
         ],
-        "operationId": "evaluateRecommendation",
-        "summary": "Evaluate a request into a recommendation",
-        "description": "Contract-only public route shape. Runtime auth, scorer behavior, storage, receipt IDs, and deployment details are intentionally outside this file.",
+        "operationId": "createDecision",
+        "summary": "Create a deterministic decision receipt",
+        "description": "Validate one closed semantic query and decide against one pinned ranking-group publication. The optional share transport parameter retains the immutable public-safe receipt for later retrieval.",
+        "parameters": [
+          {
+            "name": "share",
+            "in": "query",
+            "required": false,
+            "description": "When true, retain the returned append-only receipt so anyone with its ID can retrieve it.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EvaluationRequest"
+                "$ref": "#/components/schemas/DecisionQuery"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Recommendation generated for the request.",
+            "description": "Deterministic decision receipt.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Recommendation"
+                  "$ref": "#/components/schemas/DecisionReceipt"
                 }
               }
             }
           },
           "400": {
-            "$ref": "#/components/responses/InvalidEvaluationRequest"
+            "$ref": "#/components/responses/BadRequest"
           },
           "415": {
             "$ref": "#/components/responses/UnsupportedMediaType"
@@ -290,10 +302,55 @@
             "$ref": "#/components/responses/RateLimited"
           },
           "503": {
-            "$ref": "#/components/responses/RecommendationNotPublished"
+            "$ref": "#/components/responses/ServiceUnavailable"
           },
           "504": {
             "$ref": "#/components/responses/UpstreamTimeout"
+          }
+        }
+      }
+    },
+    "/v1/decisions/{receipt_id}": {
+      "get": {
+        "tags": [
+          "decisions"
+        ],
+        "operationId": "getDecisionReceipt",
+        "summary": "Retrieve an explicitly shared decision receipt",
+        "description": "Return the immutable bytes retained by an earlier POST /v1/decisions?share=true. Non-shared decisions are not retrievable.",
+        "parameters": [
+          {
+            "name": "receipt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^receipt_[0-9a-f]{64}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The exact retained decision receipt.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/RateLimited"
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable"
           }
         }
       }
@@ -301,17 +358,17 @@
   },
   "components": {
     "schemas": {
-      "EvaluationRequest": {
-        "$ref": "evaluation-request.schema.json"
+      "DecisionQuery": {
+        "$ref": "decision-query.schema.json"
       },
-      "Recommendation": {
-        "$ref": "recommendation.schema.json"
+      "DecisionReceipt": {
+        "$ref": "decision-receipt.schema.json"
       },
       "UseCaseCatalog": {
         "$ref": "use-case-catalog.schema.json"
       },
-      "ScoringStageCatalog": {
-        "$ref": "scoring-stage-catalog.schema.json"
+      "BenchmarkHealth": {
+        "$ref": "benchmark-health.schema.json"
       },
       "EntityDetail": {
         "$ref": "entity-detail.schema.json"
@@ -357,44 +414,6 @@
       }
     },
     "responses": {
-      "InvalidEvaluationRequest": {
-        "description": "The request body is malformed or does not conform to EvaluationRequest.",
-        "headers": {
-          "X-Request-Id": {
-            "$ref": "#/components/headers/RequestId"
-          }
-        },
-        "content": {
-          "application/problem+json": {
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                },
-                {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "code",
-                    "retriable"
-                  ],
-                  "properties": {
-                    "status": {
-                      "const": 400
-                    },
-                    "code": {
-                      "const": "invalid_evaluation_request"
-                    },
-                    "retriable": {
-                      "const": false
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      },
       "BadRequest": {
         "description": "Malformed request payload.",
         "headers": {
@@ -449,7 +468,7 @@
                       "const": 415
                     },
                     "code": {
-                      "const": "invalid_evaluation_request"
+                      "const": "validation"
                     },
                     "retriable": {
                       "const": false
@@ -582,47 +601,6 @@
                     },
                     "retriable": {"const": true},
                     "retry_after": {"type": "integer", "minimum": 0}
-                  }
-                }
-              ]
-            }
-          }
-        }
-      },
-      "RecommendationNotPublished": {
-        "description": "The legacy recommendation operation is temporarily unavailable while the deterministic decision contract is prepared.",
-        "headers": {
-          "X-Request-Id": {
-            "$ref": "#/components/headers/RequestId"
-          },
-          "Retry-After": {
-            "$ref": "#/components/headers/RetryAfter"
-          }
-        },
-        "content": {
-          "application/problem+json": {
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                },
-                {
-                  "type": "object",
-                  "required": [
-                    "status",
-                    "code",
-                    "retriable"
-                  ],
-                  "properties": {
-                    "status": {
-                      "const": 503
-                    },
-                    "code": {
-                      "const": "recommendation_not_published"
-                    },
-                    "retriable": {
-                      "const": true
-                    }
                   }
                 }
               ]

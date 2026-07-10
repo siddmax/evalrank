@@ -1,4 +1,5 @@
 import json
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -6,27 +7,15 @@ from typing import Any
 
 from evalrank_core import (
     AdapterMetadataV1,
-    Abstention,
     AvailabilityFactV1,
     CacheWriteRateV1,
     CacheWriteUsageV1,
     CapabilityFingerprintInput,
-    CandidateSet,
     ConfigurationPassportV1,
     ContextFactV1,
     ContinuousMetricV1,
-    COMPARABILITY_MODES,
-    ConfidenceInterval,
-    EntityRef,
     EvaluatedConfigurationV1,
     EvaluationToOfferLinkV1,
-    EVIDENCE_KINDS,
-    Exclusion,
-    EvidenceItem,
-    EvidenceSet,
-    EvaluationRequest,
-    FRESHNESS_STATUSES,
-    Freshness,
     IntervalUncertaintyV1,
     MAX_SAFE_INTEGER,
     ObservationV1,
@@ -39,24 +28,15 @@ from evalrank_core import (
     PublicationSnapshotRefV1,
     RankOnlyMetricV1,
     RawEntry,
-    Recommendation,
-    RankedEntity,
-    RankingGroup,
     RankingGroupSnapshotRefV1,
     RunInputArtifactV1,
     RunProvenanceV1,
     PUBLIC_FIXTURE_KINDS,
-    ScoringStage,
-    ScoringStageCatalog,
     ServingOfferV1,
     SourceArtifactV1,
     SnapshotSetDescriptorV1,
     StandardErrorUncertaintyV1,
-    StageCandidate,
-    THE_CALL_DECISIONS,
-    TheCall,
     TrialPolicyV1,
-    TRUST_TIERS,
     USE_CASE_ENTITY_KINDS,
     USE_CASE_RANK_POLICIES,
     UseCase,
@@ -80,25 +60,15 @@ from evalrank_core import (
     restricted_jcs,
     sha256_hex,
     verify_leaderboard_snapshot_set,
+    verify_benchmark_health_semantics,
     verify_leaderboard_semantics,
     verify_entity_detail_semantics,
     verify_compare_result_semantics,
     sample_capability_fingerprint_input,
-    sample_candidate_set,
-    sample_entity_ref,
-    sample_exclusion,
-    sample_evidence_item,
-    sample_evidence_set,
-    sample_evaluation_request,
     sample_observation,
     sample_problem_details,
     sample_public_fixture,
-    sample_ranked_entity,
-    sample_ranking_group,
     sample_raw_entry,
-    sample_recommendation,
-    sample_scoring_stage_catalog,
-    sample_stage_candidate,
     sample_use_case_catalog,
 )
 
@@ -121,20 +91,83 @@ class EvalRankClient:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
 
-    def recommend(self, request: EvaluationRequest | dict[str, Any]) -> dict[str, Any]:
-        body = json.dumps(_payload_dict(request), separators=(",", ":"), sort_keys=True, allow_nan=False).encode("utf-8")
-        return self._request_json(
-            "/v1/recommendations",
+    def decide(
+        self,
+        query: DecisionQueryV1 | dict[str, Any],
+        *,
+        share: bool = False,
+    ) -> dict[str, Any]:
+        if not isinstance(share, bool):
+            raise TypeError("share must be a boolean")
+        parsed_query = (
+            query if isinstance(query, DecisionQueryV1) else DecisionQueryV1.from_dict(query)
+        )
+        body = restricted_jcs(parsed_query.to_dict())
+        response = self._request_json(
+            "/v1/decisions?share=true" if share else "/v1/decisions",
             method="POST",
             body=body,
             headers={"Content-Type": "application/json"},
         )
+        return DecisionReceiptV1.from_dict(response).to_dict()
+
+    def decision_receipt(self, receipt_id: str) -> dict[str, Any]:
+        if not isinstance(receipt_id, str) or not re.fullmatch(
+            r"receipt_[0-9a-f]{64}", receipt_id
+        ):
+            raise ValueError("receipt_id must be receipt_<64 lowercase hex characters>")
+        response = self._request_json(f"/v1/decisions/{receipt_id}")
+        return DecisionReceiptV1.from_dict(response).to_dict()
 
     def use_cases(self) -> dict[str, Any]:
         return self._request_json("/v1/use-cases")
 
-    def scoring_stages(self) -> dict[str, Any]:
-        return self._request_json("/v1/scoring-stages")
+    def benchmark_health(self) -> dict[str, Any]:
+        response = self._request_json("/v1/benchmark-health")
+        return verify_benchmark_health_semantics(response)
+
+    def leaderboard(self, use_case: str) -> dict[str, Any]:
+        _require_slug("use_case", use_case)
+        response = self._request_json(f"/v1/leaderboard/{use_case}")
+        verify_leaderboard_semantics(response)
+        return response
+
+    def entity(self, entity_type: str, slug: str) -> dict[str, Any]:
+        if entity_type not in {
+            "agent_system",
+            "arena_system",
+            "component_configuration",
+            "model_configuration",
+            "system_configuration",
+        }:
+            raise ValueError("entity_type is not a public evaluated-configuration kind")
+        _require_entity_slug(slug)
+        response = self._request_json(f"/v1/entities/{entity_type}/{slug}")
+        verify_entity_detail_semantics(response)
+        return response
+
+    def compare(self, use_case: str, entities: tuple[str, ...]) -> dict[str, Any]:
+        _require_slug("use_case", use_case)
+        if not isinstance(entities, tuple) or not 2 <= len(entities) <= 4:
+            raise ValueError("entities must be a tuple containing two to four references")
+        if len(set(entities)) != len(entities):
+            raise ValueError("entities must be unique")
+        if any(
+            not isinstance(entity, str)
+            or not re.fullmatch(
+                r"(agent_system|arena_system|component_configuration|model_configuration|system_configuration):"
+                r"[a-z0-9]+(?:[._:-][a-z0-9]+)*",
+                entity,
+            )
+            for entity in entities
+        ):
+            raise ValueError("entities contains an invalid evaluated-configuration reference")
+        query = urllib.parse.urlencode(
+            {"use_case": use_case, "entities": ",".join(entities)}
+        )
+        response = self._request_json(f"/v1/compare?{query}")
+        verify_compare_result_semantics(response)
+        return response
 
     def _request_json(
         self,
@@ -170,14 +203,6 @@ class EvalRankClient:
             raise EvalRankApiError(status=exc.code, problem=problem, retry_after=_retry_after(exc.headers)) from exc
 
 
-def _payload_dict(value: EvaluationRequest | dict[str, Any]) -> dict[str, Any]:
-    if isinstance(value, EvaluationRequest):
-        return value.to_dict()
-    if isinstance(value, dict):
-        return value
-    raise TypeError("request must be an EvaluationRequest or dict")
-
-
 def _retry_after(headers: Any) -> int | None:
     value = headers.get("Retry-After")
     if value is None:
@@ -187,6 +212,20 @@ def _retry_after(headers: Any) -> int | None:
         return None
     return int(text)
 
+
+def _require_slug(name: str, value: Any) -> None:
+    if not isinstance(value, str) or not re.fullmatch(
+        r"[a-z0-9]+(?:-[a-z0-9]+)*", value
+    ):
+        raise ValueError(f"{name} must be a canonical slug")
+
+
+def _require_entity_slug(value: Any) -> None:
+    if not isinstance(value, str) or not re.fullmatch(
+        r"[a-z0-9]+(?:[._:-][a-z0-9]+)*", value
+    ):
+        raise ValueError("slug must be a canonical public entity slug or configuration ID")
+
 __all__ = [
     "AdapterMetadataV1",
     "EvalRankApiError",
@@ -195,23 +234,11 @@ __all__ = [
     "AvailabilityFactV1",
     "CacheWriteRateV1",
     "CacheWriteUsageV1",
-    "Abstention",
-    "CandidateSet",
     "ConfigurationPassportV1",
     "ContextFactV1",
     "ContinuousMetricV1",
-    "COMPARABILITY_MODES",
-    "ConfidenceInterval",
-    "EntityRef",
     "EvaluatedConfigurationV1",
     "EvaluationToOfferLinkV1",
-    "EVIDENCE_KINDS",
-    "Exclusion",
-    "EvidenceItem",
-    "EvidenceSet",
-    "EvaluationRequest",
-    "FRESHNESS_STATUSES",
-    "Freshness",
     "IntervalUncertaintyV1",
     "MAX_SAFE_INTEGER",
     "ObservationV1",
@@ -224,24 +251,15 @@ __all__ = [
     "PublicationSnapshotRefV1",
     "RankOnlyMetricV1",
     "RawEntry",
-    "Recommendation",
-    "RankedEntity",
-    "RankingGroup",
     "RankingGroupSnapshotRefV1",
     "RunInputArtifactV1",
     "RunProvenanceV1",
     "PUBLIC_FIXTURE_KINDS",
-    "ScoringStage",
-    "ScoringStageCatalog",
     "ServingOfferV1",
     "SourceArtifactV1",
     "SnapshotSetDescriptorV1",
     "StandardErrorUncertaintyV1",
-    "StageCandidate",
-    "THE_CALL_DECISIONS",
-    "TheCall",
     "TrialPolicyV1",
-    "TRUST_TIERS",
     "USE_CASE_ENTITY_KINDS",
     "USE_CASE_RANK_POLICIES",
     "UseCase",
@@ -265,25 +283,15 @@ __all__ = [
     "restricted_jcs",
     "sha256_hex",
     "verify_leaderboard_snapshot_set",
+    "verify_benchmark_health_semantics",
     "verify_leaderboard_semantics",
     "verify_entity_detail_semantics",
     "verify_compare_result_semantics",
     "sample_capability_fingerprint_input",
-    "sample_candidate_set",
-    "sample_entity_ref",
-    "sample_exclusion",
-    "sample_evidence_item",
-    "sample_evidence_set",
-    "sample_evaluation_request",
     "sample_observation",
     "sample_problem_details",
     "sample_public_fixture",
-    "sample_ranked_entity",
-    "sample_ranking_group",
     "sample_raw_entry",
-    "sample_recommendation",
-    "sample_scoring_stage_catalog",
-    "sample_stage_candidate",
     "sample_use_case_catalog",
     "__version__",
 ]

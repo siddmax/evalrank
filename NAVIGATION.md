@@ -1,18 +1,17 @@
 # EvalRank Navigation
 
-## Public API Routes
+The public API has exactly seven launch paths. `schemas/openapi.json` is authoritative; `scripts/reference_server.py` is the storage-free local exerciser.
 
-| Route | Source | Status |
-| --- | --- | --- |
-| `GET /v1/use-cases` | `schemas/openapi.json` | Public contract only; returns `UseCaseCatalog` on `200` and reusable RFC 9457 Problem Details responses for `429` and `503`; no live server is declared here. |
-| `GET /v1/scoring-stages` | `schemas/openapi.json` | Public contract only; returns `ScoringStageCatalog` on `200` and reusable RFC 9457 Problem Details responses for `429` and `503`; no live server is declared here. |
-| `GET /v1/leaderboard/{use_case}` | `schemas/openapi.json` | Public contract only; returns one content-addressed cell snapshot set with separately scaled ranking groups. |
-| `GET /v1/entities/{entity_type}/{slug}` | `schemas/openapi.json` | Public contract only; returns one exact evaluated-configuration projection pinned to its publication snapshot. |
-| `GET /v1/compare` | `schemas/openapi.json` | Public contract only; compares two to four exact configurations within one ranking-group publication. |
-| `POST /v1/recommendations` | `schemas/openapi.json` | Legacy public contract only; strict request/media validation is defined, while hosted success remains unavailable until the operation is atomically replaced by decisions. |
+| Route | Contract |
+| --- | --- |
+| `GET /v1/use-cases` | Public taxonomy. |
+| `GET /v1/leaderboard/{use_case}` | One content-addressed cell snapshot set with separate ranking-group scales. |
+| `GET /v1/entities/{entity_type}/{slug}` | One exact evaluated configuration pinned to its publication. |
+| `GET /v1/compare` | Two to four configurations within one ranking-group publication. |
+| `GET /v1/benchmark-health` | Per-cell catalog, admission, publication, and rank-eligibility counts. |
+| `POST /v1/decisions` | Closed `DecisionQueryV1` to deterministic `DecisionReceiptV1`; optional `?share=true` retains the receipt. |
+| `GET /v1/decisions/{receipt_id}` | Exact retrieval of an explicitly shared immutable receipt. |
 
-## Update Rules
+The old scoring-stage and recommendation paths do not exist and must return `404` in the reference server and hosted implementation.
 
-- Update this file when public API routes, UI routes, deeplinks, or navigation-critical docs change.
-- Keep hosted auth, tenant logic, receipt persistence, and deploy details out of this file unless they become public contracts.
-- Run `python3 -m unittest tests.test_openapi_contract` after route-contract changes.
+Run `python3 -m unittest tests.test_openapi_contract tests.test_reference_server_e2e` after route changes.

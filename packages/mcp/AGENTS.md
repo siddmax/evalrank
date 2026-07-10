@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Public MCP adapter for EvalRank fixture, metadata-route, and recommendation-route tools.
+- Public MCP adapter for EvalRank fixtures, metadata reads, deterministic decisions, and shared-receipt retrieval.
 - Keep this package as an adapter over public contracts, not a private Syndai bridge.
 
 ## Rules

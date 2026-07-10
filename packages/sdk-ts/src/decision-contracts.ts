@@ -2082,7 +2082,7 @@ function nullableSafeInteger(value: unknown, name: string, minimum?: number): nu
 function timestamp(value: unknown, name: string): string {
   const result = patternString(value, timestampPattern, name);
   const instant = Date.parse(result);
-  if (!Number.isFinite(instant) || new Date(instant).toISOString().replace(".000Z", "Z") !== result) {
+  if (result.startsWith("0000-") || !Number.isFinite(instant) || new Date(instant).toISOString().replace(".000Z", "Z") !== result) {
     throw new TypeError(`${name} must be a valid UTC timestamp`);
   }
   return result;

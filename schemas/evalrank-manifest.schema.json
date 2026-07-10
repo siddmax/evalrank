@@ -10,7 +10,6 @@
     "schema_version",
     "manifest_version",
     "ranking_group_dimensions",
-    "aliases",
     "cells",
     "ranking_groups",
     "benchmark_families",
@@ -37,22 +36,6 @@
         "interaction_policy",
         "configuration_passport_class"
       ]
-    },
-    "aliases": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "coding",
-        "math"
-      ],
-      "properties": {
-        "coding": {
-          "const": "code-generation"
-        },
-        "math": {
-          "const": "math-reasoning"
-        }
-      }
     },
     "cells": {
       "type": "array",
@@ -1235,6 +1218,7 @@
         "feed_id",
         "benchmark_family_id",
         "adapter_id",
+        "metric_direction",
         "candidate_cells",
         "ranking_group_ids",
         "entity_kind",
@@ -1261,6 +1245,17 @@
             "null"
           ],
           "minLength": 1
+        },
+        "metric_direction": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "higher",
+            "lower",
+            null
+          ]
         },
         "candidate_cells": {
           "type": "array",
@@ -1340,6 +1335,9 @@
               "adapter_id": {
                 "type": "null"
               },
+              "metric_direction": {
+                "type": "null"
+              },
               "rank_eligible_count": {
                 "type": "null"
               }
@@ -1365,6 +1363,31 @@
               "adapter_id": {
                 "type": "string",
                 "minLength": 1
+              },
+              "metric_direction": {
+                "enum": [
+                  "higher",
+                  "lower"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "state"
+            ],
+            "properties": {
+              "state": {
+                "const": "shadow"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "rank_eligible_count": {
+                "type": "null"
               }
             }
           }

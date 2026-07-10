@@ -18,7 +18,7 @@ This public plan covers only portable contracts, schemas, reference behavior, me
 
 ### 1. Canonical Inventory
 
-- Keep the exact 26-cell taxonomy, 37 explicit ranking groups, and aliases schema-validated.
+- Keep the exact 26-cell taxonomy and 37 explicit ranking groups schema-validated; expose only canonical cell slugs and no compatibility aliases.
 - Keep professional deliverables, machine-learning engineering, and computational reproduction explorer-only until independent evidence supports a stronger policy; do not leak their families into adjacent cells.
 - Keep evaluator-validation suites outside capability-family counts.
 - Keep discovery, shadow, active, and quarantine states truthful.

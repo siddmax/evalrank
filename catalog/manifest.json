@@ -2,17 +2,13 @@
   "$schema": "../schemas/evalrank-manifest.schema.json",
   "object": "evalrank_manifest",
   "schema_version": "1",
-  "manifest_version": "2026-07-09.3",
+  "manifest_version": "2026-07-10.1",
   "ranking_group_dimensions": [
     "cell_id",
     "entity_kind",
     "interaction_policy",
     "configuration_passport_class"
   ],
-  "aliases": {
-    "coding": "code-generation",
-    "math": "math-reasoning"
-  },
   "cells": [
     {
       "cell_id": "code-generation",
@@ -3020,6 +3016,7 @@
       "feed_id": "livecodebench-discovery",
       "benchmark_family_id": "livecodebench",
       "adapter_id": "livecodebench-official-html-linked-json-v2",
+      "metric_direction": "higher",
       "candidate_cells": [
         "code-generation"
       ],
@@ -3069,6 +3066,7 @@
       "feed_id": "aider-polyglot-discovery",
       "benchmark_family_id": "aider-polyglot",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "code-generation"
       ],
@@ -3118,6 +3116,7 @@
       "feed_id": "bigcodebench-discovery",
       "benchmark_family_id": "bigcodebench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "code-generation"
       ],
@@ -3167,6 +3166,7 @@
       "feed_id": "scicode-discovery",
       "benchmark_family_id": "scicode",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "code-generation"
       ],
@@ -3216,6 +3216,7 @@
       "feed_id": "swe-bench-live-discovery",
       "benchmark_family_id": "swe-bench-live",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "autonomous-swe-agent"
       ],
@@ -3265,6 +3266,7 @@
       "feed_id": "terminal-bench-2-1-discovery",
       "benchmark_family_id": "terminal-bench-2-1",
       "adapter_id": "terminal-bench-2-1-official-repository-aggregate-v1",
+      "metric_direction": "higher",
       "candidate_cells": [
         "autonomous-swe-agent",
         "devops-sre-terminal"
@@ -3316,6 +3318,7 @@
       "feed_id": "swe-lancer-discovery",
       "benchmark_family_id": "swe-lancer",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "autonomous-swe-agent"
       ],
@@ -3365,6 +3368,7 @@
       "feed_id": "swe-rebench-discovery",
       "benchmark_family_id": "swe-rebench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "autonomous-swe-agent"
       ],
@@ -3414,6 +3418,7 @@
       "feed_id": "bfcl-v4-discovery",
       "benchmark_family_id": "bfcl-v4",
       "adapter_id": "bfcl-v4-official-html-linked-csv-v2",
+      "metric_direction": "higher",
       "candidate_cells": [
         "function-calling"
       ],
@@ -3463,6 +3468,7 @@
       "feed_id": "complexfuncbench-discovery",
       "benchmark_family_id": "complexfuncbench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "function-calling"
       ],
@@ -3512,6 +3518,7 @@
       "feed_id": "tau2-bench-discovery",
       "benchmark_family_id": "tau2-bench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "function-calling",
         "customer-support"
@@ -3563,6 +3570,7 @@
       "feed_id": "mcp-universe-discovery",
       "benchmark_family_id": "mcp-universe",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "mcp-tool-orchestration"
       ],
@@ -3612,6 +3620,7 @@
       "feed_id": "mcpmark-discovery",
       "benchmark_family_id": "mcpmark",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "mcp-tool-orchestration"
       ],
@@ -3661,6 +3670,7 @@
       "feed_id": "mcp-bench-discovery",
       "benchmark_family_id": "mcp-bench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "mcp-tool-orchestration"
       ],
@@ -3710,6 +3720,7 @@
       "feed_id": "webarena-verified-discovery",
       "benchmark_family_id": "webarena-verified",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "web-browsing"
       ],
@@ -3759,6 +3770,7 @@
       "feed_id": "online-mind2web-discovery",
       "benchmark_family_id": "online-mind2web",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "web-browsing"
       ],
@@ -3808,6 +3820,7 @@
       "feed_id": "browsecomp-plus-discovery",
       "benchmark_family_id": "browsecomp-plus",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "web-browsing",
         "deep-research"
@@ -3859,6 +3872,7 @@
       "feed_id": "real-benchmark-discovery",
       "benchmark_family_id": "real-benchmark",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "web-browsing"
       ],
@@ -3908,6 +3922,7 @@
       "feed_id": "osworld-verified-discovery",
       "benchmark_family_id": "osworld-verified",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "computer-use"
       ],
@@ -3957,6 +3972,7 @@
       "feed_id": "windowsagentarena-discovery",
       "benchmark_family_id": "windowsagentarena",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "computer-use"
       ],
@@ -4006,6 +4022,7 @@
       "feed_id": "androidworld-discovery",
       "benchmark_family_id": "androidworld",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "computer-use"
       ],
@@ -4055,6 +4072,7 @@
       "feed_id": "screenspot-pro-discovery",
       "benchmark_family_id": "screenspot-pro",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "computer-use"
       ],
@@ -4104,6 +4122,7 @@
       "feed_id": "deepresearch-bench-discovery",
       "benchmark_family_id": "deepresearch-bench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "deep-research"
       ],
@@ -4153,6 +4172,7 @@
       "feed_id": "hle-with-tools-discovery",
       "benchmark_family_id": "hle-with-tools",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "deep-research"
       ],
@@ -4202,6 +4222,7 @@
       "feed_id": "futuresearch-drb-discovery",
       "benchmark_family_id": "futuresearch-drb",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "deep-research"
       ],
@@ -4251,6 +4272,7 @@
       "feed_id": "tau-voice-discovery",
       "benchmark_family_id": "tau-voice",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "customer-support"
       ],
@@ -4300,6 +4322,7 @@
       "feed_id": "crmarena-pro-service-discovery",
       "benchmark_family_id": "crmarena-pro-service",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "customer-support"
       ],
@@ -4349,6 +4372,7 @@
       "feed_id": "crmarena-pro-discovery",
       "benchmark_family_id": "crmarena-pro",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "enterprise-crm-workflow"
       ],
@@ -4398,6 +4422,7 @@
       "feed_id": "workarena-plus-plus-discovery",
       "benchmark_family_id": "workarena-plus-plus",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "enterprise-crm-workflow"
       ],
@@ -4447,6 +4472,7 @@
       "feed_id": "theagentcompany-discovery",
       "benchmark_family_id": "theagentcompany",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "enterprise-crm-workflow"
       ],
@@ -4496,6 +4522,7 @@
       "feed_id": "gaia2-are-discovery",
       "benchmark_family_id": "gaia2-are",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "enterprise-crm-workflow"
       ],
@@ -4545,6 +4572,7 @@
       "feed_id": "matharena-discovery",
       "benchmark_family_id": "matharena",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "math-reasoning"
       ],
@@ -4594,6 +4622,7 @@
       "feed_id": "frontiermath-v2-discovery",
       "benchmark_family_id": "frontiermath-v2",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "math-reasoning"
       ],
@@ -4643,6 +4672,7 @@
       "feed_id": "putnambench-discovery",
       "benchmark_family_id": "putnambench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "math-reasoning"
       ],
@@ -4692,6 +4722,7 @@
       "feed_id": "hle-discovery",
       "benchmark_family_id": "hle",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "general-knowledge-qa",
         "factuality",
@@ -4745,6 +4776,7 @@
       "feed_id": "simpleqa-verified-discovery",
       "benchmark_family_id": "simpleqa-verified",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "general-knowledge-qa",
         "factuality"
@@ -4796,6 +4828,7 @@
       "feed_id": "facts-parametric-discovery",
       "benchmark_family_id": "facts-parametric",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "general-knowledge-qa"
       ],
@@ -4845,6 +4878,7 @@
       "feed_id": "mmlu-pro-discovery",
       "benchmark_family_id": "mmlu-pro",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "general-knowledge-qa"
       ],
@@ -4894,6 +4928,7 @@
       "feed_id": "facts-grounding-v2-discovery",
       "benchmark_family_id": "facts-grounding-v2",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "factuality",
         "rag-retrieval"
@@ -4945,6 +4980,7 @@
       "feed_id": "mteb-beir-discovery",
       "benchmark_family_id": "mteb-beir",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "rag-retrieval"
       ],
@@ -4994,6 +5030,7 @@
       "feed_id": "crag-discovery",
       "benchmark_family_id": "crag",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "rag-retrieval"
       ],
@@ -5043,6 +5080,7 @@
       "feed_id": "frames-discovery",
       "benchmark_family_id": "frames",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "rag-retrieval"
       ],
@@ -5092,6 +5130,7 @@
       "feed_id": "longmemeval-discovery",
       "benchmark_family_id": "longmemeval",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "long-term-memory"
       ],
@@ -5141,6 +5180,7 @@
       "feed_id": "locomo-discovery",
       "benchmark_family_id": "locomo",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "long-term-memory"
       ],
@@ -5190,6 +5230,7 @@
       "feed_id": "beam-memory-discovery",
       "benchmark_family_id": "beam-memory",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "long-term-memory"
       ],
@@ -5239,6 +5280,7 @@
       "feed_id": "vals-fab-v2-discovery",
       "benchmark_family_id": "vals-fab-v2",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "finance"
       ],
@@ -5288,6 +5330,7 @@
       "feed_id": "finsearchcomp-discovery",
       "benchmark_family_id": "finsearchcomp",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "finance"
       ],
@@ -5337,6 +5380,7 @@
       "feed_id": "financebench-discovery",
       "benchmark_family_id": "financebench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "finance"
       ],
@@ -5386,6 +5430,7 @@
       "feed_id": "legalbench-discovery",
       "benchmark_family_id": "legalbench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "legal"
       ],
@@ -5435,6 +5480,7 @@
       "feed_id": "vlair-discovery",
       "benchmark_family_id": "vlair",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "legal"
       ],
@@ -5484,6 +5530,7 @@
       "feed_id": "healthbench-discovery",
       "benchmark_family_id": "healthbench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "medical"
       ],
@@ -5533,6 +5580,7 @@
       "feed_id": "healthbench-professional-discovery",
       "benchmark_family_id": "healthbench-professional",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "medical"
       ],
@@ -5582,6 +5630,7 @@
       "feed_id": "medhelm-discovery",
       "benchmark_family_id": "medhelm",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "medical"
       ],
@@ -5631,6 +5680,7 @@
       "feed_id": "global-mmlu-discovery",
       "benchmark_family_id": "global-mmlu",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "multilingual"
       ],
@@ -5680,6 +5730,7 @@
       "feed_id": "mmlu-prox-discovery",
       "benchmark_family_id": "mmlu-prox",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "multilingual"
       ],
@@ -5729,6 +5780,7 @@
       "feed_id": "wmt24-plus-plus-discovery",
       "benchmark_family_id": "wmt24-plus-plus",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "multilingual"
       ],
@@ -5778,6 +5830,7 @@
       "feed_id": "mmmu-pro-discovery",
       "benchmark_family_id": "mmmu-pro",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "vision-multimodal"
       ],
@@ -5827,6 +5880,7 @@
       "feed_id": "mathvista-discovery",
       "benchmark_family_id": "mathvista",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "vision-multimodal"
       ],
@@ -5876,6 +5930,7 @@
       "feed_id": "video-mme-discovery",
       "benchmark_family_id": "video-mme",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "vision-multimodal"
       ],
@@ -5925,6 +5980,7 @@
       "feed_id": "webdev-arena-discovery",
       "benchmark_family_id": "webdev-arena",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "web-frontend-code-generation"
       ],
@@ -5974,6 +6030,7 @@
       "feed_id": "design-arena-discovery",
       "benchmark_family_id": "design-arena",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "web-frontend-code-generation"
       ],
@@ -6023,6 +6080,7 @@
       "feed_id": "swe-bench-multimodal-discovery",
       "benchmark_family_id": "swe-bench-multimodal",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "web-frontend-code-generation"
       ],
@@ -6072,6 +6130,7 @@
       "feed_id": "itbench-discovery",
       "benchmark_family_id": "itbench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "devops-sre-terminal"
       ],
@@ -6121,6 +6180,7 @@
       "feed_id": "itbench-aa-discovery",
       "benchmark_family_id": "itbench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "devops-sre-terminal"
       ],
@@ -6170,6 +6230,7 @@
       "feed_id": "aiopslab-discovery",
       "benchmark_family_id": "aiopslab",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "devops-sre-terminal"
       ],
@@ -6219,6 +6280,7 @@
       "feed_id": "android-bench-discovery",
       "benchmark_family_id": "android-bench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "mobile-codegen"
       ],
@@ -6268,6 +6330,7 @@
       "feed_id": "appforge-discovery",
       "benchmark_family_id": "appforge",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "mobile-codegen"
       ],
@@ -6317,6 +6380,7 @@
       "feed_id": "swifteval-discovery",
       "benchmark_family_id": "swifteval",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "mobile-codegen"
       ],
@@ -6366,6 +6430,7 @@
       "feed_id": "swe-bench-mobile-discovery",
       "benchmark_family_id": "swe-bench-mobile",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "mobile-codegen"
       ],
@@ -6415,6 +6480,7 @@
       "feed_id": "livebench-reasoning-discovery",
       "benchmark_family_id": "livebench-reasoning",
       "adapter_id": "livebench-official-html-artifact-set-v2",
+      "metric_direction": "higher",
       "candidate_cells": [
         "reasoning"
       ],
@@ -6464,6 +6530,7 @@
       "feed_id": "arc-agi-2-discovery",
       "benchmark_family_id": "arc-agi-2",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "reasoning"
       ],
@@ -6513,6 +6580,7 @@
       "feed_id": "swe-bench-verified-discovery",
       "benchmark_family_id": "swe-bench-verified",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "autonomous-swe-agent"
       ],
@@ -6562,6 +6630,7 @@
       "feed_id": "swe-bench-pro-discovery",
       "benchmark_family_id": "swe-bench-pro",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "autonomous-swe-agent"
       ],
@@ -6611,6 +6680,7 @@
       "feed_id": "steel-current-composites-discovery",
       "benchmark_family_id": "steel-current-composites",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "autonomous-swe-agent",
         "code-generation"
@@ -6662,6 +6732,7 @@
       "feed_id": "gdpval-discovery",
       "benchmark_family_id": "gdpval",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "professional-deliverable-creation"
       ],
@@ -6711,6 +6782,7 @@
       "feed_id": "mle-bench-v1-discovery",
       "benchmark_family_id": "mle-bench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "machine-learning-engineering"
       ],
@@ -6760,6 +6832,7 @@
       "feed_id": "paperbench-full-discovery",
       "benchmark_family_id": "paperbench",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "computational-research-reproduction"
       ],
@@ -6809,6 +6882,7 @@
       "feed_id": "core-bench-v1-1-mainline-discovery",
       "benchmark_family_id": "core-bench-reproducibility",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "computational-research-reproduction"
       ],
@@ -6858,6 +6932,7 @@
       "feed_id": "core-bench-v1-1-ood-discovery",
       "benchmark_family_id": "core-bench-reproducibility",
       "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "computational-research-reproduction"
       ],

@@ -11,11 +11,72 @@ from evalrank_core.canonical_json import sha256_hex  # noqa: E402
 from evalrank_core.read_contracts import (  # noqa: E402
     RankingGroupSnapshotRefV1,
     SnapshotSetDescriptorV1,
+    verify_benchmark_health_semantics,
     verify_compare_result_semantics,
     verify_entity_detail_semantics,
     verify_leaderboard_semantics,
     verify_leaderboard_snapshot_set,
 )
+
+
+class BenchmarkHealthSemanticTests(unittest.TestCase):
+    def test_health_status_and_nested_counts_are_derived_truthfully(self):
+        payload = _benchmark_health()
+
+        self.assertIs(payload, verify_benchmark_health_semantics(payload))
+
+        wrong_status = deepcopy(payload)
+        wrong_status["cells"][0]["status"] = "active"
+        with self.assertRaisesRegex(ValueError, "status"):
+            verify_benchmark_health_semantics(wrong_status)
+
+        impossible_counts = deepcopy(payload)
+        impossible_counts["cells"][0]["admitted_feed_count"] = 3
+        with self.assertRaisesRegex(ValueError, "nested"):
+            verify_benchmark_health_semantics(impossible_counts)
+
+    def test_health_rejects_duplicate_cells_unknown_fields_and_unsafe_counts(self):
+        duplicate = _benchmark_health()
+        duplicate["cells"].append(deepcopy(duplicate["cells"][0]))
+        with self.assertRaisesRegex(ValueError, "unique"):
+            verify_benchmark_health_semantics(duplicate)
+
+        unknown = _benchmark_health()
+        unknown["cells"][0]["detail"] = "not public"
+        with self.assertRaisesRegex(ValueError, "fields"):
+            verify_benchmark_health_semantics(unknown)
+
+        unsafe = _benchmark_health()
+        unsafe["cells"][0]["candidate_feed_count"] = 2**53
+        with self.assertRaisesRegex(ValueError, "safe"):
+            verify_benchmark_health_semantics(unsafe)
+
+        invalid_timestamp = _benchmark_health()
+        invalid_timestamp["generated_at"] = "2026-02-30T00:00:00Z"
+        with self.assertRaisesRegex(ValueError, "generated_at"):
+            verify_benchmark_health_semantics(invalid_timestamp)
+
+
+def _benchmark_health() -> dict:
+    return {
+        "object": "benchmark_health",
+        "schema_version": "1",
+        "manifest_version": "2026-07-09.3",
+        "generated_at": "2026-07-10T00:00:00Z",
+        "cells": [
+            {
+                "cell_id": "code-generation",
+                "status": "preview",
+                "ranking_group_count": 2,
+                "published_ranking_group_count": 0,
+                "benchmark_family_count": 3,
+                "candidate_feed_count": 4,
+                "implemented_feed_count": 2,
+                "admitted_feed_count": 0,
+                "rank_eligible_feed_count": 0,
+            }
+        ],
+    }
 
 
 class SnapshotSetDescriptorTests(unittest.TestCase):

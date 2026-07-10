@@ -15,6 +15,7 @@ def _schema(filename: str) -> dict:
 class PublicReadSchemaTests(unittest.TestCase):
     def test_read_documents_are_closed_versioned_draft_2020_12_contracts(self):
         for filename in (
+            "benchmark-health.schema.json",
             "entity-detail.schema.json",
             "compare-result.schema.json",
             "leaderboard.schema.json",
@@ -32,6 +33,20 @@ class PublicReadSchemaTests(unittest.TestCase):
                 self.assertFalse(schema["additionalProperties"])
                 self.assertEqual(set(schema["properties"]), set(schema["required"]))
                 self.assertEqual("1", schema["properties"]["schema_version"]["const"])
+
+    def test_benchmark_health_is_closed_and_uses_safe_nonnegative_counts(self):
+        schema = _schema("benchmark-health.schema.json")
+        cell = schema["$defs"]["CellHealth"]
+
+        self.assertEqual("benchmark_health", schema["properties"]["object"]["const"])
+        self.assertFalse(cell["additionalProperties"])
+        self.assertEqual(set(cell["properties"]), set(cell["required"]))
+        self.assertEqual(
+            {"active", "preview", "unavailable"},
+            set(cell["properties"]["status"]["enum"]),
+        )
+        self.assertEqual(0, schema["$defs"]["SafeCount"]["minimum"])
+        self.assertEqual(9007199254740991, schema["$defs"]["SafeCount"]["maximum"])
 
     def test_leaderboard_is_a_cell_snapshot_set_of_isolated_ranking_groups(self):
         schema = _schema("leaderboard.schema.json")

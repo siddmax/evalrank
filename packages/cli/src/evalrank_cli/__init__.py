@@ -39,9 +39,9 @@ def main(argv: list[str] | None = None, *, stdout: TextIO | None = None, stderr:
             return 1
         stdout.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
         return 0
-    if args.command == "scoring-stages":
+    if args.command == "benchmark-health":
         try:
-            payload = EvalRankClient(args.base_url).scoring_stages()
+            payload = EvalRankClient(args.base_url).benchmark_health()
         except ValueError as exc:
             stderr.write(str(exc) + "\n")
             return 2
@@ -50,23 +50,37 @@ def main(argv: list[str] | None = None, *, stdout: TextIO | None = None, stderr:
             return 1
         stdout.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
         return 0
-    if args.command == "recommend":
+    if args.command == "receipt":
+        try:
+            payload = EvalRankClient(args.base_url).decision_receipt(args.receipt_id)
+        except ValueError as exc:
+            stderr.write(str(exc) + "\n")
+            return 2
+        except EvalRankApiError as exc:
+            stderr.write(json.dumps(exc.problem.to_dict(), sort_keys=True, separators=(",", ":")) + "\n")
+            return 1
+        stdout.write(json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n")
+        return 0
+    if args.command == "decide":
         try:
             client = EvalRankClient(args.base_url)
         except ValueError as exc:
             stderr.write(str(exc) + "\n")
             return 2
         try:
-            payload = _read_request(args.request)
+            payload = _read_query(args.query)
         except (OSError, ValueError, json.JSONDecodeError) as exc:
-            stderr.write(f"invalid request JSON: {exc}\n")
+            stderr.write(f"invalid decision query JSON: {exc}\n")
             return 2
         try:
-            recommendation = client.recommend(payload)
+            receipt = client.decide(payload, share=args.share)
+        except (TypeError, ValueError) as exc:
+            stderr.write(f"invalid decision query: {exc}\n")
+            return 2
         except EvalRankApiError as exc:
             stderr.write(json.dumps(exc.problem.to_dict(), sort_keys=True, separators=(",", ":")) + "\n")
             return 1
-        stdout.write(json.dumps(recommendation, sort_keys=True, separators=(",", ":")) + "\n")
+        stdout.write(json.dumps(receipt, sort_keys=True, separators=(",", ":")) + "\n")
         return 0
 
     parser.print_help(file=stderr)
@@ -84,23 +98,31 @@ def _parser() -> argparse.ArgumentParser:
     )
     use_cases = subparsers.add_parser("use-cases", help="call the public use-case metadata API")
     use_cases.add_argument("--base-url", required=True)
-    scoring_stages = subparsers.add_parser("scoring-stages", help="call the public scoring-stage metadata API")
-    scoring_stages.add_argument("--base-url", required=True)
-    recommend = subparsers.add_parser("recommend", help="call the public recommendation API")
-    recommend.add_argument("--base-url", required=True)
-    recommend.add_argument("--request", required=True, help="EvaluationRequest JSON file, or '-' for stdin")
+    health = subparsers.add_parser("benchmark-health", help="read public benchmark health")
+    health.add_argument("--base-url", required=True)
+    receipt = subparsers.add_parser("receipt", help="retrieve one explicitly shared decision receipt")
+    receipt.add_argument("--base-url", required=True)
+    receipt.add_argument("--receipt-id", required=True)
+    decide = subparsers.add_parser("decide", help="call the public decision API")
+    decide.add_argument("--base-url", required=True)
+    decide.add_argument("--query", required=True, help="DecisionQueryV1 JSON file, or '-' for stdin")
+    decide.add_argument(
+        "--share",
+        action="store_true",
+        help="retain an append-only public receipt that anyone with its ID can retrieve",
+    )
 
     return parser
 
 
-def _read_request(path: str) -> dict:
+def _read_query(path: str) -> dict:
     if path == "-":
         payload = json.load(sys.stdin)
     else:
         with open(path, encoding="utf-8") as handle:
             payload = json.load(handle)
     if not isinstance(payload, dict):
-        raise ValueError("request JSON must be an object")
+        raise ValueError("decision query JSON must be an object")
     return payload
 
 

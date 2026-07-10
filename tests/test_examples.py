@@ -21,34 +21,19 @@ class PublicExampleTests(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertEqual(
             [
-                "candidate_set",
-                "evidence",
-                "evidence_set",
-                "exclusion",
+                "fingerprint",
                 "observation",
                 "problem",
                 "raw_entry",
-                "recommendation",
-                "request",
-                "scoring_stages",
-                "stage_candidate",
                 "use_cases",
             ],
             sorted(payload),
         )
-        self.assertEqual("recommendation", payload["recommendation"]["object"])
-        self.assertEqual("web-browsing", payload["request"]["use_case"])
-        self.assertEqual("web-browsing", payload["recommendation"]["use_case"])
-        self.assertEqual("candidate_set", payload["candidate_set"]["object"])
-        self.assertEqual("stage_candidate", payload["stage_candidate"]["object"])
-        self.assertEqual("evidence_set", payload["evidence_set"]["object"])
+        self.assertNotIn("request", payload)
+        self.assertEqual("capability_fingerprint", payload["fingerprint"]["object"])
         self.assertEqual("observation", payload["observation"]["object"])
-        self.assertEqual("scoring_stage_catalog", payload["scoring_stages"]["object"])
         self.assertEqual("raw_entry", payload["raw_entry"]["object"])
         self.assertEqual("use_case_catalog", payload["use_cases"]["object"])
-        self.assertEqual("unknown_cost", payload["exclusion"]["reason"])
-        self.assertEqual("ev_public_trace_01", payload["evidence"]["evidence_id"])
-        self.assertRegex(payload["evidence"]["subject"]["id"], r"^config_[0-9a-f]{64}$")
         self.assertEqual("validation", payload["problem"]["code"])
 
     def test_public_fixture_readme_lists_current_output_keys(self):
@@ -66,7 +51,7 @@ class PublicExampleTests(unittest.TestCase):
             with self.subTest(key=key):
                 self.assertIn(f"`{key}`", readme)
 
-    def test_public_fixture_readme_lists_nested_contract_refs(self):
+    def test_examples_document_the_decision_golden_instead_of_legacy_outputs(self):
         result = subprocess.run(
             [sys.executable, str(REPO_ROOT / "examples" / "public_fixture.py")],
             cwd=REPO_ROOT,
@@ -77,22 +62,11 @@ class PublicExampleTests(unittest.TestCase):
 
         payload = json.loads(result.stdout)
         readme = (REPO_ROOT / "examples" / "README.md").read_text(encoding="utf-8")
-        self.assertIn("abstention", payload["recommendation"])
-        self.assertIn("the_call", payload["recommendation"])
-        output_contracts = {
-            contract
-            for stage in payload["scoring_stages"]["stages"]
-            for contract in stage["output_contracts"]
-        }
-        self.assertIn("Abstention", output_contracts)
-        for ref in (
-            "recommendation.abstention",
-            "recommendation.the_call",
-            "scoring_stages.stages[].output_contracts",
-            "Abstention",
-        ):
+        self.assertNotIn("recommendation", payload)
+        self.assertNotIn("scoring_stages", payload)
+        for ref in ("decision-contract-v1.golden.json", "DecisionQueryV1", "DecisionReceiptV1"):
             with self.subTest(ref=ref):
-                self.assertIn(f"`{ref}`", readme)
+                self.assertIn(ref, readme)
 
 
 if __name__ == "__main__":

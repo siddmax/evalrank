@@ -12,9 +12,10 @@ from evalrank_sdk import EvalRankApiError, EvalRankClient
 
 __version__ = "0.0.0"
 FIXTURE_TOOL_NAME = "evalrank.fixture"
-RECOMMEND_TOOL_NAME = "evalrank.recommend"
+DECIDE_TOOL_NAME = "evalrank.decide"
+DECISION_RECEIPT_TOOL_NAME = "evalrank.decision_receipt"
 USE_CASES_TOOL_NAME = "evalrank.use_cases"
-SCORING_STAGES_TOOL_NAME = "evalrank.scoring_stages"
+BENCHMARK_HEALTH_TOOL_NAME = "evalrank.benchmark_health"
 
 
 def list_tools() -> list[dict[str, Any]]:
@@ -35,59 +36,43 @@ def list_tools() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": RECOMMEND_TOOL_NAME,
-            "description": "Call the public EvalRank recommendation API.",
+            "name": DECIDE_TOOL_NAME,
+            "description": "Return one deterministic public EvalRank decision receipt.",
             "inputSchema": {
                 "type": "object",
                 "additionalProperties": False,
-                "required": ["base_url", "request"],
+                "required": ["base_url", "query"],
                 "properties": {
                     "base_url": {
                         "type": "string",
                         "minLength": 1,
                         "pattern": "^https?://",
                     },
-                    "request": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "required": [
-                            "object",
-                            "request_id",
-                            "use_case",
-                            "entity_types",
-                            "requested_at",
-                            "constraints",
-                        ],
-                        "properties": {
-                            "object": {
-                                "const": "evaluation_request",
-                            },
-                            "request_id": {
-                                "type": "string",
-                                "minLength": 1,
-                            },
-                            "use_case": {
-                                "type": "string",
-                                "minLength": 1,
-                            },
-                            "entity_types": {
-                                "type": "array",
-                                "minItems": 1,
-                                "uniqueItems": True,
-                                "items": {
-                                    "type": "string",
-                                    "minLength": 1,
-                                },
-                            },
-                            "requested_at": {
-                                "type": "string",
-                                "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
-                            },
-                            "constraints": {
-                                "type": "object",
-                                "additionalProperties": True,
-                            },
-                        },
+                    "query": _decision_query_schema(),
+                    "share": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Retain an append-only public receipt retrievable by ID.",
+                    },
+                },
+            },
+        },
+        {
+            "name": DECISION_RECEIPT_TOOL_NAME,
+            "description": "Retrieve one explicitly shared public decision receipt.",
+            "inputSchema": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["base_url", "receipt_id"],
+                "properties": {
+                    "base_url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "pattern": "^https?://",
+                    },
+                    "receipt_id": {
+                        "type": "string",
+                        "pattern": "^receipt_[0-9a-f]{64}$",
                     },
                 },
             },
@@ -109,8 +94,8 @@ def list_tools() -> list[dict[str, Any]]:
             },
         },
         {
-            "name": SCORING_STAGES_TOOL_NAME,
-            "description": "Call the public EvalRank scoring-stage metadata API.",
+            "name": BENCHMARK_HEALTH_TOOL_NAME,
+            "description": "Read public benchmark admission and publication health.",
             "inputSchema": {
                 "type": "object",
                 "additionalProperties": False,
@@ -134,24 +119,42 @@ def call_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, A
         raise ValueError("arguments must be an object")
     if name == FIXTURE_TOOL_NAME:
         return _text_result(sample_public_fixture(arguments.get("kind")))
-    if name == RECOMMEND_TOOL_NAME:
-        return _recommend(arguments)
+    if name == DECIDE_TOOL_NAME:
+        return _decide(arguments)
+    if name == DECISION_RECEIPT_TOOL_NAME:
+        return _decision_receipt(arguments)
     if name == USE_CASES_TOOL_NAME:
         return _metadata(arguments, "use_cases")
-    if name == SCORING_STAGES_TOOL_NAME:
-        return _metadata(arguments, "scoring_stages")
+    if name == BENCHMARK_HEALTH_TOOL_NAME:
+        return _metadata(arguments, "benchmark_health")
     raise ValueError(f"unknown tool: {name}")
 
 
-def _recommend(arguments: dict[str, Any]) -> dict[str, Any]:
+def _decide(arguments: dict[str, Any]) -> dict[str, Any]:
     base_url = arguments.get("base_url")
-    request = arguments.get("request")
+    query = arguments.get("query")
+    share = arguments.get("share", False)
     if not isinstance(base_url, str) or not base_url:
         raise ValueError("base_url is required")
-    if not isinstance(request, dict):
-        raise ValueError("request must be an object")
+    if not isinstance(query, dict):
+        raise ValueError("query must be an object")
+    if not isinstance(share, bool):
+        raise ValueError("share must be a boolean")
     try:
-        return _text_result(EvalRankClient(base_url).recommend(request))
+        return _text_result(EvalRankClient(base_url).decide(query, share=share))
+    except EvalRankApiError as exc:
+        return _text_result(exc.problem.to_dict(), is_error=True)
+
+
+def _decision_receipt(arguments: dict[str, Any]) -> dict[str, Any]:
+    base_url = arguments.get("base_url")
+    receipt_id = arguments.get("receipt_id")
+    if not isinstance(base_url, str) or not base_url:
+        raise ValueError("base_url is required")
+    if not isinstance(receipt_id, str) or not receipt_id:
+        raise ValueError("receipt_id is required")
+    try:
+        return _text_result(EvalRankClient(base_url).decision_receipt(receipt_id))
     except EvalRankApiError as exc:
         return _text_result(exc.problem.to_dict(), is_error=True)
 
@@ -164,8 +167,8 @@ def _metadata(arguments: dict[str, Any], method: str) -> dict[str, Any]:
     try:
         if method == "use_cases":
             return _text_result(client.use_cases())
-        if method == "scoring_stages":
-            return _text_result(client.scoring_stages())
+        if method == "benchmark_health":
+            return _text_result(client.benchmark_health())
     except EvalRankApiError as exc:
         return _text_result(exc.problem.to_dict(), is_error=True)
     raise ValueError(f"unknown metadata method: {method}")
@@ -183,10 +186,89 @@ def _text_result(payload: dict[str, Any], *, is_error: bool = False) -> dict[str
     }
 
 
+def _decision_query_schema() -> dict[str, Any]:
+    usage_profile = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "basis",
+            "uncached_input_tokens",
+            "cached_read_tokens",
+            "output_tokens",
+            "cache_writes",
+            "cache_storage_token_seconds",
+        ],
+        "properties": {
+            "basis": {"type": "string", "enum": ["measured", "estimated"]},
+            "uncached_input_tokens": {"type": "integer", "minimum": 0},
+            "cached_read_tokens": {"type": "integer", "minimum": 0},
+            "output_tokens": {"type": "integer", "minimum": 0},
+            "cache_writes": {
+                "type": "array",
+                "uniqueItems": True,
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["ttl_seconds", "tokens"],
+                    "properties": {
+                        "ttl_seconds": {"type": "integer", "minimum": 1},
+                        "tokens": {"type": "integer", "minimum": 1},
+                    },
+                },
+            },
+            "cache_storage_token_seconds": {"type": "integer", "minimum": 0},
+        },
+    }
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "object",
+            "schema_version",
+            "cell_id",
+            "ranking_group_id",
+            "entity_kind",
+            "interaction_policy",
+            "configuration_passport_class",
+            "objective",
+        ],
+        "properties": {
+            "object": {"const": "decision_query"},
+            "schema_version": {"const": "1"},
+            "cell_id": {"type": "string", "minLength": 1},
+            "ranking_group_id": {"type": "string", "minLength": 1},
+            "entity_kind": {"type": "string"},
+            "interaction_policy": {"type": "string"},
+            "configuration_passport_class": {"type": "string"},
+            "objective": {
+                "type": "string",
+                "enum": ["capability_top_set", "lowest_cost_within_top_set"],
+            },
+            "provider_ids": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": True,
+                "items": {"type": "string", "minLength": 1},
+            },
+            "regions": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": True,
+                "items": {"type": "string", "minLength": 1},
+            },
+            "minimum_context_tokens": {"type": "integer", "minimum": 1},
+            "usage_profile": usage_profile,
+            "zero_cache_sensitivity_usage_profile": usage_profile,
+            "monthly_budget_microusd": {"type": "integer", "minimum": 0},
+        },
+    }
+
+
 __all__ = [
+    "BENCHMARK_HEALTH_TOOL_NAME",
+    "DECIDE_TOOL_NAME",
+    "DECISION_RECEIPT_TOOL_NAME",
     "FIXTURE_TOOL_NAME",
-    "RECOMMEND_TOOL_NAME",
-    "SCORING_STAGES_TOOL_NAME",
     "USE_CASES_TOOL_NAME",
     "call_tool",
     "list_tools",

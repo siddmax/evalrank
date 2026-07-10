@@ -15,6 +15,11 @@ the number of exact evaluated configurations left after identity and evidence
 gates; on a benchmark family or feed it is the number of validated native
 observations. An active ranking group must meet its configured top-set overlap.
 
+`metric_direction` is explicit feed admission metadata. Replayed `shadow` and
+`active` feeds declare whether higher or lower native values are better;
+discovery rows keep it null. Parsers must never infer direction from labels,
+column names, or observed values.
+
 Cadence is fail-closed. An unvalidated feed has no cadence mode. A validated
 `periodic` feed carries ordered refresh, stale, and stop-recommending windows.
 A validated `frozen` feed instead pins an upstream version and UTC as-of time;
