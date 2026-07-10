@@ -2,15 +2,25 @@
   "$schema": "../schemas/benchmark-research-provenance.schema.json",
   "object": "benchmark_research_provenance",
   "schema_version": "1",
-  "manifest_version": "2026-07-09.2",
+  "manifest_version": "2026-07-09.3",
   "families": [
     {
       "benchmark_family_id": "livecodebench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/LiveCodeBench/LiveCodeBench"}
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/LiveCodeBench/LiveCodeBench"},
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://livecodebench.github.io/leaderboard.html"},
+        {"source_id": "current-data", "kind": "official_dataset", "url": "https://livecodebench.github.io/performances_generation.json"}
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official leaderboard page selects performances_generation.json as the current release_v6 data artifact.",
+          "source_ids": ["leaderboard", "current-data"]
+        }
+      ]
     },
     {
       "benchmark_family_id": "aider-polyglot",
@@ -48,9 +58,18 @@
       "benchmark_family_id": "terminal-bench-2-1",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://www.tbench.ai/news/terminal-bench-2-1"}
+        {"source_id": "release", "kind": "official_site", "url": "https://www.tbench.ai/news/terminal-bench-2-1"},
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1"}
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The Apache-2.0 official repository contains the pinned 89-task methodology and merged aggregate submission JSON; Harbor trajectories are outside this retained aggregate scope.",
+          "source_ids": ["repository"]
+        }
+      ]
     },
     {
       "benchmark_family_id": "swe-lancer",
@@ -72,9 +91,19 @@
       "benchmark_family_id": "bfcl-v4",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://sky.cs.berkeley.edu/project/berkeley-function-calling-leaderboard/"}
+        {"source_id": "site", "kind": "official_site", "url": "https://sky.cs.berkeley.edu/project/berkeley-function-calling-leaderboard/"},
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://gorilla.cs.berkeley.edu/leaderboard.html"},
+        {"source_id": "current-data", "kind": "official_dataset", "url": "https://gorilla.cs.berkeley.edu/data_overall.csv"}
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official leaderboard script resolves data_overall.csv; the previously assumed raw Git path is not the current data authority.",
+          "source_ids": ["leaderboard", "current-data"]
+        }
+      ]
     },
     {
       "benchmark_family_id": "complexfuncbench",
@@ -614,9 +643,20 @@
       "benchmark_family_id": "livebench-reasoning",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/LiveBench/LiveBench"}
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/LiveBench/LiveBench"},
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://livebench.ai/"},
+        {"source_id": "table", "kind": "official_dataset", "url": "https://livebench.ai/table_2026_06_25.csv"},
+        {"source_id": "categories", "kind": "official_dataset", "url": "https://livebench.ai/categories_2026_06_25.json"}
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official application identifies 2026-06-25 as the current release and fetches its table and category artifacts as one pair.",
+          "source_ids": ["leaderboard", "table", "categories"]
+        }
+      ]
     },
     {
       "benchmark_family_id": "arc-agi-2",

@@ -2,7 +2,7 @@
   "$schema": "../schemas/evalrank-manifest.schema.json",
   "object": "evalrank_manifest",
   "schema_version": "1",
-  "manifest_version": "2026-07-09.2",
+  "manifest_version": "2026-07-09.3",
   "ranking_group_dimensions": [
     "cell_id",
     "entity_kind",
@@ -1751,7 +1751,7 @@
       "entity_kinds": [
         "model_configuration"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "correlation_status": "unknown",
       "correlated_family_group": null,
@@ -1832,7 +1832,7 @@
       "entity_kinds": [
         "agent_system"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "correlation_status": "unknown",
       "correlated_family_group": null,
@@ -1880,7 +1880,7 @@
       "entity_kinds": [
         "model_configuration"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "correlation_status": "unknown",
       "correlated_family_group": null,
@@ -2852,7 +2852,7 @@
       "entity_kinds": [
         "model_configuration"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "correlation_status": "unknown",
       "correlated_family_group": null,
@@ -3019,14 +3019,14 @@
     {
       "feed_id": "livecodebench-discovery",
       "benchmark_family_id": "livecodebench",
-      "adapter_id": null,
+      "adapter_id": "livecodebench-official-html-linked-json-v2",
       "candidate_cells": [
         "code-generation"
       ],
       "entity_kind": "model_configuration",
       "interaction_policy": "direct_prompt",
       "configuration_passport_class": "model-configuration-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
         "status": "unknown",
@@ -3264,7 +3264,7 @@
     {
       "feed_id": "terminal-bench-2-1-discovery",
       "benchmark_family_id": "terminal-bench-2-1",
-      "adapter_id": null,
+      "adapter_id": "terminal-bench-2-1-official-repository-aggregate-v1",
       "candidate_cells": [
         "autonomous-swe-agent",
         "devops-sre-terminal"
@@ -3272,7 +3272,7 @@
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
       "configuration_passport_class": "agent-system-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
         "status": "unknown",
@@ -3413,14 +3413,14 @@
     {
       "feed_id": "bfcl-v4-discovery",
       "benchmark_family_id": "bfcl-v4",
-      "adapter_id": null,
+      "adapter_id": "bfcl-v4-official-html-linked-csv-v2",
       "candidate_cells": [
         "function-calling"
       ],
       "entity_kind": "model_configuration",
       "interaction_policy": "direct_prompt",
       "configuration_passport_class": "model-configuration-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
         "status": "unknown",
@@ -6414,14 +6414,14 @@
     {
       "feed_id": "livebench-reasoning-discovery",
       "benchmark_family_id": "livebench-reasoning",
-      "adapter_id": null,
+      "adapter_id": "livebench-official-html-artifact-set-v2",
       "candidate_cells": [
         "reasoning"
       ],
       "entity_kind": "model_configuration",
       "interaction_policy": "direct_prompt",
       "configuration_passport_class": "model-configuration-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
         "status": "unknown",

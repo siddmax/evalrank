@@ -206,7 +206,7 @@ class CoreFixtureTests(unittest.TestCase):
 
         self.assertEqual("use_case_catalog", payload["object"])
         self.assertEqual(
-            "2026-07-09.2.catalog-manifest-v1",
+            "2026-07-09.3.catalog-manifest-v1",
             PUBLIC_CATALOG_METHODOLOGY_VERSION,
         )
         self.assertEqual(

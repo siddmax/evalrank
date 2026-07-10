@@ -805,7 +805,7 @@ async function startServer(
 function useCaseCatalogPayload(): UseCaseCatalog {
   return {
     object: "use_case_catalog",
-    methodology_version: "2026-07-09.2.catalog-manifest-v1",
+    methodology_version: "2026-07-09.3.catalog-manifest-v1",
     generated_at: "2026-07-09T00:00:00Z",
     use_cases: manifestUseCases(),
   };
