@@ -2,7 +2,7 @@
 
 Last updated: 2026-07-10
 
-Portable contract status: the seven-path receipt-first launch contract, Python/TypeScript clients, CLI, MCP adapter, schemas, and stdlib reference server are implemented locally. Hosted runtime conformance and deployment remain private release-candidate work; this repo does not claim a live service.
+Portable contract status: the seven-path receipt-first launch contract, Python/TypeScript clients, CLI, MCP adapter, schemas, and stdlib reference server are implemented locally. A private release candidate now pins and conforms to the contract; deployment remains private work and this repo does not claim a live service.
 
 ## Product Contract
 
@@ -47,7 +47,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 
-No paired public/private release identifiers are recorded for this manifest version yet.
+Paired local release candidate: public contract `c3bac88b4bb6e34006853cffdba8754a8a7a1542`; private consumer `60bedba50b1ee117c0c1cc865c3b2577e27eac1f`. These identifiers prove contract linkage only; they do not claim deployment.
 
 ## Current Workstreams
 
@@ -60,10 +60,9 @@ No paired public/private release identifiers are recorded for this manifest vers
 
 ## Next Public Work
 
-1. Pin this public revision into the hosted build and prove backend/web conformance against its exact bytes.
-2. Exercise the hosted implementation against the exact public OpenAPI and golden receipt bytes.
-3. Prove desktop/mobile UX, CORS, errors, share disclosure, and immutable receipt replay in the private release candidate.
-4. Record paired immutable release identifiers only after each repository lands independently.
+1. Publish the public contract revision through the repository's normal release process.
+2. Deploy the paired private release candidate only after its owning repository's release gates pass.
+3. Advance feeds from `shadow` only through dated rights, identity, lineage, overlap, health, cadence, uncertainty, and decision-value evidence.
 
 ## Verification
 
