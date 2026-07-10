@@ -301,7 +301,12 @@
               "run_id": "run_public_demo_01",
               "benchmark_family_id": "livecodebench",
               "feed_id": "livecodebench-discovery",
-              "source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "source_artifacts": [
+                {
+                  "role": "primary",
+                  "source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ],
               "parser_id": "livecodebench-json",
               "parser_version": "1",
               "started_at": "2026-07-09T00:01:00Z",
@@ -367,7 +372,12 @@
               "run_id": "run_public_demo_01",
               "benchmark_family_id": "livecodebench",
               "feed_id": "livecodebench-discovery",
-              "source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "source_artifacts": [
+                {
+                  "role": "primary",
+                  "source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+              ],
               "parser_id": "livecodebench-json",
               "parser_version": "1",
               "started_at": "2026-07-09T00:01:00Z",
@@ -436,8 +446,8 @@
       },
       "abstention_reason": null
     },
-    "body_sha256": "654615414b0e78f1a929d70b9b366eb904346e01fd6f04be29243fa2d1b146d1",
-    "receipt_id": "receipt_654615414b0e78f1a929d70b9b366eb904346e01fd6f04be29243fa2d1b146d1"
+    "body_sha256": "d48c27f4adb7742828c4752a705187cfcd094feb06f54233b937bb343ad769aa",
+    "receipt_id": "receipt_d48c27f4adb7742828c4752a705187cfcd094feb06f54233b937bb343ad769aa"
   },
   "rejection_vectors": [
     {

@@ -319,7 +319,10 @@ test("typed provenance and observations fail closed", () => {
     run_id: "run-public-01",
     benchmark_family_id: "livecodebench",
     feed_id: "livecodebench-discovery",
-    source_artifact_id: `artifact_${"a".repeat(64)}`,
+    source_artifacts: [
+      { role: "categories", source_artifact_id: `artifact_${"b".repeat(64)}` },
+      { role: "primary", source_artifact_id: `artifact_${"a".repeat(64)}` },
+    ],
     parser_id: "json-parser",
     parser_version: "1",
     started_at: "2026-07-09T00:00:00Z",
@@ -331,6 +334,17 @@ test("typed provenance and observations fail closed", () => {
     adapter_metadata: null,
   };
   assert.equal(parseRunProvenanceV1(provenance).feed_id, "livecodebench-discovery");
+  assert.throws(
+    () => parseRunProvenanceV1({ ...provenance, source_artifacts: [...provenance.source_artifacts].reverse() }),
+    /sorted by role/,
+  );
+  assert.throws(
+    () => parseRunProvenanceV1({
+      ...provenance,
+      source_artifacts: provenance.source_artifacts.map((item) => ({ ...item, source_artifact_id: `artifact_${"a".repeat(64)}` })),
+    }),
+    /unique/,
+  );
   assert.throws(() => parseRunProvenanceV1({ ...provenance, source: "mutable-latest" }), /unknown fields/);
 
   const observation = {
@@ -1057,7 +1071,9 @@ test("Draft 2020 schemas enforce the portable semantic shapes they can express",
     run_id: "run-public-01",
     benchmark_family_id: "livecodebench",
     feed_id: "livecodebench-discovery",
-    source_artifact_id: `artifact_${"a".repeat(64)}`,
+    source_artifacts: [
+      { role: "primary", source_artifact_id: `artifact_${"a".repeat(64)}` },
+    ],
     parser_id: "json-parser",
     parser_version: "1",
     started_at: "2026-07-09T00:00:00Z",

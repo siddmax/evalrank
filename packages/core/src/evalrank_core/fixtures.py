@@ -29,6 +29,7 @@ from evalrank_core.decision_contracts import (
     IntervalUncertaintyV1,
     ObservationV1,
     ProportionMetricV1,
+    RunInputArtifactV1,
     RunProvenanceV1,
 )
 
@@ -342,7 +343,12 @@ def sample_observation() -> ObservationV1:
             run_id="run_public_demo_01",
             benchmark_family_id="public-search-freshness",
             feed_id="public-search-freshness-official",
-            source_artifact_id=f"artifact_{'a' * 64}",
+            source_artifacts=(
+                RunInputArtifactV1(
+                    role="primary",
+                    source_artifact_id=f"artifact_{'a' * 64}",
+                ),
+            ),
             parser_id="public-fixture-parser",
             parser_version="1",
             started_at="2026-06-25T00:00:00Z",

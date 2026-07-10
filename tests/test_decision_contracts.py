@@ -39,6 +39,7 @@ from evalrank_core.decision_contracts import (  # noqa: E402
     ProportionMetricV1,
     PublicationSnapshotRefV1,
     RankOnlyMetricV1,
+    RunInputArtifactV1,
     RunProvenanceV1,
     ServingOfferV1,
     SourceArtifactV1,
@@ -75,17 +76,33 @@ class SourceAndRunProvenanceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unknown fields"):
             SourceArtifactV1.from_dict(payload)
 
-    def test_run_provenance_is_typed_closed_and_references_one_artifact(self):
+    def test_run_provenance_is_typed_closed_and_references_exact_artifact_inputs(self):
         provenance = _provenance()
 
-        self.assertEqual(ARTIFACT_A, provenance.source_artifact_id)
+        self.assertEqual(
+            (
+                RunInputArtifactV1(role="categories", source_artifact_id=f"artifact_{HASH_B}"),
+                RunInputArtifactV1(role="primary", source_artifact_id=ARTIFACT_A),
+            ),
+            provenance.source_artifacts,
+        )
         self.assertNotIn("canonical_url", provenance.to_dict())
         self.assertEqual(provenance, RunProvenanceV1.from_dict(provenance.to_dict()))
 
         missing = provenance.to_dict()
-        del missing["source_artifact_id"]
-        with self.assertRaisesRegex(ValueError, "source_artifact_id"):
+        del missing["source_artifacts"]
+        with self.assertRaisesRegex(ValueError, "source_artifacts"):
             RunProvenanceV1.from_dict(missing)
+
+        reversed_inputs = provenance.to_dict()
+        reversed_inputs["source_artifacts"].reverse()
+        with self.assertRaisesRegex(ValueError, "sorted by role"):
+            RunProvenanceV1.from_dict(reversed_inputs)
+
+        duplicate_artifact = provenance.to_dict()
+        duplicate_artifact["source_artifacts"][0]["source_artifact_id"] = ARTIFACT_A
+        with self.assertRaisesRegex(ValueError, "unique"):
+            RunProvenanceV1.from_dict(duplicate_artifact)
 
         unknown = provenance.to_dict()
         unknown["source"] = "mutable-latest"
@@ -185,7 +202,7 @@ class ObservationTests(unittest.TestCase):
         payload = observation.to_dict()
         payload["provenance"] = {"source": "mutable-latest"}
 
-        with self.assertRaisesRegex(ValueError, "source_artifact_id"):
+        with self.assertRaisesRegex(ValueError, "source_artifacts"):
             ObservationV1.from_dict(payload)
 
         payload = observation.to_dict()
@@ -1024,7 +1041,10 @@ def _provenance() -> RunProvenanceV1:
         run_id="run_public_demo_01",
         benchmark_family_id="livecodebench",
         feed_id="livecodebench-discovery",
-        source_artifact_id=ARTIFACT_A,
+        source_artifacts=(
+            RunInputArtifactV1(role="categories", source_artifact_id=f"artifact_{HASH_B}"),
+            RunInputArtifactV1(role="primary", source_artifact_id=ARTIFACT_A),
+        ),
         parser_id="livecodebench-json",
         parser_version="1",
         started_at="2026-07-09T00:01:00Z",
