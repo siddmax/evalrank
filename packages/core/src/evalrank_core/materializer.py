@@ -400,7 +400,7 @@ def _comparison_scale(observation: ObservationV1) -> tuple[str, ...]:
         provenance.run_id,
         provenance.benchmark_family_id,
         provenance.feed_id,
-        provenance.source_artifact_id,
+        canonical_json([item.to_dict() for item in provenance.source_artifacts]),
         provenance.parser_id,
         provenance.parser_version,
         provenance.harness_version or "",

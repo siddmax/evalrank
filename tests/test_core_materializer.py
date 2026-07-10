@@ -22,6 +22,7 @@ from evalrank_core.decision_contracts import (  # noqa: E402
     IntervalUncertaintyV1,
     ObservationV1,
     ProportionMetricV1,
+    RunInputArtifactV1,
     RunProvenanceV1,
     UnknownUncertaintyV1,
 )
@@ -95,7 +96,12 @@ def _observation(
             run_id="run_public_materializer_01",
             benchmark_family_id="public-materializer-family",
             feed_id="public-materializer-feed",
-            source_artifact_id=f"artifact_{'a' * 64}",
+            source_artifacts=(
+                RunInputArtifactV1(
+                    role="primary",
+                    source_artifact_id=f"artifact_{'a' * 64}",
+                ),
+            ),
             parser_id="public-materializer-parser",
             parser_version="1",
             started_at=f"{date_run}T00:00:00Z",

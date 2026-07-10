@@ -20,6 +20,7 @@ from evalrank_core.canonical_json import MAX_SAFE_INTEGER, canonical_json, sha25
 
 _HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 _ARTIFACT_ID_RE = re.compile(r"^artifact_[0-9a-f]{64}$")
+_RUN_ARTIFACT_ROLE_RE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$")
 _CONFIGURATION_ID_RE = re.compile(r"^config_[0-9a-f]{64}$")
 _OBSERVATION_ID_RE = re.compile(r"^obs_[A-Za-z0-9][A-Za-z0-9._:-]*$")
 _TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
@@ -206,6 +207,26 @@ class SourceArtifactV1:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
+class RunInputArtifactV1:
+    """One exact retained parser input with a stable source-owned role."""
+
+    role: str
+    source_artifact_id: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.role, str) or not _RUN_ARTIFACT_ROLE_RE.fullmatch(self.role):
+            raise ValueError("artifact input role must be lower_snake_case ASCII")
+        _require_pattern("source_artifact_id", self.source_artifact_id, _ARTIFACT_ID_RE)
+
+    def to_dict(self) -> dict[str, str]:
+        return {"role": self.role, "source_artifact_id": self.source_artifact_id}
+
+    @classmethod
+    def from_dict(cls, value: Any) -> "RunInputArtifactV1":
+        return cls(**_closed(value, required=("role", "source_artifact_id")))
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
 class RunProvenanceV1:
     object: ClassVar[str] = "run_provenance"
     schema_version: ClassVar[str] = "1"
@@ -213,7 +234,7 @@ class RunProvenanceV1:
     run_id: str
     benchmark_family_id: str
     feed_id: str
-    source_artifact_id: str
+    source_artifacts: tuple[RunInputArtifactV1, ...]
     parser_id: str
     parser_version: str
     started_at: str
@@ -227,7 +248,18 @@ class RunProvenanceV1:
     def __post_init__(self) -> None:
         for name in ("run_id", "benchmark_family_id", "feed_id", "parser_id", "parser_version"):
             _require_string(name, getattr(self, name))
-        _require_pattern("source_artifact_id", self.source_artifact_id, _ARTIFACT_ID_RE)
+        if not isinstance(self.source_artifacts, tuple) or not self.source_artifacts:
+            raise ValueError("source_artifacts must be a non-empty tuple")
+        if any(not isinstance(item, RunInputArtifactV1) for item in self.source_artifacts):
+            raise TypeError("source_artifacts must contain RunInputArtifactV1 values")
+        roles = tuple(item.role for item in self.source_artifacts)
+        artifact_ids = tuple(item.source_artifact_id for item in self.source_artifacts)
+        if roles != tuple(sorted(roles)):
+            raise ValueError("source_artifacts must be sorted by role")
+        if len(set(roles)) != len(roles) or len(set(artifact_ids)) != len(artifact_ids):
+            raise ValueError("source_artifact roles and IDs must be unique")
+        if roles.count("primary") != 1:
+            raise ValueError("source_artifacts must contain exactly one primary role")
         started = _parse_timestamp("started_at", self.started_at)
         completed = _parse_timestamp("completed_at", self.completed_at)
         if completed < started:
@@ -246,7 +278,7 @@ class RunProvenanceV1:
             "run_id": self.run_id,
             "benchmark_family_id": self.benchmark_family_id,
             "feed_id": self.feed_id,
-            "source_artifact_id": self.source_artifact_id,
+            "source_artifacts": [item.to_dict() for item in self.source_artifacts],
             "parser_id": self.parser_id,
             "parser_version": self.parser_version,
             "started_at": self.started_at,
@@ -261,8 +293,8 @@ class RunProvenanceV1:
     @classmethod
     def from_dict(cls, value: Any) -> "RunProvenanceV1":
         raw = _mapping(value)
-        if "source_artifact_id" not in raw:
-            raise ValueError("missing required field: source_artifact_id")
+        if "source_artifacts" not in raw:
+            raise ValueError("missing required field: source_artifacts")
         payload = _closed(
             raw,
             required=(
@@ -271,7 +303,7 @@ class RunProvenanceV1:
                 "run_id",
                 "benchmark_family_id",
                 "feed_id",
-                "source_artifact_id",
+                "source_artifacts",
                 "parser_id",
                 "parser_version",
                 "started_at",
@@ -285,6 +317,11 @@ class RunProvenanceV1:
         )
         _envelope(payload, cls.object)
         values = _without_envelope(payload)
+        if not isinstance(values["source_artifacts"], list):
+            raise TypeError("source_artifacts must be an array")
+        values["source_artifacts"] = tuple(
+            RunInputArtifactV1.from_dict(item) for item in values["source_artifacts"]
+        )
         values["trial_policy"] = (
             None if values["trial_policy"] is None else TrialPolicyV1.from_dict(values["trial_policy"])
         )

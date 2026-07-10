@@ -13,6 +13,8 @@ The SDK re-exports the public core: `CapabilityFingerprintInput`, `RawEntry`, `E
 
 The SDK re-exports `aggregation_input_document`, `derive_aggregation_input_digest`, `bootstrap_seed_document`, and `derive_bootstrap_seed` directly from `evalrank_core`; it does not maintain a second Python implementation.
 
+Parser provenance also re-exports `RunInputArtifactV1`; `RunProvenanceV1.source_artifacts` is the exact role-typed retained input set.
+
 `EvalRankClient` is a dependency-free stdlib client for the public metadata and recommendation route contracts. It accepts only HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, and can post `EvaluationRequest` JSON to `POST /v1/recommendations`. Non-2xx Problem Details responses raise `EvalRankApiError`; a successful recommendation body is future contract behavior, not the current hosted behavior.
 
 The hosted legacy recommendation operation is temporarily unavailable and currently raises `EvalRankApiError` with public code `recommendation_not_published`. Keeping that typed failure visible prevents clients from treating a cached use-case lookup as a decision over the full request.

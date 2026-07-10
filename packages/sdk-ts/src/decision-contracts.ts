@@ -52,13 +52,18 @@ export interface AdapterMetadataV1 {
   payload: Record<string, unknown>;
 }
 
+export interface RunInputArtifactV1 {
+  role: string;
+  source_artifact_id: string;
+}
+
 export interface RunProvenanceV1 {
   object: "run_provenance";
   schema_version: "1";
   run_id: string;
   benchmark_family_id: string;
   feed_id: string;
-  source_artifact_id: string;
+  source_artifacts: RunInputArtifactV1[];
   parser_id: string;
   parser_version: string;
   started_at: string;
@@ -862,11 +867,11 @@ export function parseSourceArtifactV1(value: unknown): SourceArtifactV1 {
 
 export function parseRunProvenanceV1(value: unknown): RunProvenanceV1 {
   const raw = record(value, "run provenance");
-  if (!("source_artifact_id" in raw)) {
-    throw new TypeError("missing required field: source_artifact_id");
+  if (!("source_artifacts" in raw)) {
+    throw new TypeError("missing required field: source_artifacts");
   }
   const payload = closed(raw, [
-    "object", "schema_version", "run_id", "benchmark_family_id", "feed_id", "source_artifact_id",
+    "object", "schema_version", "run_id", "benchmark_family_id", "feed_id", "source_artifacts",
     "parser_id", "parser_version", "started_at", "completed_at", "harness_version",
     "environment_digest", "scorer_version", "trial_policy", "adapter_metadata",
   ]);
@@ -876,13 +881,34 @@ export function parseRunProvenanceV1(value: unknown): RunProvenanceV1 {
   if (completed < started) {
     throw new TypeError("completed_at must be on or after started_at");
   }
+  if (!Array.isArray(payload.source_artifacts) || payload.source_artifacts.length === 0) {
+    throw new TypeError("source_artifacts must be a non-empty array");
+  }
+  const sourceArtifacts = payload.source_artifacts.map((item) => {
+    const input = closed(item, ["role", "source_artifact_id"]);
+    return {
+      role: patternString(input.role, /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/, "artifact input role"),
+      source_artifact_id: patternString(input.source_artifact_id, artifactIdPattern, "source_artifact_id"),
+    };
+  });
+  const roles = sourceArtifacts.map((item) => item.role);
+  const artifactIds = sourceArtifacts.map((item) => item.source_artifact_id);
+  if (roles.some((role, index) => role !== [...roles].sort()[index])) {
+    throw new TypeError("source_artifacts must be sorted by role");
+  }
+  if (new Set(roles).size !== roles.length || new Set(artifactIds).size !== artifactIds.length) {
+    throw new TypeError("source_artifact roles and IDs must be unique");
+  }
+  if (roles.filter((role) => role === "primary").length !== 1) {
+    throw new TypeError("source_artifacts must contain exactly one primary role");
+  }
   return {
     object: "run_provenance",
     schema_version: "1",
     run_id: nonEmptyString(payload.run_id, "run_id"),
     benchmark_family_id: nonEmptyString(payload.benchmark_family_id, "benchmark_family_id"),
     feed_id: nonEmptyString(payload.feed_id, "feed_id"),
-    source_artifact_id: patternString(payload.source_artifact_id, artifactIdPattern, "source_artifact_id"),
+    source_artifacts: sourceArtifacts,
     parser_id: nonEmptyString(payload.parser_id, "parser_id"),
     parser_version: nonEmptyString(payload.parser_version, "parser_version"),
     started_at: started,

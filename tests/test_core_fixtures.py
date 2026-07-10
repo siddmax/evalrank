@@ -130,7 +130,11 @@ class CoreFixtureTests(unittest.TestCase):
         self.assertEqual("proportion", payload["metric"]["kind"])
         self.assertEqual("0.875", payload["metric"]["value"])
         self.assertEqual("reported", payload["uncertainty"]["method"])
-        self.assertRegex(payload["provenance"]["source_artifact_id"], r"^artifact_[0-9a-f]{64}$")
+        self.assertEqual("primary", payload["provenance"]["source_artifacts"][0]["role"])
+        self.assertRegex(
+            payload["provenance"]["source_artifacts"][0]["source_artifact_id"],
+            r"^artifact_[0-9a-f]{64}$",
+        )
 
     def test_sample_exclusion_is_public_contract_payload(self):
         exclusion = sample_exclusion()
