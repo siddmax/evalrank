@@ -30,9 +30,12 @@ class MethodsDocsTests(unittest.TestCase):
             "single winner",
             "challenger",
             "leave-one-family-out",
+            "aggregation input digest",
+            "exact benchmark-version and lineage blocks",
         ):
             self.assertIn(phrase, text.lower())
         self.assertNotIn("posterior superiority", text.lower())
+        self.assertNotIn("seed from the publication snapshot", text.lower())
 
     def test_scoring_stages_note_tracks_public_catalog_and_private_boundary(self):
         text = (REPO_ROOT / "methods" / "scoring-stages.md").read_text(encoding="utf-8")
