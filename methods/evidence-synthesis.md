@@ -40,7 +40,9 @@ A single-winner label is exceptional. It is withheld whenever the top identity c
 
 ## Uncertainty And Sensitivity
 
-Uncertainty is derived from the source's real sampling unit. Block bootstrap resampling preserves shared task or environment structure and derives its seed from the publication snapshot, ranking-group key, and methodology version so a receipt can be replayed.
+Uncertainty is derived from the source's real sampling unit. The baseline resamples whole paired **exact benchmark-version and lineage blocks** jointly across configurations, then gives each independent family equal total influence. It never invents a Gaussian likelihood from a reported standard error. Reported standard errors and intervals remain in native-unit practical-effect gates. When retained evidence has no raw task blocks, the result is labeled a family/version-block bootstrap rather than claiming within-task resampling.
+
+Before any bootstrap output exists, the implementation hashes the exact ranking-group tuple, sorted observation IDs, calibration report ID, and methodology version into an **aggregation input digest**. The deterministic seed is `sha256(aggregation_input_digest, methodology_version)`. The final publication snapshot hashes the completed result, so bootstrap output never participates in its own seed.
 
 Every publishable result records sensitivity to:
 
