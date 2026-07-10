@@ -1,3 +1,9 @@
+from evalrank_core.aggregation_identity import (
+    aggregation_input_document,
+    bootstrap_seed_document,
+    derive_aggregation_input_digest,
+    derive_bootstrap_seed,
+)
 from evalrank_core.contracts import (
     Abstention,
     CapabilityFingerprintInput,
@@ -103,6 +109,10 @@ from evalrank_core.read_contracts import (
 __version__ = "0.0.0"
 
 __all__ = [
+    "aggregation_input_document",
+    "bootstrap_seed_document",
+    "derive_aggregation_input_digest",
+    "derive_bootstrap_seed",
     "AdapterMetadataV1",
     "AvailabilityFactV1",
     "CacheWriteRateV1",

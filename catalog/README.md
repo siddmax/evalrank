@@ -4,6 +4,12 @@
 ranking groups, benchmark families, feeds, governance, cadence, lineage,
 retention, and publication eligibility.
 
+`aggregation-vectors.json` is the shared Python/TypeScript golden for the exact
+aggregation and bootstrap-seed preimages. Its observation IDs are canonical
+post-admission, post-identical-mirror-dedupe semantic observation identities,
+not raw feed rows. An identical mirror collapses upstream; a content conflict
+quarantines the block and never enters the aggregation document.
+
 `rank_eligible_count` is deliberately row-specific: on a ranking group it is
 the number of exact evaluated configurations left after identity and evidence
 gates; on a benchmark family or feed it is the number of validated native
@@ -41,5 +47,5 @@ new primary or official sources rather than secondary summaries.
 Run:
 
 ```sh
-python3 -m unittest tests.test_catalog_manifest tests.test_catalog_research_provenance
+python3 -m unittest tests.test_catalog_manifest tests.test_catalog_research_provenance tests.test_canonical_json
 ```

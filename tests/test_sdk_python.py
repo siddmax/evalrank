@@ -101,6 +101,20 @@ class PythonSdkTests(unittest.TestCase):
         self.assertFalse(hasattr(evalrank_core, "PricingFactV1"))
         self.assertFalse(hasattr(evalrank_sdk, "PricingFactV1"))
 
+    def test_sdk_re_exports_aggregation_identity_contract(self):
+        import evalrank_core  # noqa: PLC0415
+        import evalrank_sdk  # noqa: PLC0415
+
+        for name in (
+            "aggregation_input_document",
+            "bootstrap_seed_document",
+            "derive_aggregation_input_digest",
+            "derive_bootstrap_seed",
+        ):
+            with self.subTest(name=name):
+                self.assertTrue(hasattr(evalrank_core, name))
+                self.assertIs(getattr(evalrank_sdk, name), getattr(evalrank_core, name))
+
     def test_sdk_readme_lists_public_reexport_surface(self):
         text = (REPO_ROOT / "packages" / "sdk-python" / "README.md").read_text(encoding="utf-8")
 
@@ -133,6 +147,10 @@ class PythonSdkTests(unittest.TestCase):
             "EvalRankApiError",
             "PUBLIC_FIXTURE_KINDS",
             "sample_public_fixture",
+            "aggregation_input_document",
+            "bootstrap_seed_document",
+            "derive_aggregation_input_digest",
+            "derive_bootstrap_seed",
         ):
             self.assertIn(name, text)
 

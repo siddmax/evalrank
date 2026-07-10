@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "check": "node --experimental-strip-types --check src/index.ts && node --experimental-strip-types --check src/decision-contracts.ts",
+    "check": "node --experimental-strip-types --check src/index.ts && node --experimental-strip-types --check src/decision-contracts.ts && node --experimental-strip-types --check src/aggregation-identity.ts",
     "test": "node --experimental-strip-types --test src/index.test.ts src/decision-contracts.test.ts"
   },
   "devDependencies": {

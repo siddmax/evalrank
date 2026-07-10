@@ -32,6 +32,12 @@ class MethodsDocsTests(unittest.TestCase):
             "leave-one-family-out",
             "aggregation input digest",
             "exact benchmark-version and lineage blocks",
+            "admission_cohort_digest",
+            "calibration_report_id",
+            "observation_ids",
+            "restricted_jcs",
+            "big-endian",
+            "9007199254740991",
         ):
             self.assertIn(phrase, text.lower())
         self.assertNotIn("posterior superiority", text.lower())

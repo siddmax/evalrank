@@ -85,6 +85,10 @@ class CoreContractTests(unittest.TestCase):
             "materialize_recommendation",
             "PUBLIC_FIXTURE_KINDS",
             "sample_public_fixture",
+            "aggregation_input_document",
+            "bootstrap_seed_document",
+            "derive_aggregation_input_digest",
+            "derive_bootstrap_seed",
         ):
             with self.subTest(name=name):
                 self.assertIn(name, text)
