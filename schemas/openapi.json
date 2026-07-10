@@ -102,7 +102,7 @@
             }
           },
           "400": {
-            "$ref": "#/components/responses/BadRequest"
+            "$ref": "#/components/responses/InvalidEvaluationRequest"
           },
           "422": {
             "$ref": "#/components/responses/ValidationError"
@@ -111,7 +111,7 @@
             "$ref": "#/components/responses/RateLimited"
           },
           "503": {
-            "$ref": "#/components/responses/ServiceUnavailable"
+            "$ref": "#/components/responses/RecommendationNotPublished"
           },
           "504": {
             "$ref": "#/components/responses/UpstreamTimeout"
@@ -169,6 +169,44 @@
       }
     },
     "responses": {
+      "InvalidEvaluationRequest": {
+        "description": "The request body is malformed or does not conform to EvaluationRequest.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "code",
+                    "retriable"
+                  ],
+                  "properties": {
+                    "status": {
+                      "const": 400
+                    },
+                    "code": {
+                      "const": "invalid_evaluation_request"
+                    },
+                    "retriable": {
+                      "const": false
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
       "BadRequest": {
         "description": "Malformed request payload.",
         "headers": {
@@ -237,6 +275,47 @@
           "application/problem+json": {
             "schema": {
               "$ref": "#/components/schemas/ProblemDetails"
+            }
+          }
+        }
+      },
+      "RecommendationNotPublished": {
+        "description": "The legacy recommendation operation is temporarily unavailable while the deterministic decision contract is prepared.",
+        "headers": {
+          "X-Request-Id": {
+            "$ref": "#/components/headers/RequestId"
+          },
+          "Retry-After": {
+            "$ref": "#/components/headers/RetryAfter"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                },
+                {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "code",
+                    "retriable"
+                  ],
+                  "properties": {
+                    "status": {
+                      "const": 503
+                    },
+                    "code": {
+                      "const": "recommendation_not_published"
+                    },
+                    "retriable": {
+                      "const": true
+                    }
+                  }
+                }
+              ]
             }
           }
         }

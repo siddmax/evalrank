@@ -39,6 +39,10 @@ PUBLIC_CAPABILITY_FINGERPRINT = "da617b2b113a59a734acb6166c305086d9a850bac2a40c8
 
 
 class CoreContractTests(unittest.TestCase):
+    def test_problem_codes_include_honest_legacy_unavailability(self):
+        self.assertIn("recommendation_not_published", PROBLEM_CODES)
+        self.assertIn("invalid_evaluation_request", PROBLEM_CODES)
+
     def test_core_readme_lists_public_contract_surface(self):
         text = CORE_README.read_text(encoding="utf-8")
 

@@ -87,7 +87,7 @@ class OpenApiContractTests(unittest.TestCase):
         responses = spec["paths"]["/v1/recommendations"]["post"]["responses"]
 
         self.assertEqual(
-            "#/components/responses/BadRequest",
+            "#/components/responses/InvalidEvaluationRequest",
             responses["400"]["$ref"],
         )
         self.assertEqual(
@@ -99,7 +99,7 @@ class OpenApiContractTests(unittest.TestCase):
             responses["429"]["$ref"],
         )
         self.assertEqual(
-            "#/components/responses/ServiceUnavailable",
+            "#/components/responses/RecommendationNotPublished",
             responses["503"]["$ref"],
         )
         self.assertEqual(
@@ -123,6 +123,40 @@ class OpenApiContractTests(unittest.TestCase):
                 "#/components/schemas/ProblemDetails",
                 response["content"]["application/problem+json"]["schema"]["$ref"],
             )
+
+    def test_legacy_recommendation_unavailability_is_a_named_typed_problem(self):
+        spec = _openapi()
+        response = spec["components"]["responses"]["RecommendationNotPublished"]
+
+        self.assertEqual(
+            "#/components/headers/RetryAfter",
+            response["headers"]["Retry-After"]["$ref"],
+        )
+        schema = response["content"]["application/problem+json"]["schema"]
+        self.assertEqual("#/components/schemas/ProblemDetails", schema["allOf"][0]["$ref"])
+        typed = schema["allOf"][1]
+        self.assertEqual({"code", "retriable", "status"}, set(typed["required"]))
+        self.assertEqual(
+            "recommendation_not_published",
+            typed["properties"]["code"]["const"],
+        )
+        self.assertTrue(typed["properties"]["retriable"]["const"])
+        self.assertEqual(503, typed["properties"]["status"]["const"])
+
+    def test_invalid_evaluation_request_is_a_named_typed_problem(self):
+        spec = _openapi()
+        response = spec["components"]["responses"]["InvalidEvaluationRequest"]
+        schema = response["content"]["application/problem+json"]["schema"]
+
+        self.assertEqual("#/components/schemas/ProblemDetails", schema["allOf"][0]["$ref"])
+        typed = schema["allOf"][1]
+        self.assertEqual({"code", "retriable", "status"}, set(typed["required"]))
+        self.assertEqual(
+            "invalid_evaluation_request",
+            typed["properties"]["code"]["const"],
+        )
+        self.assertFalse(typed["properties"]["retriable"]["const"])
+        self.assertEqual(400, typed["properties"]["status"]["const"])
 
     def test_public_openapi_contract_pins_retry_headers(self):
         spec = _openapi()

@@ -21,6 +21,8 @@ THE_CALL_DECISIONS = {"recommend", "abstain"}
 USE_CASE_ENTITY_KINDS = {"model", "tool", "agent"}
 USE_CASE_RANK_POLICIES = {"ranked", "veto_overlay"}
 PROBLEM_CODES = {
+    "invalid_evaluation_request",
+    "recommendation_not_published",
     "rate_limited",
     "upstream_timeout",
     "validation",

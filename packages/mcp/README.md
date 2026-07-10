@@ -26,9 +26,11 @@ Current adapter:
 - `call_tool("evalrank.fixture", {"kind": "use-cases"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "scoring-stages"})` returns deterministic public fixture JSON text.
 - `call_tool("evalrank.fixture", {"kind": "recommendation"})` returns deterministic public fixture JSON text.
-- `call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": {...}})` calls the public `POST /v1/recommendations` contract with an `EvaluationRequest`-shaped payload and returns recommendation JSON text.
+- `call_tool("evalrank.recommend", {"base_url": "https://evalrank.example", "request": {...}})` calls the public `POST /v1/recommendations` contract with an `EvaluationRequest`-shaped payload. A successful recommendation body is future contract behavior; the current hosted operation surfaces typed Problem Details instead.
 - `call_tool("evalrank.use_cases", {"base_url": "https://evalrank.example"})` calls the public `GET /v1/use-cases` contract and returns use-case catalog JSON text.
 - `call_tool("evalrank.scoring_stages", {"base_url": "https://evalrank.example"})` calls the public `GET /v1/scoring-stages` contract and returns scoring-stage catalog JSON text.
 - Route tool input schemas advertise explicit non-empty HTTP(S) `base_url` values.
+
+The hosted legacy `evalrank.recommend` operation is temporarily unavailable and returns the typed public Problem Details code `recommendation_not_published`. MCP callers must preserve that state rather than presenting it as insufficient evidence or a successful recommendation.
 
 This package does not start a server, discover services, read environment defaults, add auth, retry requests, create hosted receipts, persist data, or call private services.

@@ -23,6 +23,8 @@ from evalrank_core.contracts import (  # noqa: E402
 from evalrank_core.fixtures import PUBLIC_FIXTURE_KINDS  # noqa: E402
 
 PROBLEM_CODES = {
+    "invalid_evaluation_request",
+    "recommendation_not_published",
     "rate_limited",
     "upstream_timeout",
     "validation",
