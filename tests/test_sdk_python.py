@@ -84,6 +84,23 @@ def _manifest_use_cases() -> list[dict]:
 
 
 class PythonSdkTests(unittest.TestCase):
+    def test_sdk_re_exports_monthly_schedule_pricing_contracts(self):
+        import evalrank_core  # noqa: PLC0415
+        import evalrank_sdk  # noqa: PLC0415
+
+        for name in (
+            "CacheWriteRateV1",
+            "CacheWriteUsageV1",
+            "PricingScheduleFactV1",
+            "UsageProfileV1",
+            "monthly_cost_microusd",
+        ):
+            with self.subTest(name=name):
+                self.assertTrue(hasattr(evalrank_core, name))
+                self.assertIs(getattr(evalrank_sdk, name), getattr(evalrank_core, name))
+        self.assertFalse(hasattr(evalrank_core, "PricingFactV1"))
+        self.assertFalse(hasattr(evalrank_sdk, "PricingFactV1"))
+
     def test_sdk_readme_lists_public_reexport_surface(self):
         text = (REPO_ROOT / "packages" / "sdk-python" / "README.md").read_text(encoding="utf-8")
 

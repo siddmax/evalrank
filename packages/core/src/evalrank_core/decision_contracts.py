@@ -62,8 +62,8 @@ EXCLUSION_CODES = {
 REASON_CODES = {
     "strongest_capability_evidence",
     "within_capability_top_set",
-    "lowest_verified_cost",
-    "budget_constraint_met",
+    "lowest_cost_under_usage_profile",
+    "budget_fit_under_declared_profiles",
     "provider_constraint_match",
     "region_constraint_match",
     "context_requirement_met",
@@ -676,36 +676,262 @@ class AvailabilityFactV1:
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
-class PricingFactV1:
-    input_microusd_per_million_tokens: int
+class CacheWriteUsageV1:
+    ttl_seconds: int
+    tokens: int
+
+    def __post_init__(self) -> None:
+        _require_safe_integer("ttl_seconds", self.ttl_seconds, minimum=1)
+        _require_safe_integer("tokens", self.tokens, minimum=1)
+
+    def to_dict(self) -> dict[str, int]:
+        return {"ttl_seconds": self.ttl_seconds, "tokens": self.tokens}
+
+    @classmethod
+    def from_dict(cls, value: Any) -> "CacheWriteUsageV1":
+        return cls(**_closed(value, required=("ttl_seconds", "tokens")))
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class UsageProfileV1:
+    basis: str
+    uncached_input_tokens: int
+    cached_read_tokens: int
+    output_tokens: int
+    cache_writes: tuple[CacheWriteUsageV1, ...]
+    cache_storage_token_seconds: int
+
+    def __post_init__(self) -> None:
+        _require_enum("basis", self.basis, {"measured", "estimated"})
+        for name in (
+            "uncached_input_tokens",
+            "cached_read_tokens",
+            "output_tokens",
+            "cache_storage_token_seconds",
+        ):
+            _require_safe_integer(name, getattr(self, name), minimum=0)
+        object.__setattr__(
+            self,
+            "cache_writes",
+            _normalize_typed_records(
+                "cache_writes",
+                self.cache_writes,
+                CacheWriteUsageV1,
+                lambda row: (row.ttl_seconds,),
+            ),
+        )
+
+    @property
+    def has_cache_usage(self) -> bool:
+        return bool(
+            self.cached_read_tokens
+            or self.cache_writes
+            or self.cache_storage_token_seconds
+        )
+
+    @property
+    def total_input_tokens(self) -> int:
+        return self.uncached_input_tokens + self.cached_read_tokens + sum(
+            row.tokens for row in self.cache_writes
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "basis": self.basis,
+            "uncached_input_tokens": self.uncached_input_tokens,
+            "cached_read_tokens": self.cached_read_tokens,
+            "output_tokens": self.output_tokens,
+            "cache_writes": [row.to_dict() for row in self.cache_writes],
+            "cache_storage_token_seconds": self.cache_storage_token_seconds,
+        }
+
+    @classmethod
+    def from_dict(cls, value: Any) -> "UsageProfileV1":
+        payload = _closed(
+            value,
+            required=(
+                "basis",
+                "uncached_input_tokens",
+                "cached_read_tokens",
+                "output_tokens",
+                "cache_writes",
+                "cache_storage_token_seconds",
+            ),
+        )
+        payload["cache_writes"] = tuple(
+            CacheWriteUsageV1.from_dict(row)
+            for row in _array("cache_writes", payload["cache_writes"])
+        )
+        return cls(**payload)
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CacheWriteRateV1:
+    ttl_seconds: int
+    microusd_per_million_tokens: int
+
+    def __post_init__(self) -> None:
+        _require_safe_integer("ttl_seconds", self.ttl_seconds, minimum=1)
+        _require_safe_integer(
+            "microusd_per_million_tokens",
+            self.microusd_per_million_tokens,
+            minimum=0,
+        )
+
+    def to_dict(self) -> dict[str, int]:
+        return {
+            "ttl_seconds": self.ttl_seconds,
+            "microusd_per_million_tokens": self.microusd_per_million_tokens,
+        }
+
+    @classmethod
+    def from_dict(cls, value: Any) -> "CacheWriteRateV1":
+        return cls(
+            **_closed(
+                value,
+                required=("ttl_seconds", "microusd_per_million_tokens"),
+            )
+        )
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class PricingScheduleFactV1:
+    uncached_input_microusd_per_million_tokens: int
+    cached_read_microusd_per_million_tokens: int | None
     output_microusd_per_million_tokens: int
+    cache_write_rates: tuple[CacheWriteRateV1, ...]
+    cache_storage_microusd_per_million_token_hours: int | None
     observed_at: str
+    effective_at: str
     expires_at: str
     source_artifact_id: str
 
     def __post_init__(self) -> None:
-        _require_safe_integer("input_microusd_per_million_tokens", self.input_microusd_per_million_tokens, minimum=0)
-        _require_safe_integer("output_microusd_per_million_tokens", self.output_microusd_per_million_tokens, minimum=0)
+        _require_safe_integer(
+            "uncached_input_microusd_per_million_tokens",
+            self.uncached_input_microusd_per_million_tokens,
+            minimum=0,
+        )
+        _require_nullable_safe_integer(
+            "cached_read_microusd_per_million_tokens",
+            self.cached_read_microusd_per_million_tokens,
+            minimum=0,
+        )
+        _require_safe_integer(
+            "output_microusd_per_million_tokens",
+            self.output_microusd_per_million_tokens,
+            minimum=0,
+        )
+        object.__setattr__(
+            self,
+            "cache_write_rates",
+            _normalize_typed_records(
+                "cache_write_rates",
+                self.cache_write_rates,
+                CacheWriteRateV1,
+                lambda row: (row.ttl_seconds,),
+            ),
+        )
+        _require_nullable_safe_integer(
+            "cache_storage_microusd_per_million_token_hours",
+            self.cache_storage_microusd_per_million_token_hours,
+            minimum=0,
+        )
         _validate_dated_fact(self.observed_at, self.expires_at, self.source_artifact_id)
+        if _parse_timestamp("expires_at", self.expires_at) <= _parse_timestamp(
+            "effective_at", self.effective_at
+        ):
+            raise ValueError("expires_at must be after effective_at")
 
     def to_dict(self) -> dict[str, Any]:
-        return _fact_dict(
-            self,
-            {
-                "input_microusd_per_million_tokens": self.input_microusd_per_million_tokens,
-                "output_microusd_per_million_tokens": self.output_microusd_per_million_tokens,
-            },
-        )
+        return {
+            "uncached_input_microusd_per_million_tokens": self.uncached_input_microusd_per_million_tokens,
+            "cached_read_microusd_per_million_tokens": self.cached_read_microusd_per_million_tokens,
+            "output_microusd_per_million_tokens": self.output_microusd_per_million_tokens,
+            "cache_write_rates": [row.to_dict() for row in self.cache_write_rates],
+            "cache_storage_microusd_per_million_token_hours": self.cache_storage_microusd_per_million_token_hours,
+            "observed_at": self.observed_at,
+            "effective_at": self.effective_at,
+            "expires_at": self.expires_at,
+            "source_artifact_id": self.source_artifact_id,
+        }
 
     @classmethod
-    def from_dict(cls, value: Any) -> "PricingFactV1":
-        return cls(**_closed(
+    def from_dict(cls, value: Any) -> "PricingScheduleFactV1":
+        payload = _closed(
             value,
             required=(
-                "input_microusd_per_million_tokens", "output_microusd_per_million_tokens",
-                "observed_at", "expires_at", "source_artifact_id",
+                "uncached_input_microusd_per_million_tokens",
+                "cached_read_microusd_per_million_tokens",
+                "output_microusd_per_million_tokens",
+                "cache_write_rates",
+                "cache_storage_microusd_per_million_token_hours",
+                "observed_at",
+                "effective_at",
+                "expires_at",
+                "source_artifact_id",
             ),
-        ))
+        )
+        payload["cache_write_rates"] = tuple(
+            CacheWriteRateV1.from_dict(row)
+            for row in _array("cache_write_rates", payload["cache_write_rates"])
+        )
+        return cls(**payload)
+
+
+def monthly_cost_microusd(
+    usage: UsageProfileV1,
+    pricing: PricingScheduleFactV1,
+) -> int | None:
+    """Return exact monthly cost, or ``None`` when pricing is incomplete."""
+
+    if not isinstance(usage, UsageProfileV1):
+        raise TypeError("usage must be UsageProfileV1")
+    if not isinstance(pricing, PricingScheduleFactV1):
+        raise TypeError("pricing must be PricingScheduleFactV1")
+    if usage.cached_read_tokens and pricing.cached_read_microusd_per_million_tokens is None:
+        return None
+    cache_write_rates = {
+        row.ttl_seconds: row.microusd_per_million_tokens
+        for row in pricing.cache_write_rates
+    }
+    if any(row.ttl_seconds not in cache_write_rates for row in usage.cache_writes):
+        return None
+    if (
+        usage.cache_storage_token_seconds
+        and pricing.cache_storage_microusd_per_million_token_hours is None
+    ):
+        return None
+
+    cached_read_cost_numerator = 0
+    if usage.cached_read_tokens:
+        cached_read_rate = pricing.cached_read_microusd_per_million_tokens
+        if cached_read_rate is None:
+            return None
+        cached_read_cost_numerator = usage.cached_read_tokens * cached_read_rate
+    storage_cost_numerator = 0
+    if usage.cache_storage_token_seconds:
+        storage_rate = pricing.cache_storage_microusd_per_million_token_hours
+        if storage_rate is None:
+            return None
+        storage_cost_numerator = usage.cache_storage_token_seconds * storage_rate
+
+    token_rate_microusd = (
+        usage.uncached_input_tokens
+        * pricing.uncached_input_microusd_per_million_tokens
+        + cached_read_cost_numerator
+        + usage.output_tokens * pricing.output_microusd_per_million_tokens
+        + sum(
+            row.tokens * cache_write_rates[row.ttl_seconds]
+            for row in usage.cache_writes
+        )
+    )
+    numerator = token_rate_microusd * 3_600 + storage_cost_numerator
+    denominator = 3_600_000_000
+    quotient, remainder = divmod(numerator, denominator)
+    result = quotient + (1 if remainder else 0)
+    _require_safe_integer("computed monthly cost", result, minimum=0)
+    return result
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -719,7 +945,7 @@ class ServingOfferV1:
     region: str
     context: ContextFactV1
     availability: AvailabilityFactV1
-    pricing: PricingFactV1
+    pricing: PricingScheduleFactV1
 
     def __post_init__(self) -> None:
         for name in ("serving_offer_id", "provider_id", "sku", "region"):
@@ -730,8 +956,8 @@ class ServingOfferV1:
             raise TypeError("context must be ContextFactV1")
         if not isinstance(self.availability, AvailabilityFactV1):
             raise TypeError("availability must be AvailabilityFactV1")
-        if not isinstance(self.pricing, PricingFactV1):
-            raise TypeError("pricing must be PricingFactV1")
+        if not isinstance(self.pricing, PricingScheduleFactV1):
+            raise TypeError("pricing must be PricingScheduleFactV1")
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -757,7 +983,7 @@ class ServingOfferV1:
             region=payload["region"],
             context=ContextFactV1.from_dict(payload["context"]),
             availability=AvailabilityFactV1.from_dict(payload["availability"]),
-            pricing=PricingFactV1.from_dict(payload["pricing"]),
+            pricing=PricingScheduleFactV1.from_dict(payload["pricing"]),
         )
 
     def is_decision_eligible(self, link: "EvaluationToOfferLinkV1", *, as_of: str) -> bool:
@@ -766,9 +992,18 @@ class ServingOfferV1:
             return False
         if not link.is_eligible(as_of=as_of) or self.availability.status != "available":
             return False
-        return all(
-            _parse_timestamp("observed_at", fact.observed_at) <= instant < _parse_timestamp("expires_at", fact.expires_at)
-            for fact in (self.context, self.availability, self.pricing)
+        return (
+            all(
+                _parse_timestamp("observed_at", fact.observed_at)
+                <= instant
+                < _parse_timestamp("expires_at", fact.expires_at)
+                for fact in (self.context, self.availability)
+            )
+            and _parse_timestamp("pricing.observed_at", self.pricing.observed_at)
+            <= instant
+            and _parse_timestamp("pricing.effective_at", self.pricing.effective_at)
+            <= instant
+            < _parse_timestamp("pricing.expires_at", self.pricing.expires_at)
         )
 
 
@@ -781,6 +1016,7 @@ class EvaluationToOfferLinkV1:
     evaluated_configuration_id: str
     serving_offer_id: str
     compatibility: str
+    evidence_basis: str
     evidence_source_artifact_id: str
     observed_at: str
     expires_at: str
@@ -795,6 +1031,11 @@ class EvaluationToOfferLinkV1:
         if not self.serving_offer_id.startswith("offer_"):
             raise ValueError("serving_offer_id must start with offer_")
         _require_enum("compatibility", self.compatibility, {"exact", "incompatible", "unresolved"})
+        _require_enum(
+            "evidence_basis",
+            self.evidence_basis,
+            {"benchmark_exact", "provider_attested", "operator_reviewed", "inferred"},
+        )
         _require_pattern("evidence_source_artifact_id", self.evidence_source_artifact_id, _ARTIFACT_ID_RE)
         observed = _parse_timestamp("observed_at", self.observed_at)
         expires = _parse_timestamp("expires_at", self.expires_at)
@@ -810,6 +1051,7 @@ class EvaluationToOfferLinkV1:
             "evaluated_configuration_id": self.evaluated_configuration_id,
             "serving_offer_id": self.serving_offer_id,
             "compatibility": self.compatibility,
+            "evidence_basis": self.evidence_basis,
             "evidence_source_artifact_id": self.evidence_source_artifact_id,
             "observed_at": self.observed_at,
             "expires_at": self.expires_at,
@@ -820,7 +1062,7 @@ class EvaluationToOfferLinkV1:
     def from_dict(cls, value: Any) -> "EvaluationToOfferLinkV1":
         payload = _closed(
             value,
-            required=("object", "schema_version", "evaluation_to_offer_link_id", "evaluated_configuration_id", "serving_offer_id", "compatibility", "evidence_source_artifact_id", "observed_at", "expires_at", "review_state"),
+            required=("object", "schema_version", "evaluation_to_offer_link_id", "evaluated_configuration_id", "serving_offer_id", "compatibility", "evidence_basis", "evidence_source_artifact_id", "observed_at", "expires_at", "review_state"),
         )
         _envelope(payload, cls.object)
         return cls(**_without_envelope(payload))
@@ -830,6 +1072,7 @@ class EvaluationToOfferLinkV1:
         return (
             self.compatibility == "exact"
             and self.review_state == "approved"
+            and self.evidence_basis != "inferred"
             and _parse_timestamp("observed_at", self.observed_at) <= instant < _parse_timestamp("expires_at", self.expires_at)
         )
 
@@ -848,9 +1091,8 @@ class DecisionQueryV1:
     provider_ids: tuple[str, ...] | None = None
     regions: tuple[str, ...] | None = None
     minimum_context_tokens: int | None = None
-    input_tokens_per_request: int | None = None
-    output_tokens_per_request: int | None = None
-    requests_per_month: int | None = None
+    usage_profile: UsageProfileV1 | None = None
+    zero_cache_sensitivity_usage_profile: UsageProfileV1 | None = None
     monthly_budget_microusd: int | None = None
 
     def __post_init__(self) -> None:
@@ -863,17 +1105,51 @@ class DecisionQueryV1:
         if self.regions is not None:
             object.__setattr__(self, "regions", _normalize_string_set("regions", self.regions))
         _require_nullable_safe_integer("minimum_context_tokens", self.minimum_context_tokens, minimum=1)
-        _require_nullable_safe_integer("input_tokens_per_request", self.input_tokens_per_request, minimum=0)
-        _require_nullable_safe_integer("output_tokens_per_request", self.output_tokens_per_request, minimum=0)
-        _require_nullable_safe_integer("requests_per_month", self.requests_per_month, minimum=1)
         _require_nullable_safe_integer("monthly_budget_microusd", self.monthly_budget_microusd, minimum=0)
-        usage = (self.input_tokens_per_request, self.output_tokens_per_request, self.requests_per_month)
-        if any(value is not None for value in usage) and any(value is None for value in usage):
-            raise ValueError("input_tokens_per_request, output_tokens_per_request, and requests_per_month must be supplied together")
-        if self.objective == "lowest_cost_within_top_set" and any(value is None for value in usage):
-            raise ValueError("lowest_cost_within_top_set requires input_tokens_per_request, output_tokens_per_request, and requests_per_month")
-        if self.monthly_budget_microusd is not None and any(value is None for value in usage):
-            raise ValueError("monthly_budget_microusd requires input_tokens_per_request, output_tokens_per_request, and requests_per_month")
+        if self.usage_profile is not None and not isinstance(self.usage_profile, UsageProfileV1):
+            raise TypeError("usage_profile must be UsageProfileV1 or null")
+        if (
+            self.zero_cache_sensitivity_usage_profile is not None
+            and not isinstance(self.zero_cache_sensitivity_usage_profile, UsageProfileV1)
+        ):
+            raise TypeError(
+                "zero_cache_sensitivity_usage_profile must be UsageProfileV1 or null"
+            )
+        if self.objective == "lowest_cost_within_top_set" and self.usage_profile is None:
+            raise ValueError("lowest_cost_within_top_set requires usage_profile")
+        if self.monthly_budget_microusd is not None and self.usage_profile is None:
+            raise ValueError("monthly_budget_microusd requires usage_profile")
+        self._validate_zero_cache_sensitivity()
+
+    def _validate_zero_cache_sensitivity(self) -> None:
+        usage = self.usage_profile
+        sensitivity = self.zero_cache_sensitivity_usage_profile
+        requires_sensitivity = bool(
+            usage is not None and usage.basis == "estimated" and usage.has_cache_usage
+        )
+        if requires_sensitivity and sensitivity is None:
+            raise ValueError(
+                "estimated cached usage requires zero_cache_sensitivity_usage_profile"
+            )
+        if not requires_sensitivity and sensitivity is not None:
+            basis = "measured" if usage is not None and usage.basis == "measured" else "uncached"
+            raise ValueError(
+                f"zero_cache_sensitivity_usage_profile is not allowed for {basis} usage"
+            )
+        if sensitivity is None or usage is None:
+            return
+        if sensitivity.basis != "estimated":
+            raise ValueError("zero_cache_sensitivity_usage_profile must be estimated")
+        if (
+            sensitivity.cached_read_tokens != 0
+            or sensitivity.cache_writes
+            or sensitivity.cache_storage_token_seconds != 0
+        ):
+            raise ValueError("zero_cache_sensitivity_usage_profile must contain no cache usage")
+        if sensitivity.total_input_tokens != usage.total_input_tokens:
+            raise ValueError("zero_cache_sensitivity_usage_profile must preserve total input tokens")
+        if sensitivity.output_tokens != usage.output_tokens:
+            raise ValueError("zero_cache_sensitivity_usage_profile must preserve output tokens")
 
     def to_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
@@ -887,12 +1163,21 @@ class DecisionQueryV1:
             "objective": self.objective,
         }
         for name in (
-            "provider_ids", "regions", "minimum_context_tokens", "input_tokens_per_request",
-            "output_tokens_per_request", "requests_per_month", "monthly_budget_microusd",
+            "provider_ids",
+            "regions",
+            "minimum_context_tokens",
+            "usage_profile",
+            "zero_cache_sensitivity_usage_profile",
+            "monthly_budget_microusd",
         ):
             value = getattr(self, name)
             if value is not None:
-                payload[name] = list(value) if isinstance(value, tuple) else value
+                if isinstance(value, tuple):
+                    payload[name] = list(value)
+                elif isinstance(value, UsageProfileV1):
+                    payload[name] = value.to_dict()
+                else:
+                    payload[name] = value
         return payload
 
     def canonical_json(self) -> str:
@@ -905,8 +1190,12 @@ class DecisionQueryV1:
             "interaction_policy", "configuration_passport_class", "objective",
         )
         optional = (
-            "provider_ids", "regions", "minimum_context_tokens", "input_tokens_per_request",
-            "output_tokens_per_request", "requests_per_month", "monthly_budget_microusd",
+            "provider_ids",
+            "regions",
+            "minimum_context_tokens",
+            "usage_profile",
+            "zero_cache_sensitivity_usage_profile",
+            "monthly_budget_microusd",
         )
         payload = _closed(value, required=required, optional=optional)
         _envelope(payload, cls.object)
@@ -917,6 +1206,9 @@ class DecisionQueryV1:
         for name in ("provider_ids", "regions"):
             if name in values:
                 values[name] = _array_to_tuple(name, values[name])
+        for name in ("usage_profile", "zero_cache_sensitivity_usage_profile"):
+            if name in values:
+                values[name] = UsageProfileV1.from_dict(values[name])
         return cls(**values)
 
 
@@ -952,7 +1244,8 @@ class DecisionSelectionV1:
     evaluated_configuration_id: str
     serving_offer_id: str | None
     capability_rank: int
-    estimated_monthly_cost_microusd: int | None
+    projected_monthly_cost_microusd: int | None
+    zero_cache_sensitivity_projected_monthly_cost_microusd: int | None
 
     def __post_init__(self) -> None:
         _require_pattern("evaluated_configuration_id", self.evaluated_configuration_id, _CONFIGURATION_ID_RE)
@@ -960,21 +1253,41 @@ class DecisionSelectionV1:
         if self.serving_offer_id is not None and not self.serving_offer_id.startswith("offer_"):
             raise ValueError("serving_offer_id must start with offer_")
         _require_safe_integer("capability_rank", self.capability_rank, minimum=1)
-        _require_nullable_safe_integer("estimated_monthly_cost_microusd", self.estimated_monthly_cost_microusd, minimum=0)
-        if self.estimated_monthly_cost_microusd is not None and self.serving_offer_id is None:
-            raise ValueError("serving_offer_id is required when estimated_monthly_cost_microusd is present")
+        _require_nullable_safe_integer("projected_monthly_cost_microusd", self.projected_monthly_cost_microusd, minimum=0)
+        _require_nullable_safe_integer(
+            "zero_cache_sensitivity_projected_monthly_cost_microusd",
+            self.zero_cache_sensitivity_projected_monthly_cost_microusd,
+            minimum=0,
+        )
+        if (
+            self.projected_monthly_cost_microusd is not None
+            or self.zero_cache_sensitivity_projected_monthly_cost_microusd is not None
+        ) and self.serving_offer_id is None:
+            raise ValueError("serving_offer_id is required when a monthly cost is present")
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "evaluated_configuration_id": self.evaluated_configuration_id,
             "serving_offer_id": self.serving_offer_id,
             "capability_rank": self.capability_rank,
-            "estimated_monthly_cost_microusd": self.estimated_monthly_cost_microusd,
+            "projected_monthly_cost_microusd": self.projected_monthly_cost_microusd,
+            "zero_cache_sensitivity_projected_monthly_cost_microusd": self.zero_cache_sensitivity_projected_monthly_cost_microusd,
         }
 
     @classmethod
     def from_dict(cls, value: Any) -> "DecisionSelectionV1":
-        return cls(**_closed(value, required=("evaluated_configuration_id", "serving_offer_id", "capability_rank", "estimated_monthly_cost_microusd")))
+        return cls(
+            **_closed(
+                value,
+                required=(
+                    "evaluated_configuration_id",
+                    "serving_offer_id",
+                    "capability_rank",
+                    "projected_monthly_cost_microusd",
+                    "zero_cache_sensitivity_projected_monthly_cost_microusd",
+                ),
+            )
+        )
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -1053,8 +1366,8 @@ class DecisionReasonV1:
             "within_capability_top_set": ("capability", "score", "within_top_set"),
             "provider_constraint_match": ("provider", "provider_id", "eq"),
             "region_constraint_match": ("region", "region_id", "eq"),
-            "lowest_verified_cost": ("monthly_cost", "microusd_per_month", "eq"),
-            "budget_constraint_met": ("monthly_cost", "microusd_per_month", "lte"),
+            "lowest_cost_under_usage_profile": ("monthly_cost", "microusd_per_month", "eq"),
+            "budget_fit_under_declared_profiles": ("monthly_cost", "microusd_per_month", "lte"),
             "budget_exceeded": ("monthly_cost", "microusd_per_month", "gt"),
             "context_requirement_met": ("context", "tokens", "gte"),
             "insufficient_evidence": ("capability", "status", "unavailable"),
@@ -1071,8 +1384,8 @@ class DecisionReasonV1:
         if self.predicate in {"within_top_set", "unavailable"} and self.threshold is not None:
             raise ValueError(f"{self.predicate} predicate requires a null threshold")
         positive = {
-            "strongest_capability_evidence", "within_capability_top_set", "lowest_verified_cost",
-            "budget_constraint_met", "provider_constraint_match", "region_constraint_match",
+            "strongest_capability_evidence", "within_capability_top_set", "lowest_cost_under_usage_profile",
+            "budget_fit_under_declared_profiles", "provider_constraint_match", "region_constraint_match",
             "context_requirement_met",
         }
         if (self.code in positive) != (self.reason_type == "best_when"):
@@ -1283,17 +1596,31 @@ class DecisionReceiptV1:
             for selection in self.selections:
                 if selection.serving_offer_id is None:
                     raise ValueError("lowest_cost_within_top_set requires serving_offer_id for every selection")
-                if selection.estimated_monthly_cost_microusd is None:
+                if selection.projected_monthly_cost_microusd is None:
                     raise ValueError(
-                        "lowest_cost_within_top_set requires estimated_monthly_cost_microusd for every selection"
+                        "lowest_cost_within_top_set requires projected_monthly_cost_microusd for every selection"
                     )
                 if (
                     self.query.monthly_budget_microusd is not None
-                    and selection.estimated_monthly_cost_microusd > self.query.monthly_budget_microusd
+                    and selection.projected_monthly_cost_microusd > self.query.monthly_budget_microusd
                 ):
                     raise ValueError("selection cost must not exceed monthly_budget_microusd")
+                if (
+                    self.query.monthly_budget_microusd is not None
+                    and self.query.zero_cache_sensitivity_usage_profile is not None
+                    and (
+                        selection.zero_cache_sensitivity_projected_monthly_cost_microusd
+                        is None
+                        or selection.zero_cache_sensitivity_projected_monthly_cost_microusd
+                        > self.query.monthly_budget_microusd
+                    )
+                ):
+                    raise ValueError(
+                        "zero-cache sensitivity projected monthly cost must not exceed "
+                        "monthly_budget_microusd"
+                    )
             selected_costs = {
-                selection.estimated_monthly_cost_microusd
+                selection.projected_monthly_cost_microusd
                 for selection in self.selections
             }
             if len(selected_costs) != 1:
@@ -1538,6 +1865,7 @@ def _validate_selected_decision_evidence(
                 query.provider_ids is not None,
                 query.regions is not None,
                 query.minimum_context_tokens is not None,
+                query.usage_profile is not None,
                 query.monthly_budget_microusd is not None,
             )
         )
@@ -1572,7 +1900,9 @@ def _validate_selected_decision_evidence(
         offer = offer_evidence.serving_offer
         link = link_evidence.evaluation_to_offer_link
         if not offer.is_decision_eligible(link, as_of=receipt.decided_at):
-            raise ValueError("selected offer and link must be exact, approved, available, and current at decided_at")
+            raise ValueError(
+                "selected offer and link must be exact, approved, non-inferred, available, and current at decided_at"
+            )
         if query.provider_ids is not None and offer.provider_id not in query.provider_ids:
             raise ValueError("selected offer provider must satisfy provider_ids")
         if query.regions is not None and offer.region not in query.regions:
@@ -1583,21 +1913,51 @@ def _validate_selected_decision_evidence(
         ):
             raise ValueError("selected offer must satisfy minimum_context_tokens")
 
-        computed_cost = None
-        if query.input_tokens_per_request is not None:
-            computed_cost = _monthly_cost_microusd(query, offer)
-            if selection.estimated_monthly_cost_microusd != computed_cost:
-                raise ValueError("estimated_monthly_cost_microusd must equal the computed monthly cost")
+        computed_cost: int | None = None
+        if query.usage_profile is not None:
+            computed_cost = monthly_cost_microusd(query.usage_profile, offer.pricing)
+            if computed_cost is None:
+                raise ValueError("pricing schedule lacks a rate for nonzero usage; decision must abstain")
+            if selection.projected_monthly_cost_microusd != computed_cost:
+                raise ValueError("projected_monthly_cost_microusd must equal the computed monthly cost")
             if query.monthly_budget_microusd is not None and computed_cost > query.monthly_budget_microusd:
                 raise ValueError("computed monthly cost must not exceed monthly_budget_microusd")
-        elif selection.estimated_monthly_cost_microusd is not None:
-            raise ValueError("estimated_monthly_cost_microusd must be null when query usage is omitted")
+        elif selection.projected_monthly_cost_microusd is not None:
+            raise ValueError("projected_monthly_cost_microusd must be null when query usage is omitted")
+        sensitivity = query.zero_cache_sensitivity_usage_profile
+        sensitivity_cost: int | None = None
+        if sensitivity is not None:
+            sensitivity_cost = monthly_cost_microusd(sensitivity, offer.pricing)
+            if sensitivity_cost is None:
+                raise ValueError(
+                    "pricing schedule lacks a rate for zero-cache sensitivity usage; decision must abstain"
+                )
+            if (
+                selection.zero_cache_sensitivity_projected_monthly_cost_microusd
+                != sensitivity_cost
+            ):
+                raise ValueError(
+                    "zero_cache_sensitivity_projected_monthly_cost_microusd must equal the computed sensitivity cost"
+                )
+            if (
+                query.monthly_budget_microusd is not None
+                and sensitivity_cost > query.monthly_budget_microusd
+            ):
+                raise ValueError(
+                    "zero-cache sensitivity projected monthly cost must not exceed "
+                    "monthly_budget_microusd"
+                )
+        elif selection.zero_cache_sensitivity_projected_monthly_cost_microusd is not None:
+            raise ValueError(
+                "zero_cache_sensitivity_projected_monthly_cost_microusd must be null when query sensitivity is omitted"
+            )
 
         required_evidence_ids = {offer_evidence.evidence_id, link_evidence.evidence_id}
         offer_observed_at = max(
             offer.context.observed_at,
             offer.availability.observed_at,
             offer.pricing.observed_at,
+            offer.pricing.effective_at,
             link.observed_at,
         )
         offer_expires_at = min(
@@ -1606,27 +1966,50 @@ def _validate_selected_decision_evidence(
             offer.pricing.expires_at,
             link.expires_at,
         )
+        cost_sensitive_to_usage = bool(
+            query.usage_profile is not None
+            and query.usage_profile.basis == "estimated"
+            and sensitivity_cost is not None
+            and computed_cost != sensitivity_cost
+        )
+        if cost_sensitive_to_usage and not any(
+            "cost_sensitive_to_usage" in reason.caveat_codes
+            and reason.subject_id
+            in {selection.evaluated_configuration_id, selection.serving_offer_id}
+            for reason in receipt.reasons
+        ):
+            raise ValueError(
+                "differing estimated profile costs require cost_sensitive_to_usage "
+                "on a matching selected configuration or offer reason"
+            )
         if query.objective == "lowest_cost_within_top_set":
             _require_offer_reason(
                 receipt,
                 selection,
-                code="lowest_verified_cost",
+                code="lowest_cost_under_usage_profile",
                 observed_value=str(computed_cost),
                 threshold=str(computed_cost),
                 evidence_ids=required_evidence_ids,
                 observed_at=offer_observed_at,
                 expires_at=offer_expires_at,
+                require_cost_sensitive_caveat=cost_sensitive_to_usage,
             )
         if query.monthly_budget_microusd is not None:
+            declared_profile_cost = max(
+                cost
+                for cost in (computed_cost, sensitivity_cost)
+                if cost is not None
+            )
             _require_offer_reason(
                 receipt,
                 selection,
-                code="budget_constraint_met",
-                observed_value=str(computed_cost),
+                code="budget_fit_under_declared_profiles",
+                observed_value=str(declared_profile_cost),
                 threshold=str(query.monthly_budget_microusd),
                 evidence_ids=required_evidence_ids,
                 observed_at=offer_observed_at,
                 expires_at=offer_expires_at,
+                require_cost_sensitive_caveat=cost_sensitive_to_usage,
             )
         if query.provider_ids is not None:
             _require_offer_reason(
@@ -1683,6 +2066,7 @@ def _require_offer_reason(
     evidence_ids: set[str],
     observed_at: str,
     expires_at: str,
+    require_cost_sensitive_caveat: bool = False,
 ) -> None:
     reason = next(
         (
@@ -1700,17 +2084,13 @@ def _require_offer_reason(
         raise ValueError(f"{code} must cite exactly the matching serving-offer and offer-link evidence")
     if reason.freshness.observed_at != observed_at or reason.freshness.expires_at != expires_at:
         raise ValueError(f"{code} freshness must equal the selected offer/link validity intersection")
-
-
-def _monthly_cost_microusd(query: DecisionQueryV1, offer: ServingOfferV1) -> int:
-    numerator = query.requests_per_month * (
-        query.input_tokens_per_request * offer.pricing.input_microusd_per_million_tokens
-        + query.output_tokens_per_request * offer.pricing.output_microusd_per_million_tokens
-    )
-    quotient, remainder = divmod(numerator, 1_000_000)
-    value = quotient + (1 if remainder else 0)
-    _require_safe_integer("computed monthly cost", value, minimum=0)
-    return value
+    if (
+        require_cost_sensitive_caveat
+        and "cost_sensitive_to_usage" not in reason.caveat_codes
+    ):
+        raise ValueError(
+            f"{code} requires cost_sensitive_to_usage when estimated profile costs differ"
+        )
 
 
 def _metric_from_dict(value: Any) -> MetricV1:

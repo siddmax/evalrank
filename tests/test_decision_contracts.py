@@ -14,6 +14,7 @@ GOLDEN = REPO_ROOT / "examples" / "decision-contract-v1.golden.json"
 sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.canonical_json import sha256_hex  # noqa: E402
+import evalrank_core.decision_contracts as decision_contracts  # noqa: E402
 from evalrank_core.decision_contracts import (  # noqa: E402
     AdapterMetadataV1,
     AvailabilityFactV1,
@@ -34,7 +35,7 @@ from evalrank_core.decision_contracts import (  # noqa: E402
     IDENTITY_TRIPLES,
     PairwisePreferenceMetricV1,
     PassAtKMetricV1,
-    PricingFactV1,
+    PricingScheduleFactV1,
     ProportionMetricV1,
     PublicationSnapshotRefV1,
     RankOnlyMetricV1,
@@ -290,6 +291,92 @@ class ConfigurationTests(unittest.TestCase):
 
 
 class ServingOfferTests(unittest.TestCase):
+    def test_v1_exposes_schedule_pricing_without_the_legacy_flat_fact(self):
+        self.assertTrue(hasattr(decision_contracts, "PricingScheduleFactV1"))
+        self.assertFalse(hasattr(decision_contracts, "PricingFactV1"))
+
+    def test_monthly_cost_joins_every_nonzero_component_and_ceilings_once(self):
+        usage = decision_contracts.UsageProfileV1(
+            basis="measured",
+            uncached_input_tokens=1,
+            cached_read_tokens=1,
+            output_tokens=1,
+            cache_writes=(decision_contracts.CacheWriteUsageV1(ttl_seconds=300, tokens=1),),
+            cache_storage_token_seconds=1,
+        )
+        pricing = decision_contracts.PricingScheduleFactV1(
+            uncached_input_microusd_per_million_tokens=1,
+            cached_read_microusd_per_million_tokens=1,
+            output_microusd_per_million_tokens=1,
+            cache_write_rates=(
+                decision_contracts.CacheWriteRateV1(
+                    ttl_seconds=300,
+                    microusd_per_million_tokens=1,
+                ),
+            ),
+            cache_storage_microusd_per_million_token_hours=1,
+            observed_at="2026-07-09T00:00:00Z",
+            effective_at="2026-07-09T01:00:00Z",
+            expires_at="2026-07-10T00:00:00Z",
+            source_artifact_id=ARTIFACT_A,
+        )
+
+        self.assertEqual(1, decision_contracts.monthly_cost_microusd(usage, pricing))
+        self.assertEqual(pricing, decision_contracts.PricingScheduleFactV1.from_dict(pricing.to_dict()))
+
+    def test_monthly_cost_fails_closed_for_each_missing_nonzero_cache_rate(self):
+        base_usage = decision_contracts.UsageProfileV1(
+            basis="measured",
+            uncached_input_tokens=0,
+            cached_read_tokens=1,
+            output_tokens=0,
+            cache_writes=(),
+            cache_storage_token_seconds=0,
+        )
+        base_pricing = decision_contracts.PricingScheduleFactV1(
+            uncached_input_microusd_per_million_tokens=1,
+            cached_read_microusd_per_million_tokens=None,
+            output_microusd_per_million_tokens=1,
+            cache_write_rates=(),
+            cache_storage_microusd_per_million_token_hours=None,
+            observed_at="2026-07-09T00:00:00Z",
+            effective_at="2026-07-09T00:00:00Z",
+            expires_at="2026-07-10T00:00:00Z",
+            source_artifact_id=ARTIFACT_A,
+        )
+
+        self.assertIsNone(decision_contracts.monthly_cost_microusd(base_usage, base_pricing))
+        self.assertIsNone(
+            decision_contracts.monthly_cost_microusd(
+                replace(
+                    base_usage,
+                    cached_read_tokens=0,
+                    cache_writes=(decision_contracts.CacheWriteUsageV1(ttl_seconds=300, tokens=1),),
+                ),
+                base_pricing,
+            )
+        )
+        self.assertIsNone(
+            decision_contracts.monthly_cost_microusd(
+                replace(base_usage, cached_read_tokens=0, cache_storage_token_seconds=1),
+                base_pricing,
+            )
+        )
+        self.assertEqual(
+            0,
+            decision_contracts.monthly_cost_microusd(
+                replace(base_usage, cached_read_tokens=0),
+                base_pricing,
+            ),
+        )
+
+    def test_pricing_effective_at_controls_offer_eligibility(self):
+        offer = _serving_offer()
+        link = _offer_link()
+
+        self.assertFalse(offer.is_decision_eligible(link, as_of="2026-07-09T00:30:00Z"))
+        self.assertTrue(offer.is_decision_eligible(link, as_of="2026-07-09T01:00:00Z"))
+
     def test_offer_requires_three_independently_dated_sourced_facts(self):
         offer = _serving_offer()
 
@@ -308,6 +395,10 @@ class ServingOfferTests(unittest.TestCase):
         link = _offer_link()
 
         self.assertTrue(offer.is_decision_eligible(link, as_of="2026-07-09T12:00:00Z"))
+        for basis in ("benchmark_exact", "provider_attested", "operator_reviewed"):
+            with self.subTest(basis=basis):
+                self.assertTrue(replace(link, evidence_basis=basis).is_eligible(as_of="2026-07-09T12:00:00Z"))
+        self.assertFalse(replace(link, evidence_basis="inferred").is_eligible(as_of="2026-07-09T12:00:00Z"))
         self.assertFalse(offer.is_decision_eligible(replace(link, compatibility="unresolved"), as_of="2026-07-09T12:00:00Z"))
         self.assertFalse(offer.is_decision_eligible(replace(link, review_state="pending"), as_of="2026-07-09T12:00:00Z"))
         self.assertFalse(offer.is_decision_eligible(link, as_of="2026-07-11T00:00:00Z"))
@@ -321,6 +412,36 @@ class ServingOfferTests(unittest.TestCase):
 
 
 class DecisionQueryTests(unittest.TestCase):
+    def test_estimated_cached_usage_requires_an_exact_zero_cache_sensitivity(self):
+        usage = _usage_profile()
+        sensitivity = _zero_cache_sensitivity(usage)
+        query = _query(usage_profile=usage, zero_cache_sensitivity_usage_profile=sensitivity)
+
+        self.assertEqual(20_000_000, sensitivity.uncached_input_tokens)
+        self.assertEqual(usage.output_tokens, sensitivity.output_tokens)
+        self.assertEqual((), sensitivity.cache_writes)
+        self.assertEqual(query, DecisionQueryV1.from_dict(query.to_dict()))
+
+        with self.assertRaisesRegex(ValueError, "zero_cache_sensitivity"):
+            replace(query, zero_cache_sensitivity_usage_profile=None)
+        with self.assertRaisesRegex(ValueError, "total input"):
+            replace(
+                query,
+                zero_cache_sensitivity_usage_profile=replace(
+                    sensitivity,
+                    uncached_input_tokens=sensitivity.uncached_input_tokens - 1,
+                ),
+            )
+        with self.assertRaisesRegex(ValueError, "measured"):
+            replace(query, usage_profile=replace(usage, basis="measured"))
+
+    def test_query_rejects_removed_per_request_usage_axes(self):
+        payload = _query().to_dict()
+        payload["input_tokens_per_request"] = 1
+
+        with self.assertRaisesRegex(ValueError, "unknown fields"):
+            DecisionQueryV1.from_dict(payload)
+
     def test_query_sorts_set_filters_and_rejects_duplicates(self):
         first = _query(provider_ids=("provider-b", "provider-a"), regions=("us-west", "eu-west"))
         second = _query(provider_ids=("provider-a", "provider-b"), regions=("eu-west", "us-west"))
@@ -352,22 +473,20 @@ class DecisionQueryTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "must not be null"):
                     DecisionQueryV1.from_dict({**payload, nullable_filter: None})
 
-    def test_lowest_cost_objective_requires_explicit_integer_usage(self):
-        for missing in ("input_tokens_per_request", "output_tokens_per_request", "requests_per_month"):
-            payload = _query().to_dict()
-            del payload[missing]
-            with self.subTest(missing=missing):
-                with self.assertRaisesRegex(ValueError, missing):
-                    DecisionQueryV1.from_dict(payload)
+    def test_lowest_cost_objective_requires_explicit_monthly_usage(self):
+        payload = _query().to_dict()
+        del payload["usage_profile"]
+        del payload["zero_cache_sensitivity_usage_profile"]
+        with self.assertRaisesRegex(ValueError, "usage_profile"):
+            DecisionQueryV1.from_dict(payload)
 
         with self.assertRaisesRegex(ValueError, "safe integer"):
-            _query(requests_per_month=2**53)
+            replace(_usage_profile(), uncached_input_tokens=2**53)
 
         capability = _query(
             objective="capability_top_set",
-            input_tokens_per_request=None,
-            output_tokens_per_request=None,
-            requests_per_month=None,
+            usage_profile=None,
+            zero_cache_sensitivity_usage_profile=None,
             monthly_budget_microusd=None,
         )
         with self.assertRaisesRegex(ValueError, "monthly_budget_microusd"):
@@ -375,6 +494,180 @@ class DecisionQueryTests(unittest.TestCase):
 
 
 class DecisionReceiptTests(unittest.TestCase):
+    def test_cost_receipt_uses_projected_cost_vocabulary_only(self):
+        selection = DecisionSelectionV1.from_dict({
+            "evaluated_configuration_id": _evaluated_configuration().evaluated_configuration_id,
+            "serving_offer_id": "offer_public-demo-us-west",
+            "capability_rank": 1,
+            "projected_monthly_cost_microusd": 41_100_000,
+            "zero_cache_sensitivity_projected_monthly_cost_microusd": 44_000_000,
+        })
+
+        self.assertEqual(41_100_000, selection.projected_monthly_cost_microusd)
+        legacy_cost_field = "estimated" + "_monthly_cost_microusd"
+        legacy_sensitivity_field = (
+            "zero_cache_sensitivity" + "_monthly_cost_microusd"
+        )
+        self.assertNotIn(legacy_cost_field, selection.to_dict())
+        self.assertNotIn(
+            legacy_sensitivity_field,
+            selection.to_dict(),
+        )
+
+    def test_declared_zero_cache_sensitivity_must_also_fit_the_hard_budget(self):
+        values = _receipt_kwargs()
+        values["query"] = replace(values["query"], monthly_budget_microusd=42_000_000)
+        values["reasons"] = tuple(
+            replace(reason, threshold="42000000")
+            if reason.code == "budget_fit_under_declared_profiles"
+            else reason
+            for reason in values["reasons"]
+        )
+
+        with self.assertRaisesRegex(ValueError, "zero-cache sensitivity.*budget"):
+            DecisionReceiptV1.create(
+                **values,
+                outcome="top_set",
+                selections=(_selection(),),
+                abstention_reason=None,
+            )
+
+    def test_differing_estimated_cost_projections_require_an_explicit_caveat(self):
+        values = _receipt_kwargs()
+        cost_codes = {
+            "lowest_cost_under_usage_profile",
+            "budget_fit_under_declared_profiles",
+        }
+        values["reasons"] = tuple(
+            replace(
+                reason,
+                caveat_codes=tuple(
+                    code
+                    for code in reason.caveat_codes
+                    if code != "cost_sensitive_to_usage"
+                ),
+            )
+            if reason.code in cost_codes
+            else reason
+            for reason in values["reasons"]
+        )
+
+        with self.assertRaisesRegex(ValueError, "cost_sensitive_to_usage"):
+            DecisionReceiptV1.create(
+                **values,
+                outcome="top_set",
+                selections=(_selection(),),
+                abstention_reason=None,
+            )
+
+    def test_capability_receipt_still_discloses_differing_projected_costs(self):
+        values = _receipt_kwargs()
+        values["query"] = replace(
+            values["query"],
+            objective="capability_top_set",
+            provider_ids=None,
+            regions=None,
+            minimum_context_tokens=None,
+            monthly_budget_microusd=None,
+        )
+        capability_reason = next(
+            reason
+            for reason in values["reasons"]
+            if reason.code == "within_capability_top_set"
+        )
+        values["reasons"] = (capability_reason,)
+        values["sensitivity"] = tuple(
+            row
+            for row in values["sensitivity"]
+            if row.scenario == "leave_one_family_out"
+        )
+        values["freshness"] = DecisionFreshnessV1(
+            observed_at="2026-07-09T00:00:00Z",
+            expires_at="2026-07-10T00:00:00Z",
+        )
+
+        with self.assertRaisesRegex(ValueError, "cost_sensitive_to_usage"):
+            DecisionReceiptV1.create(
+                **values,
+                outcome="top_set",
+                selections=(_selection(),),
+                abstention_reason=None,
+            )
+
+        values["reasons"] = (
+            replace(capability_reason, caveat_codes=("cost_sensitive_to_usage",)),
+        )
+        receipt = DecisionReceiptV1.create(
+            **values,
+            outcome="top_set",
+            selections=(_selection(),),
+            abstention_reason=None,
+        )
+        self.assertEqual(
+            ("cost_sensitive_to_usage",),
+            receipt.reasons[0].caveat_codes,
+        )
+
+    def test_cost_reasons_use_declared_profile_vocabulary(self):
+        base = _receipt_kwargs()["reasons"][0]
+
+        lowest = replace(base, code="lowest_cost_under_usage_profile")
+        budget = replace(
+            base,
+            code="budget_fit_under_declared_profiles",
+            predicate="lte",
+            threshold="50000000",
+        )
+
+        self.assertEqual("lowest_cost_under_usage_profile", lowest.code)
+        self.assertEqual("budget_fit_under_declared_profiles", budget.code)
+
+    def test_estimated_cached_receipt_recomputes_zero_cache_sensitivity_cost(self):
+        receipt = _receipt()
+
+        self.assertEqual(
+            44_000_000,
+            receipt.selections[0].zero_cache_sensitivity_projected_monthly_cost_microusd,
+        )
+        with self.assertRaisesRegex(ValueError, "zero_cache_sensitivity"):
+            DecisionReceiptV1.create(
+                **_receipt_kwargs(),
+                outcome="top_set",
+                selections=(
+                    replace(
+                        _selection(),
+                        zero_cache_sensitivity_projected_monthly_cost_microusd=43_000_000,
+                    ),
+                ),
+                abstention_reason=None,
+            )
+
+    def test_receipt_fails_closed_when_pricing_omits_a_nonzero_usage_rate(self):
+        values = _receipt_kwargs()
+        values["evidence"] = tuple(
+            replace(
+                row,
+                serving_offer=replace(
+                    row.serving_offer,
+                    pricing=replace(
+                        row.serving_offer.pricing,
+                        cached_read_microusd_per_million_tokens=None,
+                    ),
+                ),
+            )
+            if isinstance(row, ServingOfferEvidenceV1)
+            else row
+            for row in values["evidence"]
+        )
+
+        with self.assertRaisesRegex(ValueError, "pricing.*nonzero usage"):
+            DecisionReceiptV1.create(
+                **values,
+                outcome="top_set",
+                selections=(_selection(),),
+                abstention_reason=None,
+            )
+
     def test_receipt_id_hashes_full_body_except_receipt_id(self):
         receipt = _receipt()
         body = receipt.to_body_dict()
@@ -404,7 +697,7 @@ class DecisionReceiptTests(unittest.TestCase):
             DecisionReceiptV1.create(
                 **values,
                 outcome="top_set",
-                selections=(replace(_selection(), estimated_monthly_cost_microusd=43_000_000),),
+                selections=(replace(_selection(), projected_monthly_cost_microusd=43_000_000),),
                 abstention_reason=None,
             )
 
@@ -449,12 +742,13 @@ class DecisionReceiptTests(unittest.TestCase):
             evaluated_configuration_id=evaluated_id,
             serving_offer_id="offer_public-demo-us-west",
             capability_rank=1,
-            estimated_monthly_cost_microusd=44_000_000,
+            projected_monthly_cost_microusd=41_100_000,
+            zero_cache_sensitivity_projected_monthly_cost_microusd=44_000_000,
         )
 
         for selection, message in (
-            (replace(valid, estimated_monthly_cost_microusd=None), "estimated_monthly_cost_microusd"),
-            (replace(valid, estimated_monthly_cost_microusd=50_000_001), "monthly_budget_microusd"),
+            (replace(valid, projected_monthly_cost_microusd=None), "projected_monthly_cost_microusd"),
+            (replace(valid, projected_monthly_cost_microusd=50_000_001), "monthly_budget_microusd"),
         ):
             with self.subTest(message=message):
                 with self.assertRaisesRegex(ValueError, message):
@@ -470,14 +764,16 @@ class DecisionReceiptTests(unittest.TestCase):
                 evaluated_configuration_id=evaluated_id,
                 serving_offer_id=None,
                 capability_rank=1,
-                estimated_monthly_cost_microusd=1,
+                projected_monthly_cost_microusd=1,
+                zero_cache_sensitivity_projected_monthly_cost_microusd=1,
             )
 
         higher_cost = DecisionSelectionV1(
             evaluated_configuration_id="config_" + HASH_B,
             serving_offer_id="offer_public-demo-two",
             capability_rank=2,
-            estimated_monthly_cost_microusd=45_000_000,
+            projected_monthly_cost_microusd=45_000_000,
+            zero_cache_sensitivity_projected_monthly_cost_microusd=48_000_000,
         )
         with self.assertRaisesRegex(ValueError, "equal minimum cost"):
             DecisionReceiptV1.create(
@@ -534,7 +830,8 @@ class DecisionReceiptTests(unittest.TestCase):
             evaluated_configuration_id=evaluated_id,
             serving_offer_id="offer_public-demo-us-west",
             capability_rank=1,
-            estimated_monthly_cost_microusd=44_000_000,
+            projected_monthly_cost_microusd=41_100_000,
+            zero_cache_sensitivity_projected_monthly_cost_microusd=44_000_000,
         )
         values["sensitivity"] = ()
 
@@ -613,7 +910,8 @@ class DecisionReceiptTests(unittest.TestCase):
             evaluated_configuration_id=evaluated_id,
             serving_offer_id="offer_public-demo-us-west",
             capability_rank=1,
-            estimated_monthly_cost_microusd=44_000_000,
+            projected_monthly_cost_microusd=41_100_000,
+            zero_cache_sensitivity_projected_monthly_cost_microusd=44_000_000,
         )
         for field in ("reasons", "evidence"):
             invalid = {**values, field: ()}
@@ -633,7 +931,8 @@ class DecisionReceiptTests(unittest.TestCase):
             evaluated_configuration_id=evaluated_id,
             serving_offer_id="offer_public-demo-us-west",
             capability_rank=1,
-            estimated_monthly_cost_microusd=44_000_000,
+            projected_monthly_cost_microusd=41_100_000,
+            zero_cache_sensitivity_projected_monthly_cost_microusd=44_000_000,
         )
         stable = next(row for row in values["sensitivity"] if row.scenario == "leave_one_family_out")
         unrelated = replace(
@@ -682,6 +981,30 @@ class DecisionReceiptTests(unittest.TestCase):
                 self.assertFalse(schema["additionalProperties"])
                 ids.add(schema["$id"])
         self.assertEqual(len(names), len(ids))
+
+    def test_wire_schemas_publish_only_monthly_schedule_pricing(self):
+        offer = json.loads((SCHEMAS / "serving-offer.schema.json").read_text(encoding="utf-8"))
+        query = json.loads((SCHEMAS / "decision-query.schema.json").read_text(encoding="utf-8"))
+        link = json.loads((SCHEMAS / "evaluation-to-offer-link.schema.json").read_text(encoding="utf-8"))
+        receipt = json.loads((SCHEMAS / "decision-receipt.schema.json").read_text(encoding="utf-8"))
+
+        self.assertEqual("#/$defs/PricingScheduleFact", offer["properties"]["pricing"]["$ref"])
+        self.assertNotIn("PricingFact", offer["$defs"])
+        self.assertIn("UsageProfile", query["$defs"])
+        self.assertNotIn("input_tokens_per_request", query["properties"])
+        self.assertIn("evidence_basis", link["required"])
+        self.assertIn(
+            "zero_cache_sensitivity_projected_monthly_cost_microusd",
+            receipt["$defs"]["Selection"]["required"],
+        )
+        selection_fields = receipt["$defs"]["Selection"]["properties"]
+        self.assertIn("projected_monthly_cost_microusd", selection_fields)
+        self.assertNotIn("estimated" + "_monthly_cost_microusd", selection_fields)
+        reason_codes = receipt["$defs"]["Reason"]["properties"]["code"]["enum"]
+        self.assertIn("lowest_cost_under_usage_profile", reason_codes)
+        self.assertIn("budget_fit_under_declared_profiles", reason_codes)
+        self.assertNotIn("lowest_" + "verified_cost", reason_codes)
+        self.assertNotIn("budget_" + "constraint_met", reason_codes)
 
 
 def _source_artifact() -> SourceArtifactV1:
@@ -771,9 +1094,18 @@ def _serving_offer() -> ServingOfferV1:
         region="us-west",
         context=ContextFactV1(context_window_tokens=128_000, **_fact_times()),
         availability=AvailabilityFactV1(status="available", **_fact_times()),
-        pricing=PricingFactV1(
-            input_microusd_per_million_tokens=1_000_000,
+        pricing=PricingScheduleFactV1(
+            uncached_input_microusd_per_million_tokens=1_000_000,
+            cached_read_microusd_per_million_tokens=200_000,
             output_microusd_per_million_tokens=4_800_000,
+            cache_write_rates=(
+                decision_contracts.CacheWriteRateV1(
+                    ttl_seconds=300,
+                    microusd_per_million_tokens=1_200_000,
+                ),
+            ),
+            cache_storage_microusd_per_million_token_hours=100_000,
+            effective_at="2026-07-09T01:00:00Z",
             **_fact_times(),
         ),
     )
@@ -785,6 +1117,7 @@ def _offer_link() -> EvaluationToOfferLinkV1:
         evaluated_configuration_id=_evaluated_configuration().evaluated_configuration_id,
         serving_offer_id="offer_public-demo-us-west",
         compatibility="exact",
+        evidence_basis="benchmark_exact",
         evidence_source_artifact_id=ARTIFACT_A,
         observed_at="2026-07-09T00:00:00Z",
         expires_at="2026-07-10T00:00:00Z",
@@ -803,13 +1136,38 @@ def _query(**overrides) -> DecisionQueryV1:
         "provider_ids": ("provider-public",),
         "regions": ("us-west",),
         "minimum_context_tokens": 32_000,
-        "input_tokens_per_request": 2_000,
-        "output_tokens_per_request": 500,
-        "requests_per_month": 10_000,
+        "usage_profile": _usage_profile(),
+        "zero_cache_sensitivity_usage_profile": _zero_cache_sensitivity(_usage_profile()),
         "monthly_budget_microusd": 50_000_000,
     }
     values.update(overrides)
     return DecisionQueryV1(**values)
+
+
+def _usage_profile() -> decision_contracts.UsageProfileV1:
+    return decision_contracts.UsageProfileV1(
+        basis="estimated",
+        uncached_input_tokens=10_000_000,
+        cached_read_tokens=5_000_000,
+        output_tokens=5_000_000,
+        cache_writes=(
+            decision_contracts.CacheWriteUsageV1(ttl_seconds=300, tokens=5_000_000),
+        ),
+        cache_storage_token_seconds=3_600_000_000,
+    )
+
+
+def _zero_cache_sensitivity(
+    usage: decision_contracts.UsageProfileV1,
+) -> decision_contracts.UsageProfileV1:
+    return decision_contracts.UsageProfileV1(
+        basis="estimated",
+        uncached_input_tokens=usage.total_input_tokens,
+        cached_read_tokens=0,
+        output_tokens=usage.output_tokens,
+        cache_writes=(),
+        cache_storage_token_seconds=0,
+    )
 
 
 def _receipt_kwargs() -> dict:
@@ -841,23 +1199,26 @@ def _receipt_kwargs() -> dict:
         "reasons": (
             DecisionReasonV1(
                 reason_type="best_when",
-                code="lowest_verified_cost",
+                code="lowest_cost_under_usage_profile",
                 subject_id="offer_public-demo-us-west",
                 predicate="eq",
                 axis="monthly_cost",
-                observed_value="44000000",
+                observed_value="41100000",
                 unit="microusd_per_month",
-                threshold="44000000",
+                threshold="41100000",
                 evidence_ids=("evidence-link", "evidence-offer"),
                 freshness=DecisionFreshnessV1(
-                    observed_at="2026-07-09T00:00:00Z",
+                    observed_at="2026-07-09T01:00:00Z",
                     expires_at="2026-07-10T00:00:00Z",
                 ),
-                caveat_codes=("provider_offer_link_required",),
+                caveat_codes=(
+                    "cost_sensitive_to_usage",
+                    "provider_offer_link_required",
+                ),
             ),
             DecisionReasonV1(
                 reason_type="best_when",
-                code="budget_constraint_met",
+                code="budget_fit_under_declared_profiles",
                 subject_id="offer_public-demo-us-west",
                 predicate="lte",
                 axis="monthly_cost",
@@ -866,10 +1227,13 @@ def _receipt_kwargs() -> dict:
                 threshold="50000000",
                 evidence_ids=("evidence-link", "evidence-offer"),
                 freshness=DecisionFreshnessV1(
-                    observed_at="2026-07-09T00:00:00Z",
+                    observed_at="2026-07-09T01:00:00Z",
                     expires_at="2026-07-10T00:00:00Z",
                 ),
-                caveat_codes=("provider_offer_link_required",),
+                caveat_codes=(
+                    "cost_sensitive_to_usage",
+                    "provider_offer_link_required",
+                ),
             ),
             DecisionReasonV1(
                 reason_type="best_when",
@@ -882,7 +1246,7 @@ def _receipt_kwargs() -> dict:
                 threshold="provider-public",
                 evidence_ids=("evidence-link", "evidence-offer"),
                 freshness=DecisionFreshnessV1(
-                    observed_at="2026-07-09T00:00:00Z",
+                    observed_at="2026-07-09T01:00:00Z",
                     expires_at="2026-07-10T00:00:00Z",
                 ),
                 caveat_codes=("provider_offer_link_required",),
@@ -898,7 +1262,7 @@ def _receipt_kwargs() -> dict:
                 threshold="us-west",
                 evidence_ids=("evidence-link", "evidence-offer"),
                 freshness=DecisionFreshnessV1(
-                    observed_at="2026-07-09T00:00:00Z",
+                    observed_at="2026-07-09T01:00:00Z",
                     expires_at="2026-07-10T00:00:00Z",
                 ),
                 caveat_codes=("provider_offer_link_required",),
@@ -914,7 +1278,7 @@ def _receipt_kwargs() -> dict:
                 threshold="32000",
                 evidence_ids=("evidence-link", "evidence-offer"),
                 freshness=DecisionFreshnessV1(
-                    observed_at="2026-07-09T00:00:00Z",
+                    observed_at="2026-07-09T01:00:00Z",
                     expires_at="2026-07-10T00:00:00Z",
                 ),
                 caveat_codes=("provider_offer_link_required",),
@@ -977,7 +1341,7 @@ def _receipt_kwargs() -> dict:
             ),
         ),
         "freshness": DecisionFreshnessV1(
-            observed_at="2026-07-09T00:00:00Z",
+            observed_at="2026-07-09T01:00:00Z",
             expires_at="2026-07-10T00:00:00Z",
         ),
     }
@@ -997,7 +1361,8 @@ def _selection() -> DecisionSelectionV1:
         evaluated_configuration_id=_evaluated_configuration().evaluated_configuration_id,
         serving_offer_id="offer_public-demo-us-west",
         capability_rank=1,
-        estimated_monthly_cost_microusd=44_000_000,
+        projected_monthly_cost_microusd=41_100_000,
+        zero_cache_sensitivity_projected_monthly_cost_microusd=44_000_000,
     )
 
 

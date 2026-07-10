@@ -29,12 +29,30 @@
         "us-west"
       ],
       "minimum_context_tokens": 32000,
-      "input_tokens_per_request": 2000,
-      "output_tokens_per_request": 500,
-      "requests_per_month": 10000,
+      "usage_profile": {
+        "basis": "estimated",
+        "uncached_input_tokens": 10000000,
+        "cached_read_tokens": 5000000,
+        "output_tokens": 5000000,
+        "cache_writes": [
+          {
+            "ttl_seconds": 300,
+            "tokens": 5000000
+          }
+        ],
+        "cache_storage_token_seconds": 3600000000
+      },
+      "zero_cache_sensitivity_usage_profile": {
+        "basis": "estimated",
+        "uncached_input_tokens": 20000000,
+        "cached_read_tokens": 0,
+        "output_tokens": 5000000,
+        "cache_writes": [],
+        "cache_storage_token_seconds": 0
+      },
       "monthly_budget_microusd": 50000000
     },
-    "canonical": "{\"cell_id\":\"code-generation\",\"configuration_passport_class\":\"model-configuration-v1\",\"entity_kind\":\"model_configuration\",\"input_tokens_per_request\":2000,\"interaction_policy\":\"direct_prompt\",\"minimum_context_tokens\":32000,\"monthly_budget_microusd\":50000000,\"object\":\"decision_query\",\"objective\":\"lowest_cost_within_top_set\",\"output_tokens_per_request\":500,\"provider_ids\":[\"provider-a\",\"provider-b\"],\"ranking_group_id\":\"rg-code-generation-model-configuration-direct-prompt-model-configuration-v1\",\"regions\":[\"eu-west\",\"us-west\"],\"requests_per_month\":10000,\"schema_version\":\"1\"}"
+    "canonical": "{\"cell_id\":\"code-generation\",\"configuration_passport_class\":\"model-configuration-v1\",\"entity_kind\":\"model_configuration\",\"interaction_policy\":\"direct_prompt\",\"minimum_context_tokens\":32000,\"monthly_budget_microusd\":50000000,\"object\":\"decision_query\",\"objective\":\"lowest_cost_within_top_set\",\"provider_ids\":[\"provider-a\",\"provider-b\"],\"ranking_group_id\":\"rg-code-generation-model-configuration-direct-prompt-model-configuration-v1\",\"regions\":[\"eu-west\",\"us-west\"],\"schema_version\":\"1\",\"usage_profile\":{\"basis\":\"estimated\",\"cache_storage_token_seconds\":3600000000,\"cache_writes\":[{\"tokens\":5000000,\"ttl_seconds\":300}],\"cached_read_tokens\":5000000,\"output_tokens\":5000000,\"uncached_input_tokens\":10000000},\"zero_cache_sensitivity_usage_profile\":{\"basis\":\"estimated\",\"cache_storage_token_seconds\":0,\"cache_writes\":[],\"cached_read_tokens\":0,\"output_tokens\":5000000,\"uncached_input_tokens\":20000000}}"
   },
   "receipt": {
     "body": {
@@ -56,9 +74,27 @@
           "us-west"
         ],
         "minimum_context_tokens": 32000,
-        "input_tokens_per_request": 2000,
-        "output_tokens_per_request": 500,
-        "requests_per_month": 10000,
+        "usage_profile": {
+          "basis": "estimated",
+          "uncached_input_tokens": 10000000,
+          "cached_read_tokens": 5000000,
+          "output_tokens": 5000000,
+          "cache_writes": [
+            {
+              "ttl_seconds": 300,
+              "tokens": 5000000
+            }
+          ],
+          "cache_storage_token_seconds": 3600000000
+        },
+        "zero_cache_sensitivity_usage_profile": {
+          "basis": "estimated",
+          "uncached_input_tokens": 20000000,
+          "cached_read_tokens": 0,
+          "output_tokens": 5000000,
+          "cache_writes": [],
+          "cache_storage_token_seconds": 0
+        },
         "monthly_budget_microusd": 50000000
       },
       "publication_snapshot": {
@@ -75,7 +111,8 @@
           "evaluated_configuration_id": "config_e0f6d790f8d764ba1549dcddeed19dc9c1c0f20d1e0f57a91d10c1fd59fc76d2",
           "serving_offer_id": "offer_public-demo-us-west",
           "capability_rank": 1,
-          "estimated_monthly_cost_microusd": 44000000
+          "projected_monthly_cost_microusd": 41100000,
+          "zero_cache_sensitivity_projected_monthly_cost_microusd": 44000000
         }
       ],
       "exclusions": [
@@ -90,7 +127,7 @@
       "reasons": [
         {
           "reason_type": "best_when",
-          "code": "budget_constraint_met",
+          "code": "budget_fit_under_declared_profiles",
           "subject_id": "offer_public-demo-us-west",
           "predicate": "lte",
           "axis": "monthly_cost",
@@ -102,10 +139,11 @@
             "evidence-offer"
           ],
           "freshness": {
-            "observed_at": "2026-07-09T00:00:00Z",
+            "observed_at": "2026-07-09T01:00:00Z",
             "expires_at": "2026-07-10T00:00:00Z"
           },
           "caveat_codes": [
+            "cost_sensitive_to_usage",
             "provider_offer_link_required"
           ]
         },
@@ -123,7 +161,7 @@
             "evidence-offer"
           ],
           "freshness": {
-            "observed_at": "2026-07-09T00:00:00Z",
+            "observed_at": "2026-07-09T01:00:00Z",
             "expires_at": "2026-07-10T00:00:00Z"
           },
           "caveat_codes": [
@@ -132,22 +170,23 @@
         },
         {
           "reason_type": "best_when",
-          "code": "lowest_verified_cost",
+          "code": "lowest_cost_under_usage_profile",
           "subject_id": "offer_public-demo-us-west",
           "predicate": "eq",
           "axis": "monthly_cost",
-          "observed_value": "44000000",
+          "observed_value": "41100000",
           "unit": "microusd_per_month",
-          "threshold": "44000000",
+          "threshold": "41100000",
           "evidence_ids": [
             "evidence-link",
             "evidence-offer"
           ],
           "freshness": {
-            "observed_at": "2026-07-09T00:00:00Z",
+            "observed_at": "2026-07-09T01:00:00Z",
             "expires_at": "2026-07-10T00:00:00Z"
           },
           "caveat_codes": [
+            "cost_sensitive_to_usage",
             "provider_offer_link_required"
           ]
         },
@@ -165,7 +204,7 @@
             "evidence-offer"
           ],
           "freshness": {
-            "observed_at": "2026-07-09T00:00:00Z",
+            "observed_at": "2026-07-09T01:00:00Z",
             "expires_at": "2026-07-10T00:00:00Z"
           },
           "caveat_codes": [
@@ -186,7 +225,7 @@
             "evidence-offer"
           ],
           "freshness": {
-            "observed_at": "2026-07-09T00:00:00Z",
+            "observed_at": "2026-07-09T01:00:00Z",
             "expires_at": "2026-07-10T00:00:00Z"
           },
           "caveat_codes": [
@@ -294,6 +333,7 @@
             "evaluated_configuration_id": "config_e0f6d790f8d764ba1549dcddeed19dc9c1c0f20d1e0f57a91d10c1fd59fc76d2",
             "serving_offer_id": "offer_public-demo-us-west",
             "compatibility": "exact",
+            "evidence_basis": "benchmark_exact",
             "evidence_source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "observed_at": "2026-07-09T00:00:00Z",
             "expires_at": "2026-07-10T00:00:00Z",
@@ -372,9 +412,18 @@
               "source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             },
             "pricing": {
-              "input_microusd_per_million_tokens": 1000000,
+              "uncached_input_microusd_per_million_tokens": 1000000,
+              "cached_read_microusd_per_million_tokens": 200000,
               "output_microusd_per_million_tokens": 4800000,
+              "cache_write_rates": [
+                {
+                  "ttl_seconds": 300,
+                  "microusd_per_million_tokens": 1200000
+                }
+              ],
+              "cache_storage_microusd_per_million_token_hours": 100000,
               "observed_at": "2026-07-09T00:00:00Z",
+              "effective_at": "2026-07-09T01:00:00Z",
               "expires_at": "2026-07-10T00:00:00Z",
               "source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             }
@@ -382,13 +431,13 @@
         }
       ],
       "freshness": {
-        "observed_at": "2026-07-09T00:00:00Z",
+        "observed_at": "2026-07-09T01:00:00Z",
         "expires_at": "2026-07-10T00:00:00Z"
       },
       "abstention_reason": null
     },
-    "body_sha256": "3f83fe55e355d0c66fe0d24bd3bdf9b41c077e7c621c0340df6051eb9737c9ff",
-    "receipt_id": "receipt_3f83fe55e355d0c66fe0d24bd3bdf9b41c077e7c621c0340df6051eb9737c9ff"
+    "body_sha256": "654615414b0e78f1a929d70b9b366eb904346e01fd6f04be29243fa2d1b146d1",
+    "receipt_id": "receipt_654615414b0e78f1a929d70b9b366eb904346e01fd6f04be29243fa2d1b146d1"
   },
   "rejection_vectors": [
     {
@@ -416,9 +465,27 @@
           "us-west"
         ],
         "minimum_context_tokens": 32000,
-        "input_tokens_per_request": 2000,
-        "output_tokens_per_request": 500,
-        "requests_per_month": 10000,
+        "usage_profile": {
+          "basis": "estimated",
+          "uncached_input_tokens": 10000000,
+          "cached_read_tokens": 5000000,
+          "output_tokens": 5000000,
+          "cache_writes": [
+            {
+              "ttl_seconds": 300,
+              "tokens": 5000000
+            }
+          ],
+          "cache_storage_token_seconds": 3600000000
+        },
+        "zero_cache_sensitivity_usage_profile": {
+          "basis": "estimated",
+          "uncached_input_tokens": 20000000,
+          "cached_read_tokens": 0,
+          "output_tokens": 5000000,
+          "cache_writes": [],
+          "cache_storage_token_seconds": 0
+        },
         "monthly_budget_microusd": 50000000
       }
     }

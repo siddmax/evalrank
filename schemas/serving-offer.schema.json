@@ -24,7 +24,7 @@
     "region": { "type": "string", "minLength": 1 },
     "context": { "$ref": "#/$defs/ContextFact" },
     "availability": { "$ref": "#/$defs/AvailabilityFact" },
-    "pricing": { "$ref": "#/$defs/PricingFact" }
+    "pricing": { "$ref": "#/$defs/PricingScheduleFact" }
   },
   "$defs": {
     "Timestamp": {
@@ -54,22 +54,43 @@
         "source_artifact_id": { "$ref": "#/$defs/ArtifactId" }
       }
     },
-    "PricingFact": {
+    "PricingScheduleFact": {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "input_microusd_per_million_tokens",
+        "uncached_input_microusd_per_million_tokens",
+        "cached_read_microusd_per_million_tokens",
         "output_microusd_per_million_tokens",
+        "cache_write_rates",
+        "cache_storage_microusd_per_million_token_hours",
         "observed_at",
+        "effective_at",
         "expires_at",
         "source_artifact_id"
       ],
       "properties": {
-        "input_microusd_per_million_tokens": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "uncached_input_microusd_per_million_tokens": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "cached_read_microusd_per_million_tokens": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991 },
         "output_microusd_per_million_tokens": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "cache_write_rates": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/CacheWriteRate" }
+        },
+        "cache_storage_microusd_per_million_token_hours": { "type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991 },
         "observed_at": { "$ref": "#/$defs/Timestamp" },
+        "effective_at": { "$ref": "#/$defs/Timestamp" },
         "expires_at": { "$ref": "#/$defs/Timestamp" },
         "source_artifact_id": { "$ref": "#/$defs/ArtifactId" }
+      }
+    },
+    "CacheWriteRate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ttl_seconds", "microusd_per_million_tokens"],
+      "properties": {
+        "ttl_seconds": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "microusd_per_million_tokens": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
       }
     }
   }
