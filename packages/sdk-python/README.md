@@ -11,7 +11,9 @@ Package metadata:
 
 The current SDK surface re-exports public contracts, vocabulary constants, and fixtures from `evalrank-core`, including `CapabilityFingerprintInput`, `RawEntry`, `EntityRef`, `EvaluationRequest`, `CandidateSet`, `StageCandidate`, `EvidenceItem`, `EvidenceSet`, `ResultRow`, `UseCaseCatalog`, `ScoringStage`, `ScoringStageCatalog`, `RankingGroup`, `Exclusion`, `TheCall`, `Abstention`, `RankedEntity`, `Recommendation`, `ProblemDetails`, `TRUST_TIERS`, `FRESHNESS_STATUSES`, `COMPARABILITY_MODES`, `EVIDENCE_KINDS`, `PROBLEM_CODES`, `PUBLIC_FIXTURE_KINDS`, `sample_problem_details`, and `sample_public_fixture`.
 
-`EvalRankClient` is a dependency-free stdlib client for the public metadata and recommendation route contracts. It accepts only HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, posts `EvaluationRequest` JSON to `POST /v1/recommendations`, and returns public JSON. Non-2xx Problem Details responses raise `EvalRankApiError`.
+`EvalRankClient` is a dependency-free stdlib client for the public metadata and recommendation route contracts. It accepts only HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, and can post `EvaluationRequest` JSON to `POST /v1/recommendations`. Non-2xx Problem Details responses raise `EvalRankApiError`; a successful recommendation body is future contract behavior, not the current hosted behavior.
+
+The hosted legacy recommendation operation is temporarily unavailable and currently raises `EvalRankApiError` with public code `recommendation_not_published`. Keeping that typed failure visible prevents clients from treating a cached use-case lookup as a decision over the full request.
 
 ```python
 from evalrank_sdk import EvalRankClient, sample_evaluation_request
@@ -19,7 +21,8 @@ from evalrank_sdk import EvalRankClient, sample_evaluation_request
 client = EvalRankClient("https://evalrank.example")
 use_cases = client.use_cases()
 stages = client.scoring_stages()
-recommendation = client.recommend(sample_evaluation_request())
+# The current hosted call raises recommendation_not_published.
+# recommendation = client.recommend(sample_evaluation_request())
 ```
 
 The client does not add auth, retries, service discovery, environment-variable defaults, hosted receipt IDs, tenant context, private DTOs, local file URLs, production evidence lookup, or any private hosted behavior.

@@ -2,7 +2,9 @@
 
 This repo is public. Port only artifacts that are portable, sanitized, and useful without private Syndai/Finn/Savida context.
 
-Last reviewed: 2026-06-26
+Last reviewed: 2026-07-09
+
+Hosted contract status: the legacy `POST /v1/recommendations` operation is temporarily unavailable and exposes the product-neutral RFC 9457 code `recommendation_not_published`. Runtime validation and deployment remain private; the public contract will cut over atomically to the deterministic decision operation.
 
 ## Default Rule
 

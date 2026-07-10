@@ -1,6 +1,8 @@
 # EvalRank Status
 
-Last updated: 2026-06-29
+Last updated: 2026-07-09
+
+Hosted contract status: the legacy `POST /v1/recommendations` operation is temporarily unavailable and returns RFC 9457 code `recommendation_not_published`. It must not return a cached ranking that ignores the request; the deterministic decision API will replace it atomically.
 
 ## Full-Spec Dashboard
 

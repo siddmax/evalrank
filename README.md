@@ -47,7 +47,7 @@ The public route contracts live in `schemas/openapi.json`.
 
 - `GET /v1/use-cases` returns the storage-free `UseCaseCatalog` taxonomy contract.
 - `GET /v1/scoring-stages` returns the storage-free `ScoringStageCatalog` method-stage contract.
-- `POST /v1/recommendations` accepts `EvaluationRequest` JSON, returns `Recommendation` JSON, and uses RFC 9457 `application/problem+json` for malformed payloads, validation errors, rate limits, temporary unavailability, and upstream timeouts.
+- `POST /v1/recommendations` accepts `EvaluationRequest` JSON and defines the eventual `Recommendation` response shape. The hosted legacy operation is temporarily unavailable and returns RFC 9457 `application/problem+json` with code `recommendation_not_published`; it will be replaced atomically by the deterministic decision contract rather than returning a cached answer that ignores request semantics.
 
 The public error contract includes optional retry fields and reusable `Retry-After`, `RateLimit`, and `RateLimit-Policy` header definitions. This is a contract only. Hosted auth, scorer runtime, benchmark weights, rate-limit enforcement, persistence, receipt IDs, private problem types, and deployment wiring stay outside this public repo.
 

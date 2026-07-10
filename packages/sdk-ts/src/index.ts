@@ -59,6 +59,8 @@ export const USE_CASE_RANK_POLICIES = [
 ] as const;
 
 export const PROBLEM_CODES = [
+  "invalid_evaluation_request",
+  "recommendation_not_published",
   "rate_limited",
   "upstream_timeout",
   "validation",

@@ -22,7 +22,8 @@ Package metadata:
 - `RankedEntity.axes.evidence` carries the public evidence count and trust-tier coverage shape from the JSON Schema.
 - `Recommendation` includes `abstention`, `recommendation_id`, `recommend_id`, and `search_run_id` as public response fields.
 - `ProblemDetails` mirrors the public RFC 9457 error contract plus optional retry extensions; it does not imply a hosted service client.
-- `EvalRankClient` is a dependency-free native `fetch` client for the public metadata and recommendation route contracts. It accepts only explicit HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, posts public `EvaluationRequest` JSON to `POST /v1/recommendations`, returns public JSON, and raises `EvalRankApiError` with public Problem Details for non-2xx responses.
+- `EvalRankClient` is a dependency-free native `fetch` client for the public metadata and recommendation route contracts. It accepts only explicit HTTP(S) base URLs, fetches `GET /v1/use-cases` and `GET /v1/scoring-stages`, can post public `EvaluationRequest` JSON to `POST /v1/recommendations`, and raises `EvalRankApiError` with public Problem Details for non-2xx responses. A successful recommendation body is future contract behavior, not the current hosted behavior.
+- The hosted legacy recommendation operation is temporarily unavailable and surfaces public code `recommendation_not_published`; callers must preserve that typed state until the deterministic decision operation replaces the legacy route atomically.
 - No auth flow, retries, service discovery, environment-variable defaults, hosted-product behavior, hosted receipt IDs, persistence, or private data access.
 - The npm package is marked private until a built JS distribution and publish flow exist.
 
@@ -43,7 +44,8 @@ const request: EvaluationRequest = {
 const client = new EvalRankClient("https://evalrank.example");
 const useCases = await client.useCases();
 const stages = await client.scoringStages();
-const recommendation = await client.recommend(request);
+// The current hosted call throws recommendation_not_published.
+// const recommendation = await client.recommend(request);
 ```
 
 ## Check

@@ -31,7 +31,7 @@ evalrank fixture recommendation
 
 These commands write deterministic public JSON fixtures and perform no network or database work.
 
-Recommendation command:
+Legacy recommendation command:
 
 ```sh
 evalrank use-cases --base-url https://evalrank.example
@@ -40,4 +40,6 @@ evalrank recommend --base-url https://evalrank.example --request request.json
 evalrank recommend --base-url https://evalrank.example --request -
 ```
 
-These commands call explicit public route contracts. `use-cases` fetches `GET /v1/use-cases`, `scoring-stages` fetches `GET /v1/scoring-stages`, and `recommend` posts an explicit public `EvaluationRequest` JSON payload to `POST /v1/recommendations`. They accept only HTTP(S) base URLs, write public JSON to stdout, write public Problem Details JSON to stderr on API errors, and do not add auth, retries, service discovery, environment-variable defaults, private DTOs, or database work.
+These commands call explicit public route contracts. `use-cases` fetches `GET /v1/use-cases`, `scoring-stages` fetches `GET /v1/scoring-stages`, and `recommend` posts an explicit public `EvaluationRequest` JSON payload to `POST /v1/recommendations`. They accept only HTTP(S) base URLs; successful public JSON would go to stdout, while the current hosted call writes typed Problem Details to stderr and exits nonzero. They do not add auth, retries, service discovery, environment-variable defaults, private DTOs, or database work.
+
+The hosted legacy `recommend` operation is temporarily unavailable and exits with the typed public Problem Details code `recommendation_not_published`. This is intentional until the deterministic decision operation replaces it atomically.
