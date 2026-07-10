@@ -21,6 +21,7 @@ normative authority or evidence of runtime lineage, rights, or admission.
 
 ## Current Public Surface
 
+- Parser provenance records the complete sorted, role-typed retained input set. Multi-file upstream releases cannot hide auxiliary bytes in adapter metadata.
 - Apache-2.0, product-neutral Python contracts and synthetic fixtures.
 - Public JSON Schemas and OpenAPI description.
 - Immutable artifact/run provenance, native observations, exact configuration passports, effective-dated serving-offer pricing schedules, evidence-basis evaluation-to-offer links, closed monthly usage queries, baseline and zero-cache projected-cost receipts with hard cross-profile budgets and truthful divergence caveats, and deterministic receipt identities.
@@ -35,7 +36,8 @@ The public repo owns portable contracts and method. Private runtime integrations
 ## Evidence State
 
 - All 26 cells are `preview`; catalog presence is not a ranking-readiness claim.
-- Candidate families are `discovered` with `rank_eligible_count: null` until a dated admission report verifies rights, identity, lineage, overlap, health, cadence, uncertainty, and marginal decision value.
+- Candidate families remain `discovered` until an adapter replays exact official bytes. BFCL V4, LiveCodeBench, LiveBench reasoning, and Terminal-Bench 2.1 are now `shadow`: their repaired official-surface adapters replay successfully, but `rank_eligible_count` remains null and none is admitted until rights, identity, lineage, overlap, health, cadence, uncertainty, and marginal decision value pass.
+- Scraper recovery is mandatory before retirement. The four shadow adapters resolve official HTML-linked CSV/JSON, same-release artifact sets, or licensed repository archives; API/feed/raw-file failure alone is not benchmark-death evidence.
 - Every candidate family has a dated primary or official discovery source in the manifest-version-locked research companion. Source coverage documents the research basis only and does not advance admission state.
 - Professional deliverables, machine-learning engineering, and computational research reproduction are new explorer-only research jobs. GDPval, MLE-bench, PaperBench, and CORE-Bench remain discovery hypotheses and do not confer product readiness.
 - CORE-Bench mainline and out-of-distribution feeds are two views of one declared correlated family and never count as independent evidence.

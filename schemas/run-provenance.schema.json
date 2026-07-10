@@ -32,7 +32,16 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": { "$ref": "#/$defs/RunInputArtifact" },
-      "description": "Exact retained parser inputs, sorted by the ASCII role. Roles and artifact IDs are unique and exactly one role is primary; runtime validators enforce these cross-item invariants."
+      "contains": {
+        "type": "object",
+        "required": ["role"],
+        "properties": {
+          "role": { "const": "primary" }
+        }
+      },
+      "minContains": 1,
+      "maxContains": 1,
+      "description": "Exact retained parser inputs. The schema requires exactly one primary; runtime validators additionally require ASCII role order plus unique roles and artifact IDs."
     },
     "parser_id": { "$ref": "#/$defs/NonEmptyString" },
     "parser_version": { "$ref": "#/$defs/NonEmptyString" },

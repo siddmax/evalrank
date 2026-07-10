@@ -333,7 +333,16 @@ test("typed provenance and observations fail closed", () => {
     trial_policy: null,
     adapter_metadata: null,
   };
-  assert.equal(parseRunProvenanceV1(provenance).feed_id, "livecodebench-discovery");
+  const parsedProvenance = parseRunProvenanceV1(provenance);
+  assert.equal(parsedProvenance.feed_id, "livecodebench-discovery");
+  assert.throws(
+    () => (parsedProvenance.source_artifacts as unknown as Array<unknown>).reverse(),
+    TypeError,
+  );
+  assert.throws(
+    () => Object.assign(parsedProvenance.source_artifacts[0], { role: "changed" }),
+    TypeError,
+  );
   assert.throws(
     () => parseRunProvenanceV1({ ...provenance, source_artifacts: [...provenance.source_artifacts].reverse() }),
     /sorted by role/,
@@ -966,6 +975,7 @@ test("Draft 2020 schemas enforce the portable semantic shapes they can express",
   const queryValidator = ajv.getSchema("https://evalrank.ai/schemas/decision-query.schema.json")!;
   const receiptValidator = ajv.getSchema("https://evalrank.ai/schemas/decision-receipt.schema.json")!;
   const observationValidator = ajv.getSchema("https://evalrank.ai/schemas/observation.schema.json")!;
+  const provenanceValidator = ajv.getSchema("https://evalrank.ai/schemas/run-provenance.schema.json")!;
   const offerValidator = ajv.getSchema("https://evalrank.ai/schemas/serving-offer.schema.json")!;
   const linkValidator = ajv.getSchema("https://evalrank.ai/schemas/evaluation-to-offer-link.schema.json")!;
   assert.equal(queryValidator(golden.query.input), true, ajv.errorsText(queryValidator.errors));
@@ -1094,6 +1104,25 @@ test("Draft 2020 schemas enforce the portable semantic shapes they can express",
     provenance,
   };
   assert.equal(observationValidator(observation), true, ajv.errorsText(observationValidator.errors));
+  assert.equal(
+    provenanceValidator({
+      ...provenance,
+      source_artifacts: [
+        { role: "categories", source_artifact_id: `artifact_${"a".repeat(64)}` },
+      ],
+    }),
+    false,
+  );
+  assert.equal(
+    provenanceValidator({
+      ...provenance,
+      source_artifacts: [
+        { role: "primary", source_artifact_id: `artifact_${"a".repeat(64)}` },
+        { role: "primary", source_artifact_id: `artifact_${"b".repeat(64)}` },
+      ],
+    }),
+    false,
+  );
   assert.equal(observationValidator({ ...observation, metric: { ...observation.metric, value: "1.1" } }), false);
   assert.equal(observationValidator({ ...observation, metric: { ...observation.metric, denominator: 0 } }), false);
 });

@@ -27,6 +27,7 @@ from evalrank_core.decision_contracts import (  # noqa: E402
     UnknownUncertaintyV1,
 )
 from evalrank_core.fixtures import PUBLIC_GENERATED_AT, PUBLIC_METHODOLOGY_VERSION  # noqa: E402
+import evalrank_core.materializer as materializer_module  # noqa: E402
 from evalrank_core.materializer import materialize_recommendation  # noqa: E402
 
 
@@ -112,6 +113,28 @@ def _observation(
 
 
 class CoreMaterializerTests(unittest.TestCase):
+    def test_comparison_scale_changes_when_only_an_auxiliary_artifact_changes(self):
+        entity = _entity("model:artifact-provenance")
+        primary_only = _observation(entity, 0.8)
+        with_categories = replace(
+            primary_only,
+            provenance=replace(
+                primary_only.provenance,
+                source_artifacts=(
+                    RunInputArtifactV1(
+                        role="categories",
+                        source_artifact_id=f"artifact_{'b' * 64}",
+                    ),
+                    *primary_only.provenance.source_artifacts,
+                ),
+            ),
+        )
+
+        self.assertNotEqual(
+            materializer_module._comparison_scale(primary_only),
+            materializer_module._comparison_scale(with_categories),
+        )
+
     def test_materializer_emits_deterministic_cached_recommendation_from_public_inputs(self):
         alpha = _entity("model:alpha")
         beta = _entity("model:beta")

@@ -375,7 +375,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         self.assertEqual("evalrank_manifest", payload["object"])
         self.assertEqual("1", payload["schema_version"])
-        self.assertEqual("2026-07-09.2", payload["manifest_version"])
+        self.assertEqual("2026-07-09.3", payload["manifest_version"])
         for key, id_key in (
             ("cells", "cell_id"),
             ("ranking_groups", "ranking_group_id"),
@@ -584,10 +584,19 @@ class CatalogManifestTests(unittest.TestCase):
             for family_id, row in family_by_id.items()
             if row["state"] == "quarantined"
         }
+        shadow = {
+            family_id
+            for family_id, row in family_by_id.items()
+            if row["state"] == "shadow"
+        }
 
         self.assertEqual(
             {"swe-bench-verified", "swe-bench-pro", "steel-current-composites"},
             quarantined,
+        )
+        self.assertEqual(
+            {"bfcl-v4", "livebench-reasoning", "livecodebench", "terminal-bench-2-1"},
+            shadow,
         )
         self.assertEqual(77, len(families))
         self.assertEqual(EXPECTED_FAMILY_IDS, tuple(row["benchmark_family_id"] for row in families))
@@ -600,9 +609,11 @@ class CatalogManifestTests(unittest.TestCase):
                 for row in families
             )
         )
-        self.assertTrue(
-            all(row["state"] == "discovered" for row in families if row["benchmark_family_id"] not in quarantined)
-        )
+        self.assertTrue(all(
+            row["state"] == "discovered"
+            for row in families
+            if row["benchmark_family_id"] not in quarantined | shadow
+        ))
         declared_correlations = {
             row["benchmark_family_id"]: row["correlated_family_group"]
             for row in families
@@ -823,7 +834,7 @@ class CatalogManifestTests(unittest.TestCase):
                 "candidate_cells"
             ].append("factuality"),
             "feed-family state mismatch": lambda payload: payload["feeds"][0].update(
-                state="shadow"
+                state="active"
             ),
             "feed-family entity mismatch": lambda payload: payload["feeds"][0].update(
                 entity_kind="unresolved"

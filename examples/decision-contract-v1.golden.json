@@ -303,6 +303,10 @@
               "feed_id": "livecodebench-discovery",
               "source_artifacts": [
                 {
+                  "role": "categories",
+                  "source_artifact_id": "artifact_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                },
+                {
                   "role": "primary",
                   "source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 }
@@ -373,6 +377,10 @@
               "benchmark_family_id": "livecodebench",
               "feed_id": "livecodebench-discovery",
               "source_artifacts": [
+                {
+                  "role": "categories",
+                  "source_artifact_id": "artifact_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+                },
                 {
                   "role": "primary",
                   "source_artifact_id": "artifact_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -446,8 +454,8 @@
       },
       "abstention_reason": null
     },
-    "body_sha256": "d48c27f4adb7742828c4752a705187cfcd094feb06f54233b937bb343ad769aa",
-    "receipt_id": "receipt_d48c27f4adb7742828c4752a705187cfcd094feb06f54233b937bb343ad769aa"
+    "body_sha256": "ea20662a931a2d5066a2ac7c8131a8e4ebd92b2e4e1395bd52e42fbfe2fa22ac",
+    "receipt_id": "receipt_ea20662a931a2d5066a2ac7c8131a8e4ebd92b2e4e1395bd52e42fbfe2fa22ac"
   },
   "rejection_vectors": [
     {

@@ -11,7 +11,7 @@ Public EvalRank JSON Schema contracts live here.
 - `exclusion.schema.json` mirrors `Exclusion.to_dict()` and is referenced from recommendations.
 - `evidence-item.schema.json` mirrors `EvidenceItem.to_dict()` and core enum constants.
 - `source-artifact.schema.json` content-addresses replayable upstream bytes and their canonical source coordinates.
-- `run-provenance.schema.json` records one closed parser/run envelope referencing a source artifact exactly once.
+- `run-provenance.schema.json` records one closed parser/run envelope with a non-empty role-typed artifact-input set and exactly one `primary`; runtime validators additionally enforce canonical role order and unique artifact IDs.
 - `observation.schema.json` defines closed metric and uncertainty unions for one evaluated configuration.
 - `configuration-passport.schema.json` pins one resolved manifest identity and reproducible configuration.
 - `evaluated-configuration.schema.json` content-addresses a configuration passport.

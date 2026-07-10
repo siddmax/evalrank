@@ -53,8 +53,8 @@ export interface AdapterMetadataV1 {
 }
 
 export interface RunInputArtifactV1 {
-  role: string;
-  source_artifact_id: string;
+  readonly role: string;
+  readonly source_artifact_id: string;
 }
 
 export interface RunProvenanceV1 {
@@ -63,7 +63,7 @@ export interface RunProvenanceV1 {
   run_id: string;
   benchmark_family_id: string;
   feed_id: string;
-  source_artifacts: RunInputArtifactV1[];
+  source_artifacts: readonly [RunInputArtifactV1, ...RunInputArtifactV1[]];
   parser_id: string;
   parser_version: string;
   started_at: string;
@@ -884,13 +884,17 @@ export function parseRunProvenanceV1(value: unknown): RunProvenanceV1 {
   if (!Array.isArray(payload.source_artifacts) || payload.source_artifacts.length === 0) {
     throw new TypeError("source_artifacts must be a non-empty array");
   }
-  const sourceArtifacts = payload.source_artifacts.map((item) => {
+  const sourceArtifactsMutable = payload.source_artifacts.map((item) => {
     const input = closed(item, ["role", "source_artifact_id"]);
-    return {
+    return Object.freeze({
       role: patternString(input.role, /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/, "artifact input role"),
       source_artifact_id: patternString(input.source_artifact_id, artifactIdPattern, "source_artifact_id"),
-    };
+    });
   });
+  const sourceArtifacts = Object.freeze(sourceArtifactsMutable) as unknown as readonly [
+    RunInputArtifactV1,
+    ...RunInputArtifactV1[],
+  ];
   const roles = sourceArtifacts.map((item) => item.role);
   const artifactIds = sourceArtifacts.map((item) => item.source_artifact_id);
   if (roles.some((role, index) => role !== [...roles].sort()[index])) {
