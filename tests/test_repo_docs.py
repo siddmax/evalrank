@@ -7,9 +7,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
-def tracked_paths() -> list[Path]:
+def repository_paths() -> list[Path]:
     result = subprocess.run(
-        ["git", "ls-files"],
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
         cwd=REPO_ROOT,
         check=True,
         text=True,
@@ -27,12 +27,13 @@ class RepoDocsTests(unittest.TestCase):
     def test_scoped_agents_cover_public_work_areas(self):
         package_dirs = {
             f"packages/{path.parts[1]}"
-            for path in tracked_paths()
+            for path in repository_paths()
             if len(path.parts) > 2 and path.parts[0] == "packages"
         }
         scoped_dirs = {
             "docs",
             "examples",
+            "catalog",
             "methods",
             "packages",
             "schemas",
@@ -50,9 +51,10 @@ class RepoDocsTests(unittest.TestCase):
 
     def test_repo_structure_tracks_public_top_level_directories(self):
         text = (REPO_ROOT / "docs" / "REPO_STRUCTURE.md").read_text(encoding="utf-8")
-        top_level_dirs = {path.parts[0] for path in tracked_paths() if len(path.parts) > 1}
+        top_level_dirs = {path.parts[0] for path in repository_paths() if len(path.parts) > 1}
         expected_refs = {
             ".github": ".github/workflows/",
+            "catalog": "catalog/",
             "docs": "docs/",
             "examples": "examples/",
             "methods": "methods/",
@@ -75,21 +77,35 @@ class RepoDocsTests(unittest.TestCase):
         documented = set(re.findall(r"`packages/([^`/]+)/`", text))
         expected = {
             path.parts[1]
-            for path in tracked_paths()
+            for path in repository_paths()
             if len(path.parts) > 2 and path.parts[0] == "packages"
         }
 
         self.assertEqual(expected, documented)
 
-    def test_status_lists_build_logs_exactly(self):
+    def test_status_points_to_current_authorities_without_private_runtime_traces(self):
         text = (REPO_ROOT / "docs" / "STATUS.md").read_text(encoding="utf-8")
-        documented = set(re.findall(r"`(docs/build-log/[^`]+\.md)`", text))
-        expected = {
-            str(path.relative_to(REPO_ROOT))
-            for path in (REPO_ROOT / "docs" / "build-log").glob("*.md")
-        }
 
-        self.assertEqual(expected, documented)
+        for authority in (
+            "docs/PRODUCT.md",
+            "catalog/manifest.json",
+            "methods/evidence-synthesis.md",
+        ):
+            self.assertIn(authority, text)
+        for forbidden in (
+            "Stripe",
+            "billing settlement",
+            "private table count",
+            "live snapshot",
+        ):
+            self.assertNotIn(forbidden, text)
+        self.assertIsNone(
+            re.search(
+                r"\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b",
+                text,
+                re.I,
+            )
+        )
 
     def test_status_mentions_current_porting_workstreams(self):
         status_text = (REPO_ROOT / "docs" / "STATUS.md").read_text(encoding="utf-8")
@@ -111,25 +127,79 @@ class RepoDocsTests(unittest.TestCase):
         self.assertNotEqual([], workstreams)
         self.assertEqual([], missing)
 
-    def test_status_reports_full_spec_and_wave_coverage(self):
+    def test_product_contract_pins_the_user_job_and_decision_boundaries(self):
+        text = (REPO_ROOT / "docs" / "PRODUCT.md").read_text(encoding="utf-8")
+
+        for phrase in (
+            "## User Job",
+            "evaluated configuration",
+            "ServingOffer",
+            "## Receipt UX",
+            "## Catalog And Publication",
+            "## Demand Gates",
+            "## Explicit Exclusions",
+            "There is no predeclared launch cell",
+            "cross-cutting safety veto",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_current_public_plan_contains_only_portable_work(self):
+        path = (
+            REPO_ROOT
+            / "docs"
+            / "superpowers"
+            / "plans"
+            / "2026-07-09-evalrank-public-contract-gap-closure.md"
+        )
+        text = path.read_text(encoding="utf-8")
+
+        for phrase in (
+            "portable contracts",
+            "catalog/manifest.json",
+            "exact ranking groups",
+            "clean checkout",
+        ):
+            self.assertIn(phrase, text.lower())
+        for forbidden in (
+            "/Users/",
+            "Syndai/",
+            "Supabase",
+            "service role",
+            "production deploy",
+        ):
+            self.assertNotIn(forbidden, text)
+
+    def test_default_check_bootstraps_locked_node_dependencies_once(self):
+        workflow = (REPO_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        makefile = (REPO_ROOT / "Makefile").read_text(encoding="utf-8")
+        install = "npm ci --prefix packages/sdk-ts"
+        check = "make check"
+
+        self.assertIn(install, makefile)
+        self.assertIn("packages/sdk-ts/node_modules/.package-lock.json", makefile)
+        self.assertIn(check, workflow)
+        self.assertNotIn(install, workflow)
+        self.assertTrue((REPO_ROOT / "packages" / "sdk-ts" / "package-lock.json").is_file())
+
+        for relative_path in ("AGENTS.md", "README.md", "TESTS.md", "docs/STATUS.md"):
+            with self.subTest(relative_path=relative_path):
+                text = (REPO_ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertIn(check, text)
+
+    def test_status_reports_public_contract_progress_only(self):
         text = (REPO_ROOT / "docs" / "STATUS.md").read_text(encoding="utf-8")
 
         required_markers = (
-            "## Full-Spec Dashboard",
-            "## Agent Completion Rule",
-            "## Coverage Rubric",
-            "## Wave Coverage",
-            "## Spec Coverage",
-            "## Next Vertical Slice",
-            "W6 Engine library and materializer",
-            "Spec 22 Methodology Hardening",
-            "TDD is the preferred way",
-            "Start the local server, `curl`",
-            "Playwright",
+            "## Product Contract",
+            "## Current Public Surface",
+            "## Evidence State",
+            "## Next Public Work",
         )
         missing = [marker for marker in required_markers if marker not in text]
 
         self.assertEqual([], missing)
+        self.assertNotIn("Full-Spec Dashboard", text)
+        self.assertNotIn("billing", text.lower())
 
     def test_public_mcp_docs_do_not_advertise_private_evidence_lookup(self):
         checked_paths = (

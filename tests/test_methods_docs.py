@@ -15,6 +15,25 @@ class MethodsDocsTests(unittest.TestCase):
 
         self.assertEqual(expected, documented)
 
+    def test_evidence_synthesis_defines_public_decision_method(self):
+        text = (REPO_ROOT / "methods" / "evidence-synthesis.md").read_text(encoding="utf-8")
+
+        for phrase in (
+            "provisional aggregate",
+            "native metric",
+            "ranking group",
+            "tie group",
+            "sensitivity",
+            "calibrated bootstrap superiority",
+            "explorer",
+            "top set",
+            "single winner",
+            "challenger",
+            "leave-one-family-out",
+        ):
+            self.assertIn(phrase, text.lower())
+        self.assertNotIn("posterior superiority", text.lower())
+
     def test_scoring_stages_note_tracks_public_catalog_and_private_boundary(self):
         text = (REPO_ROOT / "methods" / "scoring-stages.md").read_text(encoding="utf-8")
 
@@ -43,11 +62,10 @@ class MethodsDocsTests(unittest.TestCase):
             "`entity_kinds`",
             "`rank_policy`",
             "`is_overlay`",
-            "`safety-robustness`",
+            "cross-cutting safety veto",
             "`kind-grouped`",
-            "private thresholds",
-            "held-out tasks",
-            "benchmark outputs",
+            "catalog/manifest.json",
+            "exact ranking group",
         ):
             self.assertIn(phrase, text)
 

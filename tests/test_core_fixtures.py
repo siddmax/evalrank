@@ -7,6 +7,8 @@ CORE_SRC = Path(__file__).resolve().parents[1] / "packages" / "core" / "src"
 sys.path.insert(0, str(CORE_SRC))
 
 from evalrank_core.fixtures import (  # noqa: E402
+    PUBLIC_CATALOG_GENERATED_AT,
+    PUBLIC_CATALOG_METHODOLOGY_VERSION,
     PUBLIC_METHODOLOGY_VERSION,
     PUBLIC_FIXTURE_KINDS,
     sample_capability_fingerprint_input,
@@ -199,11 +201,28 @@ class CoreFixtureTests(unittest.TestCase):
         payload = catalog.to_dict()
 
         self.assertEqual("use_case_catalog", payload["object"])
-        self.assertEqual(PUBLIC_METHODOLOGY_VERSION, payload["methodology_version"])
-        self.assertEqual(22, len(payload["use_cases"]))
-        self.assertEqual(21, sum(1 for row in payload["use_cases"] if row["rank_policy"] == "ranked"))
-        self.assertEqual(["safety-robustness"], [row["id"] for row in payload["use_cases"] if row["is_overlay"]])
+        self.assertEqual(
+            "2026-07-09.2.catalog-manifest-v1",
+            PUBLIC_CATALOG_METHODOLOGY_VERSION,
+        )
+        self.assertEqual(
+            PUBLIC_CATALOG_METHODOLOGY_VERSION,
+            payload["methodology_version"],
+        )
+        self.assertEqual("2026-07-09T00:00:00Z", PUBLIC_CATALOG_GENERATED_AT)
+        self.assertEqual(PUBLIC_CATALOG_GENERATED_AT, payload["generated_at"])
+        self.assertEqual(26, len(payload["use_cases"]))
+        self.assertEqual(26, sum(1 for row in payload["use_cases"] if row["rank_policy"] == "ranked"))
+        self.assertEqual([], [row["id"] for row in payload["use_cases"] if row["is_overlay"]])
         self.assertEqual("code-generation", payload["use_cases"][0]["id"])
+        self.assertEqual(
+            [
+                "professional-deliverable-creation",
+                "machine-learning-engineering",
+                "computational-research-reproduction",
+            ],
+            [row["id"] for row in payload["use_cases"][-3:]],
+        )
         self.assertEqual(["model", "tool", "agent"], payload["use_cases"][0]["entity_kinds"])
 
     def test_sample_scoring_stage_catalog_is_public_contract_payload(self):

@@ -67,6 +67,21 @@ from evalrank_sdk import (  # noqa: E402
     sample_use_case_catalog,
 )
 
+def _manifest_use_cases() -> list[dict]:
+    cells = json.loads((REPO_ROOT / "catalog" / "manifest.json").read_text(encoding="utf-8"))["cells"]
+    return [
+        {
+            "object": "use_case",
+            "id": cell["cell_id"],
+            "name": cell["name"],
+            "definition": cell["definition"],
+            "entity_kinds": cell["entity_kinds"],
+            "rank_policy": "ranked",
+            "is_overlay": False,
+        }
+        for cell in cells
+    ]
+
 
 class PythonSdkTests(unittest.TestCase):
     def test_sdk_readme_lists_public_reexport_surface(self):
@@ -234,7 +249,13 @@ class PythonSdkTests(unittest.TestCase):
         self.assertIs(UseCaseCatalog, CoreUseCaseCatalog)
         self.assertIsInstance(catalog, CoreUseCaseCatalog)
         self.assertEqual("use_case_catalog", catalog.to_dict()["object"])
-        self.assertEqual(22, len(catalog.to_dict()["use_cases"]))
+        self.assertEqual(26, len(catalog.to_dict()["use_cases"]))
+        self.assertEqual(
+            "computational-research-reproduction",
+            catalog.to_dict()["use_cases"][-1]["id"],
+        )
+        self.assertTrue(all(row["rank_policy"] == "ranked" for row in catalog.to_dict()["use_cases"]))
+        self.assertEqual(_manifest_use_cases(), catalog.to_dict()["use_cases"])
 
     def test_recommend_posts_public_request_and_returns_recommendation_json(self):
         server = _SdkTestServer(response_status=200, response_body=sample_recommendation().to_dict())

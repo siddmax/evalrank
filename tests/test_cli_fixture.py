@@ -27,6 +27,21 @@ from evalrank_core.fixtures import (  # noqa: E402
 )
 from evalrank_cli import main  # noqa: E402
 
+def _manifest_use_cases() -> list[dict]:
+    cells = json.loads((REPO_ROOT / "catalog" / "manifest.json").read_text(encoding="utf-8"))["cells"]
+    return [
+        {
+            "object": "use_case",
+            "id": cell["cell_id"],
+            "name": cell["name"],
+            "definition": cell["definition"],
+            "entity_kinds": cell["entity_kinds"],
+            "rank_policy": "ranked",
+            "is_overlay": False,
+        }
+        for cell in cells
+    ]
+
 
 class CliFixtureTests(unittest.TestCase):
     def test_cli_readme_lists_all_public_fixture_commands(self):
@@ -162,8 +177,13 @@ class CliFixtureTests(unittest.TestCase):
         self.assertEqual(0, exit_code)
         payload = json.loads(stdout.getvalue())
         self.assertEqual("use_case_catalog", payload["object"])
-        self.assertEqual(22, len(payload["use_cases"]))
-        self.assertEqual("safety-robustness", payload["use_cases"][-1]["id"])
+        self.assertEqual(26, len(payload["use_cases"]))
+        self.assertEqual(
+            "computational-research-reproduction",
+            payload["use_cases"][-1]["id"],
+        )
+        self.assertTrue(all(row["rank_policy"] == "ranked" for row in payload["use_cases"]))
+        self.assertEqual(_manifest_use_cases(), payload["use_cases"])
 
     def test_fixture_ranking_group_writes_public_json(self):
         stdout = StringIO()

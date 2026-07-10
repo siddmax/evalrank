@@ -27,6 +27,8 @@ from evalrank_core.contracts import (
 
 PUBLIC_METHODOLOGY_VERSION = "2026-06-25.1.public-fixture-v1"
 PUBLIC_GENERATED_AT = "2026-06-25T00:00:00Z"
+PUBLIC_CATALOG_METHODOLOGY_VERSION = "2026-07-09.2.catalog-manifest-v1"
+PUBLIC_CATALOG_GENERATED_AT = "2026-07-09T00:00:00Z"
 PUBLIC_USE_CASE_ID = "web-browsing"
 PUBLIC_FIXTURE_KINDS = (
     "candidate-set",
@@ -48,26 +50,51 @@ PUBLIC_FIXTURE_KINDS = (
 
 _USE_CASE_ROWS = (
     ("code-generation", "Code generation", "Produce correct code from a spec or prompt", ("model", "tool", "agent")),
-    ("autonomous-swe-agent", "Autonomous SWE agent", "End-to-end repo-level engineering", ("model", "agent")),
-    ("function-calling", "Function / tool calling", "Emit correct schema-valid tool calls", ("model", "tool")),
-    ("mcp-tool-orchestration", "MCP tool orchestration", "Chain MCP tools to complete a task", ("model", "tool", "agent")),
-    ("web-browsing", "Web browsing / navigation", "Retrieve and act on live web content", ("model", "tool", "agent")),
-    ("computer-use", "Computer use", "Operate a GUI or desktop to accomplish a task", ("model", "agent")),
-    ("deep-research", "Deep research", "Multi-source synthesis with citations", ("model", "tool", "agent")),
-    ("customer-support", "Customer support agent", "Resolve user issues end to end", ("model", "agent")),
-    ("enterprise-crm-workflow", "Enterprise / CRM workflow", "Execute business workflows over SaaS systems", ("tool", "agent")),
-    ("math-reasoning", "Math / quant reasoning", "Solve quantitative or symbolic problems", ("model",)),
-    ("general-knowledge-qa", "General knowledge / QA", "Answer factual questions accurately", ("model", "tool")),
-    ("rag-retrieval", "RAG / retrieval", "Retrieve relevant context and ground answers", ("model", "tool")),
-    ("long-term-memory", "Long-term memory", "Persist and recall across sessions", ("model", "tool", "agent")),
-    ("finance", "Finance", "Domain-grounded financial reasoning and workflows", ("model", "tool", "agent")),
-    ("legal", "Legal", "Domain-grounded legal reasoning and drafting", ("model", "tool", "agent")),
-    ("medical", "Medical", "Domain-grounded clinical reasoning and QA", ("model", "tool", "agent")),
-    ("multilingual", "Multilingual", "Quality across languages including translation", ("model", "tool", "agent")),
-    ("vision-multimodal", "Vision / multimodal", "Reason over images, audio, or video", ("model", "agent")),
-    ("web-frontend-code-generation", "Web / frontend code generation", "Build and iterate web UIs from a spec", ("model", "agent")),
-    ("devops-sre-terminal", "DevOps / SRE / terminal", "Resolve infra or incident tasks in a terminal", ("model", "agent")),
+    ("autonomous-swe-agent", "Autonomous SWE agent", "Complete repository-level software engineering tasks", ("model", "agent")),
+    (
+        "function-calling",
+        "Function and tool calling",
+        "Emit correct schema-valid tool calls",
+        ("model", "tool", "agent"),
+    ),
+    ("mcp-tool-orchestration", "MCP tool orchestration", "Coordinate MCP tools to complete a task", ("model", "tool", "agent")),
+    ("web-browsing", "Web browsing and navigation", "Retrieve and act on live web content", ("model", "tool", "agent")),
+    ("computer-use", "Computer use", "Operate a graphical interface to complete a task", ("model", "agent")),
+    ("deep-research", "Deep research", "Synthesize multiple sources with traceable citations", ("model", "tool", "agent")),
+    ("customer-support", "Customer support agent", "Resolve user support issues end to end", ("model", "agent")),
+    ("enterprise-crm-workflow", "Enterprise and CRM workflow", "Execute business workflows across enterprise systems", ("tool", "agent")),
+    ("math-reasoning", "Mathematical reasoning", "Solve quantitative or symbolic problems", ("model",)),
+    ("general-knowledge-qa", "General knowledge QA", "Answer broad knowledge questions accurately", ("model", "tool")),
+    ("rag-retrieval", "RAG and retrieval", "Retrieve relevant context and ground an answer", ("model", "tool")),
+    ("long-term-memory", "Long-term memory", "Persist and recall useful information across sessions", ("model", "tool", "agent")),
+    ("finance", "Finance", "Perform domain-grounded financial reasoning and workflows", ("model", "tool", "agent")),
+    ("legal", "Legal", "Perform domain-grounded legal reasoning and drafting", ("model", "tool", "agent")),
+    ("medical", "Medical", "Perform domain-grounded clinical reasoning and question answering", ("model", "tool", "agent")),
+    ("multilingual", "Multilingual", "Maintain quality across languages and translation tasks", ("model", "tool", "agent")),
+    ("vision-multimodal", "Vision and multimodal", "Reason over images, audio, or video", ("model", "agent")),
+    ("web-frontend-code-generation", "Web frontend code generation", "Build and iterate web interfaces from a specification", ("model", "agent")),
+    ("devops-sre-terminal", "DevOps, SRE, and terminal", "Resolve infrastructure or incident tasks in a terminal", ("model", "agent")),
     ("mobile-codegen", "Mobile app code generation", "Build and iterate native or cross-platform mobile apps", ("model", "agent")),
+    ("reasoning", "Reasoning", "Solve novel multi-step reasoning tasks", ("model",)),
+    ("factuality", "Factuality", "Produce correct and grounded factual claims", ("model", "tool")),
+    (
+        "professional-deliverable-creation",
+        "Professional deliverables",
+        "Create review-ready professional work products from a complete brief, domain context, and reference files.",
+        ("model", "agent"),
+    ),
+    (
+        "machine-learning-engineering",
+        "Machine-learning engineering",
+        "Build, train, and optimize machine-learning solutions from datasets and scored task objectives.",
+        ("agent",),
+    ),
+    (
+        "computational-research-reproduction",
+        "Computational research reproduction",
+        "Reproduce published computational results by implementing or executing experiments from papers, code, data, and environments.",
+        ("agent",),
+    ),
 )
 
 
@@ -113,18 +140,10 @@ def sample_use_case_catalog() -> UseCaseCatalog:
         )
         for use_case_id, name, definition, entity_kinds in _USE_CASE_ROWS
     )
-    safety_overlay = UseCase(
-        id="safety-robustness",
-        name="Safety / robustness",
-        definition="Resistance to injection, jailbreak, tool-poisoning, SSRF, rug-pull, or harmful output",
-        entity_kinds=("model", "tool", "agent"),
-        rank_policy="veto_overlay",
-        is_overlay=True,
-    )
     return UseCaseCatalog(
-        methodology_version=PUBLIC_METHODOLOGY_VERSION,
-        generated_at=PUBLIC_GENERATED_AT,
-        use_cases=(*use_cases, safety_overlay),
+        methodology_version=PUBLIC_CATALOG_METHODOLOGY_VERSION,
+        generated_at=PUBLIC_CATALOG_GENERATED_AT,
+        use_cases=use_cases,
     )
 
 

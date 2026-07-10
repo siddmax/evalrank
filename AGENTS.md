@@ -14,6 +14,7 @@
 - During private incubation, Syndai projection scripts may read Syndai-owned source tables as private inputs, but all derived EvalRank rows, caches, catalog rows, grants, RLS policies, and migrations belong in the dedicated private `evalrank` schema.
 - Private Syndai customer identity/control-plane objects, including customer API-key scope catalogs used to authenticate EvalRank routes during incubation, remain in Syndai's own schema because they are shared auth infrastructure, not EvalRank persistence.
 - Keep DB migrations in Syndai until EvalRank has its own deploy/release path or its own Supabase project.
+- Keep the cross-repo link in docs and commit history, not in a long-lived public worktree: public EvalRank work lands on this repo's `main`; private runtime work lands in Syndai; paired changes must record the public EvalRank SHA and private Syndai SHA in `docs/PORTING.md`, `docs/STATUS.md`, or a public-safe `docs/build-log/` entry.
 - If EvalRank later owns persistence, add versioned migrations, update this file, and document the cutover in `README.md` and `docs/build-log/`.
 
 ## Commands
@@ -40,5 +41,6 @@ See `TESTS.md` for the current test map.
 - When a new top-level code area is added, add a scoped `AGENTS.md` if agents need different commands, boundaries, or ownership rules there.
 - When build progress changes, update `docs/STATUS.md`; when directory ownership changes, update `docs/REPO_STRUCTURE.md`.
 - When porting work from Syndai/private systems, update `docs/PORTING.md` and run the public boundary check before committing.
+- When EvalRank work spans this repo and Syndai, do not preserve stale branches or worktrees for continuity. Land each side on its owning branch, record the paired SHAs in public-safe docs, and delete temporary worktrees after verification.
 - When scanning private-side work, route adjacent Memphant, AgentsDB, memory, or general agent-system docs to their own workstream unless there is an explicit storage-free EvalRank contract to port here.
 - When tests or navigable surfaces change, update `TESTS.md` or create/update `NAVIGATION.md` in the same change.

@@ -39,7 +39,7 @@ Run:
 make check
 ```
 
-The boundary gate rejects private imports, Smithery coupling, Min-K% implementation markers, secret files, high-signal secret values, private data paths, and public packages missing license or notice files.
+The target installs the lockfile-pinned, dev-only Draft 2020-12 validator when the TypeScript dependency stamp is absent or stale. The boundary gate rejects private imports, Smithery coupling, Min-K% implementation markers, secret files, high-signal secret values, private data paths, and public packages missing license or notice files.
 
 ## Public API Contract
 

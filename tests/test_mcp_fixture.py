@@ -22,6 +22,21 @@ from evalrank_core.fixtures import sample_scoring_stage_catalog  # noqa: E402
 from evalrank_core.fixtures import sample_use_case_catalog  # noqa: E402
 from evalrank_mcp import call_tool, list_tools  # noqa: E402
 
+def _manifest_use_cases() -> list[dict]:
+    cells = json.loads((REPO_ROOT / "catalog" / "manifest.json").read_text(encoding="utf-8"))["cells"]
+    return [
+        {
+            "object": "use_case",
+            "id": cell["cell_id"],
+            "name": cell["name"],
+            "definition": cell["definition"],
+            "entity_kinds": cell["entity_kinds"],
+            "rank_policy": "ranked",
+            "is_overlay": False,
+        }
+        for cell in cells
+    ]
+
 
 class McpFixtureTests(unittest.TestCase):
     def test_mcp_readme_lists_all_public_fixture_kinds(self):
@@ -177,8 +192,13 @@ class McpFixtureTests(unittest.TestCase):
         self.assertFalse(result["isError"])
         payload = json.loads(result["content"][0]["text"])
         self.assertEqual("use_case_catalog", payload["object"])
-        self.assertEqual(22, len(payload["use_cases"]))
-        self.assertEqual("safety-robustness", payload["use_cases"][-1]["id"])
+        self.assertEqual(26, len(payload["use_cases"]))
+        self.assertEqual(
+            "computational-research-reproduction",
+            payload["use_cases"][-1]["id"],
+        )
+        self.assertTrue(all(row["rank_policy"] == "ranked" for row in payload["use_cases"]))
+        self.assertEqual(_manifest_use_cases(), payload["use_cases"])
 
     def test_call_tool_returns_public_ranking_group_fixture_text(self):
         result = call_tool("evalrank.fixture", {"kind": "ranking-group"})
