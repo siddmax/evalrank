@@ -60,16 +60,16 @@
     }
   },
   "$defs": {
-    "PublicationSnapshotId": {
+    "EvidenceSnapshotId": {
       "type": "string",
-      "pattern": "^snapshot_[0-9a-f]{64}$"
+      "pattern": "^(snapshot|explorer)_[0-9a-f]{64}$"
     },
     "EvaluatedConfigurationId": {
       "type": "string",
       "pattern": "^config_[0-9a-f]{64}$"
     },
     "SnapshotSetDescriptor": {
-      "description": "The exact float-free restricted-JCS preimage for snapshot_set_id. ranking_group_snapshots is one-to-one and UTF-16 sorted by ranking_group_id then publication_snapshot_id on the wire.",
+      "description": "The exact float-free restricted-JCS preimage for snapshot_set_id. ranking_group_snapshots is one-to-one and UTF-16 sorted by ranking_group_id then evidence_snapshot_id on the wire.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -103,18 +103,18 @@
     "RankingGroupSnapshotRef": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ranking_group_id", "publication_snapshot_id"],
+      "required": ["ranking_group_id", "evidence_snapshot_id"],
       "properties": {
         "ranking_group_id": {
           "$ref": "evalrank-manifest.schema.json#/$defs/Slug"
         },
-        "publication_snapshot_id": {
-          "$ref": "#/$defs/PublicationSnapshotId"
+        "evidence_snapshot_id": {
+          "$ref": "#/$defs/EvidenceSnapshotId"
         }
       }
     },
     "EligibilitySummary": {
-      "description": "Typed evidence gap data for explorer UX; counts and gaps are derived from the pinned manifest and publication snapshot.",
+      "description": "Typed evidence gap data for explorer UX; counts and gaps are derived from the pinned manifest and evidence snapshot.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -161,10 +161,11 @@
         "interaction_policy",
         "configuration_passport_class",
         "state",
-        "publication_snapshot_id",
+        "evidence_snapshot_id",
         "eligibility_summary",
         "entries",
-        "citations"
+        "citations",
+        "explorer_views"
       ],
       "properties": {
         "ranking_group_id": {
@@ -203,8 +204,8 @@
         "state": {
           "$ref": "evalrank-manifest.schema.json#/$defs/CatalogState"
         },
-        "publication_snapshot_id": {
-          "$ref": "#/$defs/PublicationSnapshotId"
+        "evidence_snapshot_id": {
+          "$ref": "#/$defs/EvidenceSnapshotId"
         },
         "eligibility_summary": {
           "$ref": "#/$defs/EligibilitySummary"
@@ -221,6 +222,13 @@
           "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/Citation"
+          }
+        },
+        "explorer_views": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ExplorerEvidenceView"
           }
         }
       },
@@ -261,6 +269,10 @@
                 "type": "array",
                 "minItems": 1
               },
+              "explorer_views": {
+                "type": "array",
+                "maxItems": 0
+              },
               "eligibility_summary": {
                 "type": "object",
                 "properties": {
@@ -297,7 +309,7 @@
           "if": {
             "required": ["state"],
             "properties": {
-              "state": {"enum": ["preview", "shadow", "quarantined"]}
+              "state": {"enum": ["preview", "shadow"]}
             }
           },
           "then": {
@@ -311,19 +323,11 @@
               },
               "entries": {
                 "type": "array",
-                "not": {
-                  "contains": {
-                    "type": "object",
-                    "required": ["ranking"],
-                    "properties": {
-                      "ranking": {
-                        "type": "object",
-                        "required": ["in_top_set"],
-                        "properties": {"in_top_set": {"const": true}}
-                      }
-                    }
-                  }
-                }
+                "maxItems": 0
+              },
+              "explorer_views": {
+                "type": "array",
+                "minItems": 1
               }
             }
           }
@@ -369,6 +373,7 @@
               "eligibility_summary": {
                 "type": "object",
                 "properties": {
+                  "published_claim": {"const": "explorer"},
                   "gap_codes": {
                     "type": "array",
                     "contains": {"const": "quarantined"},
@@ -380,6 +385,56 @@
           }
         }
       ]
+    },
+    "ExplorerEvidenceView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "benchmark_family_id",
+        "feed_id",
+        "metric_direction",
+        "observed_at",
+        "expires_at",
+        "agreement",
+        "entries",
+        "citations"
+      ],
+      "properties": {
+        "benchmark_family_id": {
+          "$ref": "evalrank-manifest.schema.json#/$defs/Slug"
+        },
+        "feed_id": {
+          "$ref": "evalrank-manifest.schema.json#/$defs/Slug"
+        },
+        "metric_direction": {
+          "enum": ["higher", "lower"]
+        },
+        "observed_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "expires_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "agreement": {
+          "enum": ["single_source", "promising_not_proven", "conflicting"]
+        },
+        "entries": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/LeaderboardEntry"
+          }
+        },
+        "citations": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Citation"
+          }
+        }
+      }
     },
     "LeaderboardEntry": {
       "type": "object",

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://evalrank.ai/schemas/entity-detail.schema.json",
   "title": "EvalRank Entity Detail",
-  "description": "One exact evaluated configuration in one pinned ranking-group publication.",
+  "description": "One exact evaluated configuration in one pinned ranking-group evidence snapshot.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -15,7 +15,7 @@
     "snapshot_set_descriptor",
     "ranking_group_id",
     "state",
-    "publication_snapshot_id",
+    "evidence_snapshot_id",
     "eligibility_summary",
     "generated_at",
     "entity"
@@ -55,8 +55,8 @@
         "shadow"
       ]
     },
-    "publication_snapshot_id": {
-      "$ref": "leaderboard.schema.json#/$defs/PublicationSnapshotId"
+    "evidence_snapshot_id": {
+      "$ref": "leaderboard.schema.json#/$defs/EvidenceSnapshotId"
     },
     "eligibility_summary": {
       "$ref": "leaderboard.schema.json#/$defs/EligibilitySummary"
