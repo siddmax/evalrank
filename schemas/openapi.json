@@ -83,7 +83,7 @@
         ],
         "operationId": "getEntityDetail",
         "summary": "Read one evaluated configuration",
-        "description": "Return one exact evaluated configuration from its pinned cell and ranking-group publication.",
+        "description": "Return one exact evaluated configuration from its pinned cell and ranking-group evidence snapshot. An explorer view may be selected by its immutable family/feed identity.",
         "parameters": [
           {
             "name": "entity_type",
@@ -110,6 +110,20 @@
               "type": "string",
               "pattern": "^[a-z0-9]+(?:[._:-][a-z0-9]+)*$"
             }
+          },
+          {
+            "name": "benchmark_family_id",
+            "in": "query",
+            "required": false,
+            "description": "Explorer benchmark family selector; must be paired with feed_id.",
+            "schema": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}
+          },
+          {
+            "name": "feed_id",
+            "in": "query",
+            "required": false,
+            "description": "Explorer feed selector; must be paired with benchmark_family_id.",
+            "schema": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}
           }
         ],
         "responses": {
@@ -145,7 +159,7 @@
         ],
         "operationId": "compareEntities",
         "summary": "Compare evaluated configurations",
-        "description": "Compare two to four unique evaluated configurations within one exact ranking-group publication. Cross-group comparisons are invalid.",
+        "description": "Compare two to four unique evaluated configurations within one exact ranking-group evidence snapshot. Cross-group and cross-explorer-view comparisons are invalid.",
         "parameters": [
           {
             "name": "use_case",
@@ -174,6 +188,20 @@
                 "pattern": "^(agent_system|arena_system|component_configuration|model_configuration|system_configuration):[a-z0-9]+(?:[._:-][a-z0-9]+)*$"
               }
             }
+          },
+          {
+            "name": "benchmark_family_id",
+            "in": "query",
+            "required": false,
+            "description": "Explorer benchmark family selector; must be paired with feed_id.",
+            "schema": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}
+          },
+          {
+            "name": "feed_id",
+            "in": "query",
+            "required": false,
+            "description": "Explorer feed selector; must be paired with benchmark_family_id.",
+            "schema": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"}
           }
         ],
         "responses": {

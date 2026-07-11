@@ -235,24 +235,10 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "lower must be <= upper"):
             verify_leaderboard_semantics(bad_interval)
 
-        false_gap = deepcopy(leaderboard)
-        false_gap_group = false_gap["ranking_groups"][0]
-        false_gap_group["state"] = "preview"
-        false_gap_group["entries"][0]["ranking"]["in_top_set"] = False
-        false_gap_group["explorer_views"] = [{"entries": false_gap_group.pop("entries")}]
-        false_gap_group["entries"] = []
-        false_gap_group["eligibility_summary"] = {
-            **false_gap_group["eligibility_summary"],
-            "published_claim": "explorer",
-            "rank_eligible_configuration_count": 0,
-            "calibration_status": "unvalidated",
-            "gap_codes": [
-                "calibration_unvalidated",
-                "insufficient_independent_families",
-                "no_rank_eligible_configurations",
-            ],
-        }
-        false_gap = _with_evidence_snapshot_id(false_gap, f"explorer_{'f' * 64}")
+        false_gap = _explorer_leaderboard()
+        false_gap["ranking_groups"][0]["eligibility_summary"]["gap_codes"].remove(
+            "insufficient_independent_families"
+        )
         with self.assertRaisesRegex(ValueError, "insufficient_independent_families"):
             verify_leaderboard_semantics(false_gap)
 
@@ -277,7 +263,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "calibration_status": "unvalidated",
             "gap_codes": ["calibration_unvalidated"],
         }
-        with self.assertRaisesRegex(ValueError, "explorer groups cannot expose calibrated entries"):
+        with self.assertRaisesRegex(ValueError, "explorer evidence"):
             verify_leaderboard_semantics(preview_calibrated)
 
         for state in ("preview", "shadow"):
@@ -296,7 +282,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
                 "gap_codes": ["calibration_unvalidated", "no_rank_eligible_configurations"],
             }
             with self.subTest(state=state):
-                with self.assertRaisesRegex(ValueError, "snapshot evidence cannot expose explorer views"):
+                with self.assertRaisesRegex(ValueError, "explorer evidence"):
                     verify_leaderboard_semantics(snapshot_with_view)
 
         explorer_without_view = _with_evidence_snapshot_id(
@@ -314,27 +300,54 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "calibration_status": "unvalidated",
             "gap_codes": ["calibration_unvalidated"],
         }
-        with self.assertRaisesRegex(ValueError, "non-active reads cannot claim top-set"):
+        with self.assertRaisesRegex(ValueError, "explorer evidence"):
             verify_leaderboard_semantics(preview_top_set)
 
-        explorer_top_set = deepcopy(leaderboard)
-        group = explorer_top_set["ranking_groups"][0]
-        explorer_entry = deepcopy(group["entries"][0])
-        group["state"] = "preview"
-        group["entries"] = []
-        group["explorer_views"] = [{"entries": [explorer_entry]}]
-        group["eligibility_summary"] = {
-            **group["eligibility_summary"],
-            "published_claim": "explorer",
-            "rank_eligible_configuration_count": 0,
-            "calibration_status": "unvalidated",
-            "gap_codes": ["calibration_unvalidated", "no_rank_eligible_configurations"],
-        }
-        explorer_top_set = _with_evidence_snapshot_id(
-            explorer_top_set, f"explorer_{'e' * 64}"
-        )
+        explorer_top_set = _explorer_leaderboard()
+        explorer_top_set["ranking_groups"][0]["explorer_views"][0]["entries"][0][
+            "ranking"
+        ]["in_top_set"] = True
         with self.assertRaisesRegex(ValueError, "explorer views cannot claim top-set"):
             verify_leaderboard_semantics(explorer_top_set)
+
+    def test_explorer_views_are_independently_ranked_family_bound_and_freshness_truthful(self):
+        leaderboard = _explorer_leaderboard()
+        verify_leaderboard_semantics(leaderboard)
+
+        mutations = (
+            ("duplicate configuration", lambda view: view["entries"].append(deepcopy(view["entries"][0])), "unique"),
+            ("gapped rank", lambda view: view["entries"][1]["ranking"].__setitem__("rank", 3), "contiguous"),
+            ("wrong family citation", lambda view: view["citations"][0].__setitem__("benchmark_family_id", "other-family"), "citation"),
+            ("wrong family count", lambda view: view["entries"][0]["ranking"].__setitem__("evidence_family_count", 2), "evidence_family_count"),
+            ("wrong agreement", lambda view: view.__setitem__("agreement", "promising_not_proven"), "agreement"),
+            ("expired but fresh", lambda view: view["entries"][0]["ranking"].__setitem__("caveat_codes", []), "evidence_stale"),
+            ("invalid expiry order", lambda view: view.__setitem__("expires_at", "2026-07-08T00:00:00Z"), "expires_at"),
+        )
+        for label, mutate, message in mutations:
+            with self.subTest(label=label):
+                invalid = deepcopy(leaderboard)
+                mutate(invalid["ranking_groups"][0]["explorer_views"][0])
+                with self.assertRaisesRegex(ValueError, message):
+                    verify_leaderboard_semantics(invalid)
+
+    def test_runtime_read_verifiers_enforce_closed_shape_and_state_prefix(self):
+        leaderboard = _active_leaderboard()
+        group = leaderboard["ranking_groups"][0]
+        for state, snapshot_id in (("active", f"explorer_{'e' * 64}"), ("preview", f"snapshot_{'e' * 64}")):
+            invalid = _with_evidence_snapshot_id(leaderboard, snapshot_id)
+            invalid["ranking_groups"][0]["state"] = state
+            with self.subTest(state=state):
+                with self.assertRaisesRegex(ValueError, "evidence"):
+                    verify_leaderboard_semantics(invalid)
+
+        missing = deepcopy(leaderboard)
+        del missing["generated_at"]
+        with self.assertRaisesRegex(ValueError, "fields"):
+            verify_leaderboard_semantics(missing)
+        extra = deepcopy(leaderboard)
+        extra["private"] = True
+        with self.assertRaisesRegex(ValueError, "fields"):
+            verify_leaderboard_semantics(extra)
 
     def test_compare_semantics_reject_same_configuration_with_different_rows(self):
         leaderboard = _active_leaderboard()
@@ -344,16 +357,26 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         second["evaluated_configuration_id"] = f"config_{'d' * 64}"
         second["ranking"]["rank"] = 2
         compare = {
+            "object": "compare_result",
+            "schema_version": "1",
             "cell_id": leaderboard["cell_id"],
             "manifest_version": leaderboard["manifest_version"],
             "methodology_version": leaderboard["methodology_version"],
             "snapshot_set_id": leaderboard["snapshot_set_id"],
             "snapshot_set_descriptor": leaderboard["snapshot_set_descriptor"],
             "ranking_group_id": group["ranking_group_id"],
+            "entity_kind": group["entity_kind"],
+            "interaction_policy": group["interaction_policy"],
+            "configuration_passport_class": group["configuration_passport_class"],
             "evidence_snapshot_id": group["evidence_snapshot_id"],
+            "explorer_view": None,
             "state": "active",
             "eligibility_summary": group["eligibility_summary"],
-            "entities": [first, second],
+            "generated_at": leaderboard["generated_at"],
+            "entities": [
+                {**first, "citations": deepcopy(group["citations"])},
+                {**second, "citations": deepcopy(group["citations"])},
+            ],
         }
         verify_compare_result_semantics(compare)
 
@@ -399,17 +422,30 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "snapshot_set_descriptor": leaderboard["snapshot_set_descriptor"],
             "ranking_group_id": group["ranking_group_id"],
             "evidence_snapshot_id": group["evidence_snapshot_id"],
+            "explorer_view": None,
             "state": "active",
             "eligibility_summary": group["eligibility_summary"],
+            "generated_at": leaderboard["generated_at"],
         }
         entity = {
+            "object": "entity_detail",
+            "schema_version": "1",
             **common,
             "entity": {
                 "evaluated_configuration": evaluated_configuration,
                 "ranking": entry["ranking"],
+                "citations": deepcopy(group["citations"]),
             },
         }
-        compare = {**common, "entities": [entry]}
+        compare = {
+            "object": "compare_result",
+            "schema_version": "1",
+            **common,
+            "entity_kind": group["entity_kind"],
+            "interaction_policy": group["interaction_policy"],
+            "configuration_passport_class": group["configuration_passport_class"],
+            "entities": [{**entry, "citations": deepcopy(group["citations"])}],
+        }
         verify_entity_detail_semantics(entity)
         verify_compare_result_semantics(compare)
 
@@ -438,15 +474,21 @@ def _active_leaderboard() -> dict:
         ),
     )
     return {
+        "object": "leaderboard",
+        "schema_version": "1",
+        "cell_state": "active",
         "cell_id": descriptor.cell_id,
         "manifest_version": descriptor.manifest_version,
         "methodology_version": descriptor.methodology_version,
         "snapshot_set_id": descriptor.snapshot_set_id,
         "snapshot_set_descriptor": descriptor.to_dict(),
+        "generated_at": "2026-07-10T00:00:00Z",
         "ranking_groups": [
             {
                 "ranking_group_id": ranking_group_id,
                 "entity_kind": "model_configuration",
+                "interaction_policy": "direct_prompt",
+                "configuration_passport_class": "model-configuration-v1",
                 "state": "active",
                 "evidence_snapshot_id": snapshot_id,
                 "eligibility_summary": {
@@ -473,13 +515,61 @@ def _active_leaderboard() -> dict:
                                 "upper": 0.85,
                             },
                             "in_top_set": True,
+                            "evidence_family_count": 3,
+                            "caveat_codes": [],
                         },
                     }
                 ],
+                "citations": [{
+                    "benchmark_family_id": "family-a",
+                    "source_artifact_id": f"artifact_{'a' * 64}",
+                    "title": "Family A",
+                    "url": "https://example.com/a",
+                }],
                 "explorer_views": [],
             }
         ],
     }
+
+
+def _explorer_leaderboard() -> dict:
+    leaderboard = _active_leaderboard()
+    group = leaderboard["ranking_groups"][0]
+    first = deepcopy(group["entries"][0])
+    first["ranking"].update(rank=1, in_top_set=False, evidence_family_count=1, caveat_codes=["evidence_stale"])
+    second = deepcopy(first)
+    second["evaluated_configuration_id"] = f"config_{'d' * 64}"
+    second["ranking"].update(rank=2, display_name="Second")
+    group.update(
+        state="preview",
+        entries=[],
+        explorer_views=[{
+            "benchmark_family_id": "family-a",
+            "feed_id": "family-a-feed",
+            "metric_direction": "higher",
+            "observed_at": "2026-07-09T00:00:00Z",
+            "expires_at": "2026-07-09T12:00:00Z",
+            "agreement": "single_source",
+            "entries": [first, second],
+            "citations": [{
+                "benchmark_family_id": "family-a",
+                "source_artifact_id": f"artifact_{'a' * 64}",
+                "title": "Family A",
+                "url": "https://example.com/a",
+            }],
+        }],
+        eligibility_summary={
+            "published_claim": "explorer",
+            "rank_eligible_configuration_count": 0,
+            "current_independent_family_count": 1,
+            "required_independent_family_count": 3,
+            "current_overlap_count": 2,
+            "required_overlap_count": 2,
+            "calibration_status": "unvalidated",
+            "gap_codes": ["calibration_unvalidated", "evidence_stale", "insufficient_independent_families", "no_rank_eligible_configurations"],
+        },
+    )
+    return _with_evidence_snapshot_id(leaderboard, f"explorer_{'e' * 64}")
 
 
 def _with_evidence_snapshot_id(leaderboard: dict, evidence_snapshot_id: str) -> dict:

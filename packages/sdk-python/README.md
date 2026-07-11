@@ -14,7 +14,7 @@ The SDK re-exports the portable core, including `CapabilityFingerprintInput`, `R
 `EvalRankClient` and `EvalRankApiError` cover all seven launch routes:
 
 - `use_cases()` and `benchmark_health()`
-- `leaderboard(use_case)`, `entity(entity_type, slug)`, and `compare(use_case, entities)` with semantic verification
+- `leaderboard(use_case)`, `entity(entity_type, slug, explorer_view=(family_id, feed_id))`, and `compare(use_case, entities, explorer_view=(family_id, feed_id))` with closed-shape semantic verification
 - `decide(query, share=False)` with local `DecisionQueryV1` validation and `DecisionReceiptV1` hash verification
 - `decision_receipt(receipt_id)` for an explicitly shared immutable receipt
 

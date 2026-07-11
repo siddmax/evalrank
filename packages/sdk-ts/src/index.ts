@@ -261,6 +261,11 @@ export interface ExplorerEvidenceView {
   citations: Citation[];
 }
 
+export interface ExplorerViewIdentity {
+  benchmark_family_id: string;
+  feed_id: string;
+}
+
 export interface LeaderboardSection {
   ranking_group_id: string;
   entity_kind: string;
@@ -298,6 +303,7 @@ export interface EntityDetail {
   ranking_group_id: string;
   state: string;
   evidence_snapshot_id: string;
+  explorer_view: ExplorerViewIdentity | null;
   eligibility_summary: Record<string, unknown>;
   generated_at: string;
   entity: Record<string, unknown>;
@@ -317,6 +323,7 @@ export interface CompareResult {
   configuration_passport_class: string;
   state: string;
   evidence_snapshot_id: string;
+  explorer_view: ExplorerViewIdentity | null;
   eligibility_summary: Record<string, unknown>;
   generated_at: string;
   entities: Array<Record<string, unknown>>;
@@ -430,6 +437,7 @@ export class EvalRankClient {
   async entity(
     entityType: "agent_system" | "arena_system" | "component_configuration" | "model_configuration" | "system_configuration",
     slug: string,
+    explorerView?: ExplorerViewIdentity,
   ): Promise<EntityDetail> {
     if (![
       "agent_system",
@@ -443,14 +451,13 @@ export class EvalRankClient {
     if (!/^[a-z0-9]+(?:[._:-][a-z0-9]+)*$/.test(slug)) {
       throw new TypeError("slug must be a canonical public entity slug or configuration ID");
     }
-    const response = await this.requestJson<EntityDetail>(
-      `/v1/entities/${entityType}/${slug}`,
-    );
+    const selector = explorerView === undefined ? "" : `?${explorerViewSearch(explorerView)}`;
+    const response = await this.requestJson<EntityDetail>(`/v1/entities/${entityType}/${slug}${selector}`);
     await verifyEntityDetailSemantics(response);
     return response;
   }
 
-  async compare(useCase: string, entities: string[]): Promise<CompareResult> {
+  async compare(useCase: string, entities: string[], explorerView?: ExplorerViewIdentity): Promise<CompareResult> {
     requireSlug(useCase, "useCase");
     if (!Array.isArray(entities) || entities.length < 2 || entities.length > 4) {
       throw new TypeError("entities must contain two to four references");
@@ -465,6 +472,11 @@ export class EvalRankClient {
       use_case: useCase,
       entities: entities.join(","),
     });
+    if (explorerView !== undefined) {
+      requireExplorerView(explorerView);
+      search.set("benchmark_family_id", explorerView.benchmark_family_id);
+      search.set("feed_id", explorerView.feed_id);
+    }
     const response = await this.requestJson<CompareResult>(`/v1/compare?${search}`);
     await verifyCompareResultSemantics(response);
     return response;
@@ -604,6 +616,17 @@ function requireSlug(value: string, name: string): void {
   if (typeof value !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
     throw new TypeError(`${name} must be a canonical slug`);
   }
+}
+
+function requireExplorerView(value: ExplorerViewIdentity): void {
+  if (typeof value !== "object" || value === null) throw new TypeError("explorerView must be an object");
+  requireSlug(value.benchmark_family_id, "benchmark_family_id");
+  requireSlug(value.feed_id, "feed_id");
+}
+
+function explorerViewSearch(value: ExplorerViewIdentity): URLSearchParams {
+  requireExplorerView(value);
+  return new URLSearchParams(value);
 }
 
 export * from "./decision-contracts.ts";

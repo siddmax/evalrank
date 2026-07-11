@@ -1197,12 +1197,22 @@ async function clientReadPayloads() {
     capability_score: 1,
     uncertainty: { kind: "interval", level: 1, lower: 1, upper: 1 },
     in_top_set: true,
+    evidence_family_count: 3,
+    caveat_codes: [],
   }, {
     rank: 2,
     display_name: "Reference model B",
     capability_score: 0,
     uncertainty: { kind: "interval", level: 1, lower: 0, upper: 0 },
     in_top_set: false,
+    evidence_family_count: 3,
+    caveat_codes: [],
+  }];
+  const citations = [{
+    source_artifact_id: `artifact_${"a".repeat(64)}`,
+    benchmark_family_id: "family-a",
+    title: "Family A",
+    url: "https://example.com/a",
   }];
   const common = {
     schema_version: "1" as const,
@@ -1216,6 +1226,8 @@ async function clientReadPayloads() {
   const group = {
     ranking_group_id: rankingGroupId,
     entity_kind: "model_configuration",
+    interaction_policy: "direct_prompt",
+    configuration_passport_class: "model-configuration-v1",
     state: "active",
     evidence_snapshot_id: evidenceSnapshotId,
     eligibility_summary: eligibility,
@@ -1223,6 +1235,7 @@ async function clientReadPayloads() {
       evaluated_configuration_id: id,
       ranking: rankings[index],
     })),
+    citations,
     explorer_views: [],
   };
   const leaderboard = {
@@ -1237,6 +1250,7 @@ async function clientReadPayloads() {
     ranking_group_id: rankingGroupId,
     state: "active",
     evidence_snapshot_id: evidenceSnapshotId,
+    explorer_view: null,
     eligibility_summary: eligibility,
     entity: {
       evaluated_configuration: {
@@ -1246,6 +1260,7 @@ async function clientReadPayloads() {
         passport,
       },
       ranking: rankings[0],
+      citations,
     },
   };
   const compare = {
@@ -1257,10 +1272,12 @@ async function clientReadPayloads() {
     configuration_passport_class: "model-configuration-v1",
     state: "active",
     evidence_snapshot_id: evidenceSnapshotId,
+    explorer_view: null,
     eligibility_summary: eligibility,
     entities: [firstId, secondId].map((id, index) => ({
       evaluated_configuration_id: id,
       ranking: rankings[index],
+      citations,
     })),
   };
   return {

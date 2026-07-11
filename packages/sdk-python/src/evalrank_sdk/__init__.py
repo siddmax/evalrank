@@ -135,7 +135,13 @@ class EvalRankClient:
         verify_leaderboard_semantics(response)
         return response
 
-    def entity(self, entity_type: str, slug: str) -> dict[str, Any]:
+    def entity(
+        self,
+        entity_type: str,
+        slug: str,
+        *,
+        explorer_view: tuple[str, str] | None = None,
+    ) -> dict[str, Any]:
         if entity_type not in {
             "agent_system",
             "arena_system",
@@ -145,11 +151,18 @@ class EvalRankClient:
         }:
             raise ValueError("entity_type is not a public evaluated-configuration kind")
         _require_entity_slug(slug)
-        response = self._request_json(f"/v1/entities/{entity_type}/{slug}")
+        selector = _explorer_view_query(explorer_view)
+        response = self._request_json(f"/v1/entities/{entity_type}/{slug}{selector}")
         verify_entity_detail_semantics(response)
         return response
 
-    def compare(self, use_case: str, entities: tuple[str, ...]) -> dict[str, Any]:
+    def compare(
+        self,
+        use_case: str,
+        entities: tuple[str, ...],
+        *,
+        explorer_view: tuple[str, str] | None = None,
+    ) -> dict[str, Any]:
         _require_slug("use_case", use_case)
         if not isinstance(entities, tuple) or not 2 <= len(entities) <= 4:
             raise ValueError("entities must be a tuple containing two to four references")
@@ -165,9 +178,11 @@ class EvalRankClient:
             for entity in entities
         ):
             raise ValueError("entities contains an invalid evaluated-configuration reference")
-        query = urllib.parse.urlencode(
-            {"use_case": use_case, "entities": ",".join(entities)}
-        )
+        parameters = {"use_case": use_case, "entities": ",".join(entities)}
+        if explorer_view is not None:
+            family_id, feed_id = _validate_explorer_view(explorer_view)
+            parameters.update(benchmark_family_id=family_id, feed_id=feed_id)
+        query = urllib.parse.urlencode(parameters)
         response = self._request_json(f"/v1/compare?{query}")
         verify_compare_result_semantics(response)
         return response
@@ -221,6 +236,23 @@ def _require_slug(name: str, value: Any) -> None:
         r"[a-z0-9]+(?:-[a-z0-9]+)*", value
     ):
         raise ValueError(f"{name} must be a canonical slug")
+
+
+def _validate_explorer_view(value: tuple[str, str]) -> tuple[str, str]:
+    if not isinstance(value, tuple) or len(value) != 2:
+        raise ValueError("explorer_view must be a benchmark-family/feed tuple")
+    _require_slug("benchmark_family_id", value[0])
+    _require_slug("feed_id", value[1])
+    return value
+
+
+def _explorer_view_query(value: tuple[str, str] | None) -> str:
+    if value is None:
+        return ""
+    family_id, feed_id = _validate_explorer_view(value)
+    return "?" + urllib.parse.urlencode(
+        {"benchmark_family_id": family_id, "feed_id": feed_id}
+    )
 
 
 def _require_entity_slug(value: Any) -> None:

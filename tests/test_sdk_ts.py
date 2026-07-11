@@ -110,7 +110,7 @@ class TypeScriptSdkTests(unittest.TestCase):
             "async benchmarkHealth(): Promise<BenchmarkHealth>",
             "async leaderboard(useCase: string): Promise<Leaderboard>",
             "async entity(",
-            "async compare(useCase: string, entities: string[]): Promise<CompareResult>",
+            "async compare(useCase: string, entities: string[], explorerView?: ExplorerViewIdentity): Promise<CompareResult>",
             "async decide(",
             "async decisionReceipt(receiptId: string): Promise<DecisionReceiptV1>",
         ):

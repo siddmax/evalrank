@@ -97,9 +97,6 @@ class _ReferenceHandler(BaseHTTPRequestHandler):
         if target.path == "/v1/compare":
             self._serve_compare(target.query)
             return
-        if target.query:
-            self._problem(400, "validation", "This GET route does not accept query parameters")
-            return
         if target.path == "/v1/use-cases":
             self._json(200, self.server.use_cases_bytes)
             return
@@ -115,6 +112,9 @@ class _ReferenceHandler(BaseHTTPRequestHandler):
             return
         entity_match = _ENTITY_PATH_RE.fullmatch(target.path)
         if entity_match is not None:
+            if not _selected_reference_view(target.query):
+                self._problem(400, "validation", "Explorer selectors must identify the reference family and feed")
+                return
             if entity_match.group(1) != "model_configuration":
                 self._problem(404, "not_found", "The requested entity was not found")
                 return
@@ -123,6 +123,9 @@ class _ReferenceHandler(BaseHTTPRequestHandler):
                 self._problem(404, "not_found", "The requested entity was not found")
                 return
             self._json(200, body)
+            return
+        if target.query:
+            self._problem(400, "validation", "This GET route does not accept query parameters")
             return
         match = _RECEIPT_PATH_RE.fullmatch(target.path)
         if match is not None:
@@ -147,10 +150,16 @@ class _ReferenceHandler(BaseHTTPRequestHandler):
         except ValueError:
             self._problem(400, "validation", "Malformed compare query parameters")
             return
-        if set(query) != {"use_case", "entities"} or any(
+        if set(query) not in (
+            {"use_case", "entities"},
+            {"use_case", "entities", "benchmark_family_id", "feed_id"},
+        ) or any(
             len(values) != 1 for values in query.values()
         ):
             self._problem(400, "validation", "compare requires one use_case and one entities value")
+            return
+        if not _selected_reference_view_values(query):
+            self._problem(400, "validation", "Explorer selectors must identify the reference family and feed")
             return
         if query["use_case"][0] != "code-generation":
             self._problem(404, "not_found", "The requested cell was not found")
@@ -287,6 +296,25 @@ def _share_parameter(query: str) -> bool | None:
     return None
 
 
+def _selected_reference_view(query: str) -> bool:
+    if not query:
+        return True
+    try:
+        return _selected_reference_view_values(
+            parse_qs(query, keep_blank_values=True, strict_parsing=True)
+        )
+    except ValueError:
+        return False
+
+
+def _selected_reference_view_values(query: dict[str, list[str]]) -> bool:
+    selectors = {key: value for key, value in query.items() if key not in {"use_case", "entities"}}
+    return not selectors or selectors == {
+        "benchmark_family_id": ["reference-public-family"],
+        "feed_id": ["reference-public-feed"],
+    }
+
+
 def _json_content_type(value: str | None) -> tuple[str | None, bool]:
     if value is None:
         return None, False
@@ -406,7 +434,7 @@ def _public_read_fixtures() -> dict[str, Any]:
             "capability_score": 1,
             "uncertainty": {"kind": "interval", "level": 1, "lower": 1, "upper": 1},
             "in_top_set": False,
-            "evidence_family_count": 3,
+            "evidence_family_count": 1,
             "caveat_codes": [],
         },
         {
@@ -415,7 +443,7 @@ def _public_read_fixtures() -> dict[str, Any]:
             "capability_score": 0,
             "uncertainty": {"kind": "interval", "level": 1, "lower": 0, "upper": 0},
             "in_top_set": False,
-            "evidence_family_count": 3,
+            "evidence_family_count": 1,
             "caveat_codes": [],
         },
     )
@@ -474,6 +502,10 @@ def _public_read_fixtures() -> dict[str, Any]:
             "ranking_group_id": ranking_group_id,
             "state": "preview",
             "evidence_snapshot_id": evidence_snapshot_id,
+            "explorer_view": {
+                "benchmark_family_id": "reference-public-family",
+                "feed_id": "reference-public-feed",
+            },
             "eligibility_summary": eligibility,
             "entity": {
                 "evaluated_configuration": configuration.to_dict(),
@@ -492,6 +524,10 @@ def _public_read_fixtures() -> dict[str, Any]:
         "configuration_passport_class": "model-configuration-v1",
         "state": "preview",
         "evidence_snapshot_id": evidence_snapshot_id,
+        "explorer_view": {
+            "benchmark_family_id": "reference-public-family",
+            "feed_id": "reference-public-feed",
+        },
         "eligibility_summary": eligibility,
         "entities": [
             {

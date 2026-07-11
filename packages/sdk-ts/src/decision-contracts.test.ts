@@ -838,7 +838,7 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
     snapshotWithView.snapshot_set_id = await snapshotSetId(snapshotWithView.snapshot_set_descriptor);
     await assert.rejects(
       () => verifyLeaderboardSemantics(snapshotWithView),
-      /snapshot evidence cannot expose explorer views/,
+      /explorer evidence/,
     );
   }
 
@@ -862,7 +862,7 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
   };
   await assert.rejects(
     () => verifyLeaderboardSemantics(previewCalibrated),
-    /explorer groups cannot expose calibrated entries/,
+    /explorer evidence/,
   );
 
   const previewTopSet = await previewLeaderboard(leaderboard);
@@ -871,6 +871,22 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
     () => verifyLeaderboardSemantics(previewTopSet),
     /explorer views cannot claim top-set membership/,
   );
+
+  for (const [label, mutate, pattern] of [
+    ["duplicate configuration", (value: typeof previewTopSet) => value.ranking_groups[0].explorer_views[0].entries.push(structuredClone(value.ranking_groups[0].explorer_views[0].entries[0])), /unique/],
+    ["gapped rank", (value: typeof previewTopSet) => { value.ranking_groups[0].explorer_views[0].entries[0].ranking.rank = 2; }, /contiguous/],
+    ["family count", (value: typeof previewTopSet) => { value.ranking_groups[0].explorer_views[0].entries[0].ranking.evidence_family_count = 2; }, /evidence_family_count/],
+    ["citation family", (value: typeof previewTopSet) => { value.ranking_groups[0].explorer_views[0].citations[0].benchmark_family_id = "other-family"; }, /citation/],
+    ["agreement", (value: typeof previewTopSet) => { value.ranking_groups[0].explorer_views[0].agreement = "conflicting"; }, /agreement/],
+    ["freshness", (value: typeof previewTopSet) => {
+      value.ranking_groups[0].explorer_views[0].observed_at = "2026-07-08T00:00:00Z";
+      value.ranking_groups[0].explorer_views[0].expires_at = "2026-07-09T00:00:00Z";
+    }, /evidence_stale/],
+  ] as const) {
+    const invalid = await previewLeaderboard(leaderboard);
+    mutate(invalid);
+    await assert.rejects(() => verifyLeaderboardSemantics(invalid), pattern, label);
+  }
 
   const duplicateGroup = structuredClone(leaderboard);
   duplicateGroup.ranking_groups.push(structuredClone(duplicateGroup.ranking_groups[0]));
@@ -900,6 +916,7 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
   };
   const evaluated_configuration_id = await evaluatedConfigurationId(passport);
   const common = {
+    schema_version: "1",
     cell_id: leaderboard.cell_id,
     manifest_version: leaderboard.manifest_version,
     methodology_version: leaderboard.methodology_version,
@@ -907,11 +924,14 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
     snapshot_set_descriptor: leaderboard.snapshot_set_descriptor,
     ranking_group_id: group.ranking_group_id,
     evidence_snapshot_id: group.evidence_snapshot_id,
+    explorer_view: null,
     state: "active",
     eligibility_summary: group.eligibility_summary,
+    generated_at: leaderboard.generated_at,
   };
   const ranking = structuredClone(group.entries[0].ranking);
   const entity = {
+    object: "entity_detail",
     ...common,
     entity: {
       evaluated_configuration: {
@@ -921,15 +941,20 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
         passport,
       },
       ranking,
+      citations: group.citations,
     },
   };
   const compare = {
+    object: "compare_result",
     ...common,
+    entity_kind: group.entity_kind,
+    interaction_policy: group.interaction_policy,
+    configuration_passport_class: group.configuration_passport_class,
     entities: [
-      { evaluated_configuration_id, ranking: structuredClone(ranking) },
+      { evaluated_configuration_id, ranking: structuredClone(ranking), citations: group.citations },
       {
         evaluated_configuration_id: `config_${"d".repeat(64)}`,
-        ranking: { ...structuredClone(ranking), rank: 2 },
+        ranking: { ...structuredClone(ranking), rank: 2 }, citations: group.citations,
       },
     ],
   };
@@ -965,7 +990,7 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
   previewEntity.eligibility_summary = previewEligibility();
   await assert.rejects(
     () => verifyEntityDetailSemantics(previewEntity),
-    /non-active reads cannot claim top-set membership/,
+    /explorer evidence/,
   );
 });
 
@@ -981,14 +1006,20 @@ async function activeLeaderboard() {
     ranking_group_snapshots: [{ ranking_group_id, evidence_snapshot_id }],
   });
   return {
+    object: "leaderboard",
+    schema_version: "1",
+    cell_state: "active",
     cell_id: snapshot_set_descriptor.cell_id,
     manifest_version: snapshot_set_descriptor.manifest_version,
     methodology_version: snapshot_set_descriptor.methodology_version,
     snapshot_set_id: await snapshotSetId(snapshot_set_descriptor),
     snapshot_set_descriptor,
+    generated_at: "2026-07-10T00:00:00Z",
     ranking_groups: [{
       ranking_group_id,
       entity_kind: "model_configuration",
+      interaction_policy: "direct_prompt",
+      configuration_passport_class: "model-configuration-v1",
       state: "active",
       evidence_snapshot_id,
       eligibility_summary: {
@@ -1014,7 +1045,15 @@ async function activeLeaderboard() {
             upper: 0.85,
           },
           in_top_set: true,
+          evidence_family_count: 3,
+          caveat_codes: [],
         },
+      }],
+      citations: [{
+        source_artifact_id: `artifact_${"a".repeat(64)}`,
+        benchmark_family_id: "family-a",
+        title: "Family A",
+        url: "https://example.com/a",
       }],
       explorer_views: [],
     }],
@@ -1030,7 +1069,19 @@ async function previewLeaderboard<T extends Awaited<ReturnType<typeof activeLead
   const entries = preview.ranking_groups[0].entries;
   entries.forEach((entry) => { entry.ranking.in_top_set = false; });
   preview.ranking_groups[0].entries = [];
-  preview.ranking_groups[0].explorer_views = [{ entries }];
+  entries.forEach((entry) => {
+    entry.ranking.evidence_family_count = 1;
+  });
+  preview.ranking_groups[0].explorer_views = [{
+    benchmark_family_id: "family-a",
+    feed_id: "family-a-feed",
+    metric_direction: "higher",
+    observed_at: "2026-07-10T00:00:00Z",
+    expires_at: "2026-07-11T00:00:00Z",
+    agreement: "single_source",
+    entries,
+    citations: preview.ranking_groups[0].citations,
+  }];
   preview.snapshot_set_descriptor.ranking_group_snapshots[0].evidence_snapshot_id = `explorer_${"f".repeat(64)}`;
   preview.ranking_groups[0].evidence_snapshot_id = `explorer_${"f".repeat(64)}`;
   preview.snapshot_set_id = await snapshotSetId(preview.snapshot_set_descriptor);
