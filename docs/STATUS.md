@@ -51,7 +51,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 
-Paired release candidate: public contract `64da4c21fc14b5e3d453854e19e4b9d3e712a0bd`; private consumer `43248df5a4377eca01f504a5f0d3d1d8e5ebe777`. The pair binds explicit selectors to returned explorer-view identity, enforces complete closed wire values and freshness gaps in both SDKs, preserves the documented no-evidence preview, and transitions stale response bytes plus strong ETags exactly once while retaining the snapshot-set identity. Explorer family accumulation and exact canonical scheduler reconciliation remain included. Neither commit is deployed and migrations 058-060 remain operator-gated; this status does not claim live application or cron rollout.
+Paired release candidate: public contract `6ae8047a97f5873677c400262e2bd5e4f8d1b1a7`; private consumer `54f3e88a3fe808cc1d2d2859b2d6132a379b36d1`. The public Python and TypeScript verifiers enforce exact ranking-group identity triples, compare cardinality, cell state, active citations, and quarantined emptiness. The private entity and compare clients fail closed unless returned explorer-view identity exactly matches the requested selector. The pair preserves the documented no-evidence preview and transitions stale response bytes plus strong ETags exactly once while retaining the snapshot-set identity. Explorer family accumulation and exact canonical scheduler reconciliation remain included. Neither commit is deployed and migrations 058-060 remain operator-gated; this status does not claim live application or cron rollout.
 
 ## Current Workstreams
 
