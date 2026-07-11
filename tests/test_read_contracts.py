@@ -88,11 +88,11 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             ranking_group_snapshots=(
                 RankingGroupSnapshotRefV1(
                     ranking_group_id="rg-b",
-                    publication_snapshot_id=f"snapshot_{'b' * 64}",
+                    evidence_snapshot_id=f"snapshot_{'b' * 64}",
                 ),
                 RankingGroupSnapshotRefV1(
                     ranking_group_id="rg-a",
-                    publication_snapshot_id=f"snapshot_{'a' * 64}",
+                    evidence_snapshot_id=f"explorer_{'a' * 64}",
                 ),
             ),
         )
@@ -118,11 +118,11 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             ranking_group_snapshots=(
                 RankingGroupSnapshotRefV1(
                     ranking_group_id="rg-a",
-                    publication_snapshot_id=f"snapshot_{'a' * 64}",
+                    evidence_snapshot_id=f"explorer_{'a' * 64}",
                 ),
                 RankingGroupSnapshotRefV1(
                     ranking_group_id="rg-b",
-                    publication_snapshot_id=f"snapshot_{'b' * 64}",
+                    evidence_snapshot_id=f"snapshot_{'b' * 64}",
                 ),
             ),
         )
@@ -146,6 +146,12 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "canonical manifest slug"):
             SnapshotSetDescriptorV1.from_dict(invalid_cell)
 
+        legacy_pair = descriptor.to_dict()
+        pair = legacy_pair["ranking_group_snapshots"][0]
+        pair["publication_snapshot_id"] = pair.pop("evidence_snapshot_id")
+        with self.assertRaisesRegex(ValueError, "fields are invalid"):
+            SnapshotSetDescriptorV1.from_dict(legacy_pair)
+
     def test_leaderboard_verifier_binds_envelope_and_exact_group_snapshots(self):
         descriptor = SnapshotSetDescriptorV1(
             cell_id="code-generation",
@@ -154,11 +160,11 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             ranking_group_snapshots=(
                 RankingGroupSnapshotRefV1(
                     ranking_group_id="rg-a",
-                    publication_snapshot_id=f"snapshot_{'a' * 64}",
+                    evidence_snapshot_id=f"explorer_{'a' * 64}",
                 ),
                 RankingGroupSnapshotRefV1(
                     ranking_group_id="rg-b",
-                    publication_snapshot_id=f"snapshot_{'b' * 64}",
+                    evidence_snapshot_id=f"snapshot_{'b' * 64}",
                 ),
             ),
         )
@@ -189,7 +195,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "ranking_groups": [
                 {
                     "ranking_group_id": "rg-a",
-                    "publication_snapshot_id": f"snapshot_{'c' * 64}",
+                    "evidence_snapshot_id": f"explorer_{'c' * 64}",
                 }
             ],
         }
@@ -197,8 +203,8 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             verify_leaderboard_snapshot_set(wrong_groups)
 
         swapped_ownership = deepcopy(leaderboard)
-        swapped_ownership["ranking_groups"][0]["publication_snapshot_id"] = f"snapshot_{'b' * 64}"
-        swapped_ownership["ranking_groups"][1]["publication_snapshot_id"] = f"snapshot_{'a' * 64}"
+        swapped_ownership["ranking_groups"][0]["evidence_snapshot_id"] = f"snapshot_{'b' * 64}"
+        swapped_ownership["ranking_groups"][1]["evidence_snapshot_id"] = f"explorer_{'a' * 64}"
         with self.assertRaisesRegex(ValueError, "exact ranking-group snapshot pairs"):
             verify_leaderboard_snapshot_set(swapped_ownership)
 
@@ -262,7 +268,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "snapshot_set_id": leaderboard["snapshot_set_id"],
             "snapshot_set_descriptor": leaderboard["snapshot_set_descriptor"],
             "ranking_group_id": group["ranking_group_id"],
-            "publication_snapshot_id": group["publication_snapshot_id"],
+            "evidence_snapshot_id": group["evidence_snapshot_id"],
             "state": "active",
             "eligibility_summary": group["eligibility_summary"],
             "entities": [first, second],
@@ -310,7 +316,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "snapshot_set_id": leaderboard["snapshot_set_id"],
             "snapshot_set_descriptor": leaderboard["snapshot_set_descriptor"],
             "ranking_group_id": group["ranking_group_id"],
-            "publication_snapshot_id": group["publication_snapshot_id"],
+            "evidence_snapshot_id": group["evidence_snapshot_id"],
             "state": "active",
             "eligibility_summary": group["eligibility_summary"],
         }
@@ -345,7 +351,7 @@ def _active_leaderboard() -> dict:
         ranking_group_snapshots=(
             RankingGroupSnapshotRefV1(
                 ranking_group_id=ranking_group_id,
-                publication_snapshot_id=snapshot_id,
+                evidence_snapshot_id=snapshot_id,
             ),
         ),
     )
@@ -360,7 +366,7 @@ def _active_leaderboard() -> dict:
                 "ranking_group_id": ranking_group_id,
                 "entity_kind": "model_configuration",
                 "state": "active",
-                "publication_snapshot_id": snapshot_id,
+                "evidence_snapshot_id": snapshot_id,
                 "eligibility_summary": {
                     "published_claim": "top_set",
                     "rank_eligible_configuration_count": 1,
@@ -388,6 +394,7 @@ def _active_leaderboard() -> dict:
                         },
                     }
                 ],
+                "explorer_views": [],
             }
         ],
     }

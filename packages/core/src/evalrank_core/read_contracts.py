@@ -16,7 +16,7 @@ _MANIFEST_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*$")
 _METHODOLOGY_VERSION_RE = re.compile(
     r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$"
 )
-_SNAPSHOT_ID_RE = re.compile(r"^snapshot_[0-9a-f]{64}$")
+_EVIDENCE_SNAPSHOT_ID_RE = re.compile(r"^(snapshot|explorer)_[0-9a-f]{64}$")
 _CONFIGURATION_ID_RE = re.compile(r"^config_[0-9a-f]{64}$")
 _CELL_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
@@ -99,10 +99,10 @@ def verify_benchmark_health_semantics(payload: Any) -> dict[str, Any]:
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RankingGroupSnapshotRefV1:
-    """One ranking group's owned publication snapshot in a snapshot set."""
+    """One ranking group's owned evidence snapshot in a snapshot set."""
 
     ranking_group_id: str
-    publication_snapshot_id: str
+    evidence_snapshot_id: str
 
     def __post_init__(self) -> None:
         if not isinstance(self.ranking_group_id, str) or not _CELL_ID_RE.fullmatch(
@@ -110,28 +110,28 @@ class RankingGroupSnapshotRefV1:
         ):
             raise ValueError("ranking_group_id must be a canonical manifest slug")
         if not isinstance(
-            self.publication_snapshot_id, str
-        ) or not _SNAPSHOT_ID_RE.fullmatch(self.publication_snapshot_id):
-            raise ValueError("publication_snapshot_id must be snapshot_<sha256>")
+            self.evidence_snapshot_id, str
+        ) or not _EVIDENCE_SNAPSHOT_ID_RE.fullmatch(self.evidence_snapshot_id):
+            raise ValueError("evidence_snapshot_id must be snapshot_<sha256> or explorer_<sha256>")
 
     @property
     def utf16_sort_key(self) -> tuple[bytes, bytes]:
         return (
             self.ranking_group_id.encode("utf-16-be"),
-            self.publication_snapshot_id.encode("utf-16-be"),
+            self.evidence_snapshot_id.encode("utf-16-be"),
         )
 
     def to_dict(self) -> dict[str, str]:
         return {
             "ranking_group_id": self.ranking_group_id,
-            "publication_snapshot_id": self.publication_snapshot_id,
+            "evidence_snapshot_id": self.evidence_snapshot_id,
         }
 
     @classmethod
     def from_dict(cls, value: Any) -> "RankingGroupSnapshotRefV1":
         if not isinstance(value, dict) or any(not isinstance(key, str) for key in value):
             raise TypeError("ranking-group snapshot reference must be a JSON object")
-        expected = {"ranking_group_id", "publication_snapshot_id"}
+        expected = {"ranking_group_id", "evidence_snapshot_id"}
         if set(value) != expected:
             missing = expected - set(value)
             unknown = set(value) - expected
@@ -143,7 +143,7 @@ class RankingGroupSnapshotRefV1:
             raise ValueError(f"ranking-group snapshot reference fields are invalid: {detail}")
         return cls(
             ranking_group_id=value["ranking_group_id"],
-            publication_snapshot_id=value["publication_snapshot_id"],
+            evidence_snapshot_id=value["evidence_snapshot_id"],
         )
 
 
@@ -181,13 +181,13 @@ class SnapshotSetDescriptorV1:
             )
         group_ids = [reference.ranking_group_id for reference in self.ranking_group_snapshots]
         snapshot_ids = [
-            reference.publication_snapshot_id for reference in self.ranking_group_snapshots
+            reference.evidence_snapshot_id for reference in self.ranking_group_snapshots
         ]
         if len(set(group_ids)) != len(group_ids):
             raise ValueError("ranking_group_snapshots must own unique ranking_group_id values")
         if len(set(snapshot_ids)) != len(snapshot_ids):
             raise ValueError(
-                "ranking_group_snapshots must own unique publication_snapshot_id values"
+                "ranking_group_snapshots must own unique evidence_snapshot_id values"
             )
         object.__setattr__(
             self,
@@ -284,12 +284,12 @@ def verify_leaderboard_snapshot_set(payload: Any) -> SnapshotSetDescriptorV1:
             group_snapshots.append(
                 RankingGroupSnapshotRefV1(
                     ranking_group_id=group["ranking_group_id"],
-                    publication_snapshot_id=group["publication_snapshot_id"],
+                    evidence_snapshot_id=group["evidence_snapshot_id"],
                 )
             )
         except KeyError as error:
             raise ValueError(
-                "every ranking group must carry ranking_group_id and publication_snapshot_id"
+                "every ranking group must carry ranking_group_id and evidence_snapshot_id"
             ) from error
     try:
         expected = SnapshotSetDescriptorV1(
@@ -396,7 +396,7 @@ def _verify_snapshot_reference(payload: Any) -> SnapshotSetDescriptorV1:
         raise ValueError("snapshot_set_id must hash snapshot_set_descriptor")
     reference = RankingGroupSnapshotRefV1(
         ranking_group_id=payload.get("ranking_group_id"),
-        publication_snapshot_id=payload.get("publication_snapshot_id"),
+        evidence_snapshot_id=payload.get("evidence_snapshot_id"),
     )
     if reference not in descriptor.ranking_group_snapshots:
         raise ValueError(

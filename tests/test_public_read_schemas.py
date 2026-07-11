@@ -69,7 +69,9 @@ class PublicReadSchemaTests(unittest.TestCase):
         self.assertIn("interaction_policy", group["required"])
         self.assertIn("configuration_passport_class", group["required"])
         self.assertIn("state", group["required"])
-        self.assertIn("publication_snapshot_id", group["required"])
+        self.assertIn("evidence_snapshot_id", group["required"])
+        self.assertNotIn("publication_snapshot_id", group["properties"])
+        self.assertIn("explorer_views", group["required"])
         self.assertIn("entries", group["required"])
         self.assertIn("citations", group["required"])
         self.assertIn("unresolved", group["properties"]["entity_kind"]["enum"])
@@ -106,8 +108,17 @@ class PublicReadSchemaTests(unittest.TestCase):
         snapshot_ref = schema["$defs"]["RankingGroupSnapshotRef"]
         self.assertFalse(snapshot_ref["additionalProperties"])
         self.assertEqual(
-            {"ranking_group_id", "publication_snapshot_id"},
+            {"ranking_group_id", "evidence_snapshot_id"},
             set(snapshot_ref["required"]),
+        )
+        evidence_snapshot_id = schema["$defs"]["EvidenceSnapshotId"]
+        self.assertEqual("^(snapshot|explorer)_[0-9a-f]{64}$", evidence_snapshot_id["pattern"])
+        explorer_view = schema["$defs"]["ExplorerEvidenceView"]
+        self.assertFalse(explorer_view["additionalProperties"])
+        self.assertEqual(set(explorer_view["properties"]), set(explorer_view["required"]))
+        self.assertEqual(
+            {"single_source", "promising_not_proven", "conflicting"},
+            set(explorer_view["properties"]["agreement"]["enum"]),
         )
 
     def test_entity_detail_uses_the_exact_evaluated_configuration_contract(self):
@@ -160,7 +171,7 @@ class PublicReadSchemaTests(unittest.TestCase):
                 "entity_kind",
                 "interaction_policy",
                 "configuration_passport_class",
-                "publication_snapshot_id",
+                "evidence_snapshot_id",
             }.isdisjoint(projection["properties"])
         )
 
@@ -184,6 +195,7 @@ if (!validateLeaderboard || !validateEntity || !validateCompare) {
 const artifact = (hex) => `artifact_${hex.repeat(64)}`;
 const config = (hex) => `config_${hex.repeat(64)}`;
 const snapshot = (hex) => `snapshot_${hex.repeat(64)}`;
+const explorer = (hex) => `explorer_${hex.repeat(64)}`;
 const snapshotDescriptor = {
   object: "snapshot_set_descriptor",
   schema_version: "1",
@@ -192,7 +204,7 @@ const snapshotDescriptor = {
   methodology_version: "2026-07-10.1.truth-kernel-v1",
   ranking_group_snapshots: [{
     ranking_group_id: "rg-code-generation-model-configuration-direct-prompt-model-configuration-v1",
-    publication_snapshot_id: snapshot("b")
+    evidence_snapshot_id: snapshot("b")
   }]
 };
 const activeEligibility = {
@@ -221,7 +233,7 @@ const payload = {
     interaction_policy: "direct_prompt",
     configuration_passport_class: "model-configuration-v1",
     state: "active",
-    publication_snapshot_id: snapshot("b"),
+    evidence_snapshot_id: snapshot("b"),
     eligibility_summary: activeEligibility,
     entries: [{
       evaluated_configuration_id: config("c"),
@@ -240,7 +252,8 @@ const payload = {
       benchmark_family_id: "livebench-reasoning",
       title: "LiveBench",
       url: "https://example.com/livebench"
-    }]
+    }],
+    explorer_views: []
   }]
 };
 
@@ -262,7 +275,7 @@ unresolvedExplorer.snapshot_set_descriptor = {
   cell_id: "deep-research",
   ranking_group_snapshots: [{
     ranking_group_id: "rg-deep-research-unresolved-unresolved-unresolved-v1",
-    publication_snapshot_id: snapshot("e")
+    evidence_snapshot_id: explorer("e")
   }]
 };
 unresolvedExplorer.ranking_groups = [{
@@ -271,7 +284,7 @@ unresolvedExplorer.ranking_groups = [{
   interaction_policy: "unresolved",
   configuration_passport_class: "unresolved-v1",
   state: "preview",
-  publication_snapshot_id: snapshot("e"),
+  evidence_snapshot_id: explorer("e"),
   eligibility_summary: {
     published_claim: "explorer",
     rank_eligible_configuration_count: 0,
@@ -283,9 +296,27 @@ unresolvedExplorer.ranking_groups = [{
     gap_codes: ["no_rank_eligible_configurations", "unresolved_identity"]
   },
   entries: [],
-  citations: []
+  citations: [],
+  explorer_views: [{
+    benchmark_family_id: "deepswe",
+    feed_id: "deepswe-discovery",
+    metric_direction: "higher",
+    observed_at: "2026-07-10T03:00:00Z",
+    expires_at: "2026-07-17T03:00:00Z",
+    agreement: "single_source",
+    entries: [],
+    citations: []
+  }]
 }];
 assertValid(validateLeaderboard, unresolvedExplorer, "canonical unresolved explorer group");
+
+const openExplorerView = clone(unresolvedExplorer);
+openExplorerView.ranking_groups[0].explorer_views[0].note = "not public";
+assertInvalid(validateLeaderboard, openExplorerView, "open explorer view");
+
+const previewWithoutExplorerView = clone(unresolvedExplorer);
+previewWithoutExplorerView.ranking_groups[0].explorer_views = [];
+assertInvalid(validateLeaderboard, previewWithoutExplorerView, "preview without exact explorer evidence");
 
 const unresolvedWithEntry = clone(unresolvedExplorer);
 unresolvedWithEntry.ranking_groups[0].entries = clone(payload.ranking_groups[0].entries);
@@ -295,18 +326,19 @@ const activeWithoutTopSet = clone(payload);
 activeWithoutTopSet.ranking_groups[0].entries[0].ranking.in_top_set = false;
 assertInvalid(validateLeaderboard, activeWithoutTopSet, "active group without top-set member");
 
-const previewTopSetClaim = clone(payload);
-previewTopSetClaim.cell_state = "preview";
-previewTopSetClaim.ranking_groups[0].state = "preview";
-previewTopSetClaim.ranking_groups[0].eligibility_summary = {
-  ...activeEligibility,
-  published_claim: "explorer",
-  calibration_status: "unvalidated",
-  gap_codes: ["calibration_unvalidated"]
-};
-assertInvalid(validateLeaderboard, previewTopSetClaim, "preview group claiming top-set membership");
-previewTopSetClaim.ranking_groups[0].entries[0].ranking.in_top_set = false;
-assertValid(validateLeaderboard, previewTopSetClaim, "preview explorer ranking without top-set claim");
+const previewWithRankedEntry = clone(unresolvedExplorer);
+previewWithRankedEntry.ranking_groups[0].entries = clone(payload.ranking_groups[0].entries);
+previewWithRankedEntry.ranking_groups[0].entries[0].ranking.in_top_set = false;
+assertInvalid(validateLeaderboard, previewWithRankedEntry, "preview group with ranked entry");
+
+const activeWithExplorerView = clone(payload);
+activeWithExplorerView.ranking_groups[0].explorer_views = clone(unresolvedExplorer.ranking_groups[0].explorer_views);
+assertInvalid(validateLeaderboard, activeWithExplorerView, "active group with explorer view");
+
+const legacySnapshotField = clone(payload);
+legacySnapshotField.ranking_groups[0].publication_snapshot_id = legacySnapshotField.ranking_groups[0].evidence_snapshot_id;
+delete legacySnapshotField.ranking_groups[0].evidence_snapshot_id;
+assertInvalid(validateLeaderboard, legacySnapshotField, "legacy publication snapshot field");
 
 const nullScore = clone(payload);
 nullScore.ranking_groups[0].entries[0].ranking.capability_score = null;
@@ -356,7 +388,7 @@ const entity = {
   snapshot_set_descriptor: payload.snapshot_set_descriptor,
   ranking_group_id: payload.ranking_groups[0].ranking_group_id,
   state: "active",
-  publication_snapshot_id: payload.ranking_groups[0].publication_snapshot_id,
+  evidence_snapshot_id: payload.ranking_groups[0].evidence_snapshot_id,
   eligibility_summary: activeEligibility,
   generated_at: payload.generated_at,
   entity: { evaluated_configuration: evaluatedConfiguration, ranking, citations }
@@ -401,7 +433,7 @@ const compare = {
   interaction_policy: "direct_prompt",
   configuration_passport_class: "model-configuration-v1",
   state: "active",
-  publication_snapshot_id: payload.ranking_groups[0].publication_snapshot_id,
+  evidence_snapshot_id: payload.ranking_groups[0].evidence_snapshot_id,
   eligibility_summary: activeEligibility,
   generated_at: payload.generated_at,
   entities: [comparedEntity, secondComparedEntity]
