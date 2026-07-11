@@ -838,8 +838,10 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
     snapshotWithView.snapshot_set_id = await snapshotSetId(snapshotWithView.snapshot_set_descriptor);
     await assert.rejects(
       () => verifyLeaderboardSemantics(snapshotWithView),
-      /explorer evidence/,
+      /snapshot evidence/,
     );
+    snapshotWithView.ranking_groups[0].explorer_views = [];
+    await verifyLeaderboardSemantics(snapshotWithView);
   }
 
   const explorerWithoutView = await previewLeaderboard(leaderboard);
@@ -862,7 +864,7 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
   };
   await assert.rejects(
     () => verifyLeaderboardSemantics(previewCalibrated),
-    /explorer evidence/,
+    /explorer groups/,
   );
 
   const previewTopSet = await previewLeaderboard(leaderboard);
@@ -992,6 +994,40 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
     () => verifyEntityDetailSemantics(previewEntity),
     /explorer evidence/,
   );
+});
+
+test("read semantic verifier rejects invalid closed wire values and stale group gaps", async () => {
+  type LeaderboardFixture = Awaited<ReturnType<typeof activeLeaderboard>>;
+  const mutations: Array<[string, (value: LeaderboardFixture) => void]> = [
+    ["citation id", (value) => { value.ranking_groups[0].citations[0].source_artifact_id = "artifact_bad"; }],
+    ["citation title", (value) => { value.ranking_groups[0].citations[0].title = ""; }],
+    ["citation URL", (value) => { value.ranking_groups[0].citations[0].url = "http://example.com"; }],
+    ["score", (value) => { value.ranking_groups[0].entries[0].ranking.capability_score = 2; }],
+    ["family count", (value) => { value.ranking_groups[0].entries[0].ranking.evidence_family_count = 0; }],
+    ["uncertainty level", (value) => { value.ranking_groups[0].entries[0].ranking.uncertainty.level = 0; }],
+    ["caveat", (value) => { value.ranking_groups[0].entries[0].ranking.caveat_codes = ["Not Canonical"]; }],
+    ["eligibility count", (value) => { value.ranking_groups[0].eligibility_summary.required_overlap_count = 0; }],
+    ["eligibility enum", (value) => { value.ranking_groups[0].eligibility_summary.calibration_status = "unknown"; }],
+    ["timestamp", (value) => { value.generated_at = "2026-02-30T00:00:00Z"; }],
+  ];
+  for (const [label, mutate] of mutations) {
+    const invalid = await activeLeaderboard();
+    mutate(invalid);
+    await assert.rejects(() => verifyLeaderboardSemantics(invalid), undefined, label);
+  }
+
+  const staleWithoutGap = await previewLeaderboard(await activeLeaderboard());
+  staleWithoutGap.generated_at = "2026-07-10T00:00:00Z";
+  staleWithoutGap.ranking_groups[0].explorer_views[0].observed_at = "2026-07-08T00:00:00Z";
+  staleWithoutGap.ranking_groups[0].explorer_views[0].expires_at = "2026-07-09T00:00:00Z";
+  for (const entry of staleWithoutGap.ranking_groups[0].explorer_views[0].entries) {
+    entry.ranking.caveat_codes = ["evidence_stale"];
+  }
+  await assert.rejects(() => verifyLeaderboardSemantics(staleWithoutGap), /evidence_stale gap/);
+
+  const freshWithGap = await previewLeaderboard(await activeLeaderboard());
+  freshWithGap.ranking_groups[0].eligibility_summary.gap_codes.push("evidence_stale");
+  await assert.rejects(() => verifyLeaderboardSemantics(freshWithGap), /evidence_stale gap/);
 });
 
 async function activeLeaderboard() {

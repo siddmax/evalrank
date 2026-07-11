@@ -263,7 +263,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "calibration_status": "unvalidated",
             "gap_codes": ["calibration_unvalidated"],
         }
-        with self.assertRaisesRegex(ValueError, "explorer evidence"):
+        with self.assertRaisesRegex(ValueError, "explorer groups"):
             verify_leaderboard_semantics(preview_calibrated)
 
         for state in ("preview", "shadow"):
@@ -282,8 +282,11 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
                 "gap_codes": ["calibration_unvalidated", "no_rank_eligible_configurations"],
             }
             with self.subTest(state=state):
-                with self.assertRaisesRegex(ValueError, "explorer evidence"):
+                with self.assertRaisesRegex(ValueError, "snapshot evidence"):
                     verify_leaderboard_semantics(snapshot_with_view)
+
+            snapshot_with_view["ranking_groups"][0]["explorer_views"] = []
+            verify_leaderboard_semantics(snapshot_with_view)
 
         explorer_without_view = _with_evidence_snapshot_id(
             snapshot_with_view, f"explorer_{'e' * 64}"
@@ -300,7 +303,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "calibration_status": "unvalidated",
             "gap_codes": ["calibration_unvalidated"],
         }
-        with self.assertRaisesRegex(ValueError, "explorer evidence"):
+        with self.assertRaisesRegex(ValueError, "non-active"):
             verify_leaderboard_semantics(preview_top_set)
 
         explorer_top_set = _explorer_leaderboard()
@@ -333,12 +336,29 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
     def test_runtime_read_verifiers_enforce_closed_shape_and_state_prefix(self):
         leaderboard = _active_leaderboard()
         group = leaderboard["ranking_groups"][0]
-        for state, snapshot_id in (("active", f"explorer_{'e' * 64}"), ("preview", f"snapshot_{'e' * 64}")):
+        for state, snapshot_id in (("active", f"explorer_{'e' * 64}"),):
             invalid = _with_evidence_snapshot_id(leaderboard, snapshot_id)
             invalid["ranking_groups"][0]["state"] = state
             with self.subTest(state=state):
                 with self.assertRaisesRegex(ValueError, "evidence"):
                     verify_leaderboard_semantics(invalid)
+
+        no_evidence = deepcopy(leaderboard)
+        group = no_evidence["ranking_groups"][0]
+        group["state"] = "preview"
+        group["entries"] = []
+        group["explorer_views"] = []
+        group["eligibility_summary"] = {
+            "published_claim": "explorer",
+            "rank_eligible_configuration_count": 0,
+            "current_independent_family_count": 0,
+            "required_independent_family_count": 3,
+            "current_overlap_count": 0,
+            "required_overlap_count": 2,
+            "calibration_status": "unvalidated",
+            "gap_codes": ["calibration_unvalidated", "insufficient_configuration_overlap", "insufficient_independent_families", "no_rank_eligible_configurations"],
+        }
+        verify_leaderboard_semantics(no_evidence)
 
         missing = deepcopy(leaderboard)
         del missing["generated_at"]
@@ -348,6 +368,43 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         extra["private"] = True
         with self.assertRaisesRegex(ValueError, "fields"):
             verify_leaderboard_semantics(extra)
+
+    def test_runtime_read_verifier_rejects_invalid_closed_wire_values(self):
+        mutations = (
+            ("citation id", lambda doc: doc["ranking_groups"][0]["citations"][0].__setitem__("source_artifact_id", "artifact_bad")),
+            ("citation title", lambda doc: doc["ranking_groups"][0]["citations"][0].__setitem__("title", "")),
+            ("citation url", lambda doc: doc["ranking_groups"][0]["citations"][0].__setitem__("url", "http://example.com")),
+            ("score", lambda doc: doc["ranking_groups"][0]["entries"][0]["ranking"].__setitem__("capability_score", 2)),
+            ("family count", lambda doc: doc["ranking_groups"][0]["entries"][0]["ranking"].__setitem__("evidence_family_count", 0)),
+            ("uncertainty extra", lambda doc: doc["ranking_groups"][0]["entries"][0]["ranking"]["uncertainty"].__setitem__("private", True)),
+            ("uncertainty level", lambda doc: doc["ranking_groups"][0]["entries"][0]["ranking"]["uncertainty"].__setitem__("level", 0)),
+            ("caveat", lambda doc: doc["ranking_groups"][0]["entries"][0]["ranking"].__setitem__("caveat_codes", ["Not Canonical"])),
+            ("eligibility extra", lambda doc: doc["ranking_groups"][0]["eligibility_summary"].__setitem__("private", True)),
+            ("eligibility count", lambda doc: doc["ranking_groups"][0]["eligibility_summary"].__setitem__("required_overlap_count", 0)),
+            ("eligibility enum", lambda doc: doc["ranking_groups"][0]["eligibility_summary"].__setitem__("calibration_status", "unknown")),
+            ("group slug", lambda doc: doc["ranking_groups"][0].__setitem__("ranking_group_id", "Not Canonical")),
+            ("timestamp", lambda doc: doc.__setitem__("generated_at", "2026-02-30T00:00:00Z")),
+            ("entry extra", lambda doc: doc["ranking_groups"][0]["entries"][0].__setitem__("private", True)),
+        )
+        for label, mutate in mutations:
+            with self.subTest(label=label):
+                invalid = _active_leaderboard()
+                mutate(invalid)
+                with self.assertRaises((TypeError, ValueError)):
+                    verify_leaderboard_semantics(invalid)
+
+    def test_group_stale_gap_is_exactly_derived_from_view_expiry(self):
+        stale_without_gap = _explorer_leaderboard()
+        stale_without_gap["ranking_groups"][0]["eligibility_summary"]["gap_codes"].remove("evidence_stale")
+        with self.assertRaisesRegex(ValueError, "evidence_stale gap"):
+            verify_leaderboard_semantics(stale_without_gap)
+
+        fresh_with_gap = _explorer_leaderboard()
+        fresh_with_gap["generated_at"] = "2026-07-09T06:00:00Z"
+        for entry in fresh_with_gap["ranking_groups"][0]["explorer_views"][0]["entries"]:
+            entry["ranking"]["caveat_codes"] = []
+        with self.assertRaisesRegex(ValueError, "evidence_stale gap"):
+            verify_leaderboard_semantics(fresh_with_gap)
 
     def test_compare_semantics_reject_same_configuration_with_different_rows(self):
         leaderboard = _active_leaderboard()

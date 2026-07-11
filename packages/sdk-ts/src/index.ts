@@ -454,6 +454,7 @@ export class EvalRankClient {
     const selector = explorerView === undefined ? "" : `?${explorerViewSearch(explorerView)}`;
     const response = await this.requestJson<EntityDetail>(`/v1/entities/${entityType}/${slug}${selector}`);
     await verifyEntityDetailSemantics(response);
+    verifyRequestedExplorerView(response, explorerView);
     return response;
   }
 
@@ -479,6 +480,7 @@ export class EvalRankClient {
     }
     const response = await this.requestJson<CompareResult>(`/v1/compare?${search}`);
     await verifyCompareResultSemantics(response);
+    verifyRequestedExplorerView(response, explorerView);
     return response;
   }
 
@@ -531,6 +533,22 @@ export class EvalRankClient {
       throw new EvalRankApiError(response.status, problem, retryAfter(response.headers));
     }
     return body as T;
+  }
+}
+
+function verifyRequestedExplorerView(
+  response: EntityDetail | CompareResult,
+  requested: ExplorerViewIdentity | undefined,
+): void {
+  if (
+    requested !== undefined
+    && (
+      response.explorer_view === null
+      || response.explorer_view.benchmark_family_id !== requested.benchmark_family_id
+      || response.explorer_view.feed_id !== requested.feed_id
+    )
+  ) {
+    throw new TypeError("response explorer_view does not match the explicit selector");
   }
 }
 
