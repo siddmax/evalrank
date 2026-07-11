@@ -397,7 +397,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         self.assertEqual("evalrank_manifest", payload["object"])
         self.assertEqual("1", payload["schema_version"])
-        self.assertEqual("2026-07-10.2", payload["manifest_version"])
+        self.assertEqual("2026-07-10.3", payload["manifest_version"])
         for key, id_key in (
             ("cells", "cell_id"),
             ("ranking_groups", "ranking_group_id"),
@@ -663,6 +663,8 @@ class CatalogManifestTests(unittest.TestCase):
                 "itbench": "k8s-live-incident",
                 "aiopslab": "k8s-live-incident",
                 "sregym": "k8s-live-incident",
+                "swe-bench-live": "github-issue-resolution",
+                "swe-rebench": "github-issue-resolution",
                 "mmlu-pro": "mmlu-lineage",
                 "mmlu-prox": "mmlu-lineage",
                 "global-mmlu": "mmlu-lineage",
@@ -672,6 +674,42 @@ class CatalogManifestTests(unittest.TestCase):
         feeds = manifest()["feeds"]
         self.assertEqual(82, len(feeds))
         self.assertEqual(EXPECTED_FEED_IDS, tuple(row["feed_id"] for row in feeds))
+
+    def test_github_issue_swe_families_share_one_uncalibrated_lineage(self):
+        payload = manifest()
+        family_ids = {"swe-bench-live", "swe-rebench"}
+        families = [
+            family
+            for family in payload["benchmark_families"]
+            if family["benchmark_family_id"] in family_ids
+        ]
+        feeds = [
+            feed
+            for feed in payload["feeds"]
+            if feed["benchmark_family_id"] in family_ids
+        ]
+
+        self.assertEqual(
+            family_ids,
+            {family["benchmark_family_id"] for family in families},
+        )
+        self.assertEqual(
+            {("declared", "github-issue-resolution")},
+            {
+                (family["correlation_status"], family["correlated_family_group"])
+                for family in families
+            },
+        )
+        self.assertEqual(
+            {("declared", "github-issue-resolution")},
+            {
+                (
+                    feed["lineage"]["correlation_status"],
+                    feed["lineage"]["correlated_family_group"],
+                )
+                for feed in feeds
+            },
+        )
 
     def test_new_research_jobs_are_exact_preview_hypotheses(self):
         payload = manifest()

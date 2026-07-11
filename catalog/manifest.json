@@ -2,7 +2,7 @@
   "$schema": "../schemas/evalrank-manifest.schema.json",
   "object": "evalrank_manifest",
   "schema_version": "1",
-  "manifest_version": "2026-07-10.2",
+  "manifest_version": "2026-07-10.3",
   "ranking_group_dimensions": [
     "cell_id",
     "entity_kind",
@@ -1926,8 +1926,8 @@
       ],
       "state": "discovered",
       "rank_eligible_count": null,
-      "correlation_status": "unknown",
-      "correlated_family_group": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "github-issue-resolution",
       "research_flags": [],
       "quarantine_reason": null
     },
@@ -1974,8 +1974,8 @@
       ],
       "state": "discovered",
       "rank_eligible_count": null,
-      "correlation_status": "unknown",
-      "correlated_family_group": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "github-issue-resolution",
       "research_flags": [],
       "quarantine_reason": null
     },
@@ -3414,8 +3414,8 @@
         "task_lineage_id": null,
         "environment_lineage_id": null,
         "grader_lineage_id": null,
-        "correlation_status": "unknown",
-        "correlated_family_group": null
+        "correlation_status": "declared",
+        "correlated_family_group": "github-issue-resolution"
       },
       "ranking_group_ids": [
         "rg-autonomous-swe-agent-agent-system-agentic-agent-system-v1"
@@ -3564,8 +3564,8 @@
         "task_lineage_id": null,
         "environment_lineage_id": null,
         "grader_lineage_id": null,
-        "correlation_status": "unknown",
-        "correlated_family_group": null
+        "correlation_status": "declared",
+        "correlated_family_group": "github-issue-resolution"
       },
       "ranking_group_ids": [
         "rg-autonomous-swe-agent-agent-system-agentic-agent-system-v1"
