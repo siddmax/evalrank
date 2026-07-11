@@ -1169,7 +1169,7 @@ async function clientReadPayloads() {
   const firstId = await evaluatedConfigurationId(passport);
   const secondId = `config_${"e".repeat(64)}`;
   const rankingGroupId = "rg-code-generation-model-configuration-direct-prompt-model-configuration-v1";
-  const publicationSnapshotId = `snapshot_${"b".repeat(64)}`;
+  const evidenceSnapshotId = `snapshot_${"b".repeat(64)}`;
   const descriptor = parseSnapshotSetDescriptorV1({
     object: "snapshot_set_descriptor",
     schema_version: "1",
@@ -1178,7 +1178,7 @@ async function clientReadPayloads() {
     methodology_version: "2026-07-10.1.reference-server-v1",
     ranking_group_snapshots: [{
       ranking_group_id: rankingGroupId,
-      publication_snapshot_id: publicationSnapshotId,
+      evidence_snapshot_id: evidenceSnapshotId,
     }],
   });
   const eligibility = {
@@ -1217,12 +1217,13 @@ async function clientReadPayloads() {
     ranking_group_id: rankingGroupId,
     entity_kind: "model_configuration",
     state: "active",
-    publication_snapshot_id: publicationSnapshotId,
+    evidence_snapshot_id: evidenceSnapshotId,
     eligibility_summary: eligibility,
     entries: [firstId, secondId].map((id, index) => ({
       evaluated_configuration_id: id,
       ranking: rankings[index],
     })),
+    explorer_views: [],
   };
   const leaderboard = {
     object: "leaderboard" as const,
@@ -1235,7 +1236,7 @@ async function clientReadPayloads() {
     ...common,
     ranking_group_id: rankingGroupId,
     state: "active",
-    publication_snapshot_id: publicationSnapshotId,
+    evidence_snapshot_id: evidenceSnapshotId,
     eligibility_summary: eligibility,
     entity: {
       evaluated_configuration: {
@@ -1255,7 +1256,7 @@ async function clientReadPayloads() {
     interaction_policy: "direct_prompt",
     configuration_passport_class: "model-configuration-v1",
     state: "active",
-    publication_snapshot_id: publicationSnapshotId,
+    evidence_snapshot_id: evidenceSnapshotId,
     eligibility_summary: eligibility,
     entities: [firstId, secondId].map((id, index) => ({
       evaluated_configuration_id: id,

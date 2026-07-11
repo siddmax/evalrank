@@ -318,6 +318,15 @@ const previewWithoutExplorerView = clone(unresolvedExplorer);
 previewWithoutExplorerView.ranking_groups[0].explorer_views = [];
 assertInvalid(validateLeaderboard, previewWithoutExplorerView, "preview without exact explorer evidence");
 
+const previewWithoutExactEvidence = clone(previewWithoutExplorerView);
+previewWithoutExactEvidence.snapshot_set_descriptor.ranking_group_snapshots[0].evidence_snapshot_id = snapshot("f");
+previewWithoutExactEvidence.ranking_groups[0].evidence_snapshot_id = snapshot("f");
+assertValid(validateLeaderboard, previewWithoutExactEvidence, "preview without exact evidence");
+
+const explorerTopSetClaim = clone(unresolvedExplorer);
+explorerTopSetClaim.ranking_groups[0].explorer_views[0].entries = clone(payload.ranking_groups[0].entries);
+assertInvalid(validateLeaderboard, explorerTopSetClaim, "explorer view claiming top-set membership");
+
 const unresolvedWithEntry = clone(unresolvedExplorer);
 unresolvedWithEntry.ranking_groups[0].entries = clone(payload.ranking_groups[0].entries);
 assertInvalid(validateLeaderboard, unresolvedWithEntry, "unresolved group with entries");

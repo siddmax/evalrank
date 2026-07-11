@@ -19,10 +19,10 @@ make check
 - `tests/test_mcp_fixture.py` checks exact tool discovery, closed decision input, host-owned endpoint configuration, share/receipt semantics, metadata reads, golden receipt parity, and MCP error projection.
 - `tests/test_package_metadata.py` checks public Python package `pyproject.toml` names, versions, licenses, Python floor, dependencies, CLI entrypoint, TypeScript package metadata, and exact package README metadata drift.
 - `tests/test_schema_contracts.py` checks exact schema inventory, deleted recommendation-stage schemas, discovery hash contracts, taxonomy enums, Draft 2020-12, RFC 9457 Problem Details, and schema README drift.
-- `tests/test_public_read_schemas.py` compiles and mutation-tests grouped leaderboard, entity detail, and same-group compare contracts.
-- `tests/test_read_contracts.py` verifies benchmark-health count/status truth, float-free snapshot-set identities, exact ranking-group/snapshot ownership (including swap rejection), ranking uniqueness and contiguity, eligibility-gap truth, interval ordering, and non-active claim ceilings.
+- `tests/test_public_read_schemas.py` compiles and mutation-tests grouped leaderboard, family-scoped explorer views, entity detail, and same-group compare contracts, including empty no-evidence previews and fail-closed explorer top-set claims.
+- `tests/test_read_contracts.py` verifies benchmark-health count/status truth, float-free snapshot-set identities, exact ranking-group/evidence-snapshot ownership (including swap rejection), ranking uniqueness and contiguity, eligibility-gap truth, interval ordering, and top-set ceilings across calibrated entries and explorer views.
 - `tests/test_openapi_contract.py` checks the exact seven-path launch map, decision/share/receipt operations, reusable Problem Details responses, schema refs, deleted routes, and storage-free boundary.
-- `tests/test_reference_server_e2e.py` drives raw HTTP, Python SDK, CLI, and MCP through the stdlib server; validates schema-valid reads, canonical golden receipt bytes, non-share invisibility, append-only sharing, and deleted-route `404`s.
+- `tests/test_reference_server_e2e.py` drives raw HTTP, Python SDK, CLI, and MCP through the stdlib server; validates schema-valid family-scoped explorer reads and evidence snapshot identity, canonical golden receipt bytes, non-share invisibility, append-only sharing, and deleted-route `404`s.
 - `tests/test_methods_docs.py` checks exact method README note coverage and verifies public method notes stay aligned with the use-case taxonomy, native-metric evidence synthesis, and staged eligibility.
 - `tests/test_repo_docs.py` checks `CLAUDE.md` stays a one-line `@AGENTS.md` shim, scoped `AGENTS.md` files cover public work areas, `docs/REPO_STRUCTURE.md` tracks the public top-level directories and package directories exactly, `docs/STATUS.md` points to the canonical public authorities without private runtime traces, `docs/STATUS.md` mentions every current porting workstream from `docs/PORTING.md`, and public MCP docs do not advertise private evidence lookup.
 - `tests/test_sdk_python.py` checks portable re-exports and validates decision/receipt/health clients, strict use-case response parsing, bounded request timeouts, strict receipt IDs, canonical request bytes, response hash verification, Problem Details, and absence of compatibility methods.
@@ -34,7 +34,7 @@ make check
 
 - TypeScript SDK syntax check: `npm run check --prefix packages/sdk-ts`
 - Locked TypeScript test install: `npm ci --prefix packages/sdk-ts` installs the exact dev dependency graph from `packages/sdk-ts/package-lock.json` without changing the lock.
-- TypeScript SDK runtime test: `npm run test --prefix packages/sdk-ts` runs the client/catalog suite plus the cross-language restricted-JCS aggregation identity, provenance, observation, configuration, offer-link, receipt, pair-owned snapshot-set, read-semantic parity, and Draft 2020-12 suite.
+- TypeScript SDK runtime test: `npm run test --prefix packages/sdk-ts` runs the client/catalog suite plus the cross-language restricted-JCS aggregation identity, provenance, observation, configuration, offer-link, receipt, pair-owned evidence snapshot-set, explorer claim-ceiling, read-semantic parity, and Draft 2020-12 suite.
 - Public fixture example smoke check: `python3 examples/public_fixture.py`
 
 ## Update Rules

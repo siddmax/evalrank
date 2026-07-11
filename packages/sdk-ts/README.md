@@ -13,7 +13,7 @@ Package metadata:
 ## Public Surface
 
 - `DecisionQueryV1` and `DecisionReceiptV1` provide the closed semantic query and content-addressed receipt contracts.
-- `BenchmarkHealth`, `Leaderboard`, `EntityDetail`, and `CompareResult` type the launch reads.
+- `BenchmarkHealth`, `Leaderboard`, `ExplorerEvidenceView`, `EntityDetail`, and `CompareResult` type the launch reads and their truthful evidence snapshot identity.
 - `EvalRankClient` covers `useCases`, `benchmarkHealth`, `leaderboard`, `entity`, `compare`, `decide`, and `decisionReceipt`.
 - Read methods verify benchmark-health counts/status, leaderboard snapshots, entity details, and comparisons; decision methods validate the query and receipt hash.
 - `ProblemDetails`, `EvalRankApiError`, `PUBLIC_FIXTURE_KINDS`, and `PublicFixtureKind` mirror the public error and fixture vocabulary.

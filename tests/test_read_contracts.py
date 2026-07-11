@@ -84,7 +84,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         first = SnapshotSetDescriptorV1(
             cell_id="code-generation",
             manifest_version="2026-07-09.2",
-            methodology_version="2026-07-09.2.truth-kernel-v1",
+            methodology_version="2026-07-09.2.public-decision-v1",
             ranking_group_snapshots=(
                 RankingGroupSnapshotRefV1(
                     ranking_group_id="rg-b",
@@ -106,6 +106,10 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         self.assertEqual(first.to_dict(), reordered.to_dict())
         self.assertEqual(
             f"snapshot_set_{sha256_hex(first.to_dict())}",
+            first.snapshot_set_id,
+        )
+        self.assertEqual(
+            "snapshot_set_e9f71f01453b8bc1b61e2e895122a9ee9441fc4f40e8b6fb016870338fed151d",
             first.snapshot_set_id,
         )
         self.assertEqual(first.snapshot_set_id, reordered.snapshot_set_id)
@@ -232,16 +236,42 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             verify_leaderboard_semantics(bad_interval)
 
         false_gap = deepcopy(leaderboard)
-        false_gap["ranking_groups"][0]["state"] = "preview"
-        false_gap["ranking_groups"][0]["eligibility_summary"] = {
-            **false_gap["ranking_groups"][0]["eligibility_summary"],
+        false_gap_group = false_gap["ranking_groups"][0]
+        false_gap_group["state"] = "preview"
+        false_gap_group["entries"][0]["ranking"]["in_top_set"] = False
+        false_gap_group["explorer_views"] = [{"entries": false_gap_group.pop("entries")}]
+        false_gap_group["entries"] = []
+        false_gap_group["eligibility_summary"] = {
+            **false_gap_group["eligibility_summary"],
             "published_claim": "explorer",
+            "rank_eligible_configuration_count": 0,
             "calibration_status": "unvalidated",
-            "gap_codes": ["calibration_unvalidated", "insufficient_independent_families"],
+            "gap_codes": [
+                "calibration_unvalidated",
+                "insufficient_independent_families",
+                "no_rank_eligible_configurations",
+            ],
         }
-        false_gap["ranking_groups"][0]["entries"][0]["ranking"]["in_top_set"] = False
         with self.assertRaisesRegex(ValueError, "insufficient_independent_families"):
             verify_leaderboard_semantics(false_gap)
+
+        active_explorer = deepcopy(leaderboard)
+        active_explorer["ranking_groups"][0]["explorer_views"] = [{"entries": []}]
+        with self.assertRaisesRegex(ValueError, "active groups cannot expose explorer views"):
+            verify_leaderboard_semantics(active_explorer)
+
+        preview_calibrated = deepcopy(leaderboard)
+        preview_group = preview_calibrated["ranking_groups"][0]
+        preview_group["state"] = "preview"
+        preview_group["entries"][0]["ranking"]["in_top_set"] = False
+        preview_group["eligibility_summary"] = {
+            **preview_group["eligibility_summary"],
+            "published_claim": "explorer",
+            "calibration_status": "unvalidated",
+            "gap_codes": ["calibration_unvalidated"],
+        }
+        with self.assertRaisesRegex(ValueError, "explorer groups cannot expose calibrated entries"):
+            verify_leaderboard_semantics(preview_calibrated)
 
         preview_top_set = deepcopy(leaderboard)
         preview_top_set["ranking_groups"][0]["state"] = "preview"
@@ -253,6 +283,22 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(ValueError, "non-active reads cannot claim top-set"):
             verify_leaderboard_semantics(preview_top_set)
+
+        explorer_top_set = deepcopy(leaderboard)
+        group = explorer_top_set["ranking_groups"][0]
+        explorer_entry = deepcopy(group["entries"][0])
+        group["state"] = "preview"
+        group["entries"] = []
+        group["explorer_views"] = [{"entries": [explorer_entry]}]
+        group["eligibility_summary"] = {
+            **group["eligibility_summary"],
+            "published_claim": "explorer",
+            "rank_eligible_configuration_count": 0,
+            "calibration_status": "unvalidated",
+            "gap_codes": ["calibration_unvalidated", "no_rank_eligible_configurations"],
+        }
+        with self.assertRaisesRegex(ValueError, "explorer views cannot claim top-set"):
+            verify_leaderboard_semantics(explorer_top_set)
 
     def test_compare_semantics_reject_same_configuration_with_different_rows(self):
         leaderboard = _active_leaderboard()

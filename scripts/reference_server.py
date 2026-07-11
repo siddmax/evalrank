@@ -358,7 +358,7 @@ def _benchmark_health(repo_root: Path) -> dict[str, Any]:
 
 
 def _public_read_fixtures() -> dict[str, Any]:
-    snapshot_id = f"snapshot_{'b' * 64}"
+    evidence_snapshot_id = f"explorer_{'b' * 64}"
     ranking_group_id = (
         "rg-code-generation-model-configuration-direct-prompt-model-configuration-v1"
     )
@@ -369,7 +369,7 @@ def _public_read_fixtures() -> dict[str, Any]:
         ranking_group_snapshots=(
             RankingGroupSnapshotRefV1(
                 ranking_group_id=ranking_group_id,
-                publication_snapshot_id=snapshot_id,
+                evidence_snapshot_id=evidence_snapshot_id,
             ),
         ),
     )
@@ -386,14 +386,18 @@ def _public_read_fixtures() -> dict[str, Any]:
         }
     ]
     eligibility = {
-        "published_claim": "top_set",
-        "rank_eligible_configuration_count": 2,
-        "current_independent_family_count": 3,
+        "published_claim": "explorer",
+        "rank_eligible_configuration_count": 0,
+        "current_independent_family_count": 1,
         "required_independent_family_count": 3,
         "current_overlap_count": 2,
         "required_overlap_count": 2,
-        "calibration_status": "validated",
-        "gap_codes": [],
+        "calibration_status": "unvalidated",
+        "gap_codes": [
+            "calibration_unvalidated",
+            "insufficient_independent_families",
+            "no_rank_eligible_configurations",
+        ],
     }
     rankings = (
         {
@@ -401,7 +405,7 @@ def _public_read_fixtures() -> dict[str, Any]:
             "display_name": "Reference model A",
             "capability_score": 1,
             "uncertainty": {"kind": "interval", "level": 1, "lower": 1, "upper": 1},
-            "in_top_set": True,
+            "in_top_set": False,
             "evidence_family_count": 3,
             "caveat_codes": [],
         },
@@ -427,24 +431,38 @@ def _public_read_fixtures() -> dict[str, Any]:
     leaderboard = {
         "object": "leaderboard",
         **envelope,
-        "cell_state": "active",
+        "cell_state": "preview",
         "ranking_groups": [
             {
                 "ranking_group_id": ranking_group_id,
                 "entity_kind": "model_configuration",
                 "interaction_policy": "direct_prompt",
                 "configuration_passport_class": "model-configuration-v1",
-                "state": "active",
-                "publication_snapshot_id": snapshot_id,
+                "state": "preview",
+                "evidence_snapshot_id": evidence_snapshot_id,
                 "eligibility_summary": eligibility,
-                "entries": [
+                "entries": [],
+                "citations": [],
+                "explorer_views": [
                     {
-                        "evaluated_configuration_id": configuration.evaluated_configuration_id,
-                        "ranking": ranking,
+                        "benchmark_family_id": "reference-public-family",
+                        "feed_id": "reference-public-feed",
+                        "metric_direction": "higher",
+                        "observed_at": "2026-07-10T00:00:00Z",
+                        "expires_at": "2026-07-17T00:00:00Z",
+                        "agreement": "single_source",
+                        "entries": [
+                            {
+                                "evaluated_configuration_id": configuration.evaluated_configuration_id,
+                                "ranking": ranking,
+                            }
+                            for configuration, ranking in zip(
+                                configurations, rankings, strict=True
+                            )
+                        ],
+                        "citations": citations,
                     }
-                    for configuration, ranking in zip(configurations, rankings, strict=True)
                 ],
-                "citations": citations,
             }
         ],
     }
@@ -454,8 +472,8 @@ def _public_read_fixtures() -> dict[str, Any]:
             "object": "entity_detail",
             **envelope,
             "ranking_group_id": ranking_group_id,
-            "state": "active",
-            "publication_snapshot_id": snapshot_id,
+            "state": "preview",
+            "evidence_snapshot_id": evidence_snapshot_id,
             "eligibility_summary": eligibility,
             "entity": {
                 "evaluated_configuration": configuration.to_dict(),
@@ -472,8 +490,8 @@ def _public_read_fixtures() -> dict[str, Any]:
         "entity_kind": "model_configuration",
         "interaction_policy": "direct_prompt",
         "configuration_passport_class": "model-configuration-v1",
-        "state": "active",
-        "publication_snapshot_id": snapshot_id,
+        "state": "preview",
+        "evidence_snapshot_id": evidence_snapshot_id,
         "eligibility_summary": eligibility,
         "entities": [
             {

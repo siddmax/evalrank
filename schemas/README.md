@@ -16,7 +16,7 @@ Public EvalRank JSON Schema contracts live here.
 - `decision-query.schema.json` defines transport-free semantic decision intent for one exact ranking group and a closed monthly usage profile. Estimated cache usage requires an explicit zero-cache profile; measured usage forbids one.
 - `decision-receipt.schema.json` defines a deterministic, typed top-set or abstention receipt, including nullable baseline and zero-cache projected monthly costs on every selection.
 - `benchmark-health.schema.json` defines closed per-cell catalog, implementation, admission, publication, and rank-eligibility counts. Runtime projection reports `active` only with a published group, `preview` only with an implemented shadow/active feed, and `unavailable` otherwise.
-- `leaderboard.schema.json` defines a cell snapshot set with separate ranking-group publication sections. Its content-addressed descriptor carries a closed, UTF-16-sorted list of exact `ranking_group_id`/`publication_snapshot_id` ownership pairs.
+- `leaderboard.schema.json` defines a cell snapshot set with separate calibrated ranking groups and family-scoped explorer evidence views. Its content-addressed descriptor carries a closed, UTF-16-sorted list of exact `ranking_group_id`/`evidence_snapshot_id` ownership pairs; exact `explorer_<sha256>` evidence requires at least one view, while groups without exact explorer evidence expose an empty view list.
 - `entity-detail.schema.json` defines one exact evaluated configuration and ranking projection.
 - `compare-result.schema.json` defines a two-to-four configuration comparison on one group scale.
 - `capability-fingerprint.schema.json` mirrors `CapabilityFingerprintInput.to_dict()`.
