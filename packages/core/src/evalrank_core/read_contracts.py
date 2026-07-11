@@ -328,6 +328,12 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
         _verify_rankings(entries, configuration_ids=configuration_ids, require_contiguous=True)
         has_top_set = any(entry["ranking"]["in_top_set"] for entry in entries)
         _verify_nonactive_claim(group.get("state"), has_top_set)
+        explorer_views = group.get("explorer_views")
+        if group.get("state") == "active" and explorer_views:
+            raise ValueError("active groups cannot expose explorer views")
+        if group.get("state") in {"preview", "shadow"} and entries:
+            raise ValueError("explorer groups cannot expose calibrated entries")
+        _verify_explorer_views(explorer_views)
         eligibility = group.get("eligibility_summary")
         _verify_eligibility(
             eligibility,
@@ -337,6 +343,21 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
             has_top_set=has_top_set,
         )
     return descriptor
+
+
+def _verify_explorer_views(value: Any) -> None:
+    if not isinstance(value, list):
+        raise ValueError("explorer_views must be an array")
+    for view in value:
+        if not isinstance(view, dict) or not isinstance(view.get("entries"), list):
+            raise ValueError("explorer view entries must be an array")
+        for entry in view["entries"]:
+            if not isinstance(entry, dict):
+                raise ValueError("explorer view entries must be objects")
+            ranking = entry.get("ranking")
+            _verify_ranking(ranking)
+            if ranking["in_top_set"]:
+                raise ValueError("explorer views cannot claim top-set membership")
 
 
 def verify_entity_detail_semantics(payload: Any) -> SnapshotSetDescriptorV1:

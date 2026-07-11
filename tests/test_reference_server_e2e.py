@@ -276,7 +276,13 @@ class ReferenceServerE2ETests(unittest.TestCase):
         leaderboard = json.loads(body)
         _assert_schema_valid("leaderboard.schema.json", leaderboard)
         verify_leaderboard_semantics(leaderboard)
-        entries = leaderboard["ranking_groups"][0]["entries"]
+        group = leaderboard["ranking_groups"][0]
+        self.assertTrue(group["evidence_snapshot_id"].startswith("explorer_"))
+        self.assertNotIn("publication_snapshot_id", group)
+        self.assertEqual([], group["entries"])
+        self.assertEqual(1, len(group["explorer_views"]))
+        entries = group["explorer_views"][0]["entries"]
+        self.assertFalse(any(entry["ranking"]["in_top_set"] for entry in entries))
         client = EvalRankClient(self.base_url)
         self.assertEqual(leaderboard, client.leaderboard("code-generation"))
 
@@ -287,6 +293,8 @@ class ReferenceServerE2ETests(unittest.TestCase):
         entity = json.loads(body)
         _assert_schema_valid("entity-detail.schema.json", entity)
         verify_entity_detail_semantics(entity)
+        self.assertEqual(group["evidence_snapshot_id"], entity["evidence_snapshot_id"])
+        self.assertNotIn("publication_snapshot_id", entity)
         self.assertEqual(
             entity,
             client.entity("model_configuration", "reference-model-a"),
@@ -321,6 +329,8 @@ class ReferenceServerE2ETests(unittest.TestCase):
         comparison = json.loads(body)
         _assert_schema_valid("compare-result.schema.json", comparison)
         verify_compare_result_semantics(comparison)
+        self.assertEqual(group["evidence_snapshot_id"], comparison["evidence_snapshot_id"])
+        self.assertNotIn("publication_snapshot_id", comparison)
         self.assertEqual(
             comparison,
             client.compare("code-generation", tuple(entity_refs)),

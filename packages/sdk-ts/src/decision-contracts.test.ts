@@ -691,6 +691,11 @@ test("capability receipts still disclose differing projected costs", async () =>
 });
 
 test("snapshot-set IDs hash one normalized float-free descriptor", async () => {
+  const ref = {
+    ranking_group_id: "rg-reasoning-model-configuration-direct-prompt-model-configuration-v1",
+    evidence_snapshot_id: `snapshot_${"a".repeat(64)}`,
+  };
+  assert.equal("publication_snapshot_id" in ref, false);
   const descriptor = {
     object: "snapshot_set_descriptor" as const,
     schema_version: "1" as const,
@@ -698,14 +703,18 @@ test("snapshot-set IDs hash one normalized float-free descriptor", async () => {
     manifest_version: "2026-07-09.2",
     methodology_version: "2026-07-09.2.public-decision-v1",
     ranking_group_snapshots: [
-      { ranking_group_id: "rg-b", publication_snapshot_id: `snapshot_${"b".repeat(64)}` },
-      { ranking_group_id: "rg-a", publication_snapshot_id: `snapshot_${"a".repeat(64)}` },
+      { ranking_group_id: "rg-b", evidence_snapshot_id: `snapshot_${"b".repeat(64)}` },
+      { ranking_group_id: "rg-a", evidence_snapshot_id: `explorer_${"a".repeat(64)}` },
     ],
   };
   assert.equal(await snapshotSetId(descriptor), await snapshotSetId({
     ...descriptor,
     ranking_group_snapshots: [...descriptor.ranking_group_snapshots].reverse(),
   }));
+  assert.equal(
+    await snapshotSetId(descriptor),
+    "snapshot_set_e9f71f01453b8bc1b61e2e895122a9ee9441fc4f40e8b6fb016870338fed151d",
+  );
   assert.throws(() => parseSnapshotSetDescriptorV1(descriptor), /sorted on the wire/);
   assert.equal(
     parseSnapshotSetDescriptorV1({
@@ -743,7 +752,7 @@ test("snapshot-set IDs hash one normalized float-free descriptor", async () => {
       ...leaderboard,
       ranking_groups: [{
         ranking_group_id: "rg-a",
-        publication_snapshot_id: `snapshot_${"c".repeat(64)}`,
+        evidence_snapshot_id: `explorer_${"c".repeat(64)}`,
       }],
     }),
     /exact ranking-group snapshot pairs/,
@@ -752,8 +761,8 @@ test("snapshot-set IDs hash one normalized float-free descriptor", async () => {
     () => verifyLeaderboardSnapshotSet({
       ...leaderboard,
       ranking_groups: [
-        { ranking_group_id: "rg-a", publication_snapshot_id: `snapshot_${"b".repeat(64)}` },
-        { ranking_group_id: "rg-b", publication_snapshot_id: `snapshot_${"a".repeat(64)}` },
+        { ranking_group_id: "rg-a", evidence_snapshot_id: `snapshot_${"b".repeat(64)}` },
+        { ranking_group_id: "rg-b", evidence_snapshot_id: `explorer_${"a".repeat(64)}` },
       ],
     }),
     /exact ranking-group snapshot pairs/,
@@ -805,11 +814,31 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
     /insufficient_independent_families/,
   );
 
+  const activeExplorer = structuredClone(leaderboard);
+  activeExplorer.ranking_groups[0].explorer_views = [{ entries: [] }];
+  await assert.rejects(
+    () => verifyLeaderboardSemantics(activeExplorer),
+    /active groups cannot expose explorer views/,
+  );
+
+  const previewCalibrated = structuredClone(leaderboard);
+  previewCalibrated.ranking_groups[0].state = "preview";
+  previewCalibrated.ranking_groups[0].entries[0].ranking.in_top_set = false;
+  previewCalibrated.ranking_groups[0].eligibility_summary = {
+    ...previewEligibility(),
+    rank_eligible_configuration_count: 1,
+    gap_codes: ["calibration_unvalidated"],
+  };
+  await assert.rejects(
+    () => verifyLeaderboardSemantics(previewCalibrated),
+    /explorer groups cannot expose calibrated entries/,
+  );
+
   const previewTopSet = previewLeaderboard(leaderboard);
-  previewTopSet.ranking_groups[0].entries[0].ranking.in_top_set = true;
+  previewTopSet.ranking_groups[0].explorer_views[0].entries[0].ranking.in_top_set = true;
   await assert.rejects(
     () => verifyLeaderboardSemantics(previewTopSet),
-    /non-active reads cannot claim top-set membership/,
+    /explorer views cannot claim top-set membership/,
   );
 
   const duplicateGroup = structuredClone(leaderboard);
@@ -846,7 +875,7 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
     snapshot_set_id: leaderboard.snapshot_set_id,
     snapshot_set_descriptor: leaderboard.snapshot_set_descriptor,
     ranking_group_id: group.ranking_group_id,
-    publication_snapshot_id: group.publication_snapshot_id,
+    evidence_snapshot_id: group.evidence_snapshot_id,
     state: "active",
     eligibility_summary: group.eligibility_summary,
   };
@@ -911,14 +940,14 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
 
 async function activeLeaderboard() {
   const ranking_group_id = "rg-code-generation-model";
-  const publication_snapshot_id = `snapshot_${"a".repeat(64)}`;
+  const evidence_snapshot_id = `snapshot_${"a".repeat(64)}`;
   const snapshot_set_descriptor = parseSnapshotSetDescriptorV1({
     object: "snapshot_set_descriptor",
     schema_version: "1",
     cell_id: "code-generation",
     manifest_version: "2026-07-09.2",
     methodology_version: "2026-07-09.2.truth-kernel-v1",
-    ranking_group_snapshots: [{ ranking_group_id, publication_snapshot_id }],
+    ranking_group_snapshots: [{ ranking_group_id, evidence_snapshot_id }],
   });
   return {
     cell_id: snapshot_set_descriptor.cell_id,
@@ -930,7 +959,7 @@ async function activeLeaderboard() {
       ranking_group_id,
       entity_kind: "model_configuration",
       state: "active",
-      publication_snapshot_id,
+      evidence_snapshot_id,
       eligibility_summary: {
         published_claim: "top_set",
         rank_eligible_configuration_count: 1,
@@ -956,6 +985,7 @@ async function activeLeaderboard() {
           in_top_set: true,
         },
       }],
+      explorer_views: [],
     }],
   };
 }
@@ -966,20 +996,23 @@ function previewLeaderboard<T extends Awaited<ReturnType<typeof activeLeaderboar
   const preview = structuredClone(leaderboard);
   preview.ranking_groups[0].state = "preview";
   preview.ranking_groups[0].eligibility_summary = previewEligibility();
-  preview.ranking_groups[0].entries[0].ranking.in_top_set = false;
+  const entries = preview.ranking_groups[0].entries;
+  entries.forEach((entry) => { entry.ranking.in_top_set = false; });
+  preview.ranking_groups[0].entries = [];
+  preview.ranking_groups[0].explorer_views = [{ entries }];
   return preview;
 }
 
 function previewEligibility() {
   return {
     published_claim: "explorer",
-    rank_eligible_configuration_count: 1,
+    rank_eligible_configuration_count: 0,
     current_independent_family_count: 3,
     required_independent_family_count: 3,
     current_overlap_count: 2,
     required_overlap_count: 2,
     calibration_status: "unvalidated",
-    gap_codes: ["calibration_unvalidated"],
+    gap_codes: ["calibration_unvalidated", "no_rank_eligible_configurations"],
   };
 }
 

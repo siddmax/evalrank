@@ -230,6 +230,50 @@ export function verifyBenchmarkHealthSemantics(value: unknown): BenchmarkHealth 
   return value as unknown as BenchmarkHealth;
 }
 
+export interface Citation {
+  source_artifact_id: string;
+  benchmark_family_id: string;
+  title: string;
+  url: string;
+}
+
+export interface LeaderboardEntry {
+  evaluated_configuration_id: string;
+  ranking: {
+    rank: number;
+    display_name: string;
+    capability_score: number;
+    uncertainty: Record<string, unknown>;
+    in_top_set: boolean;
+    evidence_family_count: number;
+    caveat_codes: string[];
+  };
+}
+
+export interface ExplorerEvidenceView {
+  benchmark_family_id: string;
+  feed_id: string;
+  metric_direction: "higher" | "lower";
+  observed_at: string;
+  expires_at: string;
+  agreement: "single_source" | "promising_not_proven" | "conflicting";
+  entries: LeaderboardEntry[];
+  citations: Citation[];
+}
+
+export interface LeaderboardSection {
+  ranking_group_id: string;
+  entity_kind: string;
+  interaction_policy: string;
+  configuration_passport_class: string;
+  state: string;
+  evidence_snapshot_id: string;
+  eligibility_summary: Record<string, unknown>;
+  entries: LeaderboardEntry[];
+  citations: Citation[];
+  explorer_views: ExplorerEvidenceView[];
+}
+
 export interface Leaderboard {
   object: "leaderboard";
   schema_version: "1";
@@ -240,7 +284,7 @@ export interface Leaderboard {
   snapshot_set_id: string;
   snapshot_set_descriptor: SnapshotSetDescriptorV1;
   generated_at: string;
-  ranking_groups: Array<Record<string, unknown>>;
+  ranking_groups: LeaderboardSection[];
 }
 
 export interface EntityDetail {
@@ -253,7 +297,7 @@ export interface EntityDetail {
   snapshot_set_descriptor: SnapshotSetDescriptorV1;
   ranking_group_id: string;
   state: string;
-  publication_snapshot_id: string;
+  evidence_snapshot_id: string;
   eligibility_summary: Record<string, unknown>;
   generated_at: string;
   entity: Record<string, unknown>;
@@ -272,7 +316,7 @@ export interface CompareResult {
   interaction_policy: string;
   configuration_passport_class: string;
   state: string;
-  publication_snapshot_id: string;
+  evidence_snapshot_id: string;
   eligibility_summary: Record<string, unknown>;
   generated_at: string;
   entities: Array<Record<string, unknown>>;

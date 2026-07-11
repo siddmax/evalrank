@@ -326,6 +326,22 @@
                 "maxItems": 0
               },
               "explorer_views": {
+                "type": "array"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["state", "evidence_snapshot_id"],
+            "properties": {
+              "state": {"enum": ["preview", "shadow"]},
+              "evidence_snapshot_id": {"type": "string", "pattern": "^explorer_"}
+            }
+          },
+          "then": {
+            "properties": {
+              "explorer_views": {
                 "type": "array",
                 "minItems": 1
               }
@@ -424,7 +440,20 @@
           "type": "array",
           "uniqueItems": true,
           "items": {
-            "$ref": "#/$defs/LeaderboardEntry"
+            "allOf": [
+              {"$ref": "#/$defs/LeaderboardEntry"},
+              {
+                "type": "object",
+                "properties": {
+                  "ranking": {
+                    "type": "object",
+                    "properties": {
+                      "in_top_set": {"const": false}
+                    }
+                  }
+                }
+              }
+            ]
           }
         },
         "citations": {

@@ -27,7 +27,7 @@ evidence of runtime lineage or admission.
 - Apache-2.0, product-neutral Python contracts and synthetic fixtures.
 - Public JSON Schemas and OpenAPI description.
 - Immutable artifact/run provenance, native observations, exact configuration passports, effective-dated serving-offer pricing schedules, evidence-basis evaluation-to-offer links, non-zero closed monthly usage queries, baseline and zero-cache projected-cost receipts with hard cross-profile budgets and truthful divergence caveats, and deterministic receipt identities.
-- Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts with semantic verifiers.
+- Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts use one truthful `evidence_snapshot_id`; family-scoped explorer views remain separate from calibrated entries and cannot claim top-set membership.
 - Dependency-light Python and TypeScript SDK boundaries.
 - Deterministic CLI and MCP adapters over public contracts.
 - MCP network destinations are host-owned configuration, never model-controlled tool arguments; the Python client also enforces a bounded default request timeout.
@@ -47,7 +47,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - MCP-Atlas, BrowseComp, Toolathlon, AutomationBench, OfficeQA Pro, and Finance Agent v2 are discovery-only user-value signals mapped to existing decision groups. Agents' Last Exam and DeepSWE have replayable, licensed daily refresh feeds but remain non-ranking shadows; BrowseComp and BrowseComp-Plus share one declared correlated-family group.
 - CORE-Bench mainline and out-of-distribution feeds are two views of one declared correlated family and never count as independent evidence.
 - SWE-bench Verified, SWE-Bench Pro, and current Steel composites are `quarantined` pending documented repair and replay.
-- Eligibility thresholds are `unvalidated`. Explorer output needs at least one family; a calibrated top set needs at least three independent families; a single-winner claim needs at least four plus native practical effect and leave-one-family-out stability.
+- Eligibility thresholds are `unvalidated`. An exact `explorer_<sha256>` output needs at least one family view; a preview without exact evidence truthfully exposes `explorer_views: []`. A calibrated top set needs at least three independent families; a single-winner claim needs at least four plus native practical effect and leave-one-family-out stability.
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 

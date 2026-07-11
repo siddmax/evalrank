@@ -391,7 +391,7 @@ export interface SnapshotSetDescriptorV1 {
 
 export interface RankingGroupSnapshotRefV1 {
   ranking_group_id: string;
-  publication_snapshot_id: string;
+  evidence_snapshot_id: string;
 }
 
 const artifactIdPattern = /^artifact_[0-9a-f]{64}$/;
@@ -469,17 +469,17 @@ export function parseSnapshotSetDescriptorV1(value: unknown): SnapshotSetDescrip
 }
 
 export function parseRankingGroupSnapshotRefV1(value: unknown): RankingGroupSnapshotRefV1 {
-  const payload = closed(value, ["ranking_group_id", "publication_snapshot_id"]);
+  const payload = closed(value, ["ranking_group_id", "evidence_snapshot_id"]);
   return {
     ranking_group_id: patternString(
       payload.ranking_group_id,
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
       "ranking_group_id",
     ),
-    publication_snapshot_id: patternString(
-      payload.publication_snapshot_id,
-      /^snapshot_[0-9a-f]{64}$/,
-      "publication_snapshot_id",
+    evidence_snapshot_id: patternString(
+      payload.evidence_snapshot_id,
+      /^(snapshot|explorer)_[0-9a-f]{64}$/,
+      "evidence_snapshot_id",
     ),
   };
 }
@@ -516,7 +516,7 @@ export async function verifyLeaderboardSnapshotSet(payload: unknown): Promise<Sn
     const row = record(group, "ranking group");
     return parseRankingGroupSnapshotRefV1({
       ranking_group_id: row.ranking_group_id,
-      publication_snapshot_id: row.publication_snapshot_id,
+      evidence_snapshot_id: row.evidence_snapshot_id,
     });
   });
   validateUniqueSnapshotOwnership(references);
@@ -542,8 +542,8 @@ function sortRankingGroupSnapshots(
   return [...references].sort((left, right) => {
     if (left.ranking_group_id < right.ranking_group_id) return -1;
     if (left.ranking_group_id > right.ranking_group_id) return 1;
-    if (left.publication_snapshot_id < right.publication_snapshot_id) return -1;
-    if (left.publication_snapshot_id > right.publication_snapshot_id) return 1;
+    if (left.evidence_snapshot_id < right.evidence_snapshot_id) return -1;
+    if (left.evidence_snapshot_id > right.evidence_snapshot_id) return 1;
     return 0;
   });
 }
@@ -553,7 +553,7 @@ function sameSnapshotReference(
   right: RankingGroupSnapshotRefV1,
 ): boolean {
   return left.ranking_group_id === right.ranking_group_id
-    && left.publication_snapshot_id === right.publication_snapshot_id;
+    && left.evidence_snapshot_id === right.evidence_snapshot_id;
 }
 
 function validateUniqueSnapshotOwnership(references: RankingGroupSnapshotRefV1[]): void {
@@ -561,10 +561,10 @@ function validateUniqueSnapshotOwnership(references: RankingGroupSnapshotRefV1[]
     throw new TypeError("ranking_group_snapshots must own unique ranking_group_id values");
   }
   if (
-    new Set(references.map((reference) => reference.publication_snapshot_id)).size
+    new Set(references.map((reference) => reference.evidence_snapshot_id)).size
     !== references.length
   ) {
-    throw new TypeError("ranking_group_snapshots must own unique publication_snapshot_id values");
+    throw new TypeError("ranking_group_snapshots must own unique evidence_snapshot_id values");
   }
 }
 
@@ -588,6 +588,14 @@ export async function verifyLeaderboardSemantics(
       verifyReadRanking(record(entry, "leaderboard entry").ranking).inTopSet
     );
     verifyNonactiveClaim(group.state, hasTopSet);
+    const explorerViews = array(group.explorer_views, "explorer_views");
+    if (group.state === "active" && explorerViews.length !== 0) {
+      throw new TypeError("active groups cannot expose explorer views");
+    }
+    if ((group.state === "preview" || group.state === "shadow") && entries.length !== 0) {
+      throw new TypeError("explorer groups cannot expose calibrated entries");
+    }
+    verifyExplorerViews(explorerViews);
     verifyEligibility(group.eligibility_summary, {
       state: group.state,
       entityKind: group.entity_kind,
@@ -596,6 +604,18 @@ export async function verifyLeaderboardSemantics(
     });
   }
   return descriptor;
+}
+
+function verifyExplorerViews(value: unknown): void {
+  for (const viewValue of array(value, "explorer_views")) {
+    const view = record(viewValue, "explorer view");
+    for (const entryValue of array(view.entries, "explorer view entries")) {
+      const entry = record(entryValue, "explorer view entry");
+      if (verifyReadRanking(entry.ranking).inTopSet) {
+        throw new TypeError("explorer views cannot claim top-set membership");
+      }
+    }
+  }
 }
 
 export async function verifyEntityDetailSemantics(
@@ -654,7 +674,7 @@ async function verifySnapshotReference(
   }
   const reference = parseRankingGroupSnapshotRefV1({
     ranking_group_id: payload.ranking_group_id,
-    publication_snapshot_id: payload.publication_snapshot_id,
+    evidence_snapshot_id: payload.evidence_snapshot_id,
   });
   if (!descriptor.ranking_group_snapshots.some((candidate) =>
     sameSnapshotReference(candidate, reference)
