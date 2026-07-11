@@ -20,7 +20,7 @@ from evalrank_core.decision_contracts import (
 
 
 PUBLIC_GENERATED_AT = "2026-06-25T00:00:00Z"
-PUBLIC_CATALOG_METHODOLOGY_VERSION = "2026-07-10.1.catalog-manifest-v1"
+PUBLIC_CATALOG_METHODOLOGY_VERSION = "2026-07-10.2.catalog-manifest-v1"
 PUBLIC_CATALOG_GENERATED_AT = "2026-07-10T00:00:00Z"
 PUBLIC_USE_CASE_ID = "web-browsing"
 PUBLIC_FIXTURE_KINDS = (
@@ -57,7 +57,9 @@ _USE_CASE_ROWS = (
     ("multilingual", "Multilingual", "Maintain quality across languages and translation tasks", ("model", "tool", "agent")),
     ("vision-multimodal", "Vision and multimodal", "Reason over images, audio, or video", ("model", "agent")),
     ("web-frontend-code-generation", "Web frontend code generation", "Build and iterate web interfaces from a specification", ("model", "agent")),
-    ("devops-sre-terminal", "DevOps, SRE, and terminal", "Resolve infrastructure or incident tasks in a terminal", ("model", "agent")),
+    ("sre-incident-response", "SRE incident response", "Diagnose and repair live service or infrastructure incidents", ("agent",)),
+    ("devops-lifecycle", "DevOps lifecycle", "Build, configure, test, deploy, and monitor software delivery systems", ("agent",)),
+    ("terminal-generalist", "Terminal generalist", "Complete heterogeneous computer tasks through a terminal", ("agent",)),
     ("mobile-codegen", "Mobile app code generation", "Build and iterate native or cross-platform mobile apps", ("model", "agent")),
     ("reasoning", "Reasoning", "Solve novel multi-step reasoning tasks", ("model",)),
     ("factuality", "Factuality", "Produce correct and grounded factual claims", ("model", "tool")),
