@@ -2,7 +2,7 @@
   "$schema": "../schemas/benchmark-research-provenance.schema.json",
   "object": "benchmark_research_provenance",
   "schema_version": "1",
-  "manifest_version": "2026-07-10.3",
+  "manifest_version": "2026-07-10.4",
   "families": [
     {
       "benchmark_family_id": "livecodebench",
@@ -1041,6 +1041,14 @@
           "source_ids": ["v11_paper", "v11_repository"]
         }
       ]
-    }
+    },
+    {"benchmark_family_id":"mcp-atlas","checked_on":"2026-07-10","sources":[{"source_id":"leaderboard","kind":"official_leaderboard","url":"https://labs.scale.com/leaderboard/mcp_atlas"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2602.00933"}],"claims":[]},
+    {"benchmark_family_id":"browsecomp","checked_on":"2026-07-10","sources":[{"source_id":"release","kind":"official_site","url":"https://openai.com/index/browsecomp/"},{"source_id":"repository","kind":"official_repository","url":"https://github.com/openai/simple-evals"}],"claims":[]},
+    {"benchmark_family_id":"toolathlon","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/hkust-nlp/Toolathlon"}],"claims":[]},
+    {"benchmark_family_id":"agents-last-exam","checked_on":"2026-07-10","sources":[{"source_id":"site","kind":"official_site","url":"https://agents-last-exam.org/"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2606.05405"},{"source_id":"dataset","kind":"official_dataset","url":"https://huggingface.co/datasets/agents-last-exam/agents-last-exam"}],"claims":[]},
+    {"benchmark_family_id":"automationbench","checked_on":"2026-07-10","sources":[{"source_id":"release","kind":"official_site","url":"https://zapier.com/blog/introducing-automationbench/"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2604.18934"}],"claims":[]},
+    {"benchmark_family_id":"officeqa-pro","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/databricks/officeqa"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2603.08655"}],"claims":[]},
+    {"benchmark_family_id":"finance-agent-v2","checked_on":"2026-07-10","sources":[{"source_id":"leaderboard","kind":"official_leaderboard","url":"https://www.vals.ai/benchmarks"},{"source_id":"methodology","kind":"official_site","url":"https://www.vals.ai/methodology"}],"claims":[]},
+    {"benchmark_family_id":"deepswe","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/datacurve-ai/deep-swe"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2607.07946"},{"source_id":"dataset","kind":"official_dataset","url":"https://huggingface.co/datasets/datacurve/deep-swe"}],"claims":[]}
   ]
 }

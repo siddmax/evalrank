@@ -49,6 +49,11 @@ families exactly, in manifest order. When a manifest release changes the family
 inventory or research flags, update the companion in the same change and cite
 new primary or official sources rather than secondary summaries.
 
+Newly announced benchmarks enter as fail-closed discovery leads. A public
+leaderboard, repository, paper, or model-launch citation establishes research
+relevance only; it does not establish result rights, refresh cadence, retained
+artifact permission, replay success, or ranking eligibility.
+
 Run:
 
 ```sh

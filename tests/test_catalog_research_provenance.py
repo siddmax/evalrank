@@ -38,10 +38,10 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
 
         self.assertEqual("benchmark_research_provenance", self.provenance["object"])
         self.assertEqual("1", self.provenance["schema_version"])
-        self.assertEqual("2026-07-10.3", self.provenance["manifest_version"])
+        self.assertEqual("2026-07-10.4", self.provenance["manifest_version"])
         self.assertEqual(self.manifest["manifest_version"], self.provenance["manifest_version"])
         self.assertEqual(expected_ids, actual_ids)
-        self.assertEqual(80, len(actual_ids))
+        self.assertEqual(88, len(actual_ids))
         self.assertEqual(len(actual_ids), len(set(actual_ids)))
 
     def test_every_family_has_dated_primary_or_official_sources(self):
@@ -225,7 +225,7 @@ insecureSource.families[0].sources[0].url = "http://example.com/benchmark";
 assertInvalid(insecureSource, "non-HTTPS source");
 
 const uncategorizedFlag = clone(artifact);
-uncategorizedFlag.families.at(-1).claims[0].research_flag = "not-a-scope-claim";
+uncategorizedFlag.families.find((family) => family.claims.length > 0).claims[0].research_flag = "not-a-scope-claim";
 assertInvalid(uncategorizedFlag, "research flag on scope claim");
 """
         result = subprocess.run(
