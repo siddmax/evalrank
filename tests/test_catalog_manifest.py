@@ -403,7 +403,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         self.assertEqual("evalrank_manifest", payload["object"])
         self.assertEqual("1", payload["schema_version"])
-        self.assertEqual("2026-07-10.4", payload["manifest_version"])
+        self.assertEqual("2026-07-10.5", payload["manifest_version"])
         for key, id_key in (
             ("cells", "cell_id"),
             ("ranking_groups", "ranking_group_id"),
@@ -625,7 +625,9 @@ class CatalogManifestTests(unittest.TestCase):
         self.assertEqual(
             {
                 "aider-polyglot",
+                "agents-last-exam",
                 "bfcl-v4",
+                "deepswe",
                 "itbench",
                 "livebench-reasoning",
                 "livecodebench",
@@ -711,12 +713,53 @@ class CatalogManifestTests(unittest.TestCase):
                 self.assertEqual([cell_id], family["candidate_cells"])
                 self.assertEqual([cell_id], feed["candidate_cells"])
                 self.assertEqual([group_id], feed["ranking_group_ids"])
-                self.assertEqual("discovered", family["state"])
-                self.assertEqual("discovered", feed["state"])
-                self.assertIsNone(feed["adapter_id"])
-                self.assertEqual("unknown", feed["rights"]["status"])
-                self.assertEqual("unvalidated", feed["cadence"]["status"])
-                self.assertFalse(feed["retention"]["store_artifact_bytes"])
+                if family_id not in {"agents-last-exam", "deepswe"}:
+                    self.assertEqual("discovered", family["state"])
+                    self.assertEqual("discovered", feed["state"])
+                    self.assertIsNone(feed["adapter_id"])
+                    self.assertEqual("unknown", feed["rights"]["status"])
+                    self.assertEqual("unvalidated", feed["cadence"]["status"])
+                    self.assertFalse(feed["retention"]["store_artifact_bytes"])
+
+    def test_replayable_user_value_feeds_are_refreshable_but_not_rank_eligible(self):
+        payload = manifest()
+        families = {row["benchmark_family_id"]: row for row in payload["benchmark_families"]}
+        feeds = {row["benchmark_family_id"]: row for row in payload["feeds"]}
+        expected = {
+            "agents-last-exam": ("agents-last-exam-official-json-v1", "CC-BY-4.0"),
+            "deepswe": ("deepswe-v1-1-official-json-v1", "Apache-2.0"),
+        }
+
+        for family_id, (adapter_id, data_license) in expected.items():
+            with self.subTest(family_id=family_id):
+                family = families[family_id]
+                feed = feeds[family_id]
+                self.assertEqual("shadow", family["state"])
+                self.assertEqual("shadow", feed["state"])
+                self.assertEqual(adapter_id, feed["adapter_id"])
+                self.assertEqual("higher", feed["metric_direction"])
+                self.assertIsNone(feed["rank_eligible_count"])
+                self.assertEqual("approved", feed["rights"]["status"])
+                self.assertEqual(data_license, feed["rights"]["task_data_license"])
+                self.assertEqual("allowed", feed["rights"]["result_redistribution"])
+                self.assertEqual("allowed", feed["rights"]["artifact_retention"])
+                self.assertEqual("allowed", feed["rights"]["environment_terms"])
+                self.assertTrue(feed["retention"]["store_artifact_bytes"])
+                self.assertEqual(
+                    {
+                        "status": "validated",
+                        "mode": "periodic",
+                        "expected_seconds": 86_400,
+                        "stale_after_seconds": 172_800,
+                        "stop_recommending_after_seconds": 604_800,
+                        "as_of": None,
+                        "upstream_version": None,
+                    },
+                    feed["cadence"],
+                )
+                self.assertEqual("validated", feed["lineage"]["validation_status"])
+                self.assertEqual("unknown", feed["lineage"]["correlation_status"])
+                self.assertIsNone(feed["lineage"]["correlated_family_group"])
 
     def test_github_issue_swe_families_share_one_uncalibrated_lineage(self):
         payload = manifest()
@@ -952,7 +995,9 @@ class CatalogManifestTests(unittest.TestCase):
         }
         self.assertEqual(
             {
+                "agents-last-exam-discovery": "higher",
                 "bfcl-v4-discovery": "higher",
+                "deepswe-discovery": "higher",
                 "aider-polyglot-discovery": "higher",
                 "itbench-discovery": "higher",
                 "livebench-reasoning-discovery": "higher",
