@@ -579,6 +579,9 @@ export async function verifyLeaderboardSemantics(
     "ranking_groups",
   ]);
   envelope(complete, "leaderboard");
+  if (!["active", "preview", "shadow", "quarantined"].includes(String(complete.cell_state))) {
+    throw new TypeError("leaderboard cell_state is invalid");
+  }
   const generatedAt = utcTimestamp(complete.generated_at, "generated_at");
   const descriptor = await verifyLeaderboardSnapshotSet(payload);
   const leaderboard = record(payload, "leaderboard");
@@ -608,9 +611,10 @@ export async function verifyLeaderboardSemantics(
     if (!["active", "preview", "shadow", "quarantined"].includes(String(group.state))) {
       throw new TypeError("ranking group state is invalid");
     }
-    if (![...entityKinds, "unresolved"].includes(group.entity_kind as never)
-      || ![...interactionPolicies, "unresolved"].includes(group.interaction_policy as never)
-      || ![...passportClasses, "unresolved-v1"].includes(group.configuration_passport_class as never)) {
+    const identity = [
+      group.entity_kind, group.interaction_policy, group.configuration_passport_class,
+    ].join("|");
+    if (!identityTriples.has(identity) && identity !== "unresolved|unresolved|unresolved-v1") {
       throw new TypeError("ranking group identity is invalid");
     }
     const explorerViews = array(group.explorer_views, "explorer_views");
@@ -622,6 +626,13 @@ export async function verifyLeaderboardSemantics(
     }
     if (group.state === "active" && explorerViews.length !== 0) {
       throw new TypeError("active groups cannot expose explorer views");
+    }
+    if (group.state === "active" && entries.length !== 0
+      && array(group.citations, "ranking group citations").length === 0) {
+      throw new TypeError("active ranking entries require group citations");
+    }
+    if (group.state === "quarantined" && entries.length !== 0) {
+      throw new TypeError("quarantined groups cannot expose entries");
     }
     if (
       (group.state === "preview" || group.state === "shadow")
@@ -753,9 +764,13 @@ export async function verifyCompareResultSemantics(
     || ![...passportClasses].includes(document.configuration_passport_class as never)) {
     throw new TypeError("compare ranking-group identity is invalid");
   }
+  const comparedEntities = array(document.entities, "compare entities");
+  if (comparedEntities.length < 2 || comparedEntities.length > 4) {
+    throw new TypeError("compare entities must contain two to four rows");
+  }
   const configurationIds = new Set<string>();
   const ranks = new Set<number>();
-  for (const value of array(document.entities, "compare entities")) {
+  for (const value of comparedEntities) {
     const entity = closed(value, ["evaluated_configuration_id", "ranking", "citations"]);
     const configurationId = patternString(
       entity.evaluated_configuration_id,
