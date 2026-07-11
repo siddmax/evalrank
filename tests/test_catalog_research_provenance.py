@@ -38,7 +38,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
 
         self.assertEqual("benchmark_research_provenance", self.provenance["object"])
         self.assertEqual("1", self.provenance["schema_version"])
-        self.assertEqual("2026-07-10.2", self.provenance["manifest_version"])
+        self.assertEqual("2026-07-10.3", self.provenance["manifest_version"])
         self.assertEqual(self.manifest["manifest_version"], self.provenance["manifest_version"])
         self.assertEqual(expected_ids, actual_ids)
         self.assertEqual(80, len(actual_ids))
