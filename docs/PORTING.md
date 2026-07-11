@@ -51,7 +51,7 @@ Cross-repository work lands without circular claims:
 
 Temporary worktrees or stale branches are not continuity records. The paired identifiers and public contract history are.
 
-Current release candidate: public contract `85335aa90fb41ff57a54dbc9113d0362cf68110b` is pinned by private consumer `c0908cef9eca6a16ef6134c12c7c214f2ab91b6d`. The pair binds entity and compare reads to exact `{benchmark_family_id, feed_id}` explorer views, accumulates current last-good eligible families atomically, and deploys the canonical scheduler SQL with exact read-back verification. Migrations 058-060 and application deployment remain operator-gated, so this record does not claim live rollout.
+Current release candidate: public contract `64da4c21fc14b5e3d453854e19e4b9d3e712a0bd` is pinned by private consumer `43248df5a4377eca01f504a5f0d3d1d8e5ebe777`. The pair binds explicit `{benchmark_family_id, feed_id}` requests to returned identity, enforces complete closed wire values and exact stale gaps, preserves no-evidence preview snapshots, and uses a deterministic fresh/stale body plus strong-ETag transition without changing `snapshot_set_id`. It also retains atomic explorer-family accumulation and canonical scheduler SQL read-back. Migrations 058-060 and application deployment remain operator-gated, so this record does not claim live rollout.
 
 ## Current Workstreams
 

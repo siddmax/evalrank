@@ -51,7 +51,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 
-Paired release candidate: public contract `85335aa90fb41ff57a54dbc9113d0362cf68110b`; private consumer `c0908cef9eca6a16ef6134c12c7c214f2ab91b6d`. The pair binds entity and compare reads to exact explorer-view identity, accumulates every current last-good eligible family in each active explorer snapshot, and makes deployment reconcile and verify the one canonical scheduler job. Neither commit is deployed and migrations 058-060 remain operator-gated; this status does not claim live application or cron rollout.
+Paired release candidate: public contract `64da4c21fc14b5e3d453854e19e4b9d3e712a0bd`; private consumer `43248df5a4377eca01f504a5f0d3d1d8e5ebe777`. The pair binds explicit selectors to returned explorer-view identity, enforces complete closed wire values and freshness gaps in both SDKs, preserves the documented no-evidence preview, and transitions stale response bytes plus strong ETags exactly once while retaining the snapshot-set identity. Explorer family accumulation and exact canonical scheduler reconciliation remain included. Neither commit is deployed and migrations 058-060 remain operator-gated; this status does not claim live application or cron rollout.
 
 ## Current Workstreams
 
