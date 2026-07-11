@@ -165,6 +165,33 @@ class UseCase:
         if self.is_overlay != (self.rank_policy == "veto_overlay"):
             raise ValueError("overlay and rank_policy must agree")
 
+    @classmethod
+    def from_dict(cls, payload: dict[str, Any]) -> UseCase:
+        fields = {
+            "object",
+            "id",
+            "name",
+            "definition",
+            "entity_kinds",
+            "rank_policy",
+            "is_overlay",
+        }
+        if not isinstance(payload, dict) or set(payload) != fields:
+            raise ValueError("use_case fields are invalid")
+        if payload["object"] != cls.object:
+            raise ValueError("use_case object is invalid")
+        entity_kinds = payload["entity_kinds"]
+        if not isinstance(entity_kinds, list):
+            raise ValueError("entity_kinds must be an array")
+        return cls(
+            id=payload["id"],
+            name=payload["name"],
+            definition=payload["definition"],
+            entity_kinds=tuple(entity_kinds),
+            rank_policy=payload["rank_policy"],
+            is_overlay=payload["is_overlay"],
+        )
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "object": self.object,
@@ -195,6 +222,22 @@ class UseCaseCatalog:
         identifiers = [use_case.id for use_case in self.use_cases]
         if len(identifiers) != len(set(identifiers)):
             raise ValueError("duplicate use_case id")
+
+    @classmethod
+    def from_dict(cls, payload: dict[str, Any]) -> UseCaseCatalog:
+        fields = {"object", "methodology_version", "generated_at", "use_cases"}
+        if not isinstance(payload, dict) or set(payload) != fields:
+            raise ValueError("use_case_catalog fields are invalid")
+        if payload["object"] != cls.object:
+            raise ValueError("use_case_catalog object is invalid")
+        use_cases = payload["use_cases"]
+        if not isinstance(use_cases, list):
+            raise ValueError("use_cases must be an array")
+        return cls(
+            methodology_version=payload["methodology_version"],
+            generated_at=payload["generated_at"],
+            use_cases=tuple(UseCase.from_dict(row) for row in use_cases),
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {

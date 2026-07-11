@@ -1,4 +1,5 @@
 import json
+import math
 import re
 import urllib.error
 import urllib.parse
@@ -84,10 +85,12 @@ class EvalRankApiError(Exception):
 
 
 class EvalRankClient:
-    def __init__(self, base_url: str, *, timeout: float | None = None) -> None:
+    def __init__(self, base_url: str, *, timeout: float = 30.0) -> None:
         parsed = urllib.parse.urlparse(base_url)
         if parsed.scheme not in {"http", "https"} or not parsed.netloc:
             raise ValueError("base_url must be an http or https URL")
+        if not isinstance(timeout, (int, float)) or isinstance(timeout, bool) or not math.isfinite(timeout) or timeout <= 0:
+            raise ValueError("timeout must be a finite positive number of seconds")
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
 
@@ -120,7 +123,7 @@ class EvalRankClient:
         return DecisionReceiptV1.from_dict(response).to_dict()
 
     def use_cases(self) -> dict[str, Any]:
-        return self._request_json("/v1/use-cases")
+        return UseCaseCatalog.from_dict(self._request_json("/v1/use-cases")).to_dict()
 
     def benchmark_health(self) -> dict[str, Any]:
         response = self._request_json("/v1/benchmark-health")

@@ -41,13 +41,8 @@ def list_tools() -> list[dict[str, Any]]:
             "inputSchema": {
                 "type": "object",
                 "additionalProperties": False,
-                "required": ["base_url", "query"],
+                "required": ["query"],
                 "properties": {
-                    "base_url": {
-                        "type": "string",
-                        "minLength": 1,
-                        "pattern": "^https?://",
-                    },
                     "query": _decision_query_schema(),
                     "share": {
                         "type": "boolean",
@@ -63,13 +58,8 @@ def list_tools() -> list[dict[str, Any]]:
             "inputSchema": {
                 "type": "object",
                 "additionalProperties": False,
-                "required": ["base_url", "receipt_id"],
+                "required": ["receipt_id"],
                 "properties": {
-                    "base_url": {
-                        "type": "string",
-                        "minLength": 1,
-                        "pattern": "^https?://",
-                    },
                     "receipt_id": {
                         "type": "string",
                         "pattern": "^receipt_[0-9a-f]{64}$",
@@ -83,14 +73,7 @@ def list_tools() -> list[dict[str, Any]]:
             "inputSchema": {
                 "type": "object",
                 "additionalProperties": False,
-                "required": ["base_url"],
-                "properties": {
-                    "base_url": {
-                        "type": "string",
-                        "minLength": 1,
-                        "pattern": "^https?://",
-                    },
-                },
+                "properties": {},
             },
         },
         {
@@ -99,43 +82,47 @@ def list_tools() -> list[dict[str, Any]]:
             "inputSchema": {
                 "type": "object",
                 "additionalProperties": False,
-                "required": ["base_url"],
-                "properties": {
-                    "base_url": {
-                        "type": "string",
-                        "minLength": 1,
-                        "pattern": "^https?://",
-                    },
-                },
+                "properties": {},
             },
         },
     ]
 
 
-def call_tool(name: str, arguments: dict[str, Any] | None = None) -> dict[str, Any]:
+def call_tool(
+    name: str,
+    arguments: dict[str, Any] | None = None,
+    *,
+    base_url: str | None = None,
+) -> dict[str, Any]:
     if arguments is None:
         arguments = {}
     if not isinstance(arguments, dict):
         raise ValueError("arguments must be an object")
     if name == FIXTURE_TOOL_NAME:
         return _text_result(sample_public_fixture(arguments.get("kind")))
+    if name not in {
+        DECIDE_TOOL_NAME,
+        DECISION_RECEIPT_TOOL_NAME,
+        USE_CASES_TOOL_NAME,
+        BENCHMARK_HEALTH_TOOL_NAME,
+    }:
+        raise ValueError(f"unknown tool: {name}")
+    if not isinstance(base_url, str) or not base_url:
+        raise ValueError("base_url must be configured by the MCP host")
     if name == DECIDE_TOOL_NAME:
-        return _decide(arguments)
+        return _decide(base_url, arguments)
     if name == DECISION_RECEIPT_TOOL_NAME:
-        return _decision_receipt(arguments)
+        return _decision_receipt(base_url, arguments)
     if name == USE_CASES_TOOL_NAME:
-        return _metadata(arguments, "use_cases")
+        return _metadata(base_url, "use_cases")
     if name == BENCHMARK_HEALTH_TOOL_NAME:
-        return _metadata(arguments, "benchmark_health")
+        return _metadata(base_url, "benchmark_health")
     raise ValueError(f"unknown tool: {name}")
 
 
-def _decide(arguments: dict[str, Any]) -> dict[str, Any]:
-    base_url = arguments.get("base_url")
+def _decide(base_url: str, arguments: dict[str, Any]) -> dict[str, Any]:
     query = arguments.get("query")
     share = arguments.get("share", False)
-    if not isinstance(base_url, str) or not base_url:
-        raise ValueError("base_url is required")
     if not isinstance(query, dict):
         raise ValueError("query must be an object")
     if not isinstance(share, bool):
@@ -146,11 +133,8 @@ def _decide(arguments: dict[str, Any]) -> dict[str, Any]:
         return _text_result(exc.problem.to_dict(), is_error=True)
 
 
-def _decision_receipt(arguments: dict[str, Any]) -> dict[str, Any]:
-    base_url = arguments.get("base_url")
+def _decision_receipt(base_url: str, arguments: dict[str, Any]) -> dict[str, Any]:
     receipt_id = arguments.get("receipt_id")
-    if not isinstance(base_url, str) or not base_url:
-        raise ValueError("base_url is required")
     if not isinstance(receipt_id, str) or not receipt_id:
         raise ValueError("receipt_id is required")
     try:
@@ -159,10 +143,7 @@ def _decision_receipt(arguments: dict[str, Any]) -> dict[str, Any]:
         return _text_result(exc.problem.to_dict(), is_error=True)
 
 
-def _metadata(arguments: dict[str, Any], method: str) -> dict[str, Any]:
-    base_url = arguments.get("base_url")
-    if not isinstance(base_url, str) or not base_url:
-        raise ValueError("base_url is required")
+def _metadata(base_url: str, method: str) -> dict[str, Any]:
     client = EvalRankClient(base_url)
     try:
         if method == "use_cases":

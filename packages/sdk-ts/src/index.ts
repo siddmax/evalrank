@@ -94,6 +94,58 @@ export interface UseCaseCatalog {
   use_cases: NonEmptyArray<UseCase>;
 }
 
+export function verifyUseCaseCatalog(value: unknown): UseCaseCatalog {
+  if (!isRecord(value) || !hasExactFields(value, ["object", "methodology_version", "generated_at", "use_cases"])) {
+    throw new TypeError("use-case catalog fields are invalid");
+  }
+  if (
+    value.object !== "use_case_catalog"
+    || typeof value.methodology_version !== "string"
+    || !/^\d{4}-\d{2}-\d{2}\.[1-9]\d*\.([a-z0-9]+-)*[a-z0-9]+$/.test(value.methodology_version)
+    || !isUtcSecondTimestamp(value.generated_at)
+    || !Array.isArray(value.use_cases)
+    || value.use_cases.length === 0
+  ) {
+    throw new TypeError("use-case catalog envelope is invalid");
+  }
+  const ids = new Set<string>();
+  const fields = ["object", "id", "name", "definition", "entity_kinds", "rank_policy", "is_overlay"];
+  for (const row of value.use_cases) {
+    if (!isRecord(row) || !hasExactFields(row, fields)) {
+      throw new TypeError("use-case fields are invalid");
+    }
+    if (
+      row.object !== "use_case"
+      || typeof row.id !== "string"
+      || row.id.length === 0
+      || ids.has(row.id)
+      || typeof row.name !== "string"
+      || row.name.length === 0
+      || typeof row.definition !== "string"
+      || row.definition.length === 0
+    ) {
+      throw new TypeError("use-case ids must be unique and text fields non-empty");
+    }
+    ids.add(row.id);
+    if (
+      !Array.isArray(row.entity_kinds)
+      || row.entity_kinds.length === 0
+      || new Set(row.entity_kinds).size !== row.entity_kinds.length
+      || row.entity_kinds.some((kind) => !USE_CASE_ENTITY_KINDS.includes(kind as UseCaseEntityKind))
+    ) {
+      throw new TypeError("use-case entity_kinds must be unique public entity kinds");
+    }
+    if (
+      (row.rank_policy !== "ranked" && row.rank_policy !== "veto_overlay")
+      || typeof row.is_overlay !== "boolean"
+      || row.is_overlay !== (row.rank_policy === "veto_overlay")
+    ) {
+      throw new TypeError("use-case rank_policy and is_overlay must agree");
+    }
+  }
+  return value as unknown as UseCaseCatalog;
+}
+
 export interface BenchmarkHealthCell {
   cell_id: string;
   status: "active" | "preview" | "unavailable";
@@ -315,7 +367,7 @@ export class EvalRankClient {
   }
 
   async useCases(): Promise<UseCaseCatalog> {
-    return this.requestJson<UseCaseCatalog>("/v1/use-cases");
+    return verifyUseCaseCatalog(await this.requestJson<unknown>("/v1/use-cases"));
   }
 
   async benchmarkHealth(): Promise<BenchmarkHealth> {

@@ -723,6 +723,32 @@ test("EvalRankClient fetches public use-case catalog metadata", async () => {
   }
 });
 
+test("use-case catalog verification rejects malformed and duplicate rows", async () => {
+  const malformed = useCaseCatalogPayload();
+  malformed.use_cases[0].entity_kinds = ["private_kind"] as never;
+  const malformedServer = await startServer(200, malformed);
+  try {
+    await assert.rejects(
+      () => new EvalRankClient(malformedServer.baseUrl).useCases(),
+      /entity_kinds/,
+    );
+  } finally {
+    await malformedServer.close();
+  }
+
+  const duplicate = useCaseCatalogPayload();
+  duplicate.use_cases.push(structuredClone(duplicate.use_cases[0]));
+  const duplicateServer = await startServer(200, duplicate);
+  try {
+    await assert.rejects(
+      () => new EvalRankClient(duplicateServer.baseUrl).useCases(),
+      /unique/,
+    );
+  } finally {
+    await duplicateServer.close();
+  }
+});
+
 test("EvalRankClient fetches public benchmark health", async () => {
   const server = await startServer(200, benchmarkHealthPayload());
 
