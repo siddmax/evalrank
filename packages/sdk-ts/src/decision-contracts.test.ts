@@ -963,6 +963,13 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
   await verifyEntityDetailSemantics(entity);
   await verifyCompareResultSemantics(compare);
 
+  const mixedIdentity = structuredClone(compare);
+  mixedIdentity.interaction_policy = "agentic";
+  await assert.rejects(
+    () => verifyCompareResultSemantics(mixedIdentity),
+    /ranking-group identity/,
+  );
+
   for (const [document, verifier] of [
     [entity, verifyEntityDetailSemantics],
     [compare, verifyCompareResultSemantics],
