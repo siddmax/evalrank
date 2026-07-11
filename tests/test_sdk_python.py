@@ -279,6 +279,21 @@ class PythonSdkTests(unittest.TestCase):
         self.assertEqual("application/json, application/problem+json", server.headers["Accept"])
         self.assertIsNone(server.request_json)
 
+    def test_use_cases_rejects_malformed_catalog_responses(self):
+        malformed = sample_use_case_catalog().to_dict()
+        malformed["use_cases"][0]["entity_kinds"] = ["private_kind"]
+        server = _SdkTestServer(response_status=200, response_body=malformed)
+        try:
+            with self.assertRaisesRegex(ValueError, "entity_kinds"):
+                EvalRankClient(server.base_url).use_cases()
+        finally:
+            server.close()
+
+    def test_client_uses_a_bounded_timeout_by_default(self):
+        self.assertEqual(30.0, EvalRankClient("https://evalrank.example").timeout)
+        with self.assertRaisesRegex(ValueError, "timeout"):
+            EvalRankClient("https://evalrank.example", timeout=0)
+
     def test_benchmark_health_gets_public_health_json(self):
         health = {
             "object": "benchmark_health",

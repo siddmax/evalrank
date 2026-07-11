@@ -114,7 +114,14 @@
             "scope",
             "version_status",
             "research_flag",
-            "quarantine_reason"
+            "quarantine_reason",
+            "harness_code_license",
+            "task_data_license",
+            "commercial_use",
+            "result_redistribution",
+            "environment_terms",
+            "artifact_retention",
+            "derived_score_publication"
           ]
         },
         "research_flag": {

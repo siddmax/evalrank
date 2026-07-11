@@ -371,7 +371,8 @@ class ReferenceServerE2ETests(unittest.TestCase):
 
         mcp_result = call_tool(
             "evalrank.decide",
-            {"base_url": self.base_url, "query": query, "share": True},
+            {"query": query, "share": True},
+            base_url=self.base_url,
         )
         mcp_receipt = json.loads(mcp_result["content"][0]["text"])
 
@@ -382,7 +383,8 @@ class ReferenceServerE2ETests(unittest.TestCase):
         self.assertEqual(expected, restricted_jcs(client.decision_receipt(receipt_id)))
         receipt_tool = call_tool(
             "evalrank.decision_receipt",
-            {"base_url": self.base_url, "receipt_id": receipt_id},
+            {"receipt_id": receipt_id},
+            base_url=self.base_url,
         )
         self.assertEqual(
             expected,

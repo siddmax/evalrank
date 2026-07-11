@@ -152,6 +152,37 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
                 for claim in quarantine_claims:
                     self.assertIsNone(claim["research_flag"])
 
+    def test_every_approved_right_has_one_direct_source_claim(self):
+        rights_fields = {
+            "harness_code_license",
+            "task_data_license",
+            "commercial_use",
+            "result_redistribution",
+            "environment_terms",
+            "artifact_retention",
+            "derived_score_publication",
+        }
+        provenance = {
+            family["benchmark_family_id"]: family
+            for family in self.provenance["families"]
+        }
+
+        for feed in self.manifest["feeds"]:
+            if feed["rights"]["status"] != "approved":
+                continue
+            family = provenance[feed["benchmark_family_id"]]
+            for field in rights_fields:
+                if feed["rights"][field] in {None, "unknown"}:
+                    continue
+                claims = [
+                    claim for claim in family["claims"]
+                    if claim["topic"] == field
+                ]
+                with self.subTest(feed=feed["feed_id"], field=field):
+                    self.assertEqual(1, len(claims))
+                    self.assertEqual("direct_source", claims[0]["basis"])
+                    self.assertIsNone(claims[0]["research_flag"])
+
     def test_schema_is_closed_draft_2020_12_and_matches_artifact_shape(self):
         self.assertEqual(
             "https://json-schema.org/draft/2020-12/schema", self.schema["$schema"]

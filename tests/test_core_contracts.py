@@ -121,6 +121,17 @@ class CoreContractTests(unittest.TestCase):
                 use_cases=(row,),
             )
 
+        self.assertEqual(catalog, UseCaseCatalog.from_dict(catalog.to_dict()))
+        malformed = catalog.to_dict()
+        malformed["use_cases"][0]["rank_policy"] = "anything-goes"
+        with self.assertRaisesRegex(ValueError, "rank_policy"):
+            UseCaseCatalog.from_dict(malformed)
+
+        duplicate = catalog.to_dict()
+        duplicate["use_cases"].append(dict(duplicate["use_cases"][0]))
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            UseCaseCatalog.from_dict(duplicate)
+
     def test_problem_details_round_trips_extensions_and_rejects_private_codes(self):
         payload = {
             "type": "https://evalrank.ai/problems/rate-limited",

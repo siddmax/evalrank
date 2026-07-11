@@ -17,8 +17,9 @@ Older build logs record historical work. They are non-normative when they confli
 
 `catalog/research-provenance.json` is the version-locked research companion to
 the manifest. It records dated primary or official discovery sources and the
-claim basis behind research flags; it is supporting provenance, not a fourth
-normative authority or evidence of runtime lineage, rights, or admission.
+claim basis behind research flags and direct license evidence behind approved
+feed rights; it is supporting provenance, not a fourth normative authority or
+evidence of runtime lineage or admission.
 
 ## Current Public Surface
 
@@ -29,6 +30,7 @@ normative authority or evidence of runtime lineage, rights, or admission.
 - Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts with semantic verifiers.
 - Dependency-light Python and TypeScript SDK boundaries.
 - Deterministic CLI and MCP adapters over public contracts.
+- MCP network destinations are host-owned configuration, never model-controlled tool arguments; the Python client also enforces a bounded default request timeout.
 - A seven-route stdlib reference server and portable fixture example.
 - One receipt-first API vocabulary: benchmark health, deterministic decisions, and explicit shared-receipt retrieval. Recommendation and scoring-stage routes, clients, tools, commands, fixture kinds, and route-only problem codes are absent.
 - Boundary, schema, package, documentation, client, and parity checks under `make check`.

@@ -619,6 +619,7 @@
       "checked_on": "2026-07-10",
       "sources": [
         {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/itbench-hub/ITBench"},
+        {"source_id": "repository_license", "kind": "official_repository", "url": "https://github.com/itbench-hub/ITBench/blob/main/LICENSE"},
         {"source_id": "sre_results", "kind": "official_dataset", "url": "https://github.com/itbench-hub/ITBench/blob/main/LEADERBOARD_SRE.md"},
         {"source_id": "artificial_analysis", "kind": "official_site", "url": "https://artificialanalysis.ai/evaluations/itbench-aa"},
         {"source_id": "artificial_analysis_dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/ArtificialAnalysis/ITBench-AA"}
@@ -637,6 +638,55 @@
           "basis": "evalrank_inference",
           "statement": "ITBench-AA is an independent implementation and rerun layer over ITBench SRE tasks, combining 40 public tasks with 19 private tasks in one reported result, so it remains a feed of the ITBench family rather than independent evidence.",
           "source_ids": ["repository", "artificial_analysis", "artificial_analysis_dataset"]
+        },
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official ITBench repository licenses its harness code under Apache-2.0.",
+          "source_ids": ["repository_license"]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository's Apache-2.0 license covers its published SRE scenarios and task definitions.",
+          "source_ids": ["repository", "repository_license"]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants use and distribution rights without a noncommercial restriction.",
+          "source_ids": ["repository_license"]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 permits redistribution of the licensed work subject to its notice conditions, so independently produced result records may be redistributed.",
+          "source_ids": ["repository_license"]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository publishes its Kubernetes environment definitions under Apache-2.0.",
+          "source_ids": ["repository", "repository_license"]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants reproduction rights for the repository's licensed benchmark artifacts, permitting retained copies subject to license conditions.",
+          "source_ids": ["repository_license"]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.",
+          "source_ids": ["repository_license"]
         }
       ]
     },
@@ -1045,10 +1095,10 @@
     {"benchmark_family_id":"mcp-atlas","checked_on":"2026-07-10","sources":[{"source_id":"leaderboard","kind":"official_leaderboard","url":"https://labs.scale.com/leaderboard/mcp_atlas"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2602.00933"}],"claims":[]},
     {"benchmark_family_id":"browsecomp","checked_on":"2026-07-10","sources":[{"source_id":"release","kind":"official_site","url":"https://openai.com/index/browsecomp/"},{"source_id":"repository","kind":"official_repository","url":"https://github.com/openai/simple-evals"}],"claims":[]},
     {"benchmark_family_id":"toolathlon","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/hkust-nlp/Toolathlon"}],"claims":[]},
-    {"benchmark_family_id":"agents-last-exam","checked_on":"2026-07-10","sources":[{"source_id":"site","kind":"official_site","url":"https://agents-last-exam.org/"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2606.05405"},{"source_id":"dataset","kind":"official_dataset","url":"https://huggingface.co/datasets/agents-last-exam/agents-last-exam"}],"claims":[]},
+    {"benchmark_family_id":"agents-last-exam","checked_on":"2026-07-10","sources":[{"source_id":"site","kind":"official_site","url":"https://agents-last-exam.org/"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2606.05405"},{"source_id":"dataset","kind":"official_dataset","url":"https://huggingface.co/datasets/agents-last-exam/agents-last-exam"},{"source_id":"repository_license","kind":"official_repository","url":"https://github.com/rdi-berkeley/agents-last-exam/blob/main/LICENSE"}],"claims":[{"topic":"harness_code_license","research_flag":null,"basis":"direct_source","statement":"The official repository licenses the benchmark code under Apache-2.0.","source_ids":["repository_license"]},{"topic":"task_data_license","research_flag":null,"basis":"direct_source","statement":"The official task-card dataset declares the CC-BY-4.0 license.","source_ids":["dataset"]},{"topic":"commercial_use","research_flag":null,"basis":"direct_source","statement":"The Apache-2.0 code license and CC-BY-4.0 task-data license do not restrict use to noncommercial purposes.","source_ids":["repository_license","dataset"]},{"topic":"result_redistribution","research_flag":null,"basis":"direct_source","statement":"The published licenses permit redistribution of licensed benchmark material subject to their notice and attribution conditions, so independently produced result records may be redistributed.","source_ids":["repository_license","dataset"]},{"topic":"environment_terms","research_flag":null,"basis":"direct_source","statement":"The official repository license grants use, reproduction, modification, and distribution rights for the repository's benchmark environment code.","source_ids":["repository_license"]},{"topic":"artifact_retention","research_flag":null,"basis":"direct_source","statement":"The published licenses grant reproduction rights for the licensed code and task-card data, permitting retained copies subject to license conditions.","source_ids":["repository_license","dataset"]},{"topic":"derived_score_publication","research_flag":null,"basis":"direct_source","statement":"The published licenses grant public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores with required attribution.","source_ids":["repository_license","dataset"]}]},
     {"benchmark_family_id":"automationbench","checked_on":"2026-07-10","sources":[{"source_id":"release","kind":"official_site","url":"https://zapier.com/blog/introducing-automationbench/"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2604.18934"}],"claims":[]},
     {"benchmark_family_id":"officeqa-pro","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/databricks/officeqa"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2603.08655"}],"claims":[]},
     {"benchmark_family_id":"finance-agent-v2","checked_on":"2026-07-10","sources":[{"source_id":"leaderboard","kind":"official_leaderboard","url":"https://www.vals.ai/benchmarks"},{"source_id":"methodology","kind":"official_site","url":"https://www.vals.ai/methodology"}],"claims":[]},
-    {"benchmark_family_id":"deepswe","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/datacurve-ai/deep-swe"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2607.07946"},{"source_id":"dataset","kind":"official_dataset","url":"https://huggingface.co/datasets/datacurve/deep-swe"}],"claims":[]}
+    {"benchmark_family_id":"deepswe","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/datacurve-ai/deep-swe"},{"source_id":"repository_license","kind":"official_repository","url":"https://github.com/datacurve-ai/deep-swe/blob/main/LICENSE"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2607.07946"},{"source_id":"dataset","kind":"official_dataset","url":"https://huggingface.co/datasets/datacurve/deep-swe"}],"claims":[{"topic":"harness_code_license","research_flag":null,"basis":"direct_source","statement":"The official repository licenses the DeepSWE harness under Apache-2.0.","source_ids":["repository_license"]},{"topic":"task_data_license","research_flag":null,"basis":"direct_source","statement":"The official repository's Apache-2.0 license covers its published DeepSWE task files.","source_ids":["repository","repository_license"]},{"topic":"commercial_use","research_flag":null,"basis":"direct_source","statement":"Apache-2.0 grants use and distribution rights without a noncommercial restriction.","source_ids":["repository_license"]},{"topic":"result_redistribution","research_flag":null,"basis":"direct_source","statement":"Apache-2.0 permits redistribution of the licensed work subject to its notice conditions, so independently produced result records may be redistributed.","source_ids":["repository_license"]},{"topic":"environment_terms","research_flag":null,"basis":"direct_source","statement":"The official repository publishes Harbor-compatible environment definitions under its Apache-2.0 license.","source_ids":["repository","repository_license"]},{"topic":"artifact_retention","research_flag":null,"basis":"direct_source","statement":"Apache-2.0 grants reproduction rights for the repository's licensed benchmark artifacts, permitting retained copies subject to license conditions.","source_ids":["repository_license"]},{"topic":"derived_score_publication","research_flag":null,"basis":"direct_source","statement":"Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.","source_ids":["repository_license"]}]}
   ]
 }

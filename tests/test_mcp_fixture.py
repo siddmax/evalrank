@@ -68,7 +68,7 @@ class McpFixtureTests(unittest.TestCase):
             [tool["name"] for tool in tools],
         )
         decide = tools[1]["inputSchema"]
-        self.assertEqual(["base_url", "query"], decide["required"])
+        self.assertEqual(["query"], decide["required"])
         self.assertFalse(decide["additionalProperties"])
         query = decide["properties"]["query"]
         self.assertFalse(query["additionalProperties"])
@@ -76,14 +76,13 @@ class McpFixtureTests(unittest.TestCase):
         self.assertIn("ranking_group_id", query["required"])
         self.assertEqual("boolean", decide["properties"]["share"]["type"])
         receipt = tools[2]["inputSchema"]
-        self.assertEqual(["base_url", "receipt_id"], receipt["required"])
+        self.assertEqual(["receipt_id"], receipt["required"])
         self.assertEqual(
             "^receipt_[0-9a-f]{64}$",
             receipt["properties"]["receipt_id"]["pattern"],
         )
         for tool in tools[1:]:
-            base_url = tool["inputSchema"]["properties"]["base_url"]
-            self.assertEqual(("string", "^https?://"), (base_url["type"], base_url["pattern"]))
+            self.assertNotIn("base_url", tool["inputSchema"]["properties"])
 
     def test_every_fixture_tool_result_matches_core_dispatch(self):
         for kind in PUBLIC_FIXTURE_KINDS:
@@ -100,7 +99,8 @@ class McpFixtureTests(unittest.TestCase):
         with LocalApiServer(200, receipt) as server:
             result = call_tool(
                 "evalrank.decide",
-                {"base_url": server.base_url, "query": query, "share": True},
+                {"query": query, "share": True},
+                base_url=server.base_url,
             )
 
         self.assertFalse(result["isError"])
@@ -113,7 +113,8 @@ class McpFixtureTests(unittest.TestCase):
         with LocalApiServer(200, receipt) as server:
             result = call_tool(
                 "evalrank.decision_receipt",
-                {"base_url": server.base_url, "receipt_id": receipt["receipt_id"]},
+                {"receipt_id": receipt["receipt_id"]},
+                base_url=server.base_url,
             )
         self.assertFalse(result["isError"])
         self.assertEqual(receipt, json.loads(result["content"][0]["text"]))
@@ -147,7 +148,7 @@ class McpFixtureTests(unittest.TestCase):
         for tool, path, payload in cases:
             with self.subTest(tool=tool):
                 with LocalApiServer(200, payload) as server:
-                    result = call_tool(tool, {"base_url": server.base_url})
+                    result = call_tool(tool, {}, base_url=server.base_url)
                 self.assertFalse(result["isError"])
                 self.assertEqual(payload, json.loads(result["content"][0]["text"]))
                 self.assertEqual(("GET", path), (server.method, server.path))
@@ -166,7 +167,8 @@ class McpFixtureTests(unittest.TestCase):
         with LocalApiServer(429, problem, {"Retry-After": "3"}) as server:
             result = call_tool(
                 "evalrank.decide",
-                {"base_url": server.base_url, "query": query},
+                {"query": query},
+                base_url=server.base_url,
             )
         self.assertTrue(result["isError"])
         self.assertEqual(problem, json.loads(result["content"][0]["text"]))
@@ -175,14 +177,15 @@ class McpFixtureTests(unittest.TestCase):
         query, _ = _decision_vector()
         with self.assertRaisesRegex(ValueError, "arguments must be an object"):
             call_tool("evalrank.decide", [])
-        with self.assertRaisesRegex(ValueError, "base_url is required"):
+        with self.assertRaisesRegex(ValueError, "base_url must be configured by the MCP host"):
             call_tool("evalrank.decide", {"query": query})
         with self.assertRaisesRegex(ValueError, "query must be an object"):
-            call_tool("evalrank.decide", {"base_url": "https://evalrank.example", "query": []})
+            call_tool("evalrank.decide", {"query": []}, base_url="https://evalrank.example")
         with self.assertRaisesRegex(ValueError, "share must be a boolean"):
             call_tool(
                 "evalrank.decide",
-                {"base_url": "https://evalrank.example", "query": query, "share": "yes"},
+                {"query": query, "share": "yes"},
+                base_url="https://evalrank.example",
             )
         for name in ("evalrank.recommend", "evalrank.scoring_stages", "evalrank.unknown"):
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, "unknown tool"):
