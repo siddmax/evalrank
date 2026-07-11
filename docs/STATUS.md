@@ -9,7 +9,8 @@ Portable contract status: the seven-path receipt-first launch contract, Python/T
 Three documents are normative:
 
 - `docs/PRODUCT.md` defines the user job, entity ontology, receipt experience, demand boundary, and exclusions.
-- `catalog/manifest.json` defines the canonical 26-cell/37-ranking-group inventory, 77-family/79-feed research queue, native-metric direction, governance, cadence, lineage, retention, and eligibility. Retired `coding` and `math` aliases are absent.
+- `catalog/manifest.json` defines the canonical 28-cell/40-ranking-group inventory, 80-family/82-feed research queue, native-metric direction, governance, cadence, lineage, retention, and eligibility. SRE incident response, DevOps lifecycle, and terminal-generalist work are separate decision cells; retired aliases are absent.
+- Aider Polyglot and ITBench SRE have replayed official result adapters but remain `shadow`: neither has enough exact overlapping configurations or independent calibrated companion families to support a top set. Detailed admission evidence is in `docs/build-log/2026-07-10-independent-family-admission.md`.
 - `methods/evidence-synthesis.md` defines native-metric synthesis, top and tie sets, uncertainty, sensitivity, abstention, and challenger promotion.
 
 Older build logs record historical work. They are non-normative when they conflict with these authorities.
@@ -36,7 +37,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 
 ## Evidence State
 
-- All 26 cells are `preview`; catalog presence is not a ranking-readiness claim.
+- All 28 cells are `preview`; catalog presence is not a ranking-readiness claim.
 - Candidate families remain `discovered` until an adapter replays exact official bytes. BFCL V4, LiveCodeBench, LiveBench reasoning, and Terminal-Bench 2.1 are now `shadow`: their repaired official-surface adapters replay successfully and declare `metric_direction: higher`, but `rank_eligible_count` remains null and none is admitted until rights, identity, lineage, overlap, health, cadence, uncertainty, and marginal decision value pass. Discovery feeds keep direction null so parsers cannot guess it.
 - Scraper recovery is mandatory before retirement. The four shadow adapters resolve official HTML-linked CSV/JSON, same-release artifact sets, or licensed repository archives; API/feed/raw-file failure alone is not benchmark-death evidence.
 - Every candidate family has a dated primary or official discovery source in the manifest-version-locked research companion. Source coverage documents the research basis only and does not advance admission state.

@@ -32,7 +32,9 @@ EXPECTED_CELL_IDS = (
     "multilingual",
     "vision-multimodal",
     "web-frontend-code-generation",
-    "devops-sre-terminal",
+    "sre-incident-response",
+    "devops-lifecycle",
+    "terminal-generalist",
     "mobile-codegen",
     "reasoning",
     "factuality",
@@ -50,6 +52,7 @@ EXPECTED_FAMILY_IDS = (
     "terminal-bench-2-1",
     "swe-lancer",
     "swe-rebench",
+    "liveswebench",
     "bfcl-v4",
     "complexfuncbench",
     "tau2-bench",
@@ -106,6 +109,8 @@ EXPECTED_FAMILY_IDS = (
     "swe-bench-multimodal",
     "itbench",
     "aiopslab",
+    "sregym",
+    "devops-gym",
     "android-bench",
     "appforge",
     "swifteval",
@@ -392,7 +397,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         self.assertEqual("evalrank_manifest", payload["object"])
         self.assertEqual("1", payload["schema_version"])
-        self.assertEqual("2026-07-10.1", payload["manifest_version"])
+        self.assertEqual("2026-07-10.2", payload["manifest_version"])
         for key, id_key in (
             ("cells", "cell_id"),
             ("ranking_groups", "ranking_group_id"),
@@ -454,7 +459,7 @@ class CatalogManifestTests(unittest.TestCase):
     def test_every_cell_has_explicit_ordered_ranking_group_eligibility(self):
         payload = manifest()
         cell_ids = {cell["cell_id"] for cell in payload["cells"]}
-        self.assertEqual(37, len(payload["ranking_groups"]))
+        self.assertEqual(40, len(payload["ranking_groups"]))
         group_keys = set()
         covered_cells = set()
 
@@ -612,10 +617,17 @@ class CatalogManifestTests(unittest.TestCase):
             quarantined,
         )
         self.assertEqual(
-            {"bfcl-v4", "livebench-reasoning", "livecodebench", "terminal-bench-2-1"},
+            {
+                "aider-polyglot",
+                "bfcl-v4",
+                "itbench",
+                "livebench-reasoning",
+                "livecodebench",
+                "terminal-bench-2-1",
+            },
             shadow,
         )
-        self.assertEqual(77, len(families))
+        self.assertEqual(80, len(families))
         self.assertEqual(EXPECTED_FAMILY_IDS, tuple(row["benchmark_family_id"] for row in families))
         self.assertTrue(all(row["rank_eligible_count"] is None for row in families))
         self.assertTrue(all(set(row["candidate_cells"]) <= cell_ids for row in families))
@@ -647,7 +659,10 @@ class CatalogManifestTests(unittest.TestCase):
                 "healthbench": "healthbench",
                 "healthbench-professional": "healthbench",
                 "core-bench-reproducibility": "core-bench",
-                "itbench": "itbench",
+                "aider-polyglot": "aider-polyglot",
+                "itbench": "k8s-live-incident",
+                "aiopslab": "k8s-live-incident",
+                "sregym": "k8s-live-incident",
                 "mmlu-pro": "mmlu-lineage",
                 "mmlu-prox": "mmlu-lineage",
                 "global-mmlu": "mmlu-lineage",
@@ -655,7 +670,7 @@ class CatalogManifestTests(unittest.TestCase):
             declared_correlations,
         )
         feeds = manifest()["feeds"]
-        self.assertEqual(79, len(feeds))
+        self.assertEqual(82, len(feeds))
         self.assertEqual(EXPECTED_FEED_IDS, tuple(row["feed_id"] for row in feeds))
 
     def test_new_research_jobs_are_exact_preview_hypotheses(self):
@@ -808,22 +823,30 @@ class CatalogManifestTests(unittest.TestCase):
                 if feed["state"] in {"active", "shadow"}:
                     self.assertIn(feed["metric_direction"], {"higher", "lower"})
                 self.assertEqual(rights_keys, set(feed["rights"]))
-                self.assertEqual("unknown", feed["rights"]["status"])
-                self.assertEqual("unvalidated", feed["cadence"]["status"])
-                self.assertIsNone(feed["cadence"]["mode"])
-                self.assertIsNone(feed["cadence"]["expected_seconds"])
-                self.assertIsNone(feed["cadence"]["stale_after_seconds"])
-                self.assertIsNone(feed["cadence"]["stop_recommending_after_seconds"])
-                self.assertIsNone(feed["cadence"]["as_of"])
-                self.assertIsNone(feed["cadence"]["upstream_version"])
+                self.assertIn(feed["rights"]["status"], {"approved", "blocked", "unknown"})
+                self.assertIn(feed["cadence"]["status"], {"unvalidated", "validated"})
+                if feed["cadence"]["status"] == "unvalidated":
+                    self.assertTrue(
+                        all(feed["cadence"][key] is None for key in (
+                            "mode", "expected_seconds", "stale_after_seconds",
+                            "stop_recommending_after_seconds", "as_of", "upstream_version",
+                        ))
+                    )
+                elif feed["cadence"]["mode"] == "frozen":
+                    self.assertIsNotNone(feed["cadence"]["as_of"])
+                    self.assertIsNotNone(feed["cadence"]["upstream_version"])
                 self.assertIsInstance(feed["retention"]["store_artifact_bytes"], bool)
                 if feed["rights"]["artifact_retention"] == "unknown":
                     self.assertFalse(feed["retention"]["store_artifact_bytes"])
                 self.assertIsNone(feed["retention"]["maximum_days"])
-                self.assertEqual("unknown", feed["lineage"]["validation_status"])
-                self.assertIsNone(feed["lineage"]["task_lineage_id"])
-                self.assertIsNone(feed["lineage"]["environment_lineage_id"])
-                self.assertIsNone(feed["lineage"]["grader_lineage_id"])
+                if feed["lineage"]["validation_status"] == "unknown":
+                    self.assertIsNone(feed["lineage"]["task_lineage_id"])
+                    self.assertIsNone(feed["lineage"]["environment_lineage_id"])
+                    self.assertIsNone(feed["lineage"]["grader_lineage_id"])
+                else:
+                    self.assertTrue(feed["lineage"]["task_lineage_id"])
+                    self.assertTrue(feed["lineage"]["environment_lineage_id"])
+                    self.assertTrue(feed["lineage"]["grader_lineage_id"])
                 self.assertEqual(
                     family["correlated_family_group"],
                     feed["lineage"]["correlated_family_group"],
@@ -840,6 +863,8 @@ class CatalogManifestTests(unittest.TestCase):
         self.assertEqual(
             {
                 "bfcl-v4-discovery": "higher",
+                "aider-polyglot-discovery": "higher",
+                "itbench-discovery": "higher",
                 "livebench-reasoning-discovery": "higher",
                 "livecodebench-discovery": "higher",
                 "terminal-bench-2-1-discovery": "higher",
@@ -968,7 +993,7 @@ class CatalogManifestTests(unittest.TestCase):
                 feed
                 for feed in candidate["feeds"]
                 if group_id in feed["ranking_group_ids"]
-                and feed["state"] == "discovered"
+                and feed["state"] != "quarantined"
             ][:minimum_families]
             self.assertEqual(minimum_families, len(feeds))
             family_by_id = {

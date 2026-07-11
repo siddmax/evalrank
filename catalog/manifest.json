@@ -2,7 +2,7 @@
   "$schema": "../schemas/evalrank-manifest.schema.json",
   "object": "evalrank_manifest",
   "schema_version": "1",
-  "manifest_version": "2026-07-10.1",
+  "manifest_version": "2026-07-10.2",
   "ranking_group_dimensions": [
     "cell_id",
     "entity_kind",
@@ -210,11 +210,28 @@
       "state": "preview"
     },
     {
-      "cell_id": "devops-sre-terminal",
-      "name": "DevOps, SRE, and terminal",
-      "definition": "Resolve infrastructure or incident tasks in a terminal",
+      "cell_id": "sre-incident-response",
+      "name": "SRE incident response",
+      "definition": "Diagnose and repair live service or infrastructure incidents",
       "entity_kinds": [
-        "model",
+        "agent"
+      ],
+      "state": "preview"
+    },
+    {
+      "cell_id": "devops-lifecycle",
+      "name": "DevOps lifecycle",
+      "definition": "Build, configure, test, deploy, and monitor software delivery systems",
+      "entity_kinds": [
+        "agent"
+      ],
+      "state": "preview"
+    },
+    {
+      "cell_id": "terminal-generalist",
+      "name": "Terminal generalist",
+      "definition": "Complete heterogeneous computer tasks through a terminal",
+      "entity_kinds": [
         "agent"
       ],
       "state": "preview"
@@ -284,6 +301,48 @@
       "entity_kind": "model_configuration",
       "interaction_policy": "direct_prompt",
       "configuration_passport_class": "model-configuration-v1",
+      "state": "preview",
+      "rank_eligible_count": null,
+      "claim_ceiling": "single_winner",
+      "eligibility": {
+        "calibration_status": "unvalidated",
+        "explorer": {
+          "minimum_families": 1,
+          "minimum_overlap": 1
+        },
+        "top_set": {
+          "minimum_families": 3,
+          "minimum_overlap": 2
+        },
+        "single_winner": {
+          "minimum_families": 4,
+          "minimum_overlap": 3
+        },
+        "native_effect_policy": "family-native-likelihoods-only",
+        "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
+        "block_bootstrap": {
+          "replicates": 10000,
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
+        },
+        "bootstrap_coverage_target": 0.95,
+        "superiority_threshold": 0.95,
+        "practical_effect_floor": {
+          "mode": "native-metric-calibrated",
+          "status": "unvalidated"
+        },
+        "leave_one_family_out": {
+          "required_for_single_winner": true,
+          "stable_top_set_required": true
+        }
+      },
+      "quarantine_reason": null
+    },
+    {
+      "ranking_group_id": "rg-code-generation-agent-system-agentic-agent-system-v1",
+      "cell_id": "code-generation",
+      "entity_kind": "agent_system",
+      "interaction_policy": "agentic",
+      "configuration_passport_class": "agent-system-v1",
       "state": "preview",
       "rank_eligible_count": null,
       "claim_ceiling": "single_winner",
@@ -1449,8 +1508,8 @@
       "quarantine_reason": null
     },
     {
-      "ranking_group_id": "rg-devops-sre-terminal-agent-system-agentic-agent-system-v1",
-      "cell_id": "devops-sre-terminal",
+      "ranking_group_id": "rg-sre-incident-response-agent-system-agentic-agent-system-v1",
+      "cell_id": "sre-incident-response",
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
       "configuration_passport_class": "agent-system-v1",
@@ -1487,6 +1546,60 @@
           "required_for_single_winner": true,
           "stable_top_set_required": true
         }
+      },
+      "quarantine_reason": null
+    },
+    {
+      "ranking_group_id": "rg-devops-lifecycle-agent-system-agentic-agent-system-v1",
+      "cell_id": "devops-lifecycle",
+      "entity_kind": "agent_system",
+      "interaction_policy": "agentic",
+      "configuration_passport_class": "agent-system-v1",
+      "state": "preview",
+      "rank_eligible_count": null,
+      "claim_ceiling": "single_winner",
+      "eligibility": {
+        "calibration_status": "unvalidated",
+        "explorer": {"minimum_families": 1, "minimum_overlap": 1},
+        "top_set": {"minimum_families": 3, "minimum_overlap": 2},
+        "single_winner": {"minimum_families": 4, "minimum_overlap": 3},
+        "native_effect_policy": "family-native-likelihoods-only",
+        "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
+        "block_bootstrap": {
+          "replicates": 10000,
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
+        },
+        "bootstrap_coverage_target": 0.95,
+        "superiority_threshold": 0.95,
+        "practical_effect_floor": {"mode": "native-metric-calibrated", "status": "unvalidated"},
+        "leave_one_family_out": {"required_for_single_winner": true, "stable_top_set_required": true}
+      },
+      "quarantine_reason": null
+    },
+    {
+      "ranking_group_id": "rg-terminal-generalist-agent-system-agentic-agent-system-v1",
+      "cell_id": "terminal-generalist",
+      "entity_kind": "agent_system",
+      "interaction_policy": "agentic",
+      "configuration_passport_class": "agent-system-v1",
+      "state": "preview",
+      "rank_eligible_count": null,
+      "claim_ceiling": "single_winner",
+      "eligibility": {
+        "calibration_status": "unvalidated",
+        "explorer": {"minimum_families": 1, "minimum_overlap": 1},
+        "top_set": {"minimum_families": 3, "minimum_overlap": 2},
+        "single_winner": {"minimum_families": 4, "minimum_overlap": 3},
+        "native_effect_policy": "family-native-likelihoods-only",
+        "missing_configuration_policy": "exclude-from-ranking-group-and-disclose",
+        "block_bootstrap": {
+          "replicates": 10000,
+          "seed_derivation": "uint64be(sha256(restricted_jcs({aggregation_input_digest,methodology_version}))[0:8])&9007199254740991"
+        },
+        "bootstrap_coverage_target": 0.95,
+        "superiority_threshold": 0.95,
+        "practical_effect_floor": {"mode": "native-metric-calibrated", "status": "unvalidated"},
+        "leave_one_family_out": {"required_for_single_winner": true, "stable_top_set_required": true}
       },
       "quarantine_reason": null
     },
@@ -1761,12 +1874,12 @@
         "code-generation"
       ],
       "entity_kinds": [
-        "model_configuration"
+        "agent_system"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
-      "correlation_status": "unknown",
-      "correlated_family_group": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "aider-polyglot",
       "research_flags": [],
       "quarantine_reason": null
     },
@@ -1822,8 +1935,7 @@
       "benchmark_family_id": "terminal-bench-2-1",
       "display_name": "Terminal-Bench 2.1",
       "candidate_cells": [
-        "autonomous-swe-agent",
-        "devops-sre-terminal"
+        "terminal-generalist"
       ],
       "entity_kinds": [
         "agent_system"
@@ -1854,6 +1966,22 @@
     {
       "benchmark_family_id": "swe-rebench",
       "display_name": "SWE-rebench",
+      "candidate_cells": [
+        "autonomous-swe-agent"
+      ],
+      "entity_kinds": [
+        "agent_system"
+      ],
+      "state": "discovered",
+      "rank_eligible_count": null,
+      "correlation_status": "unknown",
+      "correlated_family_group": null,
+      "research_flags": [],
+      "quarantine_reason": null
+    },
+    {
+      "benchmark_family_id": "liveswebench",
+      "display_name": "LiveSWEBench",
       "candidate_cells": [
         "autonomous-swe-agent"
       ],
@@ -2747,15 +2875,15 @@
       "benchmark_family_id": "itbench",
       "display_name": "ITBench",
       "candidate_cells": [
-        "devops-sre-terminal"
+        "sre-incident-response"
       ],
       "entity_kinds": [
         "agent_system"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "correlation_status": "declared",
-      "correlated_family_group": "itbench",
+      "correlated_family_group": "k8s-live-incident",
       "research_flags": [],
       "quarantine_reason": null
     },
@@ -2763,7 +2891,39 @@
       "benchmark_family_id": "aiopslab",
       "display_name": "AIOpsLab",
       "candidate_cells": [
-        "devops-sre-terminal"
+        "sre-incident-response"
+      ],
+      "entity_kinds": [
+        "agent_system"
+      ],
+      "state": "discovered",
+      "rank_eligible_count": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "k8s-live-incident",
+      "research_flags": [],
+      "quarantine_reason": null
+    },
+    {
+      "benchmark_family_id": "sregym",
+      "display_name": "SREGym",
+      "candidate_cells": [
+        "sre-incident-response"
+      ],
+      "entity_kinds": [
+        "agent_system"
+      ],
+      "state": "discovered",
+      "rank_eligible_count": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "k8s-live-incident",
+      "research_flags": [],
+      "quarantine_reason": null
+    },
+    {
+      "benchmark_family_id": "devops-gym",
+      "display_name": "DevOps-Gym",
+      "candidate_cells": [
+        "devops-lifecycle"
       ],
       "entity_kinds": [
         "agent_system"
@@ -3065,50 +3225,50 @@
     {
       "feed_id": "aider-polyglot-discovery",
       "benchmark_family_id": "aider-polyglot",
-      "adapter_id": null,
-      "metric_direction": null,
+      "adapter_id": "aider-polyglot-official-yaml-v1",
+      "metric_direction": "higher",
       "candidate_cells": [
         "code-generation"
       ],
-      "entity_kind": "model_configuration",
-      "interaction_policy": "direct_prompt",
-      "configuration_passport_class": "model-configuration-v1",
-      "state": "discovered",
+      "entity_kind": "agent_system",
+      "interaction_policy": "agentic",
+      "configuration_passport_class": "agent-system-v1",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
         "status": "unknown",
-        "harness_code_license": null,
+        "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
         "trajectory_redistribution": "unknown",
         "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
-        "status": "unvalidated",
-        "mode": null,
+        "status": "validated",
+        "mode": "frozen",
         "expected_seconds": null,
         "stale_after_seconds": null,
         "stop_recommending_after_seconds": null,
-        "as_of": null,
-        "upstream_version": null
+        "as_of": "2025-10-03T00:00:00Z",
+        "upstream_version": "aider/website/_data/polyglot_leaderboard.yml"
       },
       "retention": {
-        "store_artifact_bytes": false,
+        "store_artifact_bytes": true,
         "maximum_days": null
       },
       "lineage": {
-        "validation_status": "unknown",
-        "task_lineage_id": null,
-        "environment_lineage_id": null,
-        "grader_lineage_id": null,
-        "correlation_status": "unknown",
-        "correlated_family_group": null
+        "validation_status": "declared",
+        "task_lineage_id": "aider-polyglot-225-exercism",
+        "environment_lineage_id": "aider-polyglot-docker",
+        "grader_lineage_id": "aider-polyglot-tests",
+        "correlation_status": "declared",
+        "correlated_family_group": "aider-polyglot"
       },
       "ranking_group_ids": [
-        "rg-code-generation-model-configuration-direct-prompt-model-configuration-v1"
+        "rg-code-generation-agent-system-agentic-agent-system-v1"
       ],
       "quarantine_reason": null
     },
@@ -3268,8 +3428,7 @@
       "adapter_id": "terminal-bench-2-1-official-repository-aggregate-v1",
       "metric_direction": "higher",
       "candidate_cells": [
-        "autonomous-swe-agent",
-        "devops-sre-terminal"
+        "terminal-generalist"
       ],
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
@@ -3309,8 +3468,7 @@
         "correlated_family_group": null
       },
       "ranking_group_ids": [
-        "rg-autonomous-swe-agent-agent-system-agentic-agent-system-v1",
-        "rg-devops-sre-terminal-agent-system-agentic-agent-system-v1"
+        "rg-terminal-generalist-agent-system-agentic-agent-system-v1"
       ],
       "quarantine_reason": null
     },
@@ -3412,6 +3570,42 @@
       "ranking_group_ids": [
         "rg-autonomous-swe-agent-agent-system-agentic-agent-system-v1"
       ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "liveswebench-discovery",
+      "benchmark_family_id": "liveswebench",
+      "adapter_id": null,
+      "metric_direction": null,
+      "candidate_cells": ["autonomous-swe-agent"],
+      "entity_kind": "agent_system",
+      "interaction_policy": "agentic",
+      "configuration_passport_class": "agent-system-v1",
+      "state": "discovered",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": null,
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "unvalidated", "mode": null, "expected_seconds": null,
+        "stale_after_seconds": null, "stop_recommending_after_seconds": null,
+        "as_of": null, "upstream_version": null
+      },
+      "retention": {"store_artifact_bytes": false, "maximum_days": null},
+      "lineage": {
+        "validation_status": "unknown", "task_lineage_id": null,
+        "environment_lineage_id": null, "grader_lineage_id": null,
+        "correlation_status": "unknown", "correlated_family_group": null
+      },
+      "ranking_group_ids": ["rg-autonomous-swe-agent-agent-system-agentic-agent-system-v1"],
       "quarantine_reason": null
     },
     {
@@ -6129,50 +6323,50 @@
     {
       "feed_id": "itbench-discovery",
       "benchmark_family_id": "itbench",
-      "adapter_id": null,
-      "metric_direction": null,
+      "adapter_id": "itbench-sre-official-markdown-v1",
+      "metric_direction": "higher",
       "candidate_cells": [
-        "devops-sre-terminal"
+        "sre-incident-response"
       ],
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
       "configuration_passport_class": "agent-system-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
-        "harness_code_license": null,
-        "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
+        "status": "approved",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": "Apache-2.0",
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
         "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
-        "status": "unvalidated",
-        "mode": null,
+        "status": "validated",
+        "mode": "frozen",
         "expected_seconds": null,
         "stale_after_seconds": null,
         "stop_recommending_after_seconds": null,
-        "as_of": null,
-        "upstream_version": null
+        "as_of": "2025-02-05T18:06:54Z",
+        "upstream_version": "LEADERBOARD_SRE.md"
       },
       "retention": {
-        "store_artifact_bytes": false,
+        "store_artifact_bytes": true,
         "maximum_days": null
       },
       "lineage": {
-        "validation_status": "unknown",
-        "task_lineage_id": null,
-        "environment_lineage_id": null,
-        "grader_lineage_id": null,
+        "validation_status": "declared",
+        "task_lineage_id": "itbench-sre-scenarios",
+        "environment_lineage_id": "itbench-kubernetes-environments",
+        "grader_lineage_id": "itbench-sre-evaluators",
         "correlation_status": "declared",
-        "correlated_family_group": "itbench"
+        "correlated_family_group": "k8s-live-incident"
       },
       "ranking_group_ids": [
-        "rg-devops-sre-terminal-agent-system-agentic-agent-system-v1"
+        "rg-sre-incident-response-agent-system-agentic-agent-system-v1"
       ],
       "quarantine_reason": null
     },
@@ -6182,7 +6376,7 @@
       "adapter_id": null,
       "metric_direction": null,
       "candidate_cells": [
-        "devops-sre-terminal"
+        "sre-incident-response"
       ],
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
@@ -6219,10 +6413,10 @@
         "environment_lineage_id": null,
         "grader_lineage_id": null,
         "correlation_status": "declared",
-        "correlated_family_group": "itbench"
+        "correlated_family_group": "k8s-live-incident"
       },
       "ranking_group_ids": [
-        "rg-devops-sre-terminal-agent-system-agentic-agent-system-v1"
+        "rg-sre-incident-response-agent-system-agentic-agent-system-v1"
       ],
       "quarantine_reason": null
     },
@@ -6232,7 +6426,7 @@
       "adapter_id": null,
       "metric_direction": null,
       "candidate_cells": [
-        "devops-sre-terminal"
+        "sre-incident-response"
       ],
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
@@ -6268,12 +6462,74 @@
         "task_lineage_id": null,
         "environment_lineage_id": null,
         "grader_lineage_id": null,
-        "correlation_status": "unknown",
-        "correlated_family_group": null
+        "correlation_status": "declared",
+        "correlated_family_group": "k8s-live-incident"
       },
       "ranking_group_ids": [
-        "rg-devops-sre-terminal-agent-system-agentic-agent-system-v1"
+        "rg-sre-incident-response-agent-system-agentic-agent-system-v1"
       ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "sregym-discovery",
+      "benchmark_family_id": "sregym",
+      "adapter_id": null,
+      "metric_direction": null,
+      "candidate_cells": ["sre-incident-response"],
+      "entity_kind": "agent_system",
+      "interaction_policy": "agentic",
+      "configuration_passport_class": "agent-system-v1",
+      "state": "discovered",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown", "harness_code_license": null, "task_data_license": null,
+        "commercial_use": "unknown", "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown", "environment_terms": "unknown",
+        "artifact_retention": "unknown", "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "unvalidated", "mode": null, "expected_seconds": null,
+        "stale_after_seconds": null, "stop_recommending_after_seconds": null,
+        "as_of": null, "upstream_version": null
+      },
+      "retention": {"store_artifact_bytes": false, "maximum_days": null},
+      "lineage": {
+        "validation_status": "unknown", "task_lineage_id": null,
+        "environment_lineage_id": null, "grader_lineage_id": null,
+        "correlation_status": "declared", "correlated_family_group": "k8s-live-incident"
+      },
+      "ranking_group_ids": ["rg-sre-incident-response-agent-system-agentic-agent-system-v1"],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "devops-gym-discovery",
+      "benchmark_family_id": "devops-gym",
+      "adapter_id": null,
+      "metric_direction": null,
+      "candidate_cells": ["devops-lifecycle"],
+      "entity_kind": "agent_system",
+      "interaction_policy": "agentic",
+      "configuration_passport_class": "agent-system-v1",
+      "state": "discovered",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown", "harness_code_license": null, "task_data_license": null,
+        "commercial_use": "unknown", "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown", "environment_terms": "unknown",
+        "artifact_retention": "unknown", "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "unvalidated", "mode": null, "expected_seconds": null,
+        "stale_after_seconds": null, "stop_recommending_after_seconds": null,
+        "as_of": null, "upstream_version": null
+      },
+      "retention": {"store_artifact_bytes": false, "maximum_days": null},
+      "lineage": {
+        "validation_status": "unknown", "task_lineage_id": null,
+        "environment_lineage_id": null, "grader_lineage_id": null,
+        "correlation_status": "unknown", "correlated_family_group": null
+      },
+      "ranking_group_ids": ["rg-devops-lifecycle-agent-system-agentic-agent-system-v1"],
       "quarantine_reason": null
     },
     {

@@ -13,7 +13,9 @@ Each public use case has:
 - `rank_policy`: `ranked` for every catalog cell.
 - `is_overlay`: `false` for every catalog cell.
 
-The manifest contains exactly 26 ranked cells. Public inputs use canonical cell IDs directly; the catalog defines no aliases.
+The manifest contains exactly 28 ranked cells. Public inputs use canonical cell IDs directly; the catalog defines no aliases.
+
+SRE incident response, DevOps lifecycle, and terminal-generalist work are separate decision questions. Kubernetes diagnosis and repair, delivery-pipeline construction, and heterogeneous shell tasks use different environments, success criteria, and operational skills; their evidence must never be pooled into one family count or score.
 
 Professional deliverable creation, machine-learning engineering, and computational research reproduction are distinct decision questions with explorer-only preview groups. Their candidate families stay within those cells: aggregate professional work does not become legal, finance, medical, or support evidence; ML competition work does not become SWE evidence; and computational reproduction does not become deep-research or DevOps evidence. Catalog inclusion records a research job, not ranking readiness.
 

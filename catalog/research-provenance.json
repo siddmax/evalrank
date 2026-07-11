@@ -2,7 +2,7 @@
   "$schema": "../schemas/benchmark-research-provenance.schema.json",
   "object": "benchmark_research_provenance",
   "schema_version": "1",
-  "manifest_version": "2026-07-10.1",
+  "manifest_version": "2026-07-10.2",
   "families": [
     {
       "benchmark_family_id": "livecodebench",
@@ -24,11 +24,21 @@
     },
     {
       "benchmark_family_id": "aider-polyglot",
-      "checked_on": "2026-07-09",
+      "checked_on": "2026-07-10",
       "sources": [
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://aider.chat/docs/leaderboards/"}
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://aider.chat/docs/leaderboards/"},
+        {"source_id": "results", "kind": "official_dataset", "url": "https://github.com/Aider-AI/aider/blob/main/aider/website/_data/polyglot_leaderboard.yml"},
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/Aider-AI/aider"}
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The result artifact identifies an Aider version, edit format, command, and model, so EvalRank treats each row as an agent system configuration rather than a direct-prompt model result.",
+          "source_ids": ["results", "repository"]
+        }
+      ]
     },
     {
       "benchmark_family_id": "bigcodebench",
@@ -93,6 +103,22 @@
         {"source_id": "site", "kind": "official_site", "url": "https://swe-rebench.com/about"}
       ],
       "claims": []
+    },
+    {
+      "benchmark_family_id": "liveswebench",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://liveswebench.ai/"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "LiveSWEBench separates autonomous agentic programming, targeted editing, and autocompletion instead of publishing one undifferentiated coding construct.",
+          "source_ids": ["site"]
+        }
+      ]
     },
     {
       "benchmark_family_id": "bfcl-v4",
@@ -590,13 +616,21 @@
     },
     {
       "benchmark_family_id": "itbench",
-      "checked_on": "2026-07-09",
+      "checked_on": "2026-07-10",
       "sources": [
         {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/itbench-hub/ITBench"},
+        {"source_id": "sre_results", "kind": "official_dataset", "url": "https://github.com/itbench-hub/ITBench/blob/main/LEADERBOARD_SRE.md"},
         {"source_id": "artificial_analysis", "kind": "official_site", "url": "https://artificialanalysis.ai/evaluations/itbench-aa"},
         {"source_id": "artificial_analysis_dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/ArtificialAnalysis/ITBench-AA"}
       ],
       "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The Apache-2.0 SRE leaderboard reports multiple-trial incident diagnosis and repair outcomes with native uncertainty fields.",
+          "source_ids": ["repository", "sre_results"]
+        },
         {
           "topic": "scope",
           "research_flag": null,
@@ -613,6 +647,39 @@
         {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/microsoft/AIOpsLab"}
       ],
       "claims": []
+    },
+    {
+      "benchmark_family_id": "sregym",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/SREGym/SREGym"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "SREGym imports ITBench and AIOpsLab problems, so its aggregate cannot count as independent evidence; only a hash-deduplicated new-task stratum could qualify separately.",
+          "source_ids": ["repository"]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "devops-gym",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {"source_id": "site", "kind": "official_site", "url": "https://www.devops-gym.com/"},
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/ucsb-mlsec/DevOps-Gym"}
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "Build, configuration, monitoring, testing, and delivery-pipeline tasks form a DevOps lifecycle construct and must not be pooled with live SRE incident repair.",
+          "source_ids": ["site", "repository"]
+        }
+      ]
     },
     {
       "benchmark_family_id": "android-bench",

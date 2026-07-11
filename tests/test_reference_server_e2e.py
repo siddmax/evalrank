@@ -200,26 +200,26 @@ class ReferenceServerE2ETests(unittest.TestCase):
         self.assertEqual(200, status)
         use_cases = json.loads(use_cases_body)
         self.assertEqual("use_case_catalog", use_cases["object"])
-        self.assertEqual(26, len(use_cases["use_cases"]))
+        self.assertEqual(28, len(use_cases["use_cases"]))
 
         status, _, health_body = self._request("/v1/benchmark-health")
         self.assertEqual(200, status)
         health = json.loads(health_body)
         self.assertEqual("benchmark_health", health["object"])
         self.assertEqual("1", health["schema_version"])
-        self.assertEqual("2026-07-10.1", health["manifest_version"])
-        self.assertEqual(26, len(health["cells"]))
+        self.assertEqual("2026-07-10.2", health["manifest_version"])
+        self.assertEqual(28, len(health["cells"]))
         self.assertEqual(
             {
                 "code-generation",
-                "autonomous-swe-agent",
+                "terminal-generalist",
                 "function-calling",
-                "devops-sre-terminal",
+                "sre-incident-response",
                 "reasoning",
             },
             {row["cell_id"] for row in health["cells"] if row["status"] == "preview"},
         )
-        self.assertEqual(21, sum(row["status"] == "unavailable" for row in health["cells"]))
+        self.assertEqual(23, sum(row["status"] == "unavailable" for row in health["cells"]))
         self.assertTrue(
             all(
                 (row["status"] == "active")
