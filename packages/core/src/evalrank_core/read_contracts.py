@@ -19,7 +19,14 @@ _METHODOLOGY_VERSION_RE = re.compile(
 _EVIDENCE_SNAPSHOT_ID_RE = re.compile(r"^(snapshot|explorer)_[0-9a-f]{64}$")
 _CONFIGURATION_ID_RE = re.compile(r"^config_[0-9a-f]{64}$")
 _CELL_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+_ARTIFACT_ID_RE = re.compile(r"^artifact_[0-9a-f]{64}$")
+_CAVEAT_RE = re.compile(r"^[a-z0-9]+(?:(?:-|_)[a-z0-9]+)*$")
 _TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+_GROUP_STATES = {"active", "preview", "shadow", "quarantined"}
+_ENTITY_KINDS = {"agent_system", "arena_system", "component_configuration", "model_configuration", "system_configuration", "unresolved"}
+_INTERACTION_POLICIES = {"agentic", "crowd_pairwise", "direct_prompt", "retrieval", "system", "unresolved"}
+_PASSPORT_CLASSES = {"agent-system-v1", "arena-system-v1", "component-configuration-v1", "model-configuration-v1", "system-configuration-v1", "unresolved-v1"}
+_GAP_CODES = {"calibration_unvalidated", "evidence_stale", "insufficient_configuration_overlap", "insufficient_independent_families", "no_rank_eligible_configurations", "quarantined", "unresolved_identity"}
 
 
 def verify_benchmark_health_semantics(payload: Any) -> dict[str, Any]:
@@ -338,7 +345,7 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
             label="ranking group",
         )
         group_id = group.get("ranking_group_id")
-        if not isinstance(group_id, str) or not group_id:
+        if not isinstance(group_id, str) or not _CELL_ID_RE.fullmatch(group_id):
             raise ValueError("every ranking group must carry ranking_group_id")
         if group_id in group_ids:
             raise ValueError("ranking_group_id values must be unique")
@@ -347,14 +354,21 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
         if not isinstance(entries, list):
             raise ValueError("ranking group entries must be an array")
         _verify_rankings(entries, configuration_ids=configuration_ids, require_contiguous=True)
+        citations = group.get("citations")
+        if not isinstance(citations, list):
+            raise ValueError("ranking group citations must be an array")
+        for citation in citations:
+            _verify_citation(citation)
         has_top_set = any(entry["ranking"]["in_top_set"] for entry in entries)
         state = group.get("state")
+        if state not in _GROUP_STATES or group.get("entity_kind") not in _ENTITY_KINDS or group.get("interaction_policy") not in _INTERACTION_POLICIES or group.get("configuration_passport_class") not in _PASSPORT_CLASSES:
+            raise ValueError("ranking group identity or state is invalid")
         evidence_snapshot_id = group.get("evidence_snapshot_id")
         explorer_views = group.get("explorer_views")
         if state == "active" and not str(evidence_snapshot_id).startswith("snapshot_"):
             raise ValueError("active groups require snapshot evidence")
-        if state in {"preview", "shadow"} and not str(evidence_snapshot_id).startswith("explorer_"):
-            raise ValueError("preview and shadow groups require explorer evidence")
+        if state in {"preview", "shadow"} and not str(evidence_snapshot_id).startswith(("explorer_", "snapshot_")):
+            raise ValueError("preview and shadow groups require canonical evidence")
         _verify_nonactive_claim(state, has_top_set)
         if state == "active" and explorer_views:
             raise ValueError("active groups cannot expose explorer views")
@@ -365,7 +379,7 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
                 raise ValueError("explorer evidence requires an explorer view")
             if str(evidence_snapshot_id).startswith("snapshot_") and explorer_views:
                 raise ValueError("snapshot evidence cannot expose explorer views")
-        _verify_explorer_views(explorer_views, generated_at=generated_at)
+        has_stale_view = _verify_explorer_views(explorer_views, generated_at=generated_at)
         eligibility = group.get("eligibility_summary")
         _verify_eligibility(
             eligibility,
@@ -374,13 +388,16 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
             entry_count=len(entries),
             has_top_set=has_top_set,
         )
+        if ("evidence_stale" in eligibility["gap_codes"]) != has_stale_view:
+            raise ValueError("evidence_stale gap must match explorer view freshness")
     return descriptor
 
 
-def _verify_explorer_views(value: Any, *, generated_at: datetime) -> None:
+def _verify_explorer_views(value: Any, *, generated_at: datetime) -> bool:
     if not isinstance(value, list):
         raise ValueError("explorer_views must be an array")
     orderings: list[tuple[str, ...]] = []
+    any_stale = False
     for view in value:
         _verify_fields(
             view,
@@ -397,6 +414,10 @@ def _verify_explorer_views(value: Any, *, generated_at: datetime) -> None:
         if expires_at <= observed_at:
             raise ValueError("explorer expires_at must be after observed_at")
         family_id = view["benchmark_family_id"]
+        if not isinstance(family_id, str) or not _CELL_ID_RE.fullmatch(family_id) or not isinstance(view["feed_id"], str) or not _CELL_ID_RE.fullmatch(view["feed_id"]):
+            raise ValueError("explorer view identity is invalid")
+        if view["metric_direction"] not in {"higher", "lower"}:
+            raise ValueError("explorer metric_direction is invalid")
         citations = view["citations"]
         if not isinstance(citations, list):
             raise ValueError("explorer view citations must be an array")
@@ -412,6 +433,7 @@ def _verify_explorer_views(value: Any, *, generated_at: datetime) -> None:
         )
         orderings.append(tuple(entry["evaluated_configuration_id"] for entry in view["entries"]))
         stale = generated_at >= expires_at
+        any_stale = any_stale or stale
         for entry in view["entries"]:
             ranking = entry.get("ranking")
             if ranking["in_top_set"]:
@@ -430,6 +452,7 @@ def _verify_explorer_views(value: Any, *, generated_at: datetime) -> None:
     )
     if any(view["agreement"] != expected_agreement for view in value):
         raise ValueError("explorer agreement must be derived across views")
+    return any_stale
 
 
 def verify_entity_detail_semantics(payload: Any) -> SnapshotSetDescriptorV1:
@@ -482,6 +505,8 @@ def verify_compare_result_semantics(payload: Any) -> SnapshotSetDescriptorV1:
         raise ValueError("compare result envelope is invalid")
     _parse_timestamp(payload["generated_at"], label="generated_at")
     descriptor = _verify_snapshot_reference(payload)
+    if payload.get("entity_kind") not in _ENTITY_KINDS - {"unresolved"} or payload.get("interaction_policy") not in _INTERACTION_POLICIES - {"unresolved"} or payload.get("configuration_passport_class") not in _PASSPORT_CLASSES - {"unresolved-v1"}:
+        raise ValueError("compare ranking-group identity is invalid")
     entities = payload.get("entities")
     if not isinstance(entities, list):
         raise ValueError("compare entities must be an array")
@@ -529,6 +554,8 @@ def _verify_snapshot_reference(payload: Any) -> SnapshotSetDescriptorV1:
             "ranking-group snapshot pair must belong to snapshot_set_descriptor"
         )
     state = payload.get("state")
+    if state not in {"active", "preview", "shadow"}:
+        raise ValueError("public read state is invalid")
     if state == "active" and not reference.evidence_snapshot_id.startswith("snapshot_"):
         raise ValueError("active reads require snapshot evidence")
     if state in {"preview", "shadow"} and not reference.evidence_snapshot_id.startswith("explorer_"):
@@ -547,6 +574,8 @@ def _verify_selected_explorer_view(payload: dict[str, Any], citations: Any) -> N
             {"benchmark_family_id", "feed_id"},
             label="explorer_view",
         )
+        if not _CELL_ID_RE.fullmatch(selector["benchmark_family_id"]) or not _CELL_ID_RE.fullmatch(selector["feed_id"]):
+            raise ValueError("explorer_view identity is invalid")
     if not isinstance(citations, list) or not citations:
         raise ValueError("citations must be a non-empty array")
     for citation in citations:
@@ -563,8 +592,7 @@ def _verify_rankings(
 ) -> None:
     ranks: list[int] = []
     for entry in entries:
-        if not isinstance(entry, dict):
-            raise ValueError("leaderboard entries must be objects")
+        _verify_fields(entry, {"evaluated_configuration_id", "ranking"}, label="leaderboard entry")
         configuration_id = entry.get("evaluated_configuration_id")
         if (
             not isinstance(configuration_id, str)
@@ -589,23 +617,43 @@ def _verify_ranking(ranking: Any) -> None:
         },
         label="entity ranking",
     )
-    if not isinstance(ranking.get("rank"), int) or isinstance(ranking.get("rank"), bool):
-        raise ValueError("entity ranking rank must be an integer")
+    rank = ranking.get("rank")
+    if not isinstance(rank, int) or isinstance(rank, bool) or not 1 <= rank <= MAX_SAFE_INTEGER:
+        raise ValueError("entity ranking rank must be a positive safe integer")
+    if not isinstance(ranking.get("display_name"), str) or not ranking["display_name"]:
+        raise ValueError("entity ranking display_name must be non-empty")
+    score = ranking.get("capability_score")
+    if not isinstance(score, (int, float, Decimal)) or isinstance(score, bool) or not Decimal(str(score)).is_finite() or not Decimal(0) <= Decimal(str(score)) <= Decimal(1):
+        raise ValueError("entity ranking capability_score must be within [0,1]")
     if not isinstance(ranking.get("in_top_set"), bool):
         raise ValueError("entity ranking in_top_set must be a boolean")
-    if ranking.get("evidence_family_count") is None:
-        raise ValueError("entity ranking evidence_family_count is required")
-    if not isinstance(ranking.get("caveat_codes"), list):
-        raise ValueError("entity ranking caveat_codes must be an array")
+    family_count = ranking.get("evidence_family_count")
+    if not isinstance(family_count, int) or isinstance(family_count, bool) or not 1 <= family_count <= MAX_SAFE_INTEGER:
+        raise ValueError("entity ranking evidence_family_count must be a positive safe integer")
+    caveats = ranking.get("caveat_codes")
+    if not isinstance(caveats, list) or len(set(caveats)) != len(caveats) or any(not isinstance(item, str) or _CAVEAT_RE.fullmatch(item) is None for item in caveats):
+        raise ValueError("entity ranking caveat_codes must be unique canonical strings")
     uncertainty = ranking.get("uncertainty")
-    if isinstance(uncertainty, dict) and uncertainty.get("kind") == "interval":
+    if not isinstance(uncertainty, dict):
+        raise ValueError("ranking uncertainty must be an object")
+    if uncertainty.get("kind") == "unknown":
+        if set(uncertainty) != {"kind"}:
+            raise ValueError("unknown uncertainty fields are invalid")
+    elif uncertainty.get("kind") == "interval":
+        if set(uncertainty) != {"kind", "level", "lower", "upper"}:
+            raise ValueError("interval uncertainty fields are invalid")
         try:
+            level = Decimal(str(uncertainty["level"]))
             lower = Decimal(str(uncertainty["lower"]))
             upper = Decimal(str(uncertainty["upper"]))
         except (InvalidOperation, KeyError, TypeError) as error:
             raise ValueError("ranking interval must contain numeric lower and upper values") from error
-        if not lower.is_finite() or not upper.is_finite() or lower > upper:
+        if lower > upper:
             raise ValueError("ranking interval lower must be <= upper")
+        if not level.is_finite() or not lower.is_finite() or not upper.is_finite() or not Decimal(0) < level <= Decimal(1) or not Decimal(0) <= lower <= upper <= Decimal(1):
+            raise ValueError("ranking interval must be a valid unit interval")
+    else:
+        raise ValueError("ranking uncertainty kind is invalid")
 
 
 def _verify_eligibility(
@@ -641,8 +689,10 @@ def _verify_eligibility_summary_state(value: Any, state: Any) -> None:
         label="eligibility_summary",
     )
     gaps = value.get("gap_codes")
-    if not isinstance(gaps, list) or len(set(gaps)) != len(gaps):
+    if not isinstance(gaps, list) or len(set(gaps)) != len(gaps) or any(item not in _GAP_CODES for item in gaps):
         raise ValueError("eligibility gap_codes must be a unique array")
+    if value.get("published_claim") not in {"explorer", "top_set"} or value.get("calibration_status") not in {"unvalidated", "validated"}:
+        raise ValueError("eligibility enum value is invalid")
     if state == "active":
         if value.get("published_claim") != "top_set" or value.get("calibration_status") != "validated" or gaps:
             raise ValueError("active reads require a validated top_set claim with no gaps")
@@ -669,8 +719,8 @@ def _verify_count_gap(
 ) -> None:
     current_value = value.get(current)
     required_value = value.get(required)
-    if not isinstance(current_value, int) or not isinstance(required_value, int):
-        raise ValueError("eligibility counts must be integers")
+    if not isinstance(current_value, int) or isinstance(current_value, bool) or not isinstance(required_value, int) or isinstance(required_value, bool) or not 0 <= current_value <= MAX_SAFE_INTEGER or not 1 <= required_value <= MAX_SAFE_INTEGER:
+        raise ValueError("eligibility counts must be safe and nonnegative/positive")
     if (current_value < required_value) != (code in gaps):
         raise ValueError(f"{code} gap must match eligibility counts")
 
@@ -691,8 +741,8 @@ def _verify_eligibility_count_gaps(value: dict[str, Any], gaps: set[str]) -> Non
         gaps=gaps,
     )
     rank_eligible_count = value.get("rank_eligible_configuration_count")
-    if not isinstance(rank_eligible_count, int) or isinstance(rank_eligible_count, bool):
-        raise ValueError("rank_eligible_configuration_count must be an integer")
+    if not isinstance(rank_eligible_count, int) or isinstance(rank_eligible_count, bool) or not 0 <= rank_eligible_count <= MAX_SAFE_INTEGER:
+        raise ValueError("rank_eligible_configuration_count must be a safe nonnegative integer")
     if (rank_eligible_count == 0) != ("no_rank_eligible_configurations" in gaps):
         raise ValueError("no_rank_eligible_configurations gap must match eligibility count")
     if (value.get("calibration_status") == "unvalidated") != ("calibration_unvalidated" in gaps):
@@ -719,3 +769,11 @@ def _verify_citation(value: Any) -> None:
         {"source_artifact_id", "benchmark_family_id", "title", "url"},
         label="citation",
     )
+    if not isinstance(value["source_artifact_id"], str) or not _ARTIFACT_ID_RE.fullmatch(value["source_artifact_id"]):
+        raise ValueError("citation source_artifact_id is invalid")
+    if not isinstance(value["benchmark_family_id"], str) or not _CELL_ID_RE.fullmatch(value["benchmark_family_id"]):
+        raise ValueError("citation benchmark_family_id is invalid")
+    if not isinstance(value["title"], str) or not value["title"]:
+        raise ValueError("citation title must be non-empty")
+    if not isinstance(value["url"], str) or re.fullmatch(r"https://\S+", value["url"]) is None:
+        raise ValueError("citation URL must use HTTPS")

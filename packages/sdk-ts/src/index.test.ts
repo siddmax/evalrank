@@ -846,6 +846,30 @@ test("EvalRankClient exercises leaderboard, entity, and compare reads", async ()
   } finally {
     await compareServer.close();
   }
+
+  const requestedView = { benchmark_family_id: "deepswe", feed_id: "deepswe-discovery" };
+  const mismatchedEntityServer = await startServer(200, payloads.entity);
+  try {
+    await assert.rejects(
+      () => new EvalRankClient(mismatchedEntityServer.baseUrl).entity(
+        "model_configuration", "reference-model-a", requestedView,
+      ),
+      /explicit selector/,
+    );
+  } finally {
+    await mismatchedEntityServer.close();
+  }
+  const mismatchedCompareServer = await startServer(200, payloads.compare);
+  try {
+    await assert.rejects(
+      () => new EvalRankClient(mismatchedCompareServer.baseUrl).compare(
+        "code-generation", payloads.entityRefs, requestedView,
+      ),
+      /explicit selector/,
+    );
+  } finally {
+    await mismatchedCompareServer.close();
+  }
 });
 
 test("EvalRankClient raises public Problem Details errors for metadata routes", async () => {

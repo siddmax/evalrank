@@ -6,6 +6,7 @@ import unittest
 import urllib.error
 import urllib.parse
 import urllib.request
+from copy import deepcopy
 from io import StringIO
 from pathlib import Path
 from tempfile import NamedTemporaryFile, TemporaryDirectory
@@ -335,6 +336,38 @@ class ReferenceServerE2ETests(unittest.TestCase):
             comparison,
             client.compare("code-generation", tuple(entity_refs)),
         )
+
+        mismatched_entity = deepcopy(entity)
+        mismatched_entity["explorer_view"] = {
+            "benchmark_family_id": "other-family",
+            "feed_id": "other-feed",
+        }
+        for citation in mismatched_entity["entity"]["citations"]:
+            citation["benchmark_family_id"] = "other-family"
+        mismatch_client = EvalRankClient(self.base_url)
+        mismatch_client._request_json = lambda _path: mismatched_entity
+        with self.assertRaisesRegex(ValueError, "explicit selector"):
+            mismatch_client.entity(
+                "model_configuration",
+                "reference-model-a",
+                explorer_view=("reference-public-family", "reference-public-feed"),
+            )
+
+        mismatched_compare = deepcopy(comparison)
+        mismatched_compare["explorer_view"] = {
+            "benchmark_family_id": "other-family",
+            "feed_id": "other-feed",
+        }
+        for compared in mismatched_compare["entities"]:
+            for citation in compared["citations"]:
+                citation["benchmark_family_id"] = "other-family"
+        mismatch_client._request_json = lambda _path: mismatched_compare
+        with self.assertRaisesRegex(ValueError, "explicit selector"):
+            mismatch_client.compare(
+                "code-generation",
+                tuple(entity_refs),
+                explorer_view=("reference-public-family", "reference-public-feed"),
+            )
 
         for path, expected_status in (
             ("/v1/leaderboard/coding", 404),

@@ -396,6 +396,8 @@ export interface RankingGroupSnapshotRefV1 {
 
 const artifactIdPattern = /^artifact_[0-9a-f]{64}$/;
 const configurationIdPattern = /^config_[0-9a-f]{64}$/;
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const caveatPattern = /^[a-z0-9]+(?:(?:-|_)[a-z0-9]+)*$/;
 const observationIdPattern = /^obs_[A-Za-z0-9][A-Za-z0-9._:-]*$/;
 const timestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const decimalPattern = /^(?:0|[1-9]\d*)(?:\.\d*[1-9])?$|^-(?:0\.\d*[1-9]|[1-9]\d*(?:\.\d*[1-9])?)$/;
@@ -589,16 +591,28 @@ export async function verifyLeaderboardSemantics(
       "explorer_views",
     ]);
     const groupId = nonEmptyString(group.ranking_group_id, "ranking_group_id");
+    if (!slugPattern.test(groupId)) throw new TypeError("ranking_group_id must be canonical");
     if (groupIds.has(groupId)) {
       throw new TypeError("ranking_group_id values must be unique");
     }
     groupIds.add(groupId);
     const entries = array(group.entries, "ranking group entries");
     verifyRankings(entries, configurationIds, true);
+    for (const citation of array(group.citations, "ranking group citations")) {
+      verifyCitation(citation);
+    }
     const hasTopSet = entries.some((entry) =>
       verifyReadRanking(record(entry, "leaderboard entry").ranking).inTopSet
     );
     verifyNonactiveClaim(group.state, hasTopSet);
+    if (!["active", "preview", "shadow", "quarantined"].includes(String(group.state))) {
+      throw new TypeError("ranking group state is invalid");
+    }
+    if (![...entityKinds, "unresolved"].includes(group.entity_kind as never)
+      || ![...interactionPolicies, "unresolved"].includes(group.interaction_policy as never)
+      || ![...passportClasses, "unresolved-v1"].includes(group.configuration_passport_class as never)) {
+      throw new TypeError("ranking group identity is invalid");
+    }
     const explorerViews = array(group.explorer_views, "explorer_views");
     if (
       group.state === "active"
@@ -611,7 +625,7 @@ export async function verifyLeaderboardSemantics(
     }
     if (
       (group.state === "preview" || group.state === "shadow")
-      && (typeof group.evidence_snapshot_id !== "string" || !group.evidence_snapshot_id.startsWith("explorer_"))
+      && (typeof group.evidence_snapshot_id !== "string" || !/^(?:explorer|snapshot)_[0-9a-f]{64}$/.test(group.evidence_snapshot_id))
     ) {
       throw new TypeError("preview and shadow groups require explorer evidence");
     }
@@ -634,20 +648,24 @@ export async function verifyLeaderboardSemantics(
         throw new TypeError("snapshot evidence cannot expose explorer views");
       }
     }
-    verifyExplorerViews(explorerViews, generatedAt);
-    verifyEligibility(group.eligibility_summary, {
+    const hasStaleView = verifyExplorerViews(explorerViews, generatedAt);
+    const eligibility = verifyEligibility(group.eligibility_summary, {
       state: group.state,
       entityKind: group.entity_kind,
       entryCount: entries.length,
       hasTopSet,
     });
+    if ((eligibility.gap_codes as string[]).includes("evidence_stale") !== hasStaleView) {
+      throw new TypeError("evidence_stale gap must match explorer view freshness");
+    }
   }
   return descriptor;
 }
 
-function verifyExplorerViews(value: unknown, generatedAt: Date): void {
+function verifyExplorerViews(value: unknown, generatedAt: Date): boolean {
   const views = array(value, "explorer_views");
   const orderings: string[][] = [];
+  let anyStale = false;
   for (const viewValue of views) {
     const view = closed(viewValue, [
       "benchmark_family_id", "feed_id", "metric_direction", "observed_at", "expires_at",
@@ -655,7 +673,15 @@ function verifyExplorerViews(value: unknown, generatedAt: Date): void {
     ]);
     const observedAt = utcTimestamp(view.observed_at, "observed_at");
     const expiresAt = utcTimestamp(view.expires_at, "expires_at");
+    const stale = generatedAt >= expiresAt;
+    anyStale ||= stale;
     if (expiresAt <= observedAt) throw new TypeError("explorer expires_at must be after observed_at");
+    if (!slugPattern.test(String(view.benchmark_family_id)) || !slugPattern.test(String(view.feed_id))) {
+      throw new TypeError("explorer view identity is invalid");
+    }
+    if (view.metric_direction !== "higher" && view.metric_direction !== "lower") {
+      throw new TypeError("explorer metric_direction is invalid");
+    }
     for (const citationValue of array(view.citations, "explorer view citations")) {
       const citation = verifyCitation(citationValue);
       if (citation.benchmark_family_id !== view.benchmark_family_id) {
@@ -674,7 +700,7 @@ function verifyExplorerViews(value: unknown, generatedAt: Date): void {
       const rawRanking = record(entry.ranking, "entity ranking");
       if (rawRanking.evidence_family_count !== 1) throw new TypeError("explorer evidence_family_count must equal 1");
       const caveats = array(rawRanking.caveat_codes, "caveat_codes");
-      if (caveats.includes("evidence_stale") !== (generatedAt >= expiresAt)) {
+      if (caveats.includes("evidence_stale") !== stale) {
         throw new TypeError("explorer evidence_stale must match expires_at");
       }
     }
@@ -687,6 +713,7 @@ function verifyExplorerViews(value: unknown, generatedAt: Date): void {
   if (views.some((view) => record(view, "explorer view").agreement !== expected)) {
     throw new TypeError("explorer agreement must be derived across views");
   }
+  return anyStale;
 }
 
 export async function verifyEntityDetailSemantics(
@@ -721,6 +748,11 @@ export async function verifyCompareResultSemantics(
   envelope(document, "compare_result");
   utcTimestamp(document.generated_at, "generated_at");
   const descriptor = await verifySnapshotReference(document);
+  if (![...entityKinds].includes(document.entity_kind as never)
+    || ![...interactionPolicies].includes(document.interaction_policy as never)
+    || ![...passportClasses].includes(document.configuration_passport_class as never)) {
+    throw new TypeError("compare ranking-group identity is invalid");
+  }
   const configurationIds = new Set<string>();
   const ranks = new Set<number>();
   for (const value of array(document.entities, "compare entities")) {
@@ -762,6 +794,9 @@ async function verifySnapshotReference(
     ranking_group_id: payload.ranking_group_id,
     evidence_snapshot_id: payload.evidence_snapshot_id,
   });
+  if (!["active", "preview", "shadow"].includes(String(payload.state))) {
+    throw new TypeError("public read state is invalid");
+  }
   if (!descriptor.ranking_group_snapshots.some((candidate) =>
     sameSnapshotReference(candidate, reference)
   )) {
@@ -784,6 +819,8 @@ function verifySelectedExplorerView(payload: Record<string, unknown>, citations:
     if (payload.explorer_view !== null) throw new TypeError("active reads cannot select an explorer view");
   } else {
     selector = closed(payload.explorer_view, ["benchmark_family_id", "feed_id"]);
+    patternString(selector.benchmark_family_id, slugPattern, "benchmark_family_id");
+    patternString(selector.feed_id, slugPattern, "feed_id");
   }
   const values = array(citations, "citations");
   if (values.length === 0) throw new TypeError("citations must be a non-empty array");
@@ -802,7 +839,7 @@ function verifyRankings(
 ): void {
   const ranks: number[] = [];
   for (const value of entries) {
-    const entry = record(value, "leaderboard entry");
+    const entry = closed(value, ["evaluated_configuration_id", "ranking"]);
     const configurationId = patternString(
       entry.evaluated_configuration_id,
       configurationIdPattern,
@@ -830,36 +867,70 @@ function verifyReadRanking(value: unknown): { rank: number; inTopSet: boolean } 
   if (!Number.isSafeInteger(ranking.rank)) {
     throw new TypeError("entity ranking rank must be an integer");
   }
+  if ((ranking.rank as number) < 1 || (ranking.rank as number) > MAX_SAFE_INTEGER) {
+    throw new TypeError("entity ranking rank must be a positive safe integer");
+  }
+  if (typeof ranking.display_name !== "string" || ranking.display_name.length === 0) {
+    throw new TypeError("entity ranking display_name must be non-empty");
+  }
+  if (typeof ranking.capability_score !== "number" || !Number.isFinite(ranking.capability_score)
+    || ranking.capability_score < 0 || ranking.capability_score > 1) {
+    throw new TypeError("entity ranking capability_score must be within [0,1]");
+  }
   if (typeof ranking.in_top_set !== "boolean") {
     throw new TypeError("entity ranking in_top_set must be a boolean");
   }
-  if (
-    typeof ranking.uncertainty === "object"
-    && ranking.uncertainty !== null
-    && !Array.isArray(ranking.uncertainty)
-  ) {
-    const uncertainty = ranking.uncertainty as Record<string, unknown>;
-    if (uncertainty.kind === "interval") {
-      if (
-        typeof uncertainty.lower !== "number"
-        || !Number.isFinite(uncertainty.lower)
-        || typeof uncertainty.upper !== "number"
-        || !Number.isFinite(uncertainty.upper)
-      ) {
-        throw new TypeError(
-          "ranking interval must contain numeric lower and upper values",
-        );
-      }
-      if (uncertainty.lower > uncertainty.upper) {
-        throw new TypeError("ranking interval lower must be <= upper");
-      }
+  const uncertainty = closed(
+    ranking.uncertainty,
+    record(ranking.uncertainty, "uncertainty").kind === "unknown"
+      ? ["kind"]
+      : ["kind", "level", "lower", "upper"],
+  );
+  if (uncertainty.kind === "unknown") {
+    // closed() enforces the sole valid field.
+  } else if (uncertainty.kind === "interval") {
+    if (
+      typeof uncertainty.level !== "number" || !Number.isFinite(uncertainty.level)
+      || uncertainty.level <= 0 || uncertainty.level > 1
+      || typeof uncertainty.lower !== "number"
+      || !Number.isFinite(uncertainty.lower)
+      || typeof uncertainty.upper !== "number"
+      || !Number.isFinite(uncertainty.upper)
+    ) {
+      throw new TypeError(
+        "ranking interval must contain numeric lower and upper values",
+      );
     }
+    if (uncertainty.lower > uncertainty.upper) {
+      throw new TypeError("ranking interval lower must be <= upper");
+    }
+    if (uncertainty.lower < 0 || uncertainty.upper > 1) {
+      throw new TypeError("ranking interval must be within [0,1]");
+    }
+  } else {
+    throw new TypeError("ranking uncertainty kind is invalid");
+  }
+  if (!Number.isSafeInteger(ranking.evidence_family_count)
+    || (ranking.evidence_family_count as number) < 1) {
+    throw new TypeError("entity ranking evidence_family_count must be a positive safe integer");
+  }
+  const caveats = array(ranking.caveat_codes, "caveat_codes");
+  if (new Set(caveats).size !== caveats.length
+    || caveats.some((value) => typeof value !== "string" || !caveatPattern.test(value))) {
+    throw new TypeError("entity ranking caveat_codes must be unique canonical strings");
   }
   return { rank: ranking.rank as number, inTopSet: ranking.in_top_set };
 }
 
 function verifyCitation(value: unknown): Record<string, unknown> {
-  return closed(value, ["source_artifact_id", "benchmark_family_id", "title", "url"]);
+  const citation = closed(value, ["source_artifact_id", "benchmark_family_id", "title", "url"]);
+  patternString(citation.source_artifact_id, artifactIdPattern, "source_artifact_id");
+  patternString(citation.benchmark_family_id, slugPattern, "benchmark_family_id");
+  nonEmptyString(citation.title, "citation title");
+  if (typeof citation.url !== "string" || !/^https:\/\/\S+$/.test(citation.url)) {
+    throw new TypeError("citation URL must use HTTPS");
+  }
+  return citation;
 }
 
 function utcTimestamp(value: unknown, name: string): Date {
@@ -881,7 +952,7 @@ function verifyEligibility(
     entryCount: number;
     hasTopSet: boolean;
   },
-): void {
+): Record<string, unknown> {
   const eligibility = verifyEligibilitySummaryState(value, context.state);
   if (eligibility.rank_eligible_configuration_count !== context.entryCount) {
     throw new TypeError(
@@ -900,19 +971,32 @@ function verifyEligibility(
   if (context.state === "active" && !context.hasTopSet) {
     throw new TypeError("active ranking groups must publish at least one top-set member");
   }
+  return eligibility;
 }
 
 function verifyEligibilitySummaryState(
   value: unknown,
   state: unknown,
 ): Record<string, unknown> {
-  const eligibility = record(value, "eligibility_summary");
+  const eligibility = closed(value, [
+    "published_claim", "rank_eligible_configuration_count", "current_independent_family_count",
+    "required_independent_family_count", "current_overlap_count", "required_overlap_count",
+    "calibration_status", "gap_codes",
+  ]);
   const gaps = array(eligibility.gap_codes, "eligibility gap_codes");
   if (
-    gaps.some((gap) => typeof gap !== "string")
+    gaps.some((gap) => typeof gap !== "string" || ![
+      "calibration_unvalidated", "evidence_stale", "insufficient_configuration_overlap",
+      "insufficient_independent_families", "no_rank_eligible_configurations", "quarantined",
+      "unresolved_identity",
+    ].includes(gap))
     || new Set(gaps).size !== gaps.length
   ) {
     throw new TypeError("eligibility gap_codes must be a unique array");
+  }
+  if (!["explorer", "top_set"].includes(String(eligibility.published_claim))
+    || !["unvalidated", "validated"].includes(String(eligibility.calibration_status))) {
+    throw new TypeError("eligibility enum value is invalid");
   }
   if (state === "active") {
     if (
@@ -949,7 +1033,7 @@ function verifyEligibilityCountGaps(
     code: "insufficient_configuration_overlap",
   }, gaps);
   const eligible = value.rank_eligible_configuration_count;
-  if (!Number.isSafeInteger(eligible)) {
+  if (!Number.isSafeInteger(eligible) || (eligible as number) < 0) {
     throw new TypeError("rank_eligible_configuration_count must be an integer");
   }
   if ((eligible === 0) !== gaps.has("no_rank_eligible_configurations")) {
@@ -974,7 +1058,8 @@ function verifyCountGap(
 ): void {
   const current = value[fields.current];
   const required = value[fields.required];
-  if (!Number.isSafeInteger(current) || !Number.isSafeInteger(required)) {
+  if (!Number.isSafeInteger(current) || !Number.isSafeInteger(required)
+    || (current as number) < 0 || (required as number) < 1) {
     throw new TypeError("eligibility counts must be integers");
   }
   if (((current as number) < (required as number)) !== gaps.has(fields.code)) {

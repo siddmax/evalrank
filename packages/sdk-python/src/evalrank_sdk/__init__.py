@@ -154,6 +154,7 @@ class EvalRankClient:
         selector = _explorer_view_query(explorer_view)
         response = self._request_json(f"/v1/entities/{entity_type}/{slug}{selector}")
         verify_entity_detail_semantics(response)
+        _verify_requested_explorer_view(response, explorer_view)
         return response
 
     def compare(
@@ -185,6 +186,7 @@ class EvalRankClient:
         query = urllib.parse.urlencode(parameters)
         response = self._request_json(f"/v1/compare?{query}")
         verify_compare_result_semantics(response)
+        _verify_requested_explorer_view(response, explorer_view)
         return response
 
     def _request_json(
@@ -253,6 +255,16 @@ def _explorer_view_query(value: tuple[str, str] | None) -> str:
     return "?" + urllib.parse.urlencode(
         {"benchmark_family_id": family_id, "feed_id": feed_id}
     )
+
+
+def _verify_requested_explorer_view(
+    response: dict[str, Any], requested: tuple[str, str] | None
+) -> None:
+    if requested is not None and response.get("explorer_view") != {
+        "benchmark_family_id": requested[0],
+        "feed_id": requested[1],
+    }:
+        raise ValueError("response explorer_view does not match the explicit selector")
 
 
 def _require_entity_slug(value: Any) -> None:
