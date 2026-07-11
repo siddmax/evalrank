@@ -987,6 +987,20 @@ test("entity and compare semantic verifiers bind ownership and reject parity mut
     /compare ranks must be unique/,
   );
 
+  const oneEntity = structuredClone(compare);
+  oneEntity.entities = oneEntity.entities.slice(0, 1);
+  await assert.rejects(() => verifyCompareResultSemantics(oneEntity), /two to four/);
+
+  const fiveEntities = structuredClone(compare);
+  for (const [rank, character] of [[3, "e"], [4, "f"], [5, "b"]] as const) {
+    fiveEntities.entities.push({
+      ...structuredClone(fiveEntities.entities[0]),
+      evaluated_configuration_id: `config_${character.repeat(64)}`,
+      ranking: { ...structuredClone(ranking), rank },
+    });
+  }
+  await assert.rejects(() => verifyCompareResultSemantics(fiveEntities), /two to four/);
+
   const previewEntity = structuredClone(entity);
   previewEntity.state = "preview";
   previewEntity.eligibility_summary = previewEligibility();
@@ -1009,6 +1023,13 @@ test("read semantic verifier rejects invalid closed wire values and stale group 
     ["eligibility count", (value) => { value.ranking_groups[0].eligibility_summary.required_overlap_count = 0; }],
     ["eligibility enum", (value) => { value.ranking_groups[0].eligibility_summary.calibration_status = "unknown"; }],
     ["timestamp", (value) => { value.generated_at = "2026-02-30T00:00:00Z"; }],
+    ["mixed identity", (value) => { value.ranking_groups[0].interaction_policy = "agentic"; }],
+    ["citationless active", (value) => { value.ranking_groups[0].citations = []; }],
+    ["invalid cell state", (value) => { value.cell_state = "invalid"; }],
+    ["quarantined entries", (value) => {
+      value.ranking_groups[0].state = "quarantined";
+      value.ranking_groups[0].entries[0].ranking.in_top_set = false;
+    }],
   ];
   for (const [label, mutate] of mutations) {
     const invalid = await activeLeaderboard();

@@ -385,6 +385,10 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             ("group slug", lambda doc: doc["ranking_groups"][0].__setitem__("ranking_group_id", "Not Canonical")),
             ("timestamp", lambda doc: doc.__setitem__("generated_at", "2026-02-30T00:00:00Z")),
             ("entry extra", lambda doc: doc["ranking_groups"][0]["entries"][0].__setitem__("private", True)),
+            ("mixed identity", lambda doc: doc["ranking_groups"][0].__setitem__("interaction_policy", "agentic")),
+            ("citationless active", lambda doc: doc["ranking_groups"][0].__setitem__("citations", [])),
+            ("invalid cell state", lambda doc: doc.__setitem__("cell_state", "invalid")),
+            ("quarantined entries", lambda doc: (doc["ranking_groups"][0].__setitem__("state", "quarantined"), doc["ranking_groups"][0]["entries"][0]["ranking"].__setitem__("in_top_set", False))),
         )
         for label, mutate in mutations:
             with self.subTest(label=label):
@@ -441,6 +445,20 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         duplicate["entities"][1]["evaluated_configuration_id"] = duplicate["entities"][0]["evaluated_configuration_id"]
         with self.assertRaisesRegex(ValueError, "evaluated_configuration_id values must be unique"):
             verify_compare_result_semantics(duplicate)
+
+        one = deepcopy(compare)
+        one["entities"] = one["entities"][:1]
+        with self.assertRaisesRegex(ValueError, "two to four"):
+            verify_compare_result_semantics(one)
+
+        five = deepcopy(compare)
+        for rank, character in enumerate(("e", "f", "b"), start=3):
+            added = deepcopy(five["entities"][0])
+            added["evaluated_configuration_id"] = f"config_{character * 64}"
+            added["ranking"]["rank"] = rank
+            five["entities"].append(added)
+        with self.assertRaisesRegex(ValueError, "two to four"):
+            verify_compare_result_semantics(five)
 
     def test_entity_and_compare_bind_the_outer_ranking_group_snapshot_pair(self):
         leaderboard = _active_leaderboard()
@@ -501,7 +519,15 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "entity_kind": group["entity_kind"],
             "interaction_policy": group["interaction_policy"],
             "configuration_passport_class": group["configuration_passport_class"],
-            "entities": [{**entry, "citations": deepcopy(group["citations"])}],
+            "entities": [
+                {**entry, "citations": deepcopy(group["citations"])},
+                {
+                    **entry,
+                    "evaluated_configuration_id": f"config_{'d' * 64}",
+                    "ranking": {**entry["ranking"], "rank": 2},
+                    "citations": deepcopy(group["citations"]),
+                },
+            ],
         }
         verify_entity_detail_semantics(entity)
         verify_compare_result_semantics(compare)

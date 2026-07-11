@@ -9,7 +9,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any, ClassVar
 
 from evalrank_core.canonical_json import MAX_SAFE_INTEGER, sha256_hex
-from evalrank_core.decision_contracts import EvaluatedConfigurationV1
+from evalrank_core.decision_contracts import IDENTITY_TRIPLES, EvaluatedConfigurationV1
 
 
 _MANIFEST_VERSION_RE = re.compile(r"^\d{4}-\d{2}-\d{2}\.[1-9]\d*$")
@@ -330,6 +330,8 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
     )
     if payload["object"] != "leaderboard" or payload["schema_version"] != "1":
         raise ValueError("leaderboard envelope is invalid")
+    if payload["cell_state"] not in _GROUP_STATES:
+        raise ValueError("leaderboard cell_state is invalid")
     generated_at = _parse_timestamp(payload["generated_at"], label="generated_at")
     descriptor = verify_leaderboard_snapshot_set(payload)
     group_ids: set[str] = set()
@@ -361,7 +363,15 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
             _verify_citation(citation)
         has_top_set = any(entry["ranking"]["in_top_set"] for entry in entries)
         state = group.get("state")
-        if state not in _GROUP_STATES or group.get("entity_kind") not in _ENTITY_KINDS or group.get("interaction_policy") not in _INTERACTION_POLICIES or group.get("configuration_passport_class") not in _PASSPORT_CLASSES:
+        identity_triple = (
+            group.get("entity_kind"),
+            group.get("interaction_policy"),
+            group.get("configuration_passport_class"),
+        )
+        if state not in _GROUP_STATES or identity_triple not in {
+            *IDENTITY_TRIPLES,
+            ("unresolved", "unresolved", "unresolved-v1"),
+        }:
             raise ValueError("ranking group identity or state is invalid")
         evidence_snapshot_id = group.get("evidence_snapshot_id")
         explorer_views = group.get("explorer_views")
@@ -372,6 +382,10 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
         _verify_nonactive_claim(state, has_top_set)
         if state == "active" and explorer_views:
             raise ValueError("active groups cannot expose explorer views")
+        if state == "active" and entries and not citations:
+            raise ValueError("active ranking entries require group citations")
+        if state == "quarantined" and entries:
+            raise ValueError("quarantined groups cannot expose entries")
         if state in {"preview", "shadow"} and entries:
             raise ValueError("explorer groups cannot expose calibrated entries")
         if state in {"preview", "shadow"}:
@@ -508,8 +522,8 @@ def verify_compare_result_semantics(payload: Any) -> SnapshotSetDescriptorV1:
     if payload.get("entity_kind") not in _ENTITY_KINDS - {"unresolved"} or payload.get("interaction_policy") not in _INTERACTION_POLICIES - {"unresolved"} or payload.get("configuration_passport_class") not in _PASSPORT_CLASSES - {"unresolved-v1"}:
         raise ValueError("compare ranking-group identity is invalid")
     entities = payload.get("entities")
-    if not isinstance(entities, list):
-        raise ValueError("compare entities must be an array")
+    if not isinstance(entities, list) or not 2 <= len(entities) <= 4:
+        raise ValueError("compare entities must contain two to four rows")
     configuration_ids: set[str] = set()
     ranks: set[int] = set()
     for entity in entities:
