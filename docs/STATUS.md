@@ -9,7 +9,7 @@ Portable contract status: the seven-path receipt-first launch contract, Python/T
 Three documents are normative:
 
 - `docs/PRODUCT.md` defines the user job, entity ontology, receipt experience, demand boundary, and exclusions.
-- `catalog/manifest.json` defines the canonical 28-cell/40-ranking-group inventory, 80-family/82-feed research queue, native-metric direction, governance, cadence, lineage, retention, and eligibility. SRE incident response, DevOps lifecycle, and terminal-generalist work are separate decision cells; retired aliases are absent.
+- `catalog/manifest.json` defines the canonical 28-cell/40-ranking-group inventory, 88-family/90-feed research queue, native-metric direction, governance, cadence, lineage, retention, and eligibility. SRE incident response, DevOps lifecycle, and terminal-generalist work are separate decision cells; retired aliases are absent.
 - Aider Polyglot and ITBench SRE have replayed official result adapters but remain `shadow`: neither has enough exact overlapping configurations or independent calibrated companion families to support a top set. Detailed admission evidence is in `docs/build-log/2026-07-10-independent-family-admission.md`.
 - `methods/evidence-synthesis.md` defines native-metric synthesis, top and tie sets, uncertainty, sensitivity, abstention, and challenger promotion.
 
@@ -42,6 +42,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Scraper recovery is mandatory before retirement. Four shadow adapters resolve repaired official HTML-linked CSV/JSON, same-release artifact sets, or licensed repository archives; Aider and ITBench resolve immutable Apache-licensed Git blobs with source-native parsers. API/feed/raw-file failure alone is not benchmark-death evidence.
 - Every candidate family has a dated primary or official discovery source in the manifest-version-locked research companion. Source coverage documents the research basis only and does not advance admission state.
 - Professional deliverables, machine-learning engineering, and computational research reproduction are new explorer-only research jobs. GDPval, MLE-bench, PaperBench, and CORE-Bench remain discovery hypotheses and do not confer product readiness.
+- MCP-Atlas, BrowseComp, Toolathlon, Agents' Last Exam, AutomationBench, OfficeQA Pro, Finance Agent v2, and DeepSWE are discovery-only user-value signals mapped to existing decision groups. Their discovery rows do not claim rights, cadence, replay, or admission; BrowseComp and BrowseComp-Plus share one declared correlated-family group.
 - CORE-Bench mainline and out-of-distribution feeds are two views of one declared correlated family and never count as independent evidence.
 - SWE-bench Verified, SWE-Bench Pro, and current Steel composites are `quarantined` pending documented repair and replay.
 - Eligibility thresholds are `unvalidated`. Explorer output needs at least one family; a calibrated top set needs at least three independent families; a single-winner claim needs at least four plus native practical effect and leave-one-family-out stability.

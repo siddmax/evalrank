@@ -124,22 +124,28 @@ EXPECTED_FAMILY_IDS = (
     "mle-bench",
     "paperbench",
     "core-bench-reproducibility",
+    "mcp-atlas",
+    "browsecomp",
+    "toolathlon",
+    "agents-last-exam",
+    "automationbench",
+    "officeqa-pro",
+    "finance-agent-v2",
+    "deepswe",
 )
 
 EXPECTED_FEED_IDS = tuple(
     feed_id
-    for family_id in EXPECTED_FAMILY_IDS[:-4]
-    for feed_id in (
-        (f"{family_id}-discovery", "itbench-aa-discovery")
-        if family_id == "itbench"
-        else (f"{family_id}-discovery",)
-    )
-) + (
-    "gdpval-discovery",
-    "mle-bench-v1-discovery",
-    "paperbench-full-discovery",
-    "core-bench-v1-1-mainline-discovery",
-    "core-bench-v1-1-ood-discovery",
+    for family_id in EXPECTED_FAMILY_IDS
+    for feed_id in {
+        "itbench": ("itbench-discovery", "itbench-aa-discovery"),
+        "mle-bench": ("mle-bench-v1-discovery",),
+        "paperbench": ("paperbench-full-discovery",),
+        "core-bench-reproducibility": (
+            "core-bench-v1-1-mainline-discovery",
+            "core-bench-v1-1-ood-discovery",
+        ),
+    }.get(family_id, (f"{family_id}-discovery",))
 )
 
 # Exact ranking identities project into the deliberately smaller public catalog
@@ -397,7 +403,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         self.assertEqual("evalrank_manifest", payload["object"])
         self.assertEqual("1", payload["schema_version"])
-        self.assertEqual("2026-07-10.3", payload["manifest_version"])
+        self.assertEqual("2026-07-10.4", payload["manifest_version"])
         for key, id_key in (
             ("cells", "cell_id"),
             ("ranking_groups", "ranking_group_id"),
@@ -627,7 +633,7 @@ class CatalogManifestTests(unittest.TestCase):
             },
             shadow,
         )
-        self.assertEqual(80, len(families))
+        self.assertEqual(88, len(families))
         self.assertEqual(EXPECTED_FAMILY_IDS, tuple(row["benchmark_family_id"] for row in families))
         self.assertTrue(all(row["rank_eligible_count"] is None for row in families))
         self.assertTrue(all(set(row["candidate_cells"]) <= cell_ids for row in families))
@@ -668,12 +674,49 @@ class CatalogManifestTests(unittest.TestCase):
                 "mmlu-pro": "mmlu-lineage",
                 "mmlu-prox": "mmlu-lineage",
                 "global-mmlu": "mmlu-lineage",
+                "browsecomp-plus": "browsecomp",
+                "browsecomp": "browsecomp",
             },
             declared_correlations,
         )
         feeds = manifest()["feeds"]
-        self.assertEqual(82, len(feeds))
+        self.assertEqual(90, len(feeds))
         self.assertEqual(EXPECTED_FEED_IDS, tuple(row["feed_id"] for row in feeds))
+
+    def test_user_value_research_wave_maps_to_existing_decision_groups(self):
+        payload = manifest()
+        family_by_id = {
+            row["benchmark_family_id"]: row for row in payload["benchmark_families"]
+        }
+        feed_by_family = {
+            row["benchmark_family_id"]: row for row in payload["feeds"]
+            if row["benchmark_family_id"] in EXPECTED_FAMILY_IDS[-8:]
+        }
+        expected = {
+            "mcp-atlas": ("mcp-tool-orchestration", "rg-mcp-tool-orchestration-agent-system-agentic-agent-system-v1"),
+            "browsecomp": ("web-browsing", "rg-web-browsing-agent-system-agentic-agent-system-v1"),
+            "toolathlon": ("mcp-tool-orchestration", "rg-mcp-tool-orchestration-agent-system-agentic-agent-system-v1"),
+            "agents-last-exam": ("professional-deliverable-creation", "rg-professional-deliverable-creation-system-configuration-system-system-configuration-v1"),
+            "automationbench": ("enterprise-crm-workflow", "rg-enterprise-crm-workflow-agent-system-agentic-agent-system-v1"),
+            "officeqa-pro": ("rag-retrieval", "rg-rag-retrieval-system-configuration-system-system-configuration-v1"),
+            "finance-agent-v2": ("finance", "rg-finance-agent-system-agentic-agent-system-v1"),
+            "deepswe": ("autonomous-swe-agent", "rg-autonomous-swe-agent-agent-system-agentic-agent-system-v1"),
+        }
+
+        self.assertEqual(set(expected), set(feed_by_family))
+        for family_id, (cell_id, group_id) in expected.items():
+            with self.subTest(family_id=family_id):
+                family = family_by_id[family_id]
+                feed = feed_by_family[family_id]
+                self.assertEqual([cell_id], family["candidate_cells"])
+                self.assertEqual([cell_id], feed["candidate_cells"])
+                self.assertEqual([group_id], feed["ranking_group_ids"])
+                self.assertEqual("discovered", family["state"])
+                self.assertEqual("discovered", feed["state"])
+                self.assertIsNone(feed["adapter_id"])
+                self.assertEqual("unknown", feed["rights"]["status"])
+                self.assertEqual("unvalidated", feed["cadence"]["status"])
+                self.assertFalse(feed["retention"]["store_artifact_bytes"])
 
     def test_github_issue_swe_families_share_one_uncalibrated_lineage(self):
         payload = manifest()
@@ -791,7 +834,16 @@ class CatalogManifestTests(unittest.TestCase):
             for row in payload["feeds"]
             if row["benchmark_family_id"] in expected
         }
-        self.assertEqual(set(EXPECTED_FEED_IDS[-5:]), set(feeds))
+        self.assertEqual(
+            {
+                "gdpval-discovery",
+                "mle-bench-v1-discovery",
+                "paperbench-full-discovery",
+                "core-bench-v1-1-mainline-discovery",
+                "core-bench-v1-1-ood-discovery",
+            },
+            set(feeds),
+        )
         for feed in feeds.values():
             with self.subTest(feed_id=feed["feed_id"]):
                 family = family_by_id[feed["benchmark_family_id"]]
