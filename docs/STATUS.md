@@ -1,6 +1,6 @@
 # EvalRank Public Status
 
-Last updated: 2026-07-10
+Last updated: 2026-07-11
 
 Portable contract status: the seven-path receipt-first launch contract, Python/TypeScript clients, CLI, MCP adapter, schemas, and stdlib reference server are implemented locally. A private release candidate now pins and conforms to the contract; deployment remains private work and this repo does not claim a live service.
 
@@ -51,7 +51,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 
-Paired release candidate: public contract `9688ac3d9d1a7a46dace46579528d9361b3dbb47`; private consumer `49bb5402e1fb75f29e2f69aa09078534584b79bf`. The pair adds licensed daily shadow refresh contracts and the private evidence pipeline, but neither commit is deployed and migrations 058/059 remain operator-gated; this status does not claim live application or cron rollout.
+Paired release candidate: public contract `88791dc705777a57519f698a0432f23b55e3552f`; private consumer `a316c62d1747e46ce8fe74aa7a861acbe91ff23a`. The pair adds licensed daily shadow refresh plus persisted, family-scoped explorer evidence, but neither commit is deployed and migrations 058-060 remain operator-gated; this status does not claim live application or cron rollout.
 
 ## Current Workstreams
 

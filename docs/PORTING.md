@@ -2,7 +2,7 @@
 
 This Apache-2.0 repository contains portable EvalRank contracts and method. A port is acceptable only when it remains understandable, reproducible, and testable without a private service, credential, customer, or non-public dataset.
 
-Last reviewed: 2026-07-10
+Last reviewed: 2026-07-11
 
 Portable contract status: deterministic decisions, benchmark health, explicit shared-receipt retrieval, and all grouped explorer reads now share one seven-path public contract. A private hosted runtime must conform to this exact contract before deployment; no compatibility route is public.
 
@@ -51,7 +51,7 @@ Cross-repository work lands without circular claims:
 
 Temporary worktrees or stale branches are not continuity records. The paired identifiers and public contract history are.
 
-Current release candidate: public contract `9688ac3d9d1a7a46dace46579528d9361b3dbb47` is pinned by private consumer `49bb5402e1fb75f29e2f69aa09078534584b79bf`. The pair adds licensed daily shadow refresh contracts and the private evidence pipeline; migrations 058/059 and application deployment remain operator-gated, so this record does not claim live rollout.
+Current release candidate: public contract `88791dc705777a57519f698a0432f23b55e3552f` is pinned by private consumer `a316c62d1747e46ce8fe74aa7a861acbe91ff23a`. The pair adds licensed daily shadow refresh plus persisted, family-scoped explorer evidence; migrations 058-060 and application deployment remain operator-gated, so this record does not claim live rollout.
 
 ## Current Workstreams
 
