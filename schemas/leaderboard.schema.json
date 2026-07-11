@@ -426,6 +426,15 @@
         }
       ]
     },
+    "ExplorerViewIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["benchmark_family_id", "feed_id"],
+      "properties": {
+        "benchmark_family_id": {"$ref": "evalrank-manifest.schema.json#/$defs/Slug"},
+        "feed_id": {"$ref": "evalrank-manifest.schema.json#/$defs/Slug"}
+      }
+    },
     "ExplorerEvidenceView": {
       "type": "object",
       "additionalProperties": false,

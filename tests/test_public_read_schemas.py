@@ -411,6 +411,7 @@ const entity = {
   ranking_group_id: payload.ranking_groups[0].ranking_group_id,
   state: "active",
   evidence_snapshot_id: payload.ranking_groups[0].evidence_snapshot_id,
+  explorer_view: null,
   eligibility_summary: activeEligibility,
   generated_at: payload.generated_at,
   entity: { evaluated_configuration: evaluatedConfiguration, ranking, citations }
@@ -419,6 +420,8 @@ assertValid(validateEntity, entity, "exact entity detail");
 
 const previewEntity = clone(entity);
 previewEntity.state = "preview";
+previewEntity.evidence_snapshot_id = explorer("f");
+previewEntity.explorer_view = { benchmark_family_id: "family-a", feed_id: "family-a-feed" };
 previewEntity.eligibility_summary = {
   ...activeEligibility,
   published_claim: "explorer",
@@ -456,6 +459,7 @@ const compare = {
   configuration_passport_class: "model-configuration-v1",
   state: "active",
   evidence_snapshot_id: payload.ranking_groups[0].evidence_snapshot_id,
+  explorer_view: null,
   eligibility_summary: activeEligibility,
   generated_at: payload.generated_at,
   entities: [comparedEntity, secondComparedEntity]
@@ -464,6 +468,8 @@ assertValid(validateCompare, compare, "same-group comparison");
 
 const previewCompare = clone(compare);
 previewCompare.state = "preview";
+previewCompare.evidence_snapshot_id = explorer("f");
+previewCompare.explorer_view = { benchmark_family_id: "family-a", feed_id: "family-a-feed" };
 previewCompare.eligibility_summary = {
   ...activeEligibility,
   published_claim: "explorer",

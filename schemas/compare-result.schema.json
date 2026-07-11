@@ -19,6 +19,7 @@
     "configuration_passport_class",
     "state",
     "evidence_snapshot_id",
+    "explorer_view",
     "eligibility_summary",
     "generated_at",
     "entities"
@@ -88,6 +89,12 @@
     "evidence_snapshot_id": {
       "$ref": "leaderboard.schema.json#/$defs/EvidenceSnapshotId"
     },
+    "explorer_view": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "leaderboard.schema.json#/$defs/ExplorerViewIdentity"}
+      ]
+    },
     "eligibility_summary": {
       "$ref": "leaderboard.schema.json#/$defs/EligibilitySummary"
     },
@@ -116,6 +123,8 @@
       },
       "then": {
         "properties": {
+          "evidence_snapshot_id": {"type": "string", "pattern": "^snapshot_"},
+          "explorer_view": {"type": "null"},
           "eligibility_summary": {
             "type": "object",
             "properties": {
@@ -128,6 +137,8 @@
       },
       "else": {
         "properties": {
+          "evidence_snapshot_id": {"type": "string", "pattern": "^explorer_"},
+          "explorer_view": {"$ref": "leaderboard.schema.json#/$defs/ExplorerViewIdentity"},
           "eligibility_summary": {
             "type": "object",
             "properties": {

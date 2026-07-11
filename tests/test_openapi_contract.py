@@ -105,8 +105,8 @@ class OpenApiContractTests(unittest.TestCase):
     def test_grouped_read_routes_keep_exact_parameters_and_schemas(self):
         spec = _openapi()
         cases = (
-            ("/v1/entities/{entity_type}/{slug}", "getEntityDetail", "EntityDetail", {"entity_type": "path", "slug": "path"}),
-            ("/v1/compare", "compareEntities", "CompareResult", {"use_case": "query", "entities": "query"}),
+            ("/v1/entities/{entity_type}/{slug}", "getEntityDetail", "EntityDetail", {"entity_type": "path", "slug": "path", "benchmark_family_id": "query", "feed_id": "query"}),
+            ("/v1/compare", "compareEntities", "CompareResult", {"use_case": "query", "entities": "query", "benchmark_family_id": "query", "feed_id": "query"}),
             ("/v1/leaderboard/{use_case}", "getLeaderboard", "Leaderboard", {"use_case": "path"}),
         )
         for path, operation_id, response_schema, expected_parameters in cases:

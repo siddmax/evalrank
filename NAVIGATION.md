@@ -6,8 +6,8 @@ The public API has exactly seven launch paths. `schemas/openapi.json` is authori
 | --- | --- |
 | `GET /v1/use-cases` | Public taxonomy. |
 | `GET /v1/leaderboard/{use_case}` | One content-addressed cell snapshot set with separate ranking-group scales. |
-| `GET /v1/entities/{entity_type}/{slug}` | One exact evaluated configuration pinned to its publication. |
-| `GET /v1/compare` | Two to four configurations within one ranking-group publication. |
+| `GET /v1/entities/{entity_type}/{slug}` | One exact evaluated configuration pinned to its evidence snapshot; explorer reads may select an immutable benchmark-family/feed view. |
+| `GET /v1/compare` | Two to four configurations within one ranking-group evidence snapshot and, for explorer evidence, one selected benchmark-family/feed view. |
 | `GET /v1/benchmark-health` | Per-cell catalog, admission, publication, and rank-eligibility counts. |
 | `POST /v1/decisions` | Closed `DecisionQueryV1` to deterministic `DecisionReceiptV1`; optional `?share=true` retains the receipt. |
 | `GET /v1/decisions/{receipt_id}` | Exact retrieval of an explicitly shared immutable receipt. |

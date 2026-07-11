@@ -571,12 +571,23 @@ function validateUniqueSnapshotOwnership(references: RankingGroupSnapshotRefV1[]
 export async function verifyLeaderboardSemantics(
   payload: unknown,
 ): Promise<SnapshotSetDescriptorV1> {
+  const complete = closed(payload, [
+    "object", "schema_version", "cell_id", "cell_state", "manifest_version",
+    "methodology_version", "snapshot_set_id", "snapshot_set_descriptor", "generated_at",
+    "ranking_groups",
+  ]);
+  envelope(complete, "leaderboard");
+  const generatedAt = utcTimestamp(complete.generated_at, "generated_at");
   const descriptor = await verifyLeaderboardSnapshotSet(payload);
   const leaderboard = record(payload, "leaderboard");
   const groupIds = new Set<string>();
   const configurationIds = new Set<string>();
   for (const value of array(leaderboard.ranking_groups, "ranking_groups")) {
-    const group = record(value, "ranking group");
+    const group = closed(value, [
+      "ranking_group_id", "entity_kind", "interaction_policy", "configuration_passport_class",
+      "state", "evidence_snapshot_id", "eligibility_summary", "entries", "citations",
+      "explorer_views",
+    ]);
     const groupId = nonEmptyString(group.ranking_group_id, "ranking_group_id");
     if (groupIds.has(groupId)) {
       throw new TypeError("ranking_group_id values must be unique");
@@ -598,6 +609,12 @@ export async function verifyLeaderboardSemantics(
     if (group.state === "active" && explorerViews.length !== 0) {
       throw new TypeError("active groups cannot expose explorer views");
     }
+    if (
+      (group.state === "preview" || group.state === "shadow")
+      && (typeof group.evidence_snapshot_id !== "string" || !group.evidence_snapshot_id.startsWith("explorer_"))
+    ) {
+      throw new TypeError("preview and shadow groups require explorer evidence");
+    }
     if ((group.state === "preview" || group.state === "shadow") && entries.length !== 0) {
       throw new TypeError("explorer groups cannot expose calibrated entries");
     }
@@ -617,7 +634,7 @@ export async function verifyLeaderboardSemantics(
         throw new TypeError("snapshot evidence cannot expose explorer views");
       }
     }
-    verifyExplorerViews(explorerViews);
+    verifyExplorerViews(explorerViews, generatedAt);
     verifyEligibility(group.eligibility_summary, {
       state: group.state,
       entityKind: group.entity_kind,
@@ -628,40 +645,86 @@ export async function verifyLeaderboardSemantics(
   return descriptor;
 }
 
-function verifyExplorerViews(value: unknown): void {
-  for (const viewValue of array(value, "explorer_views")) {
-    const view = record(viewValue, "explorer view");
-    for (const entryValue of array(view.entries, "explorer view entries")) {
-      const entry = record(entryValue, "explorer view entry");
-      if (verifyReadRanking(entry.ranking).inTopSet) {
-        throw new TypeError("explorer views cannot claim top-set membership");
+function verifyExplorerViews(value: unknown, generatedAt: Date): void {
+  const views = array(value, "explorer_views");
+  const orderings: string[][] = [];
+  for (const viewValue of views) {
+    const view = closed(viewValue, [
+      "benchmark_family_id", "feed_id", "metric_direction", "observed_at", "expires_at",
+      "agreement", "entries", "citations",
+    ]);
+    const observedAt = utcTimestamp(view.observed_at, "observed_at");
+    const expiresAt = utcTimestamp(view.expires_at, "expires_at");
+    if (expiresAt <= observedAt) throw new TypeError("explorer expires_at must be after observed_at");
+    for (const citationValue of array(view.citations, "explorer view citations")) {
+      const citation = verifyCitation(citationValue);
+      if (citation.benchmark_family_id !== view.benchmark_family_id) {
+        throw new TypeError("explorer citation must match benchmark_family_id");
       }
     }
+    const entries = array(view.entries, "explorer view entries");
+    verifyRankings(entries, new Set<string>(), true);
+    orderings.push(entries.map((entry) => String(record(entry, "explorer view entry").evaluated_configuration_id)));
+    for (const entryValue of entries) {
+      const entry = record(entryValue, "explorer view entry");
+      const ranking = verifyReadRanking(entry.ranking);
+      if (ranking.inTopSet) {
+        throw new TypeError("explorer views cannot claim top-set membership");
+      }
+      const rawRanking = record(entry.ranking, "entity ranking");
+      if (rawRanking.evidence_family_count !== 1) throw new TypeError("explorer evidence_family_count must equal 1");
+      const caveats = array(rawRanking.caveat_codes, "caveat_codes");
+      if (caveats.includes("evidence_stale") !== (generatedAt >= expiresAt)) {
+        throw new TypeError("explorer evidence_stale must match expires_at");
+      }
+    }
+  }
+  const expected = views.length === 1
+    ? "single_source"
+    : orderings.slice(1).every((ordering) => JSON.stringify(ordering) === JSON.stringify(orderings[0]))
+      ? "promising_not_proven"
+      : "conflicting";
+  if (views.some((view) => record(view, "explorer view").agreement !== expected)) {
+    throw new TypeError("explorer agreement must be derived across views");
   }
 }
 
 export async function verifyEntityDetailSemantics(
   payload: unknown,
 ): Promise<SnapshotSetDescriptorV1> {
-  const document = record(payload, "entity detail");
+  const document = closed(payload, [
+    "object", "schema_version", "cell_id", "manifest_version", "methodology_version",
+    "snapshot_set_id", "snapshot_set_descriptor", "ranking_group_id", "state",
+    "evidence_snapshot_id", "explorer_view", "eligibility_summary", "generated_at", "entity",
+  ]);
+  envelope(document, "entity_detail");
+  utcTimestamp(document.generated_at, "generated_at");
   const descriptor = await verifySnapshotReference(document);
-  const projection = record(document.entity, "entity projection");
+  const projection = closed(document.entity, ["evaluated_configuration", "ranking", "citations"]);
   await parseEvaluatedConfigurationV1(projection.evaluated_configuration);
   const ranking = verifyReadRanking(projection.ranking);
   verifyNonactiveClaim(document.state, ranking.inTopSet);
   verifyEligibilitySummaryState(document.eligibility_summary, document.state);
+  verifySelectedExplorerView(document, projection.citations);
   return descriptor;
 }
 
 export async function verifyCompareResultSemantics(
   payload: unknown,
 ): Promise<SnapshotSetDescriptorV1> {
-  const document = record(payload, "compare result");
+  const document = closed(payload, [
+    "object", "schema_version", "cell_id", "manifest_version", "methodology_version",
+    "snapshot_set_id", "snapshot_set_descriptor", "ranking_group_id", "entity_kind",
+    "interaction_policy", "configuration_passport_class", "state", "evidence_snapshot_id",
+    "explorer_view", "eligibility_summary", "generated_at", "entities",
+  ]);
+  envelope(document, "compare_result");
+  utcTimestamp(document.generated_at, "generated_at");
   const descriptor = await verifySnapshotReference(document);
   const configurationIds = new Set<string>();
   const ranks = new Set<number>();
   for (const value of array(document.entities, "compare entities")) {
-    const entity = record(value, "compared entity");
+    const entity = closed(value, ["evaluated_configuration_id", "ranking", "citations"]);
     const configurationId = patternString(
       entity.evaluated_configuration_id,
       configurationIdPattern,
@@ -677,6 +740,7 @@ export async function verifyCompareResultSemantics(
     }
     ranks.add(ranking.rank);
     verifyNonactiveClaim(document.state, ranking.inTopSet);
+    verifySelectedExplorerView(document, entity.citations);
   }
   verifyEligibilitySummaryState(document.eligibility_summary, document.state);
   return descriptor;
@@ -705,7 +769,30 @@ async function verifySnapshotReference(
       "ranking-group snapshot pair must belong to snapshot_set_descriptor",
     );
   }
+  if (payload.state === "active" && !reference.evidence_snapshot_id.startsWith("snapshot_")) {
+    throw new TypeError("active reads require snapshot evidence");
+  }
+  if ((payload.state === "preview" || payload.state === "shadow") && !reference.evidence_snapshot_id.startsWith("explorer_")) {
+    throw new TypeError("preview and shadow reads require explorer evidence");
+  }
   return descriptor;
+}
+
+function verifySelectedExplorerView(payload: Record<string, unknown>, citations: unknown): void {
+  let selector: Record<string, unknown> | null = null;
+  if (payload.state === "active") {
+    if (payload.explorer_view !== null) throw new TypeError("active reads cannot select an explorer view");
+  } else {
+    selector = closed(payload.explorer_view, ["benchmark_family_id", "feed_id"]);
+  }
+  const values = array(citations, "citations");
+  if (values.length === 0) throw new TypeError("citations must be a non-empty array");
+  for (const value of values) {
+    const citation = verifyCitation(value);
+    if (selector !== null && citation.benchmark_family_id !== selector.benchmark_family_id) {
+      throw new TypeError("citations must match selected explorer benchmark_family_id");
+    }
+  }
 }
 
 function verifyRankings(
@@ -736,7 +823,10 @@ function verifyRankings(
 }
 
 function verifyReadRanking(value: unknown): { rank: number; inTopSet: boolean } {
-  const ranking = record(value, "entity ranking");
+  const ranking = closed(value, [
+    "rank", "display_name", "capability_score", "uncertainty", "in_top_set",
+    "evidence_family_count", "caveat_codes",
+  ]);
   if (!Number.isSafeInteger(ranking.rank)) {
     throw new TypeError("entity ranking rank must be an integer");
   }
@@ -766,6 +856,21 @@ function verifyReadRanking(value: unknown): { rank: number; inTopSet: boolean } 
     }
   }
   return { rank: ranking.rank as number, inTopSet: ranking.in_top_set };
+}
+
+function verifyCitation(value: unknown): Record<string, unknown> {
+  return closed(value, ["source_artifact_id", "benchmark_family_id", "title", "url"]);
+}
+
+function utcTimestamp(value: unknown, name: string): Date {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)) {
+    throw new TypeError(`${name} must be a UTC-second timestamp`);
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.valueOf()) || parsed.toISOString() !== `${value.slice(0, -1)}.000Z`) {
+    throw new TypeError(`${name} must be a UTC-second timestamp`);
+  }
+  return parsed;
 }
 
 function verifyEligibility(

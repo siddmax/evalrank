@@ -312,10 +312,31 @@ def verify_leaderboard_snapshot_set(payload: Any) -> SnapshotSetDescriptorV1:
 def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
     """Verify keyed uniqueness, ranks, claims, and evidence-gap truth after schema validation."""
 
+    _verify_fields(
+        payload,
+        {
+            "object", "schema_version", "cell_id", "cell_state", "manifest_version",
+            "methodology_version", "snapshot_set_id", "snapshot_set_descriptor",
+            "generated_at", "ranking_groups",
+        },
+        label="leaderboard",
+    )
+    if payload["object"] != "leaderboard" or payload["schema_version"] != "1":
+        raise ValueError("leaderboard envelope is invalid")
+    generated_at = _parse_timestamp(payload["generated_at"], label="generated_at")
     descriptor = verify_leaderboard_snapshot_set(payload)
     group_ids: set[str] = set()
     configuration_ids: set[str] = set()
     for group in payload["ranking_groups"]:
+        _verify_fields(
+            group,
+            {
+                "ranking_group_id", "entity_kind", "interaction_policy",
+                "configuration_passport_class", "state", "evidence_snapshot_id",
+                "eligibility_summary", "entries", "citations", "explorer_views",
+            },
+            label="ranking group",
+        )
         group_id = group.get("ranking_group_id")
         if not isinstance(group_id, str) or not group_id:
             raise ValueError("every ranking group must carry ranking_group_id")
@@ -327,12 +348,14 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
             raise ValueError("ranking group entries must be an array")
         _verify_rankings(entries, configuration_ids=configuration_ids, require_contiguous=True)
         has_top_set = any(entry["ranking"]["in_top_set"] for entry in entries)
-        _verify_nonactive_claim(group.get("state"), has_top_set)
         state = group.get("state")
         evidence_snapshot_id = group.get("evidence_snapshot_id")
         explorer_views = group.get("explorer_views")
         if state == "active" and not str(evidence_snapshot_id).startswith("snapshot_"):
             raise ValueError("active groups require snapshot evidence")
+        if state in {"preview", "shadow"} and not str(evidence_snapshot_id).startswith("explorer_"):
+            raise ValueError("preview and shadow groups require explorer evidence")
+        _verify_nonactive_claim(state, has_top_set)
         if state == "active" and explorer_views:
             raise ValueError("active groups cannot expose explorer views")
         if state in {"preview", "shadow"} and entries:
@@ -342,7 +365,7 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
                 raise ValueError("explorer evidence requires an explorer view")
             if str(evidence_snapshot_id).startswith("snapshot_") and explorer_views:
                 raise ValueError("snapshot evidence cannot expose explorer views")
-        _verify_explorer_views(explorer_views)
+        _verify_explorer_views(explorer_views, generated_at=generated_at)
         eligibility = group.get("eligibility_summary")
         _verify_eligibility(
             eligibility,
@@ -354,31 +377,87 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
     return descriptor
 
 
-def _verify_explorer_views(value: Any) -> None:
+def _verify_explorer_views(value: Any, *, generated_at: datetime) -> None:
     if not isinstance(value, list):
         raise ValueError("explorer_views must be an array")
+    orderings: list[tuple[str, ...]] = []
     for view in value:
-        if not isinstance(view, dict) or not isinstance(view.get("entries"), list):
+        _verify_fields(
+            view,
+            {
+                "benchmark_family_id", "feed_id", "metric_direction", "observed_at",
+                "expires_at", "agreement", "entries", "citations",
+            },
+            label="explorer view",
+        )
+        if not isinstance(view.get("entries"), list):
             raise ValueError("explorer view entries must be an array")
+        observed_at = _parse_timestamp(view["observed_at"], label="observed_at")
+        expires_at = _parse_timestamp(view["expires_at"], label="expires_at")
+        if expires_at <= observed_at:
+            raise ValueError("explorer expires_at must be after observed_at")
+        family_id = view["benchmark_family_id"]
+        citations = view["citations"]
+        if not isinstance(citations, list):
+            raise ValueError("explorer view citations must be an array")
+        for citation in citations:
+            _verify_citation(citation)
+            if citation["benchmark_family_id"] != family_id:
+                raise ValueError("explorer citation must match benchmark_family_id")
+        configuration_ids: set[str] = set()
+        _verify_rankings(
+            view["entries"],
+            configuration_ids=configuration_ids,
+            require_contiguous=True,
+        )
+        orderings.append(tuple(entry["evaluated_configuration_id"] for entry in view["entries"]))
+        stale = generated_at >= expires_at
         for entry in view["entries"]:
-            if not isinstance(entry, dict):
-                raise ValueError("explorer view entries must be objects")
             ranking = entry.get("ranking")
-            _verify_ranking(ranking)
             if ranking["in_top_set"]:
                 raise ValueError("explorer views cannot claim top-set membership")
+            if ranking.get("evidence_family_count") != 1:
+                raise ValueError("explorer evidence_family_count must equal 1")
+            caveats = ranking.get("caveat_codes")
+            if not isinstance(caveats, list) or (("evidence_stale" in caveats) != stale):
+                raise ValueError("explorer evidence_stale must match expires_at")
+    expected_agreement = (
+        "single_source"
+        if len(value) == 1
+        else "promising_not_proven"
+        if orderings and all(ordering == orderings[0] for ordering in orderings[1:])
+        else "conflicting"
+    )
+    if any(view["agreement"] != expected_agreement for view in value):
+        raise ValueError("explorer agreement must be derived across views")
 
 
 def verify_entity_detail_semantics(payload: Any) -> SnapshotSetDescriptorV1:
     """Verify one detail projection against its snapshot and configuration identity."""
 
+    _verify_fields(
+        payload,
+        {
+            "object", "schema_version", "cell_id", "manifest_version", "methodology_version",
+            "snapshot_set_id", "snapshot_set_descriptor", "ranking_group_id", "state",
+            "evidence_snapshot_id", "explorer_view", "eligibility_summary", "generated_at", "entity",
+        },
+        label="entity detail",
+    )
+    if payload["object"] != "entity_detail" or payload["schema_version"] != "1":
+        raise ValueError("entity detail envelope is invalid")
+    _parse_timestamp(payload["generated_at"], label="generated_at")
     descriptor = _verify_snapshot_reference(payload)
     projection = payload.get("entity")
-    if not isinstance(projection, dict):
-        raise ValueError("entity detail must carry an entity projection")
+    _verify_fields(
+        projection,
+        {"evaluated_configuration", "ranking", "citations"},
+        label="entity projection",
+    )
     configuration = EvaluatedConfigurationV1.from_dict(projection.get("evaluated_configuration"))
     ranking = projection.get("ranking")
     _verify_ranking(ranking)
+    _verify_selected_explorer_view(payload, projection["citations"])
     _verify_nonactive_claim(payload.get("state"), ranking["in_top_set"])
     _verify_eligibility_summary_state(payload.get("eligibility_summary"), payload.get("state"))
     if configuration.evaluated_configuration_id != projection["evaluated_configuration"]["evaluated_configuration_id"]:
@@ -389,6 +468,19 @@ def verify_entity_detail_semantics(payload: Any) -> SnapshotSetDescriptorV1:
 def verify_compare_result_semantics(payload: Any) -> SnapshotSetDescriptorV1:
     """Verify compare-key uniqueness and snapshot/claim consistency after schema validation."""
 
+    _verify_fields(
+        payload,
+        {
+            "object", "schema_version", "cell_id", "manifest_version", "methodology_version",
+            "snapshot_set_id", "snapshot_set_descriptor", "ranking_group_id", "entity_kind",
+            "interaction_policy", "configuration_passport_class", "state", "evidence_snapshot_id",
+            "explorer_view", "eligibility_summary", "generated_at", "entities",
+        },
+        label="compare result",
+    )
+    if payload["object"] != "compare_result" or payload["schema_version"] != "1":
+        raise ValueError("compare result envelope is invalid")
+    _parse_timestamp(payload["generated_at"], label="generated_at")
     descriptor = _verify_snapshot_reference(payload)
     entities = payload.get("entities")
     if not isinstance(entities, list):
@@ -396,8 +488,11 @@ def verify_compare_result_semantics(payload: Any) -> SnapshotSetDescriptorV1:
     configuration_ids: set[str] = set()
     ranks: set[int] = set()
     for entity in entities:
-        if not isinstance(entity, dict):
-            raise ValueError("compare entities must be objects")
+        _verify_fields(
+            entity,
+            {"evaluated_configuration_id", "ranking", "citations"},
+            label="compared entity",
+        )
         configuration_id = entity.get("evaluated_configuration_id")
         if not isinstance(configuration_id, str) or not _CONFIGURATION_ID_RE.fullmatch(configuration_id):
             raise ValueError("compare evaluated_configuration_id has an invalid format")
@@ -411,6 +506,7 @@ def verify_compare_result_semantics(payload: Any) -> SnapshotSetDescriptorV1:
             raise ValueError("compare ranks must be unique")
         ranks.add(rank)
         _verify_nonactive_claim(payload.get("state"), ranking["in_top_set"])
+        _verify_selected_explorer_view(payload, entity["citations"])
     _verify_eligibility_summary_state(payload.get("eligibility_summary"), payload.get("state"))
     return descriptor
 
@@ -432,7 +528,31 @@ def _verify_snapshot_reference(payload: Any) -> SnapshotSetDescriptorV1:
         raise ValueError(
             "ranking-group snapshot pair must belong to snapshot_set_descriptor"
         )
+    state = payload.get("state")
+    if state == "active" and not reference.evidence_snapshot_id.startswith("snapshot_"):
+        raise ValueError("active reads require snapshot evidence")
+    if state in {"preview", "shadow"} and not reference.evidence_snapshot_id.startswith("explorer_"):
+        raise ValueError("preview and shadow reads require explorer evidence")
     return descriptor
+
+
+def _verify_selected_explorer_view(payload: dict[str, Any], citations: Any) -> None:
+    selector = payload["explorer_view"]
+    if payload["state"] == "active":
+        if selector is not None:
+            raise ValueError("active reads cannot select an explorer view")
+    else:
+        _verify_fields(
+            selector,
+            {"benchmark_family_id", "feed_id"},
+            label="explorer_view",
+        )
+    if not isinstance(citations, list) or not citations:
+        raise ValueError("citations must be a non-empty array")
+    for citation in citations:
+        _verify_citation(citation)
+        if selector is not None and citation["benchmark_family_id"] != selector["benchmark_family_id"]:
+            raise ValueError("citations must match selected explorer benchmark_family_id")
 
 
 def _verify_rankings(
@@ -461,12 +581,22 @@ def _verify_rankings(
 
 
 def _verify_ranking(ranking: Any) -> None:
-    if not isinstance(ranking, dict):
-        raise ValueError("entity ranking must be an object")
+    _verify_fields(
+        ranking,
+        {
+            "rank", "display_name", "capability_score", "uncertainty", "in_top_set",
+            "evidence_family_count", "caveat_codes",
+        },
+        label="entity ranking",
+    )
     if not isinstance(ranking.get("rank"), int) or isinstance(ranking.get("rank"), bool):
         raise ValueError("entity ranking rank must be an integer")
     if not isinstance(ranking.get("in_top_set"), bool):
         raise ValueError("entity ranking in_top_set must be a boolean")
+    if ranking.get("evidence_family_count") is None:
+        raise ValueError("entity ranking evidence_family_count is required")
+    if not isinstance(ranking.get("caveat_codes"), list):
+        raise ValueError("entity ranking caveat_codes must be an array")
     uncertainty = ranking.get("uncertainty")
     if isinstance(uncertainty, dict) and uncertainty.get("kind") == "interval":
         try:
@@ -500,8 +630,16 @@ def _verify_eligibility(
 
 
 def _verify_eligibility_summary_state(value: Any, state: Any) -> None:
-    if not isinstance(value, dict):
-        raise ValueError("eligibility_summary must be an object")
+    _verify_fields(
+        value,
+        {
+            "published_claim", "rank_eligible_configuration_count",
+            "current_independent_family_count", "required_independent_family_count",
+            "current_overlap_count", "required_overlap_count", "calibration_status",
+            "gap_codes",
+        },
+        label="eligibility_summary",
+    )
     gaps = value.get("gap_codes")
     if not isinstance(gaps, list) or len(set(gaps)) != len(gaps):
         raise ValueError("eligibility gap_codes must be a unique array")
@@ -559,3 +697,25 @@ def _verify_eligibility_count_gaps(value: dict[str, Any], gaps: set[str]) -> Non
         raise ValueError("no_rank_eligible_configurations gap must match eligibility count")
     if (value.get("calibration_status") == "unvalidated") != ("calibration_unvalidated" in gaps):
         raise ValueError("calibration_unvalidated gap must match calibration_status")
+
+
+def _verify_fields(value: Any, expected: set[str], *, label: str) -> None:
+    if not isinstance(value, dict) or set(value) != expected:
+        raise ValueError(f"{label} fields are invalid")
+
+
+def _parse_timestamp(value: Any, *, label: str) -> datetime:
+    if not isinstance(value, str) or not _TIMESTAMP_RE.fullmatch(value):
+        raise ValueError(f"{label} is invalid")
+    try:
+        return datetime.fromisoformat(value.removesuffix("Z") + "+00:00")
+    except ValueError as error:
+        raise ValueError(f"{label} is invalid") from error
+
+
+def _verify_citation(value: Any) -> None:
+    _verify_fields(
+        value,
+        {"source_artifact_id", "benchmark_family_id", "title", "url"},
+        label="citation",
+    )
