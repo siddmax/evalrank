@@ -38,8 +38,8 @@ The public repo owns portable contracts and method. Private runtime integrations
 ## Evidence State
 
 - All 28 cells are `preview`; catalog presence is not a ranking-readiness claim.
-- Candidate families remain `discovered` until an adapter replays exact official bytes. BFCL V4, LiveCodeBench, LiveBench reasoning, and Terminal-Bench 2.1 are now `shadow`: their repaired official-surface adapters replay successfully and declare `metric_direction: higher`, but `rank_eligible_count` remains null and none is admitted until rights, identity, lineage, overlap, health, cadence, uncertainty, and marginal decision value pass. Discovery feeds keep direction null so parsers cannot guess it.
-- Scraper recovery is mandatory before retirement. The four shadow adapters resolve official HTML-linked CSV/JSON, same-release artifact sets, or licensed repository archives; API/feed/raw-file failure alone is not benchmark-death evidence.
+- Candidate families remain `discovered` until an adapter replays exact official bytes. BFCL V4, LiveCodeBench, LiveBench reasoning, Terminal-Bench 2.1, Aider Polyglot, and ITBench SRE are now `shadow`: their official-source adapters replay successfully and declare `metric_direction: higher`, but `rank_eligible_count` remains null and none is admitted until rights, identity, lineage, overlap, health, cadence, uncertainty, and marginal decision value pass. Discovery feeds keep direction null so parsers cannot guess it.
+- Scraper recovery is mandatory before retirement. Four shadow adapters resolve repaired official HTML-linked CSV/JSON, same-release artifact sets, or licensed repository archives; Aider and ITBench resolve immutable Apache-licensed Git blobs with source-native parsers. API/feed/raw-file failure alone is not benchmark-death evidence.
 - Every candidate family has a dated primary or official discovery source in the manifest-version-locked research companion. Source coverage documents the research basis only and does not advance admission state.
 - Professional deliverables, machine-learning engineering, and computational research reproduction are new explorer-only research jobs. GDPval, MLE-bench, PaperBench, and CORE-Bench remain discovery hypotheses and do not confer product readiness.
 - CORE-Bench mainline and out-of-distribution feeds are two views of one declared correlated family and never count as independent evidence.
@@ -48,7 +48,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 
-Paired release candidate: public contract `c3bac88b4bb6e34006853cffdba8754a8a7a1542`; private consumer `5d5cf83d1492559db207b44bd5c38edcc6fc7594`. The private migration chain is applied to the shared project's isolated `evalrank` schema; application deployment remains a separate release action.
+Paired release candidate: public contract `35395cbfd2600eb94900742b6d36439074a5e26d`; private consumer `53007d66287d77dea9b1827983bfa8d4281c51f2`. The private migration chain is applied to the shared project's isolated `evalrank` schema; application deployment remains a separate release action.
 
 ## Current Workstreams
 
