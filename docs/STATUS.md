@@ -27,7 +27,7 @@ evidence of runtime lineage or admission.
 - Apache-2.0, product-neutral Python contracts and synthetic fixtures.
 - Public JSON Schemas and OpenAPI description.
 - Immutable artifact/run provenance, native observations, exact configuration passports, effective-dated serving-offer pricing schedules, evidence-basis evaluation-to-offer links, non-zero closed monthly usage queries, baseline and zero-cache projected-cost receipts with hard cross-profile budgets and truthful divergence caveats, and deterministic receipt identities.
-- Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts use one truthful `evidence_snapshot_id`; family-scoped explorer views remain separate from calibrated entries and cannot claim top-set membership.
+- Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts use one truthful `evidence_snapshot_id`; entity and compare responses additionally disclose the exact `{benchmark_family_id, feed_id}` explorer view when they return preview evidence. Family-scoped explorer views remain separate from calibrated entries and cannot claim top-set membership.
 - Dependency-light Python and TypeScript SDK boundaries.
 - Deterministic CLI and MCP adapters over public contracts.
 - MCP network destinations are host-owned configuration, never model-controlled tool arguments; the Python client also enforces a bounded default request timeout.
@@ -51,7 +51,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 
-Paired release candidate: public contract `88791dc705777a57519f698a0432f23b55e3552f`; private consumer `a316c62d1747e46ce8fe74aa7a861acbe91ff23a`. The pair adds licensed daily shadow refresh plus persisted, family-scoped explorer evidence, but neither commit is deployed and migrations 058-060 remain operator-gated; this status does not claim live application or cron rollout.
+Paired release candidate: public contract `85335aa90fb41ff57a54dbc9113d0362cf68110b`; private consumer `c0908cef9eca6a16ef6134c12c7c214f2ab91b6d`. The pair binds entity and compare reads to exact explorer-view identity, accumulates every current last-good eligible family in each active explorer snapshot, and makes deployment reconcile and verify the one canonical scheduler job. Neither commit is deployed and migrations 058-060 remain operator-gated; this status does not claim live application or cron rollout.
 
 ## Current Workstreams
 
