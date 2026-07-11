@@ -589,11 +589,33 @@ export async function verifyLeaderboardSemantics(
     );
     verifyNonactiveClaim(group.state, hasTopSet);
     const explorerViews = array(group.explorer_views, "explorer_views");
+    if (
+      group.state === "active"
+      && (typeof group.evidence_snapshot_id !== "string" || !group.evidence_snapshot_id.startsWith("snapshot_"))
+    ) {
+      throw new TypeError("active groups require snapshot evidence");
+    }
     if (group.state === "active" && explorerViews.length !== 0) {
       throw new TypeError("active groups cannot expose explorer views");
     }
     if ((group.state === "preview" || group.state === "shadow") && entries.length !== 0) {
       throw new TypeError("explorer groups cannot expose calibrated entries");
+    }
+    if (group.state === "preview" || group.state === "shadow") {
+      if (
+        typeof group.evidence_snapshot_id === "string"
+        && group.evidence_snapshot_id.startsWith("explorer_")
+        && explorerViews.length === 0
+      ) {
+        throw new TypeError("explorer evidence requires an explorer view");
+      }
+      if (
+        typeof group.evidence_snapshot_id === "string"
+        && group.evidence_snapshot_id.startsWith("snapshot_")
+        && explorerViews.length !== 0
+      ) {
+        throw new TypeError("snapshot evidence cannot expose explorer views");
+      }
     }
     verifyExplorerViews(explorerViews);
     verifyEligibility(group.eligibility_summary, {

@@ -344,6 +344,19 @@ const activeWithExplorerView = clone(payload);
 activeWithExplorerView.ranking_groups[0].explorer_views = clone(unresolvedExplorer.ranking_groups[0].explorer_views);
 assertInvalid(validateLeaderboard, activeWithExplorerView, "active group with explorer view");
 
+const activeWithExplorerIdentity = clone(payload);
+activeWithExplorerIdentity.snapshot_set_descriptor.ranking_group_snapshots[0].evidence_snapshot_id = explorer("a");
+activeWithExplorerIdentity.ranking_groups[0].evidence_snapshot_id = explorer("a");
+assertInvalid(validateLeaderboard, activeWithExplorerIdentity, "active group with explorer identity");
+
+for (const state of ["preview", "shadow"]) {
+  const snapshotWithExplorerView = clone(unresolvedExplorer);
+  snapshotWithExplorerView.ranking_groups[0].state = state;
+  snapshotWithExplorerView.snapshot_set_descriptor.ranking_group_snapshots[0].evidence_snapshot_id = snapshot("f");
+  snapshotWithExplorerView.ranking_groups[0].evidence_snapshot_id = snapshot("f");
+  assertInvalid(validateLeaderboard, snapshotWithExplorerView, `${state} snapshot with explorer view`);
+}
+
 const legacySnapshotField = clone(payload);
 legacySnapshotField.ranking_groups[0].publication_snapshot_id = legacySnapshotField.ranking_groups[0].evidence_snapshot_id;
 delete legacySnapshotField.ranking_groups[0].evidence_snapshot_id;
