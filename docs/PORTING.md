@@ -51,7 +51,7 @@ Cross-repository work lands without circular claims:
 
 Temporary worktrees or stale branches are not continuity records. The paired identifiers and public contract history are.
 
-Current release candidate: public contract `c3bac88b4bb6e34006853cffdba8754a8a7a1542` is pinned by private consumer `5d5cf83d1492559db207b44bd5c38edcc6fc7594`. Its private migration chain is applied to the shared project's isolated `evalrank` schema; this record does not claim application deployment.
+Current release candidate: public contract `9688ac3d9d1a7a46dace46579528d9361b3dbb47` is pinned by private consumer `49bb5402e1fb75f29e2f69aa09078534584b79bf`. The pair adds licensed daily shadow refresh contracts and the private evidence pipeline; migrations 058/059 and application deployment remain operator-gated, so this record does not claim live rollout.
 
 ## Current Workstreams
 
