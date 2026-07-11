@@ -626,7 +626,10 @@ function requireExplorerView(value: ExplorerViewIdentity): void {
 
 function explorerViewSearch(value: ExplorerViewIdentity): URLSearchParams {
   requireExplorerView(value);
-  return new URLSearchParams(value);
+  return new URLSearchParams({
+    benchmark_family_id: value.benchmark_family_id,
+    feed_id: value.feed_id,
+  });
 }
 
 export * from "./decision-contracts.ts";
