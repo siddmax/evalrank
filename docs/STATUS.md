@@ -47,7 +47,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 
-Paired local release candidate: public contract `c3bac88b4bb6e34006853cffdba8754a8a7a1542`; private consumer `dad2a3f397859694dde426a3a3c247f3a91981af`. These identifiers prove contract linkage only; they do not claim deployment.
+Paired local release candidate: public contract `c3bac88b4bb6e34006853cffdba8754a8a7a1542`; private consumer `4d80a38760a1e067cac50011ba733cf6d3eb6ce4`. These identifiers prove contract linkage only; they do not claim deployment.
 
 ## Current Workstreams
 

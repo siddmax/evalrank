@@ -51,7 +51,7 @@ Cross-repository work lands without circular claims:
 
 Temporary worktrees or stale branches are not continuity records. The paired identifiers and public contract history are.
 
-Current local release candidate: public contract `c3bac88b4bb6e34006853cffdba8754a8a7a1542` is pinned by private consumer `dad2a3f397859694dde426a3a3c247f3a91981af`. This is a public-safe linkage record, not a deployment claim.
+Current local release candidate: public contract `c3bac88b4bb6e34006853cffdba8754a8a7a1542` is pinned by private consumer `4d80a38760a1e067cac50011ba733cf6d3eb6ce4`. This is a public-safe linkage record, not a deployment claim.
 
 ## Current Workstreams
 
