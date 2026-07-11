@@ -805,7 +805,7 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
     /lower must be <= upper/,
   );
 
-  const falseGap = previewLeaderboard(leaderboard);
+  const falseGap = await previewLeaderboard(leaderboard);
   falseGap.ranking_groups[0].eligibility_summary.gap_codes.push(
     "insufficient_independent_families",
   );
@@ -821,6 +821,37 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
     /active groups cannot expose explorer views/,
   );
 
+  const activeExplorerIdentity = structuredClone(leaderboard);
+  activeExplorerIdentity.snapshot_set_descriptor.ranking_group_snapshots[0].evidence_snapshot_id = `explorer_${"e".repeat(64)}`;
+  activeExplorerIdentity.ranking_groups[0].evidence_snapshot_id = `explorer_${"e".repeat(64)}`;
+  activeExplorerIdentity.snapshot_set_id = await snapshotSetId(activeExplorerIdentity.snapshot_set_descriptor);
+  await assert.rejects(
+    () => verifyLeaderboardSemantics(activeExplorerIdentity),
+    /active groups require snapshot evidence/,
+  );
+
+  for (const state of ["preview", "shadow"] as const) {
+    const snapshotWithView = await previewLeaderboard(leaderboard);
+    snapshotWithView.ranking_groups[0].state = state;
+    snapshotWithView.snapshot_set_descriptor.ranking_group_snapshots[0].evidence_snapshot_id = `snapshot_${"a".repeat(64)}`;
+    snapshotWithView.ranking_groups[0].evidence_snapshot_id = `snapshot_${"a".repeat(64)}`;
+    snapshotWithView.snapshot_set_id = await snapshotSetId(snapshotWithView.snapshot_set_descriptor);
+    await assert.rejects(
+      () => verifyLeaderboardSemantics(snapshotWithView),
+      /snapshot evidence cannot expose explorer views/,
+    );
+  }
+
+  const explorerWithoutView = await previewLeaderboard(leaderboard);
+  explorerWithoutView.snapshot_set_descriptor.ranking_group_snapshots[0].evidence_snapshot_id = `explorer_${"e".repeat(64)}`;
+  explorerWithoutView.ranking_groups[0].evidence_snapshot_id = `explorer_${"e".repeat(64)}`;
+  explorerWithoutView.ranking_groups[0].explorer_views = [];
+  explorerWithoutView.snapshot_set_id = await snapshotSetId(explorerWithoutView.snapshot_set_descriptor);
+  await assert.rejects(
+    () => verifyLeaderboardSemantics(explorerWithoutView),
+    /explorer evidence requires an explorer view/,
+  );
+
   const previewCalibrated = structuredClone(leaderboard);
   previewCalibrated.ranking_groups[0].state = "preview";
   previewCalibrated.ranking_groups[0].entries[0].ranking.in_top_set = false;
@@ -834,7 +865,7 @@ test("read semantic verifiers reject the same leaderboard mutations as Python", 
     /explorer groups cannot expose calibrated entries/,
   );
 
-  const previewTopSet = previewLeaderboard(leaderboard);
+  const previewTopSet = await previewLeaderboard(leaderboard);
   previewTopSet.ranking_groups[0].explorer_views[0].entries[0].ranking.in_top_set = true;
   await assert.rejects(
     () => verifyLeaderboardSemantics(previewTopSet),
@@ -990,9 +1021,9 @@ async function activeLeaderboard() {
   };
 }
 
-function previewLeaderboard<T extends Awaited<ReturnType<typeof activeLeaderboard>>>(
+async function previewLeaderboard<T extends Awaited<ReturnType<typeof activeLeaderboard>>>(
   leaderboard: T,
-): T {
+): Promise<T> {
   const preview = structuredClone(leaderboard);
   preview.ranking_groups[0].state = "preview";
   preview.ranking_groups[0].eligibility_summary = previewEligibility();
@@ -1000,6 +1031,9 @@ function previewLeaderboard<T extends Awaited<ReturnType<typeof activeLeaderboar
   entries.forEach((entry) => { entry.ranking.in_top_set = false; });
   preview.ranking_groups[0].entries = [];
   preview.ranking_groups[0].explorer_views = [{ entries }];
+  preview.snapshot_set_descriptor.ranking_group_snapshots[0].evidence_snapshot_id = `explorer_${"f".repeat(64)}`;
+  preview.ranking_groups[0].evidence_snapshot_id = `explorer_${"f".repeat(64)}`;
+  preview.snapshot_set_id = await snapshotSetId(preview.snapshot_set_descriptor);
   return preview;
 }
 

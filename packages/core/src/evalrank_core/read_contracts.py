@@ -328,11 +328,20 @@ def verify_leaderboard_semantics(payload: Any) -> SnapshotSetDescriptorV1:
         _verify_rankings(entries, configuration_ids=configuration_ids, require_contiguous=True)
         has_top_set = any(entry["ranking"]["in_top_set"] for entry in entries)
         _verify_nonactive_claim(group.get("state"), has_top_set)
+        state = group.get("state")
+        evidence_snapshot_id = group.get("evidence_snapshot_id")
         explorer_views = group.get("explorer_views")
-        if group.get("state") == "active" and explorer_views:
+        if state == "active" and not str(evidence_snapshot_id).startswith("snapshot_"):
+            raise ValueError("active groups require snapshot evidence")
+        if state == "active" and explorer_views:
             raise ValueError("active groups cannot expose explorer views")
-        if group.get("state") in {"preview", "shadow"} and entries:
+        if state in {"preview", "shadow"} and entries:
             raise ValueError("explorer groups cannot expose calibrated entries")
+        if state in {"preview", "shadow"}:
+            if str(evidence_snapshot_id).startswith("explorer_") and not explorer_views:
+                raise ValueError("explorer evidence requires an explorer view")
+            if str(evidence_snapshot_id).startswith("snapshot_") and explorer_views:
+                raise ValueError("snapshot evidence cannot expose explorer views")
         _verify_explorer_views(explorer_views)
         eligibility = group.get("eligibility_summary")
         _verify_eligibility(

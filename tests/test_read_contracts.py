@@ -252,6 +252,7 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
                 "no_rank_eligible_configurations",
             ],
         }
+        false_gap = _with_evidence_snapshot_id(false_gap, f"explorer_{'f' * 64}")
         with self.assertRaisesRegex(ValueError, "insufficient_independent_families"):
             verify_leaderboard_semantics(false_gap)
 
@@ -259,6 +260,12 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         active_explorer["ranking_groups"][0]["explorer_views"] = [{"entries": []}]
         with self.assertRaisesRegex(ValueError, "active groups cannot expose explorer views"):
             verify_leaderboard_semantics(active_explorer)
+
+        active_explorer_identity = _with_evidence_snapshot_id(
+            leaderboard, f"explorer_{'e' * 64}"
+        )
+        with self.assertRaisesRegex(ValueError, "active groups require snapshot evidence"):
+            verify_leaderboard_semantics(active_explorer_identity)
 
         preview_calibrated = deepcopy(leaderboard)
         preview_group = preview_calibrated["ranking_groups"][0]
@@ -272,6 +279,32 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(ValueError, "explorer groups cannot expose calibrated entries"):
             verify_leaderboard_semantics(preview_calibrated)
+
+        for state in ("preview", "shadow"):
+            snapshot_with_view = deepcopy(leaderboard)
+            group = snapshot_with_view["ranking_groups"][0]
+            explorer_entry = deepcopy(group["entries"][0])
+            explorer_entry["ranking"]["in_top_set"] = False
+            group["state"] = state
+            group["entries"] = []
+            group["explorer_views"] = [{"entries": [explorer_entry]}]
+            group["eligibility_summary"] = {
+                **group["eligibility_summary"],
+                "published_claim": "explorer",
+                "rank_eligible_configuration_count": 0,
+                "calibration_status": "unvalidated",
+                "gap_codes": ["calibration_unvalidated", "no_rank_eligible_configurations"],
+            }
+            with self.subTest(state=state):
+                with self.assertRaisesRegex(ValueError, "snapshot evidence cannot expose explorer views"):
+                    verify_leaderboard_semantics(snapshot_with_view)
+
+        explorer_without_view = _with_evidence_snapshot_id(
+            snapshot_with_view, f"explorer_{'e' * 64}"
+        )
+        explorer_without_view["ranking_groups"][0]["explorer_views"] = []
+        with self.assertRaisesRegex(ValueError, "explorer evidence requires an explorer view"):
+            verify_leaderboard_semantics(explorer_without_view)
 
         preview_top_set = deepcopy(leaderboard)
         preview_top_set["ranking_groups"][0]["state"] = "preview"
@@ -297,6 +330,9 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
             "calibration_status": "unvalidated",
             "gap_codes": ["calibration_unvalidated", "no_rank_eligible_configurations"],
         }
+        explorer_top_set = _with_evidence_snapshot_id(
+            explorer_top_set, f"explorer_{'e' * 64}"
+        )
         with self.assertRaisesRegex(ValueError, "explorer views cannot claim top-set"):
             verify_leaderboard_semantics(explorer_top_set)
 
@@ -444,6 +480,26 @@ def _active_leaderboard() -> dict:
             }
         ],
     }
+
+
+def _with_evidence_snapshot_id(leaderboard: dict, evidence_snapshot_id: str) -> dict:
+    updated = deepcopy(leaderboard)
+    descriptor = SnapshotSetDescriptorV1.from_dict(updated["snapshot_set_descriptor"])
+    replacement = SnapshotSetDescriptorV1(
+        cell_id=descriptor.cell_id,
+        manifest_version=descriptor.manifest_version,
+        methodology_version=descriptor.methodology_version,
+        ranking_group_snapshots=(
+            RankingGroupSnapshotRefV1(
+                ranking_group_id=updated["ranking_groups"][0]["ranking_group_id"],
+                evidence_snapshot_id=evidence_snapshot_id,
+            ),
+        ),
+    )
+    updated["snapshot_set_descriptor"] = replacement.to_dict()
+    updated["snapshot_set_id"] = replacement.snapshot_set_id
+    updated["ranking_groups"][0]["evidence_snapshot_id"] = evidence_snapshot_id
+    return updated
 
 
 if __name__ == "__main__":

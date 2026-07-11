@@ -273,6 +273,10 @@
                 "type": "array",
                 "maxItems": 0
               },
+              "evidence_snapshot_id": {
+                "type": "string",
+                "pattern": "^snapshot_[0-9a-f]{64}$"
+              },
               "eligibility_summary": {
                 "type": "object",
                 "properties": {
@@ -301,6 +305,26 @@
                     "minContains": 1
                   }
                 }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["state", "evidence_snapshot_id"],
+            "properties": {
+              "state": {"enum": ["preview", "shadow"]},
+              "evidence_snapshot_id": {
+                "type": "string",
+                "pattern": "^snapshot_[0-9a-f]{64}$"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "explorer_views": {
+                "type": "array",
+                "maxItems": 0
               }
             }
           }
