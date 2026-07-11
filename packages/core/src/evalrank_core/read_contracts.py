@@ -519,7 +519,12 @@ def verify_compare_result_semantics(payload: Any) -> SnapshotSetDescriptorV1:
         raise ValueError("compare result envelope is invalid")
     _parse_timestamp(payload["generated_at"], label="generated_at")
     descriptor = _verify_snapshot_reference(payload)
-    if payload.get("entity_kind") not in _ENTITY_KINDS - {"unresolved"} or payload.get("interaction_policy") not in _INTERACTION_POLICIES - {"unresolved"} or payload.get("configuration_passport_class") not in _PASSPORT_CLASSES - {"unresolved-v1"}:
+    identity_triple = (
+        payload.get("entity_kind"),
+        payload.get("interaction_policy"),
+        payload.get("configuration_passport_class"),
+    )
+    if identity_triple not in IDENTITY_TRIPLES:
         raise ValueError("compare ranking-group identity is invalid")
     entities = payload.get("entities")
     if not isinstance(entities, list) or not 2 <= len(entities) <= 4:

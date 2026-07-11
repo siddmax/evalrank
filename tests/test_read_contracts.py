@@ -441,6 +441,11 @@ class SnapshotSetDescriptorTests(unittest.TestCase):
         }
         verify_compare_result_semantics(compare)
 
+        mixed_identity = deepcopy(compare)
+        mixed_identity["interaction_policy"] = "agentic"
+        with self.assertRaisesRegex(ValueError, "ranking-group identity"):
+            verify_compare_result_semantics(mixed_identity)
+
         duplicate = deepcopy(compare)
         duplicate["entities"][1]["evaluated_configuration_id"] = duplicate["entities"][0]["evaluated_configuration_id"]
         with self.assertRaisesRegex(ValueError, "evaluated_configuration_id values must be unique"):

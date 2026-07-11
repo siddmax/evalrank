@@ -759,9 +759,10 @@ export async function verifyCompareResultSemantics(
   envelope(document, "compare_result");
   utcTimestamp(document.generated_at, "generated_at");
   const descriptor = await verifySnapshotReference(document);
-  if (![...entityKinds].includes(document.entity_kind as never)
-    || ![...interactionPolicies].includes(document.interaction_policy as never)
-    || ![...passportClasses].includes(document.configuration_passport_class as never)) {
+  const identity = [
+    document.entity_kind, document.interaction_policy, document.configuration_passport_class,
+  ].join("|");
+  if (!identityTriples.has(identity)) {
     throw new TypeError("compare ranking-group identity is invalid");
   }
   const comparedEntities = array(document.entities, "compare entities");
