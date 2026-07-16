@@ -2,7 +2,7 @@
 
 Date: 2026-07-16
 
-The public catalog contract at `434fc2476c47ece2c5b756495f14854bf47fae59` and private consumer at `d85b9e2dcf019e5d268b16dee07e85b5324eeca9` form the paired Terminal-Bench 2.1 source repair.
+The public catalog contract at `434fc2476c47ece2c5b756495f14854bf47fae59` and private consumer at `e39dca613952161e23d346715e3dc7b76d6f6f2a` form the paired Terminal-Bench 2.1 source repair.
 
 The public repository now generates one closed, nested `catalog/feeds.json` projection from `catalog/manifest.json` and `catalog/research-provenance.json`. It contains no private runtime or probe state. The private operator can render static TSV or JSONL and can independently overlay cursor-bound last-good evidence or an ephemeral manual probe.
 
@@ -12,4 +12,4 @@ The probe was read-only and persistence-free. Rights remain unknown, artifact re
 
 A one-time manual fleet probe enumerated the policy-derived manual set without adding scheduling. It surfaced seven healthy feeds and one unrelated unhealthy DeepSWE feed. That result is operational evidence only and does not revise unrelated public catalog states or expand this repair into other adapters.
 
-The private consumer also advances its EvalRank methodology authority to bind the exact public manifest and generated inventory. That authority change is append-only and deployment-gated; this public log records the paired source revisions but does not claim that a private migration or service deployment completed.
+The private consumer also advances its EvalRank methodology authority to bind the exact public manifest and generated inventory. That append-only authority change was deployed after the pre-deploy operational checks, then verified by the release-bound runtime checks after authority, worker, and cron reconciliation.
