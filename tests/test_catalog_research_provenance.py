@@ -38,7 +38,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
 
         self.assertEqual("benchmark_research_provenance", self.provenance["object"])
         self.assertEqual("1", self.provenance["schema_version"])
-        self.assertEqual("2026-07-10.6", self.provenance["manifest_version"])
+        self.assertEqual("2026-07-15.1", self.provenance["manifest_version"])
         self.assertEqual(self.manifest["manifest_version"], self.provenance["manifest_version"])
         self.assertEqual(expected_ids, actual_ids)
         self.assertEqual(88, len(actual_ids))
@@ -130,6 +130,27 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
                         for claim in claims
                     )
                 )
+
+    def test_terminal_bench_records_pinned_current_schema_and_no_retention(self):
+        family = next(
+            row for row in self.provenance["families"]
+            if row["benchmark_family_id"] == "terminal-bench-2-1"
+        )
+        sources = {row["source_id"]: row["url"] for row in family["sources"]}
+        statements = "\n".join(claim["statement"] for claim in family["claims"])
+
+        self.assertEqual(
+            "https://www.tbench.ai/leaderboard/terminal-bench/2.1",
+            sources["leaderboard"],
+        )
+        self.assertIn("a0c400b1138e8c2272c2fc7daa4fa35199b43bef", sources["schema_migration"])
+        self.assertIn("67f1daf5b331fd10f5e8bc05bfc626aac26eeb39", sources["signed_labels_migration"])
+        self.assertNotIn("EvalRank retains the repository aggregate artifacts", statements)
+        reconciliation = next(
+            claim for claim in family["claims"]
+            if "every published row matched" in claim["statement"]
+        )
+        self.assertEqual("evalrank_inference", reconciliation["basis"])
 
     def test_every_quarantine_reason_has_one_linked_categorized_claim(self):
         manifest_families = {

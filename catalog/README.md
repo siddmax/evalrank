@@ -15,7 +15,7 @@ the number of exact evaluated configurations left after identity and evidence
 gates; on a benchmark family or feed it is the number of validated native
 observations. An active ranking group must meet its configured top-set overlap.
 
-`metric_direction` is explicit feed admission metadata. Replayed `shadow` and
+`metric_direction` is explicit feed admission metadata. Parser-validated `shadow` and
 `active` feeds declare whether higher or lower native values are better;
 discovery rows keep it null. Parsers must never infer direction from labels,
 column names, or observed values.
@@ -26,7 +26,7 @@ A validated `frozen` feed instead pins an upstream version and UTC as-of time;
 all recency windows remain null, so a static benchmark cannot imply freshness.
 
 Feed lifecycle is independent. A family is a derived aggregate: `active` when
-any feed is active, otherwise `shadow` when any feed has replayed, otherwise
+any feed is active, otherwise `shadow` when any feed has dated parse evidence, otherwise
 `discovered` when any lead remains, and `quarantined` only when every feed is
 quarantined. Feed validation status and quarantine reasons stay feed-specific;
 the correlated-family group remains consistent across the family and its feeds.
@@ -52,7 +52,7 @@ new primary or official sources rather than secondary summaries.
 Newly announced benchmarks enter as fail-closed discovery leads. A public
 leaderboard, repository, paper, or model-launch citation establishes research
 relevance only; it does not establish result rights, refresh cadence, retained
-artifact permission, replay success, or ranking eligibility.
+artifact permission, parser evidence, or ranking eligibility.
 
 `feeds.json` is a generated, non-normative join of the two authorities above: one
 row per manifest feed, in manifest feed order, nesting the exact manifest

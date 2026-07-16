@@ -208,13 +208,13 @@ class ReferenceServerE2ETests(unittest.TestCase):
         health = json.loads(health_body)
         self.assertEqual("benchmark_health", health["object"])
         self.assertEqual("1", health["schema_version"])
-        self.assertEqual("2026-07-10.6", health["manifest_version"])
+        self.assertEqual("2026-07-15.1", health["manifest_version"])
+        self.assertEqual("2026-07-15T00:00:00Z", health["generated_at"])
         self.assertEqual(28, len(health["cells"]))
         self.assertEqual(
             {
                 "autonomous-swe-agent",
                 "code-generation",
-                "terminal-generalist",
                 "function-calling",
                 "professional-deliverable-creation",
                 "sre-incident-response",
@@ -222,7 +222,7 @@ class ReferenceServerE2ETests(unittest.TestCase):
             },
             {row["cell_id"] for row in health["cells"] if row["status"] == "preview"},
         )
-        self.assertEqual(21, sum(row["status"] == "unavailable" for row in health["cells"]))
+        self.assertEqual(22, sum(row["status"] == "unavailable" for row in health["cells"]))
         self.assertTrue(
             all(
                 (row["status"] == "active")

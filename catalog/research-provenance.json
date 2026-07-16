@@ -2,7 +2,7 @@
   "$schema": "../schemas/benchmark-research-provenance.schema.json",
   "object": "benchmark_research_provenance",
   "schema_version": "1",
-  "manifest_version": "2026-07-10.6",
+  "manifest_version": "2026-07-15.1",
   "families": [
     {
       "benchmark_family_id": "livecodebench",
@@ -69,23 +69,48 @@
       "checked_on": "2026-07-15",
       "sources": [
         {"source_id": "release", "kind": "official_site", "url": "https://www.tbench.ai/news/terminal-bench-2-1"},
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://www.tbench.ai/leaderboard"},
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1"}
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"},
+        {"source_id": "website_client", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-docs/blob/3bfb689d4c19642107ce8c1d4a04f1360d45f78e/app/%28home%29/leaderboard/hub/fetch.ts"},
+        {"source_id": "harbor_client", "kind": "official_repository", "url": "https://github.com/harbor-framework/harbor/blob/d3e606d9f7d1e111bb22d3d820ebed03ec300eb3/src/harbor/hub/leaderboards.py"},
+        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1"},
+        {"source_id": "schema_migration", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1/commit/a0c400b1138e8c2272c2fc7daa4fa35199b43bef"},
+        {"source_id": "signed_labels_migration", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1/commit/67f1daf5b331fd10f5e8bc05bfc626aac26eeb39"}
       ],
       "claims": [
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "direct_source",
-          "statement": "The Apache-2.0 official repository pins the 89-task methodology and the current merged submission-schema JSON, and the official website publishes the leaderboard of the same submissions.",
+          "statement": "The official website publishes the display leaderboard while the Apache-2.0 repository pins the 89-task methodology and current merged submissions.",
           "source_ids": ["repository", "leaderboard"]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
-          "statement": "EvalRank parses the official website leaderboard client and the Harbor repository client at pinned schema-boundary commits, tracks only the current submission schema, and retains no upstream bytes from this adapter.",
-          "source_ids": ["release", "leaderboard", "repository"]
+          "statement": "On 2026-07-15, EvalRank's read-only source comparison found every published row matched one current repository submission and repository-only submissions represented unpublished history.",
+          "source_ids": ["leaderboard", "repository"]
+        },
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The pinned official website and Harbor clients document anonymous leaderboard-read access for the public Terminal-Bench 2.1 board.",
+          "source_ids": ["website_client", "harbor_client"]
+        },
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The pinned repository migrations define the current-only boundary: judge_url was removed when hack metrics were introduced, and the later migration introduced signed hack labels.",
+          "source_ids": ["schema_migration", "signed_labels_migration"]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The current-schema adapter joins the anonymous leaderboard response to an exact repository commit, excludes repository-only history from observations, and covers no trajectories.",
+          "source_ids": ["leaderboard", "repository", "schema_migration", "signed_labels_migration"]
         }
       ]
     },

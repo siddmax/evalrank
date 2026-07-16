@@ -16,7 +16,7 @@
       "const": "../schemas/feed-inventory.schema.json"
     },
     "object": {
-      "const": "feed_inventory"
+      "const": "evalrank_feed_inventory"
     },
     "schema_version": {
       "const": "1"

@@ -2,7 +2,7 @@
   "$schema": "../schemas/evalrank-manifest.schema.json",
   "object": "evalrank_manifest",
   "schema_version": "1",
-  "manifest_version": "2026-07-10.6",
+  "manifest_version": "2026-07-15.1",
   "ranking_group_dimensions": [
     "cell_id",
     "entity_kind",
@@ -1940,7 +1940,7 @@
       "entity_kinds": [
         "agent_system"
       ],
-      "state": "shadow",
+      "state": "discovered",
       "rank_eligible_count": null,
       "correlation_status": "unknown",
       "correlated_family_group": null,
@@ -3433,15 +3433,15 @@
     {
       "feed_id": "terminal-bench-2-1-discovery",
       "benchmark_family_id": "terminal-bench-2-1",
-      "adapter_id": "terminal-bench-2-1-official-hub-repository-v1",
-      "metric_direction": "higher",
+      "adapter_id": null,
+      "metric_direction": null,
       "candidate_cells": [
         "terminal-generalist"
       ],
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
       "configuration_passport_class": "agent-system-v1",
-      "state": "shadow",
+      "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
         "status": "unknown",

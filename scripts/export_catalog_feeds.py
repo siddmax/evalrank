@@ -25,7 +25,7 @@ PROVENANCE_PATH = CATALOG / "research-provenance.json"
 FEEDS_PATH = CATALOG / "feeds.json"
 
 SCHEMA_REF = "../schemas/feed-inventory.schema.json"
-OBJECT = "feed_inventory"
+OBJECT = "evalrank_feed_inventory"
 SCHEMA_VERSION = "1"
 
 
@@ -35,6 +35,8 @@ def _load(path: Path) -> dict:
 
 def build_inventory(manifest: dict, provenance: dict) -> dict:
     """Join every manifest feed to its exact family and research objects."""
+    if provenance["manifest_version"] != manifest["manifest_version"]:
+        raise ValueError("manifest and research provenance versions must match")
     family_by_id: dict[str, dict] = {}
     for family in manifest["benchmark_families"]:
         family_id = family["benchmark_family_id"]
