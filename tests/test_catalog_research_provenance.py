@@ -1,5 +1,6 @@
 import json
 import re
+import re
 import subprocess
 import unittest
 from datetime import date
@@ -148,9 +149,18 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
         self.assertNotIn("EvalRank retains the repository aggregate artifacts", statements)
         reconciliation = next(
             claim for claim in family["claims"]
-            if "every published row matched" in claim["statement"]
+            if "exact-byte manual composite probe" in claim["statement"]
         )
         self.assertEqual("evalrank_inference", reconciliation["basis"])
+        self.assertEqual("2026-07-16", family["checked_on"])
+        for expected in (
+            "exact-byte manual composite probe",
+            "retention remained disabled",
+            "probe evidence rather than replayable retained input",
+        ):
+            self.assertIn(expected, reconciliation["statement"])
+        self.assertEqual(2, len(re.findall(r"\b[0-9a-f]{64}\b", reconciliation["statement"])))
+        self.assertEqual(1, len(re.findall(r"\b[0-9a-f]{40}\b", reconciliation["statement"])))
 
     def test_every_quarantine_reason_has_one_linked_categorized_claim(self):
         manifest_families = {

@@ -1,6 +1,6 @@
 # EvalRank Public Status
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 Portable contract status: the seven-path receipt-first launch contract, Python/TypeScript clients, CLI, MCP adapter, schemas, and stdlib reference server are implemented locally. A private release candidate now pins and conforms to the contract; deployment remains private work and this repo does not claim a live service.
 
@@ -40,7 +40,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 ## Evidence State
 
 - All 28 cells are `preview`; catalog presence is not a ranking-readiness claim.
-- Candidate families remain `discovered` until a dated successful exact-byte parse of official bytes. `shadow` records only that dated parser evidence; it is not durable replay and implies no retention, scheduling, or publication. Existing family states are catalog policy, not a fresh fleet-health assertion from this update; source-specific health is recorded only with dated evidence. Terminal-Bench 2.1 has no new success claim here until the final official-Hub plus exact-repository composite probe passes. Discovery feeds keep direction null so parsers cannot guess it.
+- Candidate families remain `discovered` until a dated successful exact-byte parse of official bytes. `shadow` records only that dated parser evidence; it is not durable replay and implies no retention, scheduling, or publication. Existing family states are catalog policy, not a fresh fleet-health assertion from this update; source-specific health is recorded only with dated evidence. On 2026-07-16, the Terminal-Bench 2.1 manual composite probe was healthy: 17 public display rows reconciled against 20 submissions at repository commit `36d417f56c293b8271b306a0e4c566f58e98c153`, with 3 repository-only historical rows excluded. The accepted Hub/archive SHA-256 digests were `d41b509716d6dd63c2fe1d3a234c676cfdaa31cad99b97fbc56f6d3304d16cff` and `c217bf6a30104d297f978c771f83cf50a715236dfb66e6340442d6e96effdfa2`; bytes were discarded under the no-retention policy. Discovery feeds keep direction null so parsers cannot guess it.
 - Scraper recovery is mandatory before retirement. Four shadow adapters resolve repaired official HTML-linked CSV/JSON, same-release artifact sets, or licensed repository archives; Aider and ITBench resolve immutable Apache-licensed Git blobs with source-native parsers. API/feed/raw-file failure alone is not benchmark-death evidence.
 - Every candidate family has a dated primary or official discovery source in the manifest-version-locked research companion. Source coverage documents the research basis only and does not advance admission state.
 - Professional deliverables, machine-learning engineering, and computational research reproduction are new explorer-only research jobs. GDPval, MLE-bench, PaperBench, and CORE-Bench remain discovery hypotheses and do not confer product readiness.

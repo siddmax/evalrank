@@ -414,21 +414,17 @@ class CatalogManifestTests(unittest.TestCase):
                 ids = [row[id_key] for row in payload[key]]
                 self.assertEqual(len(ids), len(set(ids)))
 
-    def test_terminal_bench_feed_stays_discovered_until_composite_probe_passes(self):
+    def test_terminal_bench_feed_uses_the_composite_adapter_contract(self):
         payload = manifest()
-        family = next(
-            row for row in payload["benchmark_families"]
-            if row["benchmark_family_id"] == "terminal-bench-2-1"
-        )
         feed = next(
             row for row in payload["feeds"]
             if row["feed_id"] == "terminal-bench-2-1-discovery"
         )
 
-        self.assertEqual("discovered", family["state"])
-        self.assertEqual("discovered", feed["state"])
-        self.assertIsNone(feed["adapter_id"])
-        self.assertIsNone(feed["metric_direction"])
+        self.assertEqual(
+            "terminal-bench-2-1-official-hub-repository-v1",
+            feed["adapter_id"],
+        )
         self.assertEqual(["terminal-generalist"], feed["candidate_cells"])
         self.assertFalse(feed["retention"]["store_artifact_bytes"])
 
@@ -649,6 +645,7 @@ class CatalogManifestTests(unittest.TestCase):
                 "itbench",
                 "livebench-reasoning",
                 "livecodebench",
+                "terminal-bench-2-1",
             },
             shadow,
         )
@@ -1019,6 +1016,7 @@ class CatalogManifestTests(unittest.TestCase):
                 "itbench-discovery": "higher",
                 "livebench-reasoning-discovery": "higher",
                 "livecodebench-discovery": "higher",
+                "terminal-bench-2-1-discovery": "higher",
             },
             recovered_directions,
         )
