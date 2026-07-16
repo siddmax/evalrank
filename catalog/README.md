@@ -54,8 +54,17 @@ leaderboard, repository, paper, or model-launch citation establishes research
 relevance only; it does not establish result rights, refresh cadence, retained
 artifact permission, replay success, or ranking eligibility.
 
+`feeds.json` is a generated, non-normative join of the two authorities above: one
+row per manifest feed, in manifest feed order, nesting the exact manifest
+benchmark-family object, the exact manifest feed object, and the exact family
+research object. It adds no facts of its own. Regenerate it with
+`python3 scripts/export_catalog_feeds.py --write` and never hand-edit it;
+`--check` fails when it is stale, missing, or hand-edited. `shadow` is dated
+successful exact-byte parser evidence, not durable replay; it implies no
+retention, scheduling, or publication.
+
 Run:
 
 ```sh
-python3 -m unittest tests.test_catalog_manifest tests.test_catalog_research_provenance tests.test_canonical_json
+python3 -m unittest tests.test_catalog_manifest tests.test_catalog_research_provenance tests.test_catalog_feed_inventory tests.test_canonical_json
 ```

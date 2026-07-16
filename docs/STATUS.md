@@ -1,6 +1,6 @@
 # EvalRank Public Status
 
-Last updated: 2026-07-11
+Last updated: 2026-07-15
 
 Portable contract status: the seven-path receipt-first launch contract, Python/TypeScript clients, CLI, MCP adapter, schemas, and stdlib reference server are implemented locally. A private release candidate now pins and conforms to the contract; deployment remains private work and this repo does not claim a live service.
 
@@ -25,7 +25,7 @@ evidence of runtime lineage or admission.
 
 - Parser provenance records the complete sorted, role-typed retained input set. Multi-file upstream releases cannot hide auxiliary bytes in adapter metadata.
 - Apache-2.0, product-neutral Python contracts and synthetic fixtures.
-- Public JSON Schemas and OpenAPI description.
+- Public JSON Schemas and OpenAPI description, including a closed feed-inventory schema whose generated `catalog/feeds.json` join is guarded by a stdlib `--write`/`--check` exporter.
 - Immutable artifact/run provenance, native observations, exact configuration passports, effective-dated serving-offer pricing schedules, evidence-basis evaluation-to-offer links, non-zero closed monthly usage queries, baseline and zero-cache projected-cost receipts with hard cross-profile budgets and truthful divergence caveats, and deterministic receipt identities.
 - Content-addressed grouped leaderboard, exact entity-detail, and same-ranking-group compare read contracts use one truthful `evidence_snapshot_id`; entity and compare responses additionally disclose the exact `{benchmark_family_id, feed_id}` explorer view when they return preview evidence. Family-scoped explorer views remain separate from calibrated entries and cannot claim top-set membership.
 - Dependency-light Python and TypeScript SDK boundaries.
@@ -40,7 +40,7 @@ The public repo owns portable contracts and method. Private runtime integrations
 ## Evidence State
 
 - All 28 cells are `preview`; catalog presence is not a ranking-readiness claim.
-- Candidate families remain `discovered` until an adapter replays exact official bytes. BFCL V4, LiveCodeBench, LiveBench reasoning, Terminal-Bench 2.1, Aider Polyglot, ITBench SRE, Agents' Last Exam, and DeepSWE are now `shadow`: their official-source adapters replay successfully and declare `metric_direction: higher`, but `rank_eligible_count` remains null and none is admitted until identity, overlap, health, uncertainty, and marginal decision value pass. Discovery feeds keep direction null so parsers cannot guess it.
+- Candidate families remain `discovered` until a dated successful exact-byte parse of official bytes. `shadow` records that dated parser evidence only; it is not durable replay and implies no retention, scheduling, or publication. BFCL V4, LiveCodeBench, LiveBench reasoning, Aider Polyglot, ITBench SRE, Agents' Last Exam, and DeepSWE are `shadow` with a dated successful exact-byte parse that declares `metric_direction: higher`, but `rank_eligible_count` remains null and none is admitted until identity, overlap, health, uncertainty, and marginal decision value pass. Terminal-Bench 2.1 stays provisionally `shadow` for the `terminal-generalist` cell against the `terminal-bench-2-1-official-hub-repository-v1` adapter; its official website leaderboard plus Harbor repository composite probe is not yet confirmed successful, so no successful replay is claimed. Discovery feeds keep direction null so parsers cannot guess it.
 - Scraper recovery is mandatory before retirement. Four shadow adapters resolve repaired official HTML-linked CSV/JSON, same-release artifact sets, or licensed repository archives; Aider and ITBench resolve immutable Apache-licensed Git blobs with source-native parsers. API/feed/raw-file failure alone is not benchmark-death evidence.
 - Every candidate family has a dated primary or official discovery source in the manifest-version-locked research companion. Source coverage documents the research basis only and does not advance admission state.
 - Professional deliverables, machine-learning engineering, and computational research reproduction are new explorer-only research jobs. GDPval, MLE-bench, PaperBench, and CORE-Bench remain discovery hypotheses and do not confer product readiness.

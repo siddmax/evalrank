@@ -208,7 +208,7 @@ class ReferenceServerE2ETests(unittest.TestCase):
         health = json.loads(health_body)
         self.assertEqual("benchmark_health", health["object"])
         self.assertEqual("1", health["schema_version"])
-        self.assertEqual("2026-07-10.5", health["manifest_version"])
+        self.assertEqual("2026-07-10.6", health["manifest_version"])
         self.assertEqual(28, len(health["cells"]))
         self.assertEqual(
             {

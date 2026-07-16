@@ -2,7 +2,7 @@
   "$schema": "../schemas/benchmark-research-provenance.schema.json",
   "object": "benchmark_research_provenance",
   "schema_version": "1",
-  "manifest_version": "2026-07-10.5",
+  "manifest_version": "2026-07-10.6",
   "families": [
     {
       "benchmark_family_id": "livecodebench",
@@ -66,9 +66,10 @@
     },
     {
       "benchmark_family_id": "terminal-bench-2-1",
-      "checked_on": "2026-07-09",
+      "checked_on": "2026-07-15",
       "sources": [
         {"source_id": "release", "kind": "official_site", "url": "https://www.tbench.ai/news/terminal-bench-2-1"},
+        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://www.tbench.ai/leaderboard"},
         {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1"}
       ],
       "claims": [
@@ -76,15 +77,15 @@
           "topic": "scope",
           "research_flag": null,
           "basis": "direct_source",
-          "statement": "The Apache-2.0 official repository contains the pinned 89-task methodology and merged aggregate submission JSON.",
-          "source_ids": ["repository"]
+          "statement": "The Apache-2.0 official repository pins the 89-task methodology and the current merged submission-schema JSON, and the official website publishes the leaderboard of the same submissions.",
+          "source_ids": ["repository", "leaderboard"]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
-          "statement": "EvalRank retains the repository aggregate artifacts and excludes Harbor trajectories from this adapter's scope.",
-          "source_ids": ["repository"]
+          "statement": "EvalRank parses the official website leaderboard client and the Harbor repository client at pinned schema-boundary commits, tracks only the current submission schema, and retains no upstream bytes from this adapter.",
+          "source_ids": ["release", "leaderboard", "repository"]
         }
       ]
     },

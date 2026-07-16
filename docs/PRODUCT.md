@@ -32,7 +32,9 @@ A **ServingOffer** is a separately dated, provider-specific purchasable or runna
 
 ## Catalog And Publication
 
-[`catalog/manifest.json`](../catalog/manifest.json) is the canonical public registry for cells, candidate benchmark families, feeds, explicit higher/lower native-metric direction, rights state, cadence, retention policy, lineage, and publication eligibility. It contains exactly 28 canonical cells and no compatibility aliases. Every cell begins in `preview`; research leads remain `discovered` until replayed, then `shadow` until publication gates pass.
+[`catalog/manifest.json`](../catalog/manifest.json) is the canonical public registry for cells, candidate benchmark families, feeds, explicit higher/lower native-metric direction, rights state, cadence, retention policy, lineage, and publication eligibility. It contains exactly 28 canonical cells and no compatibility aliases. Every cell begins in `preview`; research leads remain `discovered` until a dated successful exact-byte parse, then `shadow` until publication gates pass. `shadow` is that dated parser evidence only: it is not durable replay and implies no retention, scheduling, or publication.
+
+[`catalog/feeds.json`](../catalog/feeds.json) is a generated, non-normative join that pairs each manifest feed, in order, with its exact benchmark-family, feed, and research objects. It is produced by `scripts/export_catalog_feeds.py --write` and adds no facts beyond the manifest and its research companion.
 
 Catalog membership means “EvalRank understands this decision question.” It does not mean the cell is ranked, launch-ready, or supported by enough independent evidence. A publication snapshot may expose a top set only after the exact ranking group clears rights, identity, overlap, health, calibration, freshness, replay, and sensitivity gates. Thin cells disclose the missing-family gap instead of emitting a thin ranking.
 
