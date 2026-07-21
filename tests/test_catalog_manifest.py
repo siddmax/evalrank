@@ -403,7 +403,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         self.assertEqual("evalrank_manifest", payload["object"])
         self.assertEqual("1", payload["schema_version"])
-        self.assertEqual("2026-07-15.1", payload["manifest_version"])
+        self.assertEqual("2026-07-21.1", payload["manifest_version"])
         for key, id_key in (
             ("cells", "cell_id"),
             ("ranking_groups", "ranking_group_id"),
@@ -426,7 +426,7 @@ class CatalogManifestTests(unittest.TestCase):
             feed["adapter_id"],
         )
         self.assertEqual(["terminal-generalist"], feed["candidate_cells"])
-        self.assertFalse(feed["retention"]["store_artifact_bytes"])
+        self.assertTrue(feed["retention"]["store_artifact_bytes"])
 
     def test_manifest_is_the_exact_public_taxonomy(self):
         payload = manifest()
@@ -640,12 +640,19 @@ class CatalogManifestTests(unittest.TestCase):
             {
                 "aider-polyglot",
                 "agents-last-exam",
+                "arc-agi-2",
                 "bfcl-v4",
                 "deepswe",
+                "frontiermath-v2",
+                "hle",
                 "itbench",
                 "livebench-reasoning",
                 "livecodebench",
+                "scicode",
+                "simpleqa-verified",
                 "terminal-bench-2-1",
+                "theagentcompany",
+                "webdev-arena",
             },
             shadow,
         )
@@ -692,6 +699,13 @@ class CatalogManifestTests(unittest.TestCase):
                 "global-mmlu": "mmlu-lineage",
                 "browsecomp-plus": "browsecomp",
                 "browsecomp": "browsecomp",
+                "terminal-bench-2-1": "terminal-bench-2-1",
+                "scicode": "scicode",
+                "arc-agi-2": "arc-agi-2",
+                "frontiermath-v2": "frontiermath",
+                "simpleqa-verified": "simpleqa",
+                "theagentcompany": "theagentcompany",
+                "webdev-arena": "webdev-arena",
             },
             declared_correlations,
         )
@@ -1010,13 +1024,20 @@ class CatalogManifestTests(unittest.TestCase):
         self.assertEqual(
             {
                 "agents-last-exam-discovery": "higher",
+                "arc-agi-2-discovery": "higher",
                 "bfcl-v4-discovery": "higher",
                 "deepswe-discovery": "higher",
                 "aider-polyglot-discovery": "higher",
+                "frontiermath-v2-discovery": "higher",
+                "hle-discovery": "higher",
                 "itbench-discovery": "higher",
                 "livebench-reasoning-discovery": "higher",
                 "livecodebench-discovery": "higher",
+                "scicode-discovery": "higher",
+                "simpleqa-verified-discovery": "higher",
                 "terminal-bench-2-1-discovery": "higher",
+                "theagentcompany-discovery": "higher",
+                "webdev-arena-discovery": "higher",
             },
             recovered_directions,
         )

@@ -208,8 +208,8 @@ class ReferenceServerE2ETests(unittest.TestCase):
         health = json.loads(health_body)
         self.assertEqual("benchmark_health", health["object"])
         self.assertEqual("1", health["schema_version"])
-        self.assertEqual("2026-07-15.1", health["manifest_version"])
-        self.assertEqual("2026-07-15T00:00:00Z", health["generated_at"])
+        self.assertEqual("2026-07-21.1", health["manifest_version"])
+        self.assertEqual("2026-07-21T00:00:00Z", health["generated_at"])
         self.assertEqual(28, len(health["cells"]))
         self.assertEqual(
             {
@@ -220,10 +220,15 @@ class ReferenceServerE2ETests(unittest.TestCase):
                 "professional-deliverable-creation",
                 "sre-incident-response",
                 "reasoning",
+                "general-knowledge-qa",
+                "factuality",
+                "math-reasoning",
+                "enterprise-crm-workflow",
+                "web-frontend-code-generation",
             },
             {row["cell_id"] for row in health["cells"] if row["status"] == "preview"},
         )
-        self.assertEqual(21, sum(row["status"] == "unavailable" for row in health["cells"]))
+        self.assertEqual(16, sum(row["status"] == "unavailable" for row in health["cells"]))
         self.assertTrue(
             all(
                 (row["status"] == "active")

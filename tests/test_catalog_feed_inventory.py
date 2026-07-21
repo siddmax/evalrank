@@ -18,7 +18,7 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _manifest(families, feeds, version="2026-07-15.1") -> dict:
+def _manifest(families, feeds, version="2026-07-21.1") -> dict:
     return {
         "manifest_version": version,
         "benchmark_families": families,
@@ -46,7 +46,7 @@ class FeedInventoryBuilderTests(unittest.TestCase):
 
         inventory = exporter.build_inventory(
             _manifest([fam_a, fam_b], [feed_1, feed_2]),
-            {"manifest_version": "2026-07-15.1", "families": [res_a, res_b]},
+            {"manifest_version": "2026-07-21.1", "families": [res_a, res_b]},
         )
 
         self.assertEqual(["f1", "f2"], [e["feed"]["feed_id"] for e in inventory["feeds"]])
@@ -56,17 +56,17 @@ class FeedInventoryBuilderTests(unittest.TestCase):
         self.assertIs(res_b, inventory["feeds"][0]["research"])
         self.assertIs(fam_a, inventory["feeds"][1]["benchmark_family"])
         self.assertIs(res_a, inventory["feeds"][1]["research"])
-        self.assertEqual("2026-07-15.1", inventory["manifest_version"])
+        self.assertEqual("2026-07-21.1", inventory["manifest_version"])
         self.assertEqual("evalrank_feed_inventory", inventory["object"])
 
     def test_missing_research_for_a_feed_family_raises(self):
         manifest = _manifest([_family("a")], [_feed("f1", "a")])
         with self.assertRaisesRegex(ValueError, "no research"):
-            exporter.build_inventory(manifest, {"manifest_version": "2026-07-15.1", "families": []})
+            exporter.build_inventory(manifest, {"manifest_version": "2026-07-21.1", "families": []})
 
     def test_duplicate_research_family_raises(self):
         manifest = _manifest([_family("a")], [_feed("f1", "a")])
-        provenance = {"manifest_version": "2026-07-15.1", "families": [_research("a"), _research("a")]}
+        provenance = {"manifest_version": "2026-07-21.1", "families": [_research("a"), _research("a")]}
         with self.assertRaisesRegex(ValueError, "duplicate research"):
             exporter.build_inventory(manifest, provenance)
 
@@ -79,12 +79,12 @@ class FeedInventoryBuilderTests(unittest.TestCase):
     def test_duplicate_benchmark_family_raises(self):
         manifest = _manifest([_family("a"), _family("a")], [_feed("f1", "a")])
         with self.assertRaisesRegex(ValueError, "duplicate benchmark family"):
-            exporter.build_inventory(manifest, {"manifest_version": "2026-07-15.1", "families": [_research("a")]})
+            exporter.build_inventory(manifest, {"manifest_version": "2026-07-21.1", "families": [_research("a")]})
 
     def test_feed_referencing_unknown_family_raises(self):
         manifest = _manifest([_family("a")], [_feed("f1", "ghost")])
         with self.assertRaisesRegex(ValueError, "unknown family"):
-            exporter.build_inventory(manifest, {"manifest_version": "2026-07-15.1", "families": [_research("a")]})
+            exporter.build_inventory(manifest, {"manifest_version": "2026-07-21.1", "families": [_research("a")]})
 
     def test_faithfully_nests_flags_quarantines_arrays_dup_kinds_and_equals_urls(self):
         family = _family(
@@ -113,7 +113,7 @@ class FeedInventoryBuilderTests(unittest.TestCase):
         )
 
         inventory = exporter.build_inventory(
-            _manifest([family], [feed]), {"manifest_version": "2026-07-15.1", "families": [research]}
+            _manifest([family], [feed]), {"manifest_version": "2026-07-21.1", "families": [research]}
         )
         entry = inventory["feeds"][0]
 
@@ -135,7 +135,7 @@ class FeedInventoryRenderTests(unittest.TestCase):
     def test_each_feed_entry_is_exactly_one_compact_physical_line(self):
         inventory = exporter.build_inventory(
             _manifest([_family("a"), _family("b")], [_feed("f1", "a"), _feed("f2", "b")]),
-            {"manifest_version": "2026-07-15.1", "families": [_research("a"), _research("b")]},
+            {"manifest_version": "2026-07-21.1", "families": [_research("a"), _research("b")]},
         )
         lines = exporter.render(inventory).splitlines()
         start = lines.index('  "feeds": [')
@@ -186,7 +186,7 @@ class FeedInventoryArtifactTests(unittest.TestCase):
         self.assertEqual("evalrank_feed_inventory", self.feeds["object"])
         self.assertEqual("1", self.feeds["schema_version"])
         self.assertEqual(self.manifest["manifest_version"], self.feeds["manifest_version"])
-        self.assertEqual("2026-07-15.1", self.feeds["manifest_version"])
+        self.assertEqual("2026-07-21.1", self.feeds["manifest_version"])
 
     def test_committed_file_is_one_compact_line_per_feed(self):
         lines = (CATALOG / "feeds.json").read_text(encoding="utf-8").splitlines()

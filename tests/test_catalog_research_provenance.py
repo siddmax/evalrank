@@ -39,7 +39,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
 
         self.assertEqual("benchmark_research_provenance", self.provenance["object"])
         self.assertEqual("1", self.provenance["schema_version"])
-        self.assertEqual("2026-07-15.1", self.provenance["manifest_version"])
+        self.assertEqual("2026-07-21.1", self.provenance["manifest_version"])
         self.assertEqual(self.manifest["manifest_version"], self.provenance["manifest_version"])
         self.assertEqual(expected_ids, actual_ids)
         self.assertEqual(88, len(actual_ids))
@@ -132,7 +132,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
                     )
                 )
 
-    def test_terminal_bench_records_pinned_current_schema_and_no_retention(self):
+    def test_terminal_bench_records_pinned_current_schema_and_probe_evidence(self):
         family = next(
             row for row in self.provenance["families"]
             if row["benchmark_family_id"] == "terminal-bench-2-1"
@@ -152,7 +152,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
             if "exact-byte manual composite probe" in claim["statement"]
         )
         self.assertEqual("evalrank_inference", reconciliation["basis"])
-        self.assertEqual("2026-07-16", family["checked_on"])
+        self.assertEqual("2026-07-21", family["checked_on"])
         for expected in (
             "exact-byte manual composite probe",
             "retention remained disabled",
