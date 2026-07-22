@@ -651,6 +651,8 @@ class CatalogManifestTests(unittest.TestCase):
                 "scicode",
                 "simpleqa-verified",
                 "swe-bench-live",
+                "tau2-bench",
+                "tau-voice",
                 "terminal-bench-2-1",
                 "theagentcompany",
                 "video-mme",
@@ -791,6 +793,45 @@ class CatalogManifestTests(unittest.TestCase):
                 self.assertEqual("validated", feed["lineage"]["validation_status"])
                 self.assertEqual("unknown", feed["lineage"]["correlation_status"])
                 self.assertIsNone(feed["lineage"]["correlated_family_group"])
+
+    def test_tau2_feeds_are_shadow_admitted(self):
+        payload = manifest()
+        families = {row["benchmark_family_id"]: row for row in payload["benchmark_families"]}
+        feeds = {row["benchmark_family_id"]: row for row in payload["feeds"]}
+        expected = {
+            "tau2-bench": "tau2-bench-submissions-json-v1",
+            "tau-voice": "tau-voice-submissions-json-v1",
+        }
+
+        for family_id, adapter_id in expected.items():
+            with self.subTest(family_id=family_id):
+                family = families[family_id]
+                feed = feeds[family_id]
+                self.assertEqual("shadow", family["state"])
+                self.assertEqual("shadow", feed["state"])
+                self.assertEqual(adapter_id, feed["adapter_id"])
+                self.assertEqual("higher", feed["metric_direction"])
+                self.assertIsNone(feed["rank_eligible_count"])
+                self.assertEqual("approved", feed["rights"]["status"])
+                self.assertEqual("MIT", feed["rights"]["task_data_license"])
+                self.assertEqual(
+                    "not-applicable-repo-data-view", feed["rights"]["harness_code_license"]
+                )
+                self.assertTrue(feed["retention"]["store_artifact_bytes"])
+                self.assertEqual(
+                    {
+                        "status": "validated",
+                        "mode": "periodic",
+                        "expected_seconds": 604_800,
+                        "stale_after_seconds": 2_592_000,
+                        "stop_recommending_after_seconds": 15_552_000,
+                        "as_of": None,
+                        "upstream_version": None,
+                    },
+                    feed["cadence"],
+                )
+                self.assertEqual("declared", feed["lineage"]["correlation_status"])
+                self.assertEqual("tau2", feed["lineage"]["correlated_family_group"])
 
     def test_github_issue_swe_families_share_one_uncalibrated_lineage(self):
         payload = manifest()
@@ -1039,6 +1080,8 @@ class CatalogManifestTests(unittest.TestCase):
                 "scicode-discovery": "higher",
                 "simpleqa-verified-discovery": "higher",
                 "swe-bench-live-discovery": "higher",
+                "tau2-bench-discovery": "higher",
+                "tau-voice-discovery": "higher",
                 "terminal-bench-2-1-discovery": "higher",
                 "theagentcompany-discovery": "higher",
                 "video-mme-discovery": "higher",
