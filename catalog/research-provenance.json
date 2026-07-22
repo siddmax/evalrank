@@ -945,7 +945,7 @@
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
-          "statement": "The tau-voice research page ships its leaderboard submission results under the repository's MIT LICENSE.",
+          "statement": "The tau-voice research page ships its leaderboard submission results under the tau2-bench project's MIT LICENSE.",
           "source_ids": [
             "site"
           ]
@@ -972,7 +972,7 @@
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
-          "statement": "This feed ingests published leaderboard result JSON only, involving no execution environment; the repository's MIT license imposes no additional environment terms.",
+          "statement": "This feed ingests published leaderboard result JSON only, involving no execution environment; the tau2-bench project's MIT license imposes no additional environment terms.",
           "source_ids": [
             "site"
           ]
