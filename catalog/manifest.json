@@ -3564,7 +3564,7 @@
         "upstream_version": null
       },
       "retention": {
-        "store_artifact_bytes": false,
+        "store_artifact_bytes": true,
         "maximum_days": null
       },
       "lineage": {
