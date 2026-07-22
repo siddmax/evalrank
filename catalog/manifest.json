@@ -1954,7 +1954,7 @@
       "entity_kinds": [
         "agent_system"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "correlation_status": "declared",
       "correlated_family_group": "github-issue-resolution",
@@ -3533,33 +3533,33 @@
     {
       "feed_id": "swe-bench-live-discovery",
       "benchmark_family_id": "swe-bench-live",
-      "adapter_id": null,
-      "metric_direction": null,
+      "adapter_id": "swe-bench-live-official-jsonl-v1",
+      "metric_direction": "higher",
       "candidate_cells": [
         "autonomous-swe-agent"
       ],
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
       "configuration_passport_class": "agent-system-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
-        "harness_code_license": null,
-        "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "status": "approved",
+        "harness_code_license": "MIT",
+        "task_data_license": "MIT",
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
-        "status": "unvalidated",
-        "mode": null,
-        "expected_seconds": null,
-        "stale_after_seconds": null,
-        "stop_recommending_after_seconds": null,
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 86400,
+        "stale_after_seconds": 1209600,
+        "stop_recommending_after_seconds": 15552000,
         "as_of": null,
         "upstream_version": null
       },
@@ -3568,10 +3568,10 @@
         "maximum_days": null
       },
       "lineage": {
-        "validation_status": "unknown",
-        "task_lineage_id": null,
-        "environment_lineage_id": null,
-        "grader_lineage_id": null,
+        "validation_status": "declared",
+        "task_lineage_id": "swe-bench-live-tasks",
+        "environment_lineage_id": "swe-bench-live-environments",
+        "grader_lineage_id": "swe-bench-live-graders",
         "correlation_status": "declared",
         "correlated_family_group": "github-issue-resolution"
       },

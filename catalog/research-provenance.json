@@ -274,15 +274,102 @@
     },
     {
       "benchmark_family_id": "swe-bench-live",
-      "checked_on": "2026-07-09",
+      "checked_on": "2026-07-22",
       "sources": [
+        {
+          "source_id": "repository_license",
+          "kind": "official_repository",
+          "url": "https://raw.githubusercontent.com/microsoft/SWE-bench-Live/main/LICENSE"
+        },
         {
           "source_id": "leaderboard",
           "kind": "official_leaderboard",
           "url": "https://swe-bench-live.github.io/"
+        },
+        {
+          "source_id": "results",
+          "kind": "official_dataset",
+          "url": "https://swe-bench-live.github.io/reports-0605.jsonl"
         }
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The SWE-bench-Live repository ships its harness and submission tooling under the MIT License granted by Microsoft Corporation.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The SWE-bench-Live project publishes its benchmark results and associated task material under the MIT License, permitting reuse of the leaderboard result data.",
+          "source_ids": [
+            "repository_license",
+            "results"
+          ]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The MIT License grants use, copying, modification, and distribution without a noncommercial restriction.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The MIT License permits redistribution of the published leaderboard result records with attribution.",
+          "source_ids": [
+            "repository_license",
+            "results"
+          ]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Ingesting the published MIT-licensed result records imposes no additional execution-environment terms on this feed.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The MIT License grants reproduction rights for the published result data, permitting retained copies with attribution.",
+          "source_ids": [
+            "repository_license",
+            "results"
+          ]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The MIT License grants public display and distribution rights for the data and derivative material, permitting publication of independently derived pass@1 scores with attribution.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "SWE-bench-Live shares the github-issue-resolution task lineage with swe-rebench, so this feed declares correlated_family_group github-issue-resolution and is never counted as independent evidence against another feed of the same lineage.",
+          "source_ids": [
+            "leaderboard",
+            "results"
+          ]
+        }
+      ]
     },
     {
       "benchmark_family_id": "terminal-bench-2-1",
