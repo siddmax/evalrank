@@ -8,9 +8,21 @@
       "benchmark_family_id": "livecodebench",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/LiveCodeBench/LiveCodeBench"},
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://livecodebench.github.io/leaderboard.html"},
-        {"source_id": "current-data", "kind": "official_dataset", "url": "https://livecodebench.github.io/performances_generation.json"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/LiveCodeBench/LiveCodeBench"
+        },
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://livecodebench.github.io/leaderboard.html"
+        },
+        {
+          "source_id": "current-data",
+          "kind": "official_dataset",
+          "url": "https://livecodebench.github.io/performances_generation.json"
+        }
       ],
       "claims": [
         {
@@ -18,14 +30,21 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official leaderboard page selects performances_generation.json as the current release_v6 data artifact.",
-          "source_ids": ["repository", "leaderboard", "current-data"]
+          "source_ids": [
+            "repository",
+            "leaderboard",
+            "current-data"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The served performances_generation.json artifact carries no license grant and the repository license covers code only, so leaderboard-data ingestion rights remain unestablished and the feed stays unscheduled pending a granted permission request.",
-          "source_ids": ["current-data", "repository"]
+          "source_ids": [
+            "current-data",
+            "repository"
+          ]
         }
       ]
     },
@@ -33,10 +52,26 @@
       "benchmark_family_id": "aider-polyglot",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://aider.chat/docs/leaderboards/"},
-        {"source_id": "results", "kind": "official_dataset", "url": "https://github.com/Aider-AI/aider/blob/main/aider/website/_data/polyglot_leaderboard.yml"},
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/Aider-AI/aider"},
-        {"source_id": "repository_license", "kind": "official_repository", "url": "https://github.com/Aider-AI/aider/blob/main/LICENSE"}
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://aider.chat/docs/leaderboards/"
+        },
+        {
+          "source_id": "results",
+          "kind": "official_dataset",
+          "url": "https://github.com/Aider-AI/aider/blob/main/aider/website/_data/polyglot_leaderboard.yml"
+        },
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/Aider-AI/aider"
+        },
+        {
+          "source_id": "repository_license",
+          "kind": "official_repository",
+          "url": "https://github.com/Aider-AI/aider/blob/main/LICENSE"
+        }
       ],
       "claims": [
         {
@@ -44,63 +79,85 @@
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The result artifact identifies an Aider version, edit format, command, and model, so EvalRank treats each row as an agent system configuration rather than a direct-prompt model result.",
-          "source_ids": ["results", "repository"]
+          "source_ids": [
+            "results",
+            "repository"
+          ]
         },
         {
           "topic": "harness_code_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official Aider repository licenses the benchmark harness code under Apache-2.0.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official repository's Apache-2.0 license covers the in-repo benchmark definitions and the published polyglot leaderboard dataset.",
-          "source_ids": ["results", "repository_license"]
+          "source_ids": [
+            "results",
+            "repository_license"
+          ]
         },
         {
           "topic": "commercial_use",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Apache-2.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "result_redistribution",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Apache-2.0 permits redistribution of the licensed work subject to its notice conditions, so independently produced result records may be redistributed.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official repository publishes its benchmark container environment definitions under Apache-2.0.",
-          "source_ids": ["repository", "repository_license"]
+          "source_ids": [
+            "repository",
+            "repository_license"
+          ]
         },
         {
           "topic": "artifact_retention",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Apache-2.0 grants reproduction rights for the repository's licensed benchmark artifacts, permitting retained copies subject to license conditions.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "derived_score_publication",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "version_status",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The published polyglot leaderboard dataset has not changed since 2025-10-03; the validated periodic cadence describes EvalRank's weekly polling of aider/website/_data/polyglot_leaderboard.yml, not an upstream release commitment.",
-          "source_ids": ["results", "repository"]
+          "source_ids": [
+            "results",
+            "repository"
+          ]
         }
       ]
     },
@@ -108,7 +165,11 @@
       "benchmark_family_id": "bigcodebench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/bigcode-project/bigcodebench"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/bigcode-project/bigcodebench"
+        }
       ],
       "claims": []
     },
@@ -116,9 +177,21 @@
       "benchmark_family_id": "scicode",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://scicode-bench.github.io/"},
-        {"source_id": "epoch_hub", "kind": "official_site", "url": "https://epoch.ai/benchmarks/use-this-data"},
-        {"source_id": "epoch_data", "kind": "official_dataset", "url": "https://epoch.ai/data/benchmark_data.zip"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://scicode-bench.github.io/"
+        },
+        {
+          "source_id": "epoch_hub",
+          "kind": "official_site",
+          "url": "https://epoch.ai/benchmarks/use-this-data"
+        },
+        {
+          "source_id": "epoch_data",
+          "kind": "official_dataset",
+          "url": "https://epoch.ai/data/benchmark_data.zip"
+        }
       ],
       "claims": [
         {
@@ -126,56 +199,76 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The Epoch AI hub distributes result data only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Epoch AI publishes its benchmark data hub under CC-BY-4.0 with per-source license pass-through, covering the SciCode results distributed in benchmark_data.zip.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "commercial_use",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "result_redistribution",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 permits redistribution of the published benchmark data with attribution, so ingested result records may be redistributed.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The hub data view involves no execution environment; ingesting the published CC-BY-4.0 data imposes no additional environment terms.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "artifact_retention",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "derived_score_publication",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The Epoch AI hub view republishes existing SciCode results, so this feed declares correlated_family_group scicode and is never counted as independent evidence against another feed of the same task lineage.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         }
       ]
     },
@@ -183,7 +276,11 @@
       "benchmark_family_id": "swe-bench-live",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://swe-bench-live.github.io/"}
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://swe-bench-live.github.io/"
+        }
       ],
       "claims": []
     },
@@ -191,14 +288,46 @@
       "benchmark_family_id": "terminal-bench-2-1",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://www.tbench.ai/news/terminal-bench-2-1"},
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"},
-        {"source_id": "website_client", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-docs/blob/3bfb689d4c19642107ce8c1d4a04f1360d45f78e/app/%28home%29/leaderboard/hub/fetch.ts"},
-        {"source_id": "harbor_client", "kind": "official_repository", "url": "https://github.com/harbor-framework/harbor/blob/d3e606d9f7d1e111bb22d3d820ebed03ec300eb3/src/harbor/hub/leaderboards.py"},
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1"},
-        {"source_id": "schema_migration", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1/commit/a0c400b1138e8c2272c2fc7daa4fa35199b43bef"},
-        {"source_id": "signed_labels_migration", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1/commit/67f1daf5b331fd10f5e8bc05bfc626aac26eeb39"},
-        {"source_id": "repository_license", "kind": "official_repository", "url": "https://github.com/harbor-framework/terminal-bench-2-1/blob/main/LICENSE"}
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://www.tbench.ai/news/terminal-bench-2-1"
+        },
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://www.tbench.ai/leaderboard/terminal-bench/2.1"
+        },
+        {
+          "source_id": "website_client",
+          "kind": "official_repository",
+          "url": "https://github.com/harbor-framework/terminal-bench-docs/blob/3bfb689d4c19642107ce8c1d4a04f1360d45f78e/app/%28home%29/leaderboard/hub/fetch.ts"
+        },
+        {
+          "source_id": "harbor_client",
+          "kind": "official_repository",
+          "url": "https://github.com/harbor-framework/harbor/blob/d3e606d9f7d1e111bb22d3d820ebed03ec300eb3/src/harbor/hub/leaderboards.py"
+        },
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/harbor-framework/terminal-bench-2-1"
+        },
+        {
+          "source_id": "schema_migration",
+          "kind": "official_repository",
+          "url": "https://github.com/harbor-framework/terminal-bench-2-1/commit/a0c400b1138e8c2272c2fc7daa4fa35199b43bef"
+        },
+        {
+          "source_id": "signed_labels_migration",
+          "kind": "official_repository",
+          "url": "https://github.com/harbor-framework/terminal-bench-2-1/commit/67f1daf5b331fd10f5e8bc05bfc626aac26eeb39"
+        },
+        {
+          "source_id": "repository_license",
+          "kind": "official_repository",
+          "url": "https://github.com/harbor-framework/terminal-bench-2-1/blob/main/LICENSE"
+        }
       ],
       "claims": [
         {
@@ -206,84 +335,117 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official website publishes the display leaderboard while the Apache-2.0 repository pins the 89-task methodology and current merged submissions.",
-          "source_ids": ["repository", "leaderboard"]
+          "source_ids": [
+            "repository",
+            "leaderboard"
+          ]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "On 2026-07-16, EvalRank's exact-byte manual composite probe reconciled all 17 public display rows against repository commit 36d417f56c293b8271b306a0e4c566f58e98c153, validated 20 repository submissions, and excluded 3 repository-only historical rows. The accepted Hub response SHA-256 was d41b509716d6dd63c2fe1d3a234c676cfdaa31cad99b97fbc56f6d3304d16cff and the exact commit archive SHA-256 was c217bf6a30104d297f978c771f83cf50a715236dfb66e6340442d6e96effdfa2; retention remained disabled, so this is probe evidence rather than replayable retained input.",
-          "source_ids": ["leaderboard", "repository"]
+          "source_ids": [
+            "leaderboard",
+            "repository"
+          ]
         },
         {
           "topic": "version_status",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The pinned official website and Harbor clients document anonymous leaderboard-read access for the public Terminal-Bench 2.1 board.",
-          "source_ids": ["website_client", "harbor_client"]
+          "source_ids": [
+            "website_client",
+            "harbor_client"
+          ]
         },
         {
           "topic": "version_status",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The pinned repository migrations define the current-only boundary: judge_url was removed when hack metrics were introduced, and the later migration introduced signed hack labels.",
-          "source_ids": ["schema_migration", "signed_labels_migration"]
+          "source_ids": [
+            "schema_migration",
+            "signed_labels_migration"
+          ]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The current-schema adapter joins the anonymous leaderboard response to an exact repository commit, excludes repository-only history from observations, and covers no trajectories.",
-          "source_ids": ["leaderboard", "repository", "schema_migration", "signed_labels_migration"]
+          "source_ids": [
+            "leaderboard",
+            "repository",
+            "schema_migration",
+            "signed_labels_migration"
+          ]
         },
         {
           "topic": "harness_code_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official repository licenses the Terminal-Bench 2.1 harness code under Apache-2.0.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official repository's Apache-2.0 license covers its published tasks and the in-repo leaderboard submissions under leaderboard/submissions/.",
-          "source_ids": ["repository", "repository_license"]
+          "source_ids": [
+            "repository",
+            "repository_license"
+          ]
         },
         {
           "topic": "commercial_use",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Apache-2.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "result_redistribution",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Apache-2.0 permits redistribution of the licensed work subject to its notice conditions, so independently produced result records may be redistributed.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official repository publishes its Harbor task environment definitions under Apache-2.0.",
-          "source_ids": ["repository", "repository_license"]
+          "source_ids": [
+            "repository",
+            "repository_license"
+          ]
         },
         {
           "topic": "artifact_retention",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Apache-2.0 grants reproduction rights for the repository's licensed benchmark artifacts, permitting retained copies subject to license conditions; artifact retention for this feed was enabled on 2026-07-21 under this grant.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         },
         {
           "topic": "derived_score_publication",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.",
-          "source_ids": ["repository_license"]
+          "source_ids": [
+            "repository_license"
+          ]
         }
       ]
     },
@@ -291,7 +453,11 @@
       "benchmark_family_id": "swe-lancer",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/openai/SWELancer-Benchmark"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/openai/SWELancer-Benchmark"
+        }
       ],
       "claims": []
     },
@@ -299,8 +465,16 @@
       "benchmark_family_id": "swe-rebench",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://swe-rebench.com/about"},
-        {"source_id": "hf_dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/nebius/SWE-rebench-leaderboard"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://swe-rebench.com/about"
+        },
+        {
+          "source_id": "hf_dataset",
+          "kind": "official_dataset",
+          "url": "https://huggingface.co/datasets/nebius/SWE-rebench-leaderboard"
+        }
       ],
       "claims": [
         {
@@ -308,7 +482,10 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Verified 2026-07-21: the CC-BY-4.0 Hugging Face dataset contains task instances rather than leaderboard scores, and the site leaderboard ships as embedded React Server Component state without a data contract, so no licensed score artifact exists and the feed stays unscheduled pending a granted permission request or a published score artifact.",
-          "source_ids": ["hf_dataset", "site"]
+          "source_ids": [
+            "hf_dataset",
+            "site"
+          ]
         }
       ]
     },
@@ -316,7 +493,11 @@
       "benchmark_family_id": "liveswebench",
       "checked_on": "2026-07-10",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://liveswebench.ai/"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://liveswebench.ai/"
+        }
       ],
       "claims": [
         {
@@ -324,7 +505,9 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "LiveSWEBench separates autonomous agentic programming, targeted editing, and autocompletion instead of publishing one undifferentiated coding construct.",
-          "source_ids": ["site"]
+          "source_ids": [
+            "site"
+          ]
         }
       ]
     },
@@ -332,9 +515,21 @@
       "benchmark_family_id": "bfcl-v4",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://sky.cs.berkeley.edu/project/berkeley-function-calling-leaderboard/"},
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://gorilla.cs.berkeley.edu/leaderboard.html"},
-        {"source_id": "current-data", "kind": "official_dataset", "url": "https://gorilla.cs.berkeley.edu/data_overall.csv"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://sky.cs.berkeley.edu/project/berkeley-function-calling-leaderboard/"
+        },
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://gorilla.cs.berkeley.edu/leaderboard.html"
+        },
+        {
+          "source_id": "current-data",
+          "kind": "official_dataset",
+          "url": "https://gorilla.cs.berkeley.edu/data_overall.csv"
+        }
       ],
       "claims": [
         {
@@ -342,14 +537,20 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The official leaderboard script resolves data_overall.csv; the previously assumed raw Git path is not the current data authority.",
-          "source_ids": ["leaderboard", "current-data"]
+          "source_ids": [
+            "leaderboard",
+            "current-data"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The served data_overall.csv carries no license statement, so leaderboard-data ingestion rights remain unestablished and the feed stays unscheduled pending a granted permission request.",
-          "source_ids": ["current-data", "leaderboard"]
+          "source_ids": [
+            "current-data",
+            "leaderboard"
+          ]
         }
       ]
     },
@@ -357,7 +558,11 @@
       "benchmark_family_id": "complexfuncbench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2501.10132"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2501.10132"
+        }
       ],
       "claims": []
     },
@@ -365,7 +570,11 @@
       "benchmark_family_id": "tau2-bench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/sierra-research/tau2-bench"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/sierra-research/tau2-bench"
+        }
       ],
       "claims": []
     },
@@ -373,7 +582,11 @@
       "benchmark_family_id": "mcp-universe",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/SalesforceAIResearch/MCP-Universe"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/SalesforceAIResearch/MCP-Universe"
+        }
       ],
       "claims": []
     },
@@ -381,7 +594,11 @@
       "benchmark_family_id": "mcpmark",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/eval-sys/mcpmark"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/eval-sys/mcpmark"
+        }
       ],
       "claims": []
     },
@@ -389,7 +606,11 @@
       "benchmark_family_id": "mcp-bench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/Accenture/mcp-bench"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/Accenture/mcp-bench"
+        }
       ],
       "claims": []
     },
@@ -397,7 +618,11 @@
       "benchmark_family_id": "webarena-verified",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://servicenow.github.io/webarena-verified/"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://servicenow.github.io/webarena-verified/"
+        }
       ],
       "claims": []
     },
@@ -405,7 +630,11 @@
       "benchmark_family_id": "online-mind2web",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/OSU-NLP-Group/Online-Mind2Web"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/OSU-NLP-Group/Online-Mind2Web"
+        }
       ],
       "claims": []
     },
@@ -413,7 +642,11 @@
       "benchmark_family_id": "browsecomp-plus",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/texttron/BrowseComp-Plus"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/texttron/BrowseComp-Plus"
+        }
       ],
       "claims": []
     },
@@ -421,7 +654,11 @@
       "benchmark_family_id": "real-benchmark",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2504.11543"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2504.11543"
+        }
       ],
       "claims": []
     },
@@ -429,7 +666,11 @@
       "benchmark_family_id": "osworld-verified",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/xlang-ai/OSWorld"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/xlang-ai/OSWorld"
+        }
       ],
       "claims": []
     },
@@ -437,7 +678,11 @@
       "benchmark_family_id": "windowsagentarena",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/microsoft/WindowsAgentArena"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/microsoft/WindowsAgentArena"
+        }
       ],
       "claims": []
     },
@@ -445,7 +690,11 @@
       "benchmark_family_id": "androidworld",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://google-research.github.io/android_world/"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://google-research.github.io/android_world/"
+        }
       ],
       "claims": [
         {
@@ -453,7 +702,9 @@
           "research_flag": "possible-ceiling-pressure",
           "basis": "evalrank_inference",
           "statement": "EvalRank treats top-cohort compression as a hypothesis to measure on a dated AndroidWorld leaderboard snapshot, not as an established saturation fact.",
-          "source_ids": ["site"]
+          "source_ids": [
+            "site"
+          ]
         }
       ]
     },
@@ -461,7 +712,11 @@
       "benchmark_family_id": "screenspot-pro",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2504.07981"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2504.07981"
+        }
       ],
       "claims": []
     },
@@ -469,8 +724,16 @@
       "benchmark_family_id": "deepresearch-bench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "drb", "kind": "official_repository", "url": "https://github.com/Ayanami0730/deep_research_bench"},
-        {"source_id": "drb2", "kind": "official_repository", "url": "https://github.com/imlrz/DeepResearch-Bench-II"}
+        {
+          "source_id": "drb",
+          "kind": "official_repository",
+          "url": "https://github.com/Ayanami0730/deep_research_bench"
+        },
+        {
+          "source_id": "drb2",
+          "kind": "official_repository",
+          "url": "https://github.com/imlrz/DeepResearch-Bench-II"
+        }
       ],
       "claims": []
     },
@@ -478,7 +741,11 @@
       "benchmark_family_id": "hle-with-tools",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://lastexam.ai/"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://lastexam.ai/"
+        }
       ],
       "claims": []
     },
@@ -486,7 +753,11 @@
       "benchmark_family_id": "futuresearch-drb",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://drb.futuresearch.ai/"}
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://drb.futuresearch.ai/"
+        }
       ],
       "claims": []
     },
@@ -494,7 +765,11 @@
       "benchmark_family_id": "tau-voice",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://sierra.ai/resources/research/tau-3-bench"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://sierra.ai/resources/research/tau-3-bench"
+        }
       ],
       "claims": []
     },
@@ -502,7 +777,11 @@
       "benchmark_family_id": "crmarena-pro-service",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://openreview.net/forum?id=EPlpe3Fx1x"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://openreview.net/forum?id=EPlpe3Fx1x"
+        }
       ],
       "claims": []
     },
@@ -510,7 +789,11 @@
       "benchmark_family_id": "crmarena-pro",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://openreview.net/forum?id=EPlpe3Fx1x"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://openreview.net/forum?id=EPlpe3Fx1x"
+        }
       ],
       "claims": []
     },
@@ -518,7 +801,11 @@
       "benchmark_family_id": "workarena-plus-plus",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/ServiceNow/WorkArena"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/ServiceNow/WorkArena"
+        }
       ],
       "claims": []
     },
@@ -526,9 +813,21 @@
       "benchmark_family_id": "theagentcompany",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/TheAgentCompany/TheAgentCompany"},
-        {"source_id": "epoch_hub", "kind": "official_site", "url": "https://epoch.ai/benchmarks/use-this-data"},
-        {"source_id": "epoch_data", "kind": "official_dataset", "url": "https://epoch.ai/data/benchmark_data.zip"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/TheAgentCompany/TheAgentCompany"
+        },
+        {
+          "source_id": "epoch_hub",
+          "kind": "official_site",
+          "url": "https://epoch.ai/benchmarks/use-this-data"
+        },
+        {
+          "source_id": "epoch_data",
+          "kind": "official_dataset",
+          "url": "https://epoch.ai/data/benchmark_data.zip"
+        }
       ],
       "claims": [
         {
@@ -536,56 +835,76 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The Epoch AI hub distributes result data only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Epoch AI publishes its benchmark data hub under CC-BY-4.0 with per-source license pass-through, covering the TheAgentCompany results distributed in benchmark_data.zip.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "commercial_use",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "result_redistribution",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 permits redistribution of the published benchmark data with attribution, so ingested result records may be redistributed.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The hub data view involves no execution environment; ingesting the published CC-BY-4.0 data imposes no additional environment terms.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "artifact_retention",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "derived_score_publication",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The Epoch AI hub view republishes existing TheAgentCompany results, so this feed declares correlated_family_group theagentcompany and is never counted as independent evidence against another feed of the same task lineage.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         }
       ]
     },
@@ -593,7 +912,11 @@
       "benchmark_family_id": "gaia2-are",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://huggingface.co/blog/gaia2"}
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://huggingface.co/blog/gaia2"
+        }
       ],
       "claims": []
     },
@@ -601,7 +924,11 @@
       "benchmark_family_id": "matharena",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://matharena.ai/"}
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://matharena.ai/"
+        }
       ],
       "claims": []
     },
@@ -609,9 +936,21 @@
       "benchmark_family_id": "frontiermath-v2",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://epoch.ai/frontiermath/tiers-1-4/about"},
-        {"source_id": "epoch_hub", "kind": "official_site", "url": "https://epoch.ai/benchmarks/use-this-data"},
-        {"source_id": "epoch_data", "kind": "official_dataset", "url": "https://epoch.ai/data/benchmark_data.zip"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://epoch.ai/frontiermath/tiers-1-4/about"
+        },
+        {
+          "source_id": "epoch_hub",
+          "kind": "official_site",
+          "url": "https://epoch.ai/benchmarks/use-this-data"
+        },
+        {
+          "source_id": "epoch_data",
+          "kind": "official_dataset",
+          "url": "https://epoch.ai/data/benchmark_data.zip"
+        }
       ],
       "claims": [
         {
@@ -619,56 +958,76 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The Epoch AI hub distributes result data only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Epoch AI publishes its benchmark data hub under CC-BY-4.0 with per-source license pass-through, covering the FrontierMath v2 results distributed in benchmark_data.zip.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "commercial_use",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "result_redistribution",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 permits redistribution of the published benchmark data with attribution, so ingested result records may be redistributed.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The hub data view involves no execution environment; ingesting the published CC-BY-4.0 data imposes no additional environment terms.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "artifact_retention",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "derived_score_publication",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The Epoch AI hub view republishes existing FrontierMath v2 results, so this feed declares correlated_family_group frontiermath and is never counted as independent evidence against another feed of the same task lineage.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         }
       ]
     },
@@ -676,7 +1035,11 @@
       "benchmark_family_id": "putnambench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/trishullab/PutnamBench"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/trishullab/PutnamBench"
+        }
       ],
       "claims": []
     },
@@ -684,9 +1047,21 @@
       "benchmark_family_id": "hle",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2501.14249"},
-        {"source_id": "epoch_hub", "kind": "official_site", "url": "https://epoch.ai/benchmarks/use-this-data"},
-        {"source_id": "epoch_data", "kind": "official_dataset", "url": "https://epoch.ai/data/benchmark_data.zip"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2501.14249"
+        },
+        {
+          "source_id": "epoch_hub",
+          "kind": "official_site",
+          "url": "https://epoch.ai/benchmarks/use-this-data"
+        },
+        {
+          "source_id": "epoch_data",
+          "kind": "official_dataset",
+          "url": "https://epoch.ai/data/benchmark_data.zip"
+        }
       ],
       "claims": [
         {
@@ -694,56 +1069,76 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The Epoch AI hub distributes result data only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Epoch AI publishes its benchmark data hub under CC-BY-4.0 with per-source license pass-through, covering the Humanity's Last Exam results distributed in benchmark_data.zip.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "commercial_use",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "result_redistribution",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 permits redistribution of the published benchmark data with attribution, so ingested result records may be redistributed.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The hub data view involves no execution environment; ingesting the published CC-BY-4.0 data imposes no additional environment terms.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "artifact_retention",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "derived_score_publication",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The Epoch AI hub view republishes existing Humanity's Last Exam results, so this feed declares correlated_family_group hle and is never counted as independent evidence against another feed of the same task lineage. The group is shared with hle-with-tools because both draw on the same task lineage.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         }
       ]
     },
@@ -751,9 +1146,21 @@
       "benchmark_family_id": "simpleqa-verified",
       "checked_on": "2026-07-21",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2509.07968"},
-        {"source_id": "epoch_hub", "kind": "official_site", "url": "https://epoch.ai/benchmarks/use-this-data"},
-        {"source_id": "epoch_data", "kind": "official_dataset", "url": "https://epoch.ai/data/benchmark_data.zip"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2509.07968"
+        },
+        {
+          "source_id": "epoch_hub",
+          "kind": "official_site",
+          "url": "https://epoch.ai/benchmarks/use-this-data"
+        },
+        {
+          "source_id": "epoch_data",
+          "kind": "official_dataset",
+          "url": "https://epoch.ai/data/benchmark_data.zip"
+        }
       ],
       "claims": [
         {
@@ -761,56 +1168,76 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The Epoch AI hub distributes result data only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Epoch AI publishes its benchmark data hub under CC-BY-4.0 with per-source license pass-through, covering the SimpleQA Verified results distributed in benchmark_data.zip.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "commercial_use",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "result_redistribution",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 permits redistribution of the published benchmark data with attribution, so ingested result records may be redistributed.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The hub data view involves no execution environment; ingesting the published CC-BY-4.0 data imposes no additional environment terms.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "artifact_retention",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "derived_score_publication",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The Epoch AI hub view republishes existing SimpleQA Verified results, so this feed declares correlated_family_group simpleqa and is never counted as independent evidence against another feed of the same task lineage.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         }
       ]
     },
@@ -818,7 +1245,11 @@
       "benchmark_family_id": "facts-parametric",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://deepmind.google/blog/facts-benchmark-suite-systematically-evaluating-the-factuality-of-large-language-models/"}
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://deepmind.google/blog/facts-benchmark-suite-systematically-evaluating-the-factuality-of-large-language-models/"
+        }
       ],
       "claims": [
         {
@@ -826,7 +1257,9 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "FACTS Parametric is the suite component that measures factual knowledge from model parameters without search or other external tools.",
-          "source_ids": ["release"]
+          "source_ids": [
+            "release"
+          ]
         }
       ]
     },
@@ -834,8 +1267,16 @@
       "benchmark_family_id": "mmlu-pro",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/TIGER-AI-Lab/MMLU-Pro"},
-        {"source_id": "prox_site", "kind": "official_site", "url": "https://mmluprox.github.io/"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/TIGER-AI-Lab/MMLU-Pro"
+        },
+        {
+          "source_id": "prox_site",
+          "kind": "official_site",
+          "url": "https://mmluprox.github.io/"
+        }
       ],
       "claims": [
         {
@@ -843,7 +1284,10 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "MMLU-Pro is built around questions adapted from original MMLU, and MMLU-ProX carries the resulting questions across translated language versions.",
-          "source_ids": ["repository", "prox_site"]
+          "source_ids": [
+            "repository",
+            "prox_site"
+          ]
         }
       ]
     },
@@ -851,7 +1295,11 @@
       "benchmark_family_id": "facts-grounding-v2",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://deepmind.google/blog/facts-benchmark-suite-systematically-evaluating-the-factuality-of-large-language-models/"}
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://deepmind.google/blog/facts-benchmark-suite-systematically-evaluating-the-factuality-of-large-language-models/"
+        }
       ],
       "claims": []
     },
@@ -859,8 +1307,16 @@
       "benchmark_family_id": "mteb-beir",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "mteb", "kind": "official_repository", "url": "https://github.com/embeddings-benchmark/mteb"},
-        {"source_id": "beir", "kind": "official_repository", "url": "https://github.com/beir-cellar/beir"}
+        {
+          "source_id": "mteb",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb"
+        },
+        {
+          "source_id": "beir",
+          "kind": "official_repository",
+          "url": "https://github.com/beir-cellar/beir"
+        }
       ],
       "claims": []
     },
@@ -868,7 +1324,11 @@
       "benchmark_family_id": "crag",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/facebookresearch/CRAG"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/facebookresearch/CRAG"
+        }
       ],
       "claims": []
     },
@@ -876,7 +1336,11 @@
       "benchmark_family_id": "frames",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/google/frames-benchmark"}
+        {
+          "source_id": "dataset",
+          "kind": "official_dataset",
+          "url": "https://huggingface.co/datasets/google/frames-benchmark"
+        }
       ],
       "claims": []
     },
@@ -884,7 +1348,11 @@
       "benchmark_family_id": "longmemeval",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/xiaowu0162/LongMemEval-V2"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/xiaowu0162/LongMemEval-V2"
+        }
       ],
       "claims": []
     },
@@ -892,7 +1360,11 @@
       "benchmark_family_id": "locomo",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/snap-research/locomo"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/snap-research/locomo"
+        }
       ],
       "claims": []
     },
@@ -900,7 +1372,11 @@
       "benchmark_family_id": "beam-memory",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/mohammadtavakoli78/BEAM"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/mohammadtavakoli78/BEAM"
+        }
       ],
       "claims": []
     },
@@ -908,7 +1384,11 @@
       "benchmark_family_id": "vals-fab-v2",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://www.vals.ai/benchmarks/fabv2"}
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://www.vals.ai/benchmarks/fabv2"
+        }
       ],
       "claims": []
     },
@@ -916,7 +1396,11 @@
       "benchmark_family_id": "finsearchcomp",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://randomtutu.github.io/FinSearchComp/"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://randomtutu.github.io/FinSearchComp/"
+        }
       ],
       "claims": []
     },
@@ -924,7 +1408,11 @@
       "benchmark_family_id": "financebench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2311.11944"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2311.11944"
+        }
       ],
       "claims": []
     },
@@ -932,7 +1420,11 @@
       "benchmark_family_id": "legalbench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://hazyresearch.stanford.edu/legalbench/"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://hazyresearch.stanford.edu/legalbench/"
+        }
       ],
       "claims": []
     },
@@ -940,7 +1432,11 @@
       "benchmark_family_id": "vlair",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "report", "kind": "official_site", "url": "https://www.vals.ai/industry-reports/vlair-10-14-25"}
+        {
+          "source_id": "report",
+          "kind": "official_site",
+          "url": "https://www.vals.ai/industry-reports/vlair-10-14-25"
+        }
       ],
       "claims": []
     },
@@ -948,7 +1444,11 @@
       "benchmark_family_id": "healthbench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://openai.com/index/healthbench/"}
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://openai.com/index/healthbench/"
+        }
       ],
       "claims": []
     },
@@ -956,7 +1456,11 @@
       "benchmark_family_id": "healthbench-professional",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2604.27470"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2604.27470"
+        }
       ],
       "claims": []
     },
@@ -964,7 +1468,11 @@
       "benchmark_family_id": "medhelm",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://crfm.stanford.edu/helm/medhelm/v2.0.0/"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://crfm.stanford.edu/helm/medhelm/v2.0.0/"
+        }
       ],
       "claims": []
     },
@@ -972,8 +1480,16 @@
       "benchmark_family_id": "global-mmlu",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://cohere.com/research/globalmmlu"},
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2412.03304"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://cohere.com/research/globalmmlu"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2412.03304"
+        }
       ],
       "claims": [
         {
@@ -981,7 +1497,10 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "Global-MMLU translates and professionally or communally reviews original MMLU questions across languages.",
-          "source_ids": ["site", "paper"]
+          "source_ids": [
+            "site",
+            "paper"
+          ]
         }
       ]
     },
@@ -989,7 +1508,11 @@
       "benchmark_family_id": "mmlu-prox",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://mmluprox.github.io/"}
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://mmluprox.github.io/"
+        }
       ],
       "claims": [
         {
@@ -997,7 +1520,9 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "MMLU-ProX is built on MMLU-Pro and uses identical translated questions to enable direct cross-linguistic comparison.",
-          "source_ids": ["site"]
+          "source_ids": [
+            "site"
+          ]
         }
       ]
     },
@@ -1005,7 +1530,11 @@
       "benchmark_family_id": "wmt24-plus-plus",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/google-research/mt-metrics-eval"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/google-research/mt-metrics-eval"
+        }
       ],
       "claims": []
     },
@@ -1013,7 +1542,11 @@
       "benchmark_family_id": "mmmu-pro",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/MMMU-Benchmark/MMMU"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/MMMU-Benchmark/MMMU"
+        }
       ],
       "claims": [
         {
@@ -1021,7 +1554,9 @@
           "research_flag": "possible-ceiling-pressure",
           "basis": "evalrank_inference",
           "statement": "EvalRank treats top-cohort compression as a hypothesis to test on a dated MMMU-Pro result snapshot, not as a source-established saturation fact.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         }
       ]
     },
@@ -1029,289 +1564,33 @@
       "benchmark_family_id": "mathvista",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/lupantech/MathVista"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/lupantech/MathVista"
+        }
       ],
       "claims": []
     },
     {
       "benchmark_family_id": "video-mme",
-      "checked_on": "2026-07-09",
+      "checked_on": "2026-07-22",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/MME-Benchmarks/Video-MME"}
-      ],
-      "claims": []
-    },
-    {
-      "benchmark_family_id": "webdev-arena",
-      "checked_on": "2026-07-21",
-      "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://arena.ai/blog/webdev-arena/"},
-        {"source_id": "dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset"}
-      ],
-      "claims": [
         {
-          "topic": "harness_code_license",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "The dataset distributes leaderboard rows only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
-          "source_ids": ["dataset"]
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/MME-Benchmarks/Video-MME"
         },
         {
-          "topic": "task_data_license",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "The official lmarena-ai leaderboard-dataset card declares the CC-BY-4.0 license, verified 2026-07-21, covering the published WebDev Arena leaderboard rows.",
-          "source_ids": ["dataset"]
+          "source_id": "epoch_hub",
+          "kind": "official_site",
+          "url": "https://epoch.ai/benchmarks/use-this-data"
         },
         {
-          "topic": "commercial_use",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["dataset"]
-        },
-        {
-          "topic": "result_redistribution",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "CC-BY-4.0 permits redistribution of the published leaderboard data with attribution, so ingested result records may be redistributed.",
-          "source_ids": ["dataset"]
-        },
-        {
-          "topic": "environment_terms",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "Ingesting the published CC-BY-4.0 dataset involves no execution environment and imposes no additional environment terms.",
-          "source_ids": ["dataset"]
-        },
-        {
-          "topic": "artifact_retention",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
-          "source_ids": ["dataset"]
-        },
-        {
-          "topic": "derived_score_publication",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
-          "source_ids": ["dataset"]
-        },
-        {
-          "topic": "scope",
-          "research_flag": null,
-          "basis": "evalrank_inference",
-          "statement": "The feed ingests crowd pairwise vote aggregates for the webdev-arena lineage; the declared correlated_family_group webdev-arena prevents counting republished views of this lineage as independent evidence.",
-          "source_ids": ["dataset", "release"]
+          "source_id": "epoch_data",
+          "kind": "official_dataset",
+          "url": "https://epoch.ai/data/benchmark_data.zip"
         }
-      ]
-    },
-    {
-      "benchmark_family_id": "design-arena",
-      "checked_on": "2026-07-09",
-      "sources": [
-        {"source_id": "docs", "kind": "official_site", "url": "https://docs.designarena.ai/introduction"}
-      ],
-      "claims": []
-    },
-    {
-      "benchmark_family_id": "swe-bench-multimodal",
-      "checked_on": "2026-07-09",
-      "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/SWE-bench/SWE-bench"}
-      ],
-      "claims": []
-    },
-    {
-      "benchmark_family_id": "itbench",
-      "checked_on": "2026-07-21",
-      "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/itbench-hub/ITBench"},
-        {"source_id": "repository_license", "kind": "official_repository", "url": "https://github.com/itbench-hub/ITBench/blob/main/LICENSE"},
-        {"source_id": "sre_results", "kind": "official_dataset", "url": "https://github.com/itbench-hub/ITBench/blob/main/LEADERBOARD_SRE.md"},
-        {"source_id": "artificial_analysis", "kind": "official_site", "url": "https://artificialanalysis.ai/evaluations/itbench-aa"},
-        {"source_id": "artificial_analysis_dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/ArtificialAnalysis/ITBench-AA"}
-      ],
-      "claims": [
-        {
-          "topic": "scope",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "The Apache-2.0 SRE leaderboard reports multiple-trial incident diagnosis and repair outcomes with native uncertainty fields.",
-          "source_ids": ["repository", "sre_results"]
-        },
-        {
-          "topic": "scope",
-          "research_flag": null,
-          "basis": "evalrank_inference",
-          "statement": "ITBench-AA is an independent implementation and rerun layer over ITBench SRE tasks, combining 40 public tasks with 19 private tasks in one reported result, so it remains a feed of the ITBench family rather than independent evidence.",
-          "source_ids": ["repository", "artificial_analysis", "artificial_analysis_dataset"]
-        },
-        {
-          "topic": "harness_code_license",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "The official ITBench repository licenses its harness code under Apache-2.0.",
-          "source_ids": ["repository_license"]
-        },
-        {
-          "topic": "task_data_license",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "The official repository's Apache-2.0 license covers its published SRE scenarios and task definitions.",
-          "source_ids": ["repository", "repository_license"]
-        },
-        {
-          "topic": "commercial_use",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "Apache-2.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["repository_license"]
-        },
-        {
-          "topic": "result_redistribution",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "Apache-2.0 permits redistribution of the licensed work subject to its notice conditions, so independently produced result records may be redistributed.",
-          "source_ids": ["repository_license"]
-        },
-        {
-          "topic": "environment_terms",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "The official repository publishes its Kubernetes environment definitions under Apache-2.0.",
-          "source_ids": ["repository", "repository_license"]
-        },
-        {
-          "topic": "artifact_retention",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "Apache-2.0 grants reproduction rights for the repository's licensed benchmark artifacts, permitting retained copies subject to license conditions.",
-          "source_ids": ["repository_license"]
-        },
-        {
-          "topic": "derived_score_publication",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.",
-          "source_ids": ["repository_license"]
-        },
-        {
-          "topic": "version_status",
-          "research_flag": null,
-          "basis": "evalrank_inference",
-          "statement": "The SRE leaderboard markdown remains the current data authority; the validated periodic cadence describes EvalRank's weekly polling of LEADERBOARD_SRE.md, not an upstream refresh commitment.",
-          "source_ids": ["sre_results"]
-        }
-      ]
-    },
-    {
-      "benchmark_family_id": "aiopslab",
-      "checked_on": "2026-07-09",
-      "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/microsoft/AIOpsLab"}
-      ],
-      "claims": []
-    },
-    {
-      "benchmark_family_id": "sregym",
-      "checked_on": "2026-07-10",
-      "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/SREGym/SREGym"}
-      ],
-      "claims": [
-        {
-          "topic": "scope",
-          "research_flag": null,
-          "basis": "evalrank_inference",
-          "statement": "SREGym imports ITBench and AIOpsLab problems, so its aggregate cannot count as independent evidence; only a hash-deduplicated new-task stratum could qualify separately.",
-          "source_ids": ["repository"]
-        }
-      ]
-    },
-    {
-      "benchmark_family_id": "devops-gym",
-      "checked_on": "2026-07-10",
-      "sources": [
-        {"source_id": "site", "kind": "official_site", "url": "https://www.devops-gym.com/"},
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/ucsb-mlsec/DevOps-Gym"}
-      ],
-      "claims": [
-        {
-          "topic": "scope",
-          "research_flag": null,
-          "basis": "evalrank_inference",
-          "statement": "Build, configuration, monitoring, testing, and delivery-pipeline tasks form a DevOps lifecycle construct and must not be pooled with live SRE incident repair.",
-          "source_ids": ["site", "repository"]
-        }
-      ]
-    },
-    {
-      "benchmark_family_id": "android-bench",
-      "checked_on": "2026-07-09",
-      "sources": [
-        {"source_id": "methodology", "kind": "official_site", "url": "https://developer.android.com/bench/methodology"}
-      ],
-      "claims": []
-    },
-    {
-      "benchmark_family_id": "appforge",
-      "checked_on": "2026-07-09",
-      "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2510.07740"}
-      ],
-      "claims": []
-    },
-    {
-      "benchmark_family_id": "swifteval",
-      "checked_on": "2026-07-09",
-      "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2505.24324"}
-      ],
-      "claims": []
-    },
-    {
-      "benchmark_family_id": "swe-bench-mobile",
-      "checked_on": "2026-07-09",
-      "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2602.09540"}
-      ],
-      "claims": []
-    },
-    {
-      "benchmark_family_id": "livebench-reasoning",
-      "checked_on": "2026-07-21",
-      "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/LiveBench/LiveBench"},
-        {"source_id": "leaderboard", "kind": "official_leaderboard", "url": "https://livebench.ai/"},
-        {"source_id": "table", "kind": "official_dataset", "url": "https://livebench.ai/table_2026_06_25.csv"},
-        {"source_id": "categories", "kind": "official_dataset", "url": "https://livebench.ai/categories_2026_06_25.json"}
-      ],
-      "claims": [
-        {
-          "topic": "version_status",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "The official application identifies 2026-06-25 as the current release and fetches its table and category artifacts as one pair.",
-          "source_ids": ["leaderboard", "table", "categories"]
-        },
-        {
-          "topic": "task_data_license",
-          "research_flag": null,
-          "basis": "direct_source",
-          "statement": "The served livebench.ai table and category artifacts carry no data license, so leaderboard-data ingestion rights remain unestablished and the feed stays unscheduled pending a granted permission request.",
-          "source_ids": ["table", "categories"]
-        }
-      ]
-    },
-    {
-      "benchmark_family_id": "arc-agi-2",
-      "checked_on": "2026-07-21",
-      "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/arcprize/ARC-AGI-2"},
-        {"source_id": "epoch_hub", "kind": "official_site", "url": "https://epoch.ai/benchmarks/use-this-data"},
-        {"source_id": "epoch_data", "kind": "official_dataset", "url": "https://epoch.ai/data/benchmark_data.zip"}
       ],
       "claims": [
         {
@@ -1319,56 +1598,577 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The Epoch AI hub distributes result data only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "task_data_license",
           "research_flag": null,
           "basis": "direct_source",
-          "statement": "Epoch AI publishes its benchmark data hub under CC-BY-4.0 with per-source license pass-through, covering the ARC-AGI-2 results distributed in benchmark_data.zip.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "statement": "Epoch AI publishes its benchmark data hub under CC-BY-4.0 with per-source license pass-through, covering the Video-MME results distributed in benchmark_data.zip.",
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "commercial_use",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "result_redistribution",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 permits redistribution of the published benchmark data with attribution, so ingested result records may be redistributed.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "environment_terms",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The hub data view involves no execution environment; ingesting the published CC-BY-4.0 data imposes no additional environment terms.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "artifact_retention",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         },
         {
           "topic": "derived_score_publication",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
-          "source_ids": ["epoch_hub"]
+          "source_ids": [
+            "epoch_hub"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The Epoch AI hub view republishes existing Video-MME results, so this feed declares correlated_family_group video-mme and is never counted as independent evidence against another feed of the same task lineage.",
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "webdev-arena",
+      "checked_on": "2026-07-21",
+      "sources": [
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://arena.ai/blog/webdev-arena/"
+        },
+        {
+          "source_id": "dataset",
+          "kind": "official_dataset",
+          "url": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The dataset distributes leaderboard rows only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
+          "source_ids": [
+            "dataset"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official lmarena-ai leaderboard-dataset card declares the CC-BY-4.0 license, verified 2026-07-21, covering the published WebDev Arena leaderboard rows.",
+          "source_ids": [
+            "dataset"
+          ]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
+          "source_ids": [
+            "dataset"
+          ]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CC-BY-4.0 permits redistribution of the published leaderboard data with attribution, so ingested result records may be redistributed.",
+          "source_ids": [
+            "dataset"
+          ]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Ingesting the published CC-BY-4.0 dataset involves no execution environment and imposes no additional environment terms.",
+          "source_ids": [
+            "dataset"
+          ]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
+          "source_ids": [
+            "dataset"
+          ]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
+          "source_ids": [
+            "dataset"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The feed ingests crowd pairwise vote aggregates for the webdev-arena lineage; the declared correlated_family_group webdev-arena prevents counting republished views of this lineage as independent evidence.",
+          "source_ids": [
+            "dataset",
+            "release"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "design-arena",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {
+          "source_id": "docs",
+          "kind": "official_site",
+          "url": "https://docs.designarena.ai/introduction"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swe-bench-multimodal",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/SWE-bench/SWE-bench"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "itbench",
+      "checked_on": "2026-07-21",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/itbench-hub/ITBench"
+        },
+        {
+          "source_id": "repository_license",
+          "kind": "official_repository",
+          "url": "https://github.com/itbench-hub/ITBench/blob/main/LICENSE"
+        },
+        {
+          "source_id": "sre_results",
+          "kind": "official_dataset",
+          "url": "https://github.com/itbench-hub/ITBench/blob/main/LEADERBOARD_SRE.md"
+        },
+        {
+          "source_id": "artificial_analysis",
+          "kind": "official_site",
+          "url": "https://artificialanalysis.ai/evaluations/itbench-aa"
+        },
+        {
+          "source_id": "artificial_analysis_dataset",
+          "kind": "official_dataset",
+          "url": "https://huggingface.co/datasets/ArtificialAnalysis/ITBench-AA"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The Apache-2.0 SRE leaderboard reports multiple-trial incident diagnosis and repair outcomes with native uncertainty fields.",
+          "source_ids": [
+            "repository",
+            "sre_results"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "ITBench-AA is an independent implementation and rerun layer over ITBench SRE tasks, combining 40 public tasks with 19 private tasks in one reported result, so it remains a feed of the ITBench family rather than independent evidence.",
+          "source_ids": [
+            "repository",
+            "artificial_analysis",
+            "artificial_analysis_dataset"
+          ]
+        },
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official ITBench repository licenses its harness code under Apache-2.0.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository's Apache-2.0 license covers its published SRE scenarios and task definitions.",
+          "source_ids": [
+            "repository",
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants use and distribution rights without a noncommercial restriction.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 permits redistribution of the licensed work subject to its notice conditions, so independently produced result records may be redistributed.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository publishes its Kubernetes environment definitions under Apache-2.0.",
+          "source_ids": [
+            "repository",
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants reproduction rights for the repository's licensed benchmark artifacts, permitting retained copies subject to license conditions.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The SRE leaderboard markdown remains the current data authority; the validated periodic cadence describes EvalRank's weekly polling of LEADERBOARD_SRE.md, not an upstream refresh commitment.",
+          "source_ids": [
+            "sre_results"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "aiopslab",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/microsoft/AIOpsLab"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "sregym",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/SREGym/SREGym"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "SREGym imports ITBench and AIOpsLab problems, so its aggregate cannot count as independent evidence; only a hash-deduplicated new-task stratum could qualify separately.",
+          "source_ids": [
+            "repository"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "devops-gym",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://www.devops-gym.com/"
+        },
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/ucsb-mlsec/DevOps-Gym"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "Build, configuration, monitoring, testing, and delivery-pipeline tasks form a DevOps lifecycle construct and must not be pooled with live SRE incident repair.",
+          "source_ids": [
+            "site",
+            "repository"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "android-bench",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {
+          "source_id": "methodology",
+          "kind": "official_site",
+          "url": "https://developer.android.com/bench/methodology"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "appforge",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2510.07740"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swifteval",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2505.24324"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "swe-bench-mobile",
+      "checked_on": "2026-07-09",
+      "sources": [
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2602.09540"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "livebench-reasoning",
+      "checked_on": "2026-07-21",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/LiveBench/LiveBench"
+        },
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://livebench.ai/"
+        },
+        {
+          "source_id": "table",
+          "kind": "official_dataset",
+          "url": "https://livebench.ai/table_2026_06_25.csv"
+        },
+        {
+          "source_id": "categories",
+          "kind": "official_dataset",
+          "url": "https://livebench.ai/categories_2026_06_25.json"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "version_status",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official application identifies 2026-06-25 as the current release and fetches its table and category artifacts as one pair.",
+          "source_ids": [
+            "leaderboard",
+            "table",
+            "categories"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The served livebench.ai table and category artifacts carry no data license, so leaderboard-data ingestion rights remain unestablished and the feed stays unscheduled pending a granted permission request.",
+          "source_ids": [
+            "table",
+            "categories"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "arc-agi-2",
+      "checked_on": "2026-07-21",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/arcprize/ARC-AGI-2"
+        },
+        {
+          "source_id": "epoch_hub",
+          "kind": "official_site",
+          "url": "https://epoch.ai/benchmarks/use-this-data"
+        },
+        {
+          "source_id": "epoch_data",
+          "kind": "official_dataset",
+          "url": "https://epoch.ai/data/benchmark_data.zip"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The Epoch AI hub distributes result data only; no harness code ships with this feed, so the recorded value marks the field not applicable to the hub data view.",
+          "source_ids": [
+            "epoch_hub"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Epoch AI publishes its benchmark data hub under CC-BY-4.0 with per-source license pass-through, covering the ARC-AGI-2 results distributed in benchmark_data.zip.",
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CC-BY-4.0 grants use and distribution rights without a noncommercial restriction.",
+          "source_ids": [
+            "epoch_hub"
+          ]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CC-BY-4.0 permits redistribution of the published benchmark data with attribution, so ingested result records may be redistributed.",
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The hub data view involves no execution environment; ingesting the published CC-BY-4.0 data imposes no additional environment terms.",
+          "source_ids": [
+            "epoch_hub"
+          ]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CC-BY-4.0 grants reproduction rights for the published data, permitting retained copies with attribution.",
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "CC-BY-4.0 grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores with attribution.",
+          "source_ids": [
+            "epoch_hub"
+          ]
         },
         {
           "topic": "scope",
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The Epoch AI hub view republishes existing ARC-AGI-2 results, so this feed declares correlated_family_group arc-agi-2 and is never counted as independent evidence against another feed of the same task lineage.",
-          "source_ids": ["epoch_hub", "epoch_data"]
+          "source_ids": [
+            "epoch_hub",
+            "epoch_data"
+          ]
         }
       ]
     },
@@ -1376,7 +2176,11 @@
       "benchmark_family_id": "swe-bench-verified",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "audit", "kind": "official_site", "url": "https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/"}
+        {
+          "source_id": "audit",
+          "kind": "official_site",
+          "url": "https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/"
+        }
       ],
       "claims": [
         {
@@ -1384,7 +2188,9 @@
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The official audit reports task-design and contamination defects that prevent the unrepaired benchmark from supporting current system comparisons.",
-          "source_ids": ["audit"]
+          "source_ids": [
+            "audit"
+          ]
         }
       ]
     },
@@ -1392,8 +2198,16 @@
       "benchmark_family_id": "swe-bench-pro",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2509.16941"},
-        {"source_id": "audit", "kind": "official_site", "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations/"}
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2509.16941"
+        },
+        {
+          "source_id": "audit",
+          "kind": "official_site",
+          "url": "https://openai.com/index/separating-signal-from-noise-coding-evaluations/"
+        }
       ],
       "claims": [
         {
@@ -1401,7 +2215,9 @@
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "The official audit documents broken tasks at a rate that requires a repaired task set and replay before admission.",
-          "source_ids": ["audit"]
+          "source_ids": [
+            "audit"
+          ]
         }
       ]
     },
@@ -1409,7 +2225,11 @@
       "benchmark_family_id": "steel-current-composites",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/steel-dev/leaderboard"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/steel-dev/leaderboard"
+        }
       ],
       "claims": [
         {
@@ -1417,7 +2237,9 @@
           "research_flag": null,
           "basis": "evalrank_inference",
           "statement": "EvalRank's code audit found that the current composite rows do not retain exact system kind and use competitor count as task count, so identity and uncertainty are not admission-ready.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         }
       ]
     },
@@ -1425,9 +2247,21 @@
       "benchmark_family_id": "gdpval",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://openai.com/index/gdpval/"},
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2510.04374"},
-        {"source_id": "dataset", "kind": "official_dataset", "url": "https://huggingface.co/datasets/openai/gdpval"}
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://openai.com/index/gdpval/"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2510.04374"
+        },
+        {
+          "source_id": "dataset",
+          "kind": "official_dataset",
+          "url": "https://huggingface.co/datasets/openai/gdpval"
+        }
       ],
       "claims": [
         {
@@ -1435,49 +2269,66 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "GDPval v1 covers 1,320 professional tasks across 44 occupations in nine U.S. industries, with a 220-task open gold subset.",
-          "source_ids": ["release", "paper"]
+          "source_ids": [
+            "release",
+            "paper"
+          ]
         },
         {
           "topic": "version_status",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The checked public release identifies the benchmark as the first version and describes future interactive versions as planned work.",
-          "source_ids": ["release"]
+          "source_ids": [
+            "release"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "cross-occupation-mixture",
           "basis": "direct_source",
           "statement": "The reported aggregate spans 44 occupations selected from nine industries rather than one homogeneous occupation.",
-          "source_ids": ["release", "paper"]
+          "source_ids": [
+            "release",
+            "paper"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "one-shot-complete-context",
           "basis": "direct_source",
           "statement": "GDPval v1 supplies prompts, reference files, and context in one-shot tasks and does not measure iterative context building or revision.",
-          "source_ids": ["release"]
+          "source_ids": [
+            "release"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "tooling-scaffold-sensitive",
           "basis": "evalrank_inference",
           "statement": "Because tasks require heterogeneous document, slide, spreadsheet, diagram, and multimedia deliverables, EvalRank will compare only explicitly identified tool and scaffold configurations.",
-          "source_ids": ["release", "dataset"]
+          "source_ids": [
+            "release",
+            "dataset"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "human-pairwise-primary",
           "basis": "direct_source",
           "statement": "The primary evaluation uses blinded occupational experts to compare and rank AI and human deliverables.",
-          "source_ids": ["release"]
+          "source_ids": [
+            "release"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "automated-grader-not-independent",
           "basis": "direct_source",
           "statement": "The experimental automated grader estimates expert preferences and is explicitly described as not reliable enough to replace expert grading.",
-          "source_ids": ["release"]
+          "source_ids": [
+            "release"
+          ]
         }
       ]
     },
@@ -1485,8 +2336,16 @@
       "benchmark_family_id": "mle-bench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/openai/mle-bench"},
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2410.07095"}
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/openai/mle-bench"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2410.07095"
+        }
       ],
       "claims": [
         {
@@ -1494,63 +2353,85 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "MLE-bench v1 evaluates agents on 75 Kaggle machine-learning competitions; its low-complexity lite split contains 22 competitions.",
-          "source_ids": ["repository", "paper"]
+          "source_ids": [
+            "repository",
+            "paper"
+          ]
         },
         {
           "topic": "version_status",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "As checked on 2026-07-09, the repository says v1 fixes are deferred to an upcoming v2 release and new leaderboard submissions have been paused since 2026-04-24.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "leaderboard-submissions-paused",
           "basis": "direct_source",
           "statement": "The official repository states that new leaderboard submissions have been paused since 2026-04-24 while a fairer, more comparable process is developed.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "v1-known-health-defects",
           "basis": "direct_source",
           "statement": "The official Known Issues list records preparation, grading, checksum, leakage, missing-data, and crowded-leaderboard defects in v1 competitions.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "v2-pending",
           "basis": "direct_source",
           "statement": "The maintainers say batched fixes and version-separated results are planned for an upcoming v2 release.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "high-cost",
           "basis": "direct_source",
           "statement": "The canonical full protocol recommends 24 hours, 36 vCPUs, 440 GB RAM, one 24 GB A10 GPU, and at least three seeds across 75 competitions.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "scaffold-sensitive",
           "basis": "evalrank_inference",
           "statement": "Because the official protocol says resource changes can degrade results and evaluates agent systems rather than bare models, EvalRank will not pool unlike scaffolds or resource envelopes.",
-          "source_ids": ["repository", "paper"]
+          "source_ids": [
+            "repository",
+            "paper"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "competition-lineage",
           "basis": "direct_source",
           "statement": "The benchmark is constructed from 75 Kaggle competitions and uses their data and leaderboard-derived medal thresholds.",
-          "source_ids": ["repository", "paper"]
+          "source_ids": [
+            "repository",
+            "paper"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "contamination-risk",
           "basis": "direct_source",
           "statement": "The paper studies pre-training familiarity, while the official Known Issues list identifies public labels and test-label leakage in multiple competitions.",
-          "source_ids": ["repository", "paper"]
+          "source_ids": [
+            "repository",
+            "paper"
+          ]
         }
       ]
     },
@@ -1558,9 +2439,21 @@
       "benchmark_family_id": "paperbench",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "release", "kind": "official_site", "url": "https://openai.com/index/paperbench/"},
-        {"source_id": "repository", "kind": "official_repository", "url": "https://github.com/openai/frontier-evals/tree/main/project/paperbench"},
-        {"source_id": "paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2504.01848"}
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://openai.com/index/paperbench/"
+        },
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/openai/frontier-evals/tree/main/project/paperbench"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2504.01848"
+        }
       ],
       "claims": [
         {
@@ -1568,49 +2461,70 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "PaperBench evaluates end-to-end replication of 20 ICML 2024 Spotlight and Oral machine-learning papers.",
-          "source_ids": ["release", "repository", "paper"]
+          "source_ids": [
+            "release",
+            "repository",
+            "paper"
+          ]
         },
         {
           "topic": "version_status",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The checked canonical release is the 2025-04-02 PaperBench task set and its maintained frontier-evals implementation.",
-          "source_ids": ["release", "repository"]
+          "source_ids": [
+            "release",
+            "repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "ml-paper-only",
           "basis": "direct_source",
           "statement": "All 20 source papers are ICML 2024 Spotlight or Oral machine-learning papers.",
-          "source_ids": ["release", "paper"]
+          "source_ids": [
+            "release",
+            "paper"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "from-scratch-implementation",
           "basis": "direct_source",
           "statement": "Agents must understand each paper, develop a codebase, and execute experiments to replicate it from scratch.",
-          "source_ids": ["release", "repository"]
+          "source_ids": [
+            "release",
+            "repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "judge-model-dependent",
           "basis": "direct_source",
           "statement": "Executed submissions are graded against hierarchical rubrics by an LLM-based judge whose performance is separately evaluated.",
-          "source_ids": ["release", "repository", "paper"]
+          "source_ids": [
+            "release",
+            "repository",
+            "paper"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "third-party-assets",
           "basis": "direct_source",
           "statement": "The official setup requires separately hydrated Git LFS data, and some papers require external OpenAI or Hugging Face access or non-redistributable JudgeEval assets.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "high-cost",
           "basis": "direct_source",
           "statement": "The benchmark uses separate rollout, GPU reproduction, and grading stages, with official leaderboard runs reporting 24-hour and 36-hour agent limits.",
-          "source_ids": ["repository"]
+          "source_ids": [
+            "repository"
+          ]
         }
       ]
     },
@@ -1618,9 +2532,21 @@
       "benchmark_family_id": "core-bench-reproducibility",
       "checked_on": "2026-07-09",
       "sources": [
-        {"source_id": "v11_paper", "kind": "primary_paper", "url": "https://arxiv.org/abs/2606.26158"},
-        {"source_id": "v11_repository", "kind": "official_repository", "url": "https://github.com/nnadgi01/corebench-analysis"},
-        {"source_id": "original_repository", "kind": "official_repository", "url": "https://github.com/siegelz/core-bench"}
+        {
+          "source_id": "v11_paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2606.26158"
+        },
+        {
+          "source_id": "v11_repository",
+          "kind": "official_repository",
+          "url": "https://github.com/nnadgi01/corebench-analysis"
+        },
+        {
+          "source_id": "original_repository",
+          "kind": "official_repository",
+          "url": "https://github.com/siegelz/core-bench"
+        }
       ],
       "claims": [
         {
@@ -1628,59 +2554,355 @@
           "research_flag": null,
           "basis": "direct_source",
           "statement": "CORE-Bench v1.1 contains 39 corrected mainline computational-reproducibility tasks, while CORE-Bench OOD contains 19 field-shift tasks.",
-          "source_ids": ["v11_paper", "v11_repository"]
+          "source_ids": [
+            "v11_paper",
+            "v11_repository"
+          ]
         },
         {
           "topic": "version_status",
           "research_flag": null,
           "basis": "direct_source",
           "statement": "The June 2026 primary paper introduces CORE-Bench v1.1 and CORE-Bench OOD and treats both as active benchmarks that may be updated as validity threats are found.",
-          "source_ids": ["v11_paper", "v11_repository"]
+          "source_ids": [
+            "v11_paper",
+            "v11_repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "measured-top-cohort-compression",
           "basis": "direct_source",
           "statement": "The paper reports that the top five agents are statistically indistinguishable on accuracy for both v1.1 and OOD.",
-          "source_ids": ["v11_paper"]
+          "source_ids": [
+            "v11_paper"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "active-validity-revision",
           "basis": "direct_source",
           "statement": "v1.1 corrects task-level errors and exploitable shortcuts, and the authors plan continued updates when new validity threats surface.",
-          "source_ids": ["v11_paper", "v11_repository"]
+          "source_ids": [
+            "v11_paper",
+            "v11_repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "scaffold-sensitive",
           "basis": "direct_source",
           "statement": "The paper reports material model-scaffold interaction, including an approximately 44-point difference for the same GPT-5.4 setting across two scaffolds.",
-          "source_ids": ["v11_paper"]
+          "source_ids": [
+            "v11_paper"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "rights-incomplete",
           "basis": "evalrank_inference",
           "statement": "Because tasks depend on separately owned Code Ocean capsules and the primary sources do not establish one blanket redistribution grant, EvalRank requires a per-capsule rights audit before retention or publication.",
-          "source_ids": ["v11_paper", "original_repository"]
+          "source_ids": [
+            "v11_paper",
+            "original_repository"
+          ]
         },
         {
           "topic": "research_flag",
           "research_flag": "multidimensional-utility",
           "basis": "direct_source",
           "statement": "The v1.1 study finds retained signal in efficiency, reliability, model-versus-scaffold behavior, out-of-distribution generalization, and human-agent uplift despite accuracy compression.",
-          "source_ids": ["v11_paper", "v11_repository"]
+          "source_ids": [
+            "v11_paper",
+            "v11_repository"
+          ]
         }
       ]
     },
-    {"benchmark_family_id":"mcp-atlas","checked_on":"2026-07-10","sources":[{"source_id":"leaderboard","kind":"official_leaderboard","url":"https://labs.scale.com/leaderboard/mcp_atlas"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2602.00933"}],"claims":[]},
-    {"benchmark_family_id":"browsecomp","checked_on":"2026-07-10","sources":[{"source_id":"release","kind":"official_site","url":"https://openai.com/index/browsecomp/"},{"source_id":"repository","kind":"official_repository","url":"https://github.com/openai/simple-evals"}],"claims":[]},
-    {"benchmark_family_id":"toolathlon","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/hkust-nlp/Toolathlon"}],"claims":[]},
-    {"benchmark_family_id":"agents-last-exam","checked_on":"2026-07-10","sources":[{"source_id":"site","kind":"official_site","url":"https://agents-last-exam.org/"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2606.05405"},{"source_id":"dataset","kind":"official_dataset","url":"https://huggingface.co/datasets/agents-last-exam/agents-last-exam"},{"source_id":"repository_license","kind":"official_repository","url":"https://github.com/rdi-berkeley/agents-last-exam/blob/main/LICENSE"}],"claims":[{"topic":"harness_code_license","research_flag":null,"basis":"direct_source","statement":"The official repository licenses the benchmark code under Apache-2.0.","source_ids":["repository_license"]},{"topic":"task_data_license","research_flag":null,"basis":"direct_source","statement":"The official task-card dataset declares the CC-BY-4.0 license.","source_ids":["dataset"]},{"topic":"commercial_use","research_flag":null,"basis":"direct_source","statement":"The Apache-2.0 code license and CC-BY-4.0 task-data license do not restrict use to noncommercial purposes.","source_ids":["repository_license","dataset"]},{"topic":"result_redistribution","research_flag":null,"basis":"direct_source","statement":"The published licenses permit redistribution of licensed benchmark material subject to their notice and attribution conditions, so independently produced result records may be redistributed.","source_ids":["repository_license","dataset"]},{"topic":"environment_terms","research_flag":null,"basis":"direct_source","statement":"The official repository license grants use, reproduction, modification, and distribution rights for the repository's benchmark environment code.","source_ids":["repository_license"]},{"topic":"artifact_retention","research_flag":null,"basis":"direct_source","statement":"The published licenses grant reproduction rights for the licensed code and task-card data, permitting retained copies subject to license conditions.","source_ids":["repository_license","dataset"]},{"topic":"derived_score_publication","research_flag":null,"basis":"direct_source","statement":"The published licenses grant public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores with required attribution.","source_ids":["repository_license","dataset"]}]},
-    {"benchmark_family_id":"automationbench","checked_on":"2026-07-10","sources":[{"source_id":"release","kind":"official_site","url":"https://zapier.com/blog/introducing-automationbench/"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2604.18934"}],"claims":[]},
-    {"benchmark_family_id":"officeqa-pro","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/databricks/officeqa"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2603.08655"}],"claims":[]},
-    {"benchmark_family_id":"finance-agent-v2","checked_on":"2026-07-10","sources":[{"source_id":"leaderboard","kind":"official_leaderboard","url":"https://www.vals.ai/benchmarks"},{"source_id":"methodology","kind":"official_site","url":"https://www.vals.ai/methodology"}],"claims":[]},
-    {"benchmark_family_id":"deepswe","checked_on":"2026-07-10","sources":[{"source_id":"repository","kind":"official_repository","url":"https://github.com/datacurve-ai/deep-swe"},{"source_id":"repository_license","kind":"official_repository","url":"https://github.com/datacurve-ai/deep-swe/blob/main/LICENSE"},{"source_id":"paper","kind":"primary_paper","url":"https://arxiv.org/abs/2607.07946"},{"source_id":"dataset","kind":"official_dataset","url":"https://huggingface.co/datasets/datacurve/deep-swe"}],"claims":[{"topic":"harness_code_license","research_flag":null,"basis":"direct_source","statement":"The official repository licenses the DeepSWE harness under Apache-2.0.","source_ids":["repository_license"]},{"topic":"task_data_license","research_flag":null,"basis":"direct_source","statement":"The official repository's Apache-2.0 license covers its published DeepSWE task files.","source_ids":["repository","repository_license"]},{"topic":"commercial_use","research_flag":null,"basis":"direct_source","statement":"Apache-2.0 grants use and distribution rights without a noncommercial restriction.","source_ids":["repository_license"]},{"topic":"result_redistribution","research_flag":null,"basis":"direct_source","statement":"Apache-2.0 permits redistribution of the licensed work subject to its notice conditions, so independently produced result records may be redistributed.","source_ids":["repository_license"]},{"topic":"environment_terms","research_flag":null,"basis":"direct_source","statement":"The official repository publishes Harbor-compatible environment definitions under its Apache-2.0 license.","source_ids":["repository","repository_license"]},{"topic":"artifact_retention","research_flag":null,"basis":"direct_source","statement":"Apache-2.0 grants reproduction rights for the repository's licensed benchmark artifacts, permitting retained copies subject to license conditions.","source_ids":["repository_license"]},{"topic":"derived_score_publication","research_flag":null,"basis":"direct_source","statement":"Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.","source_ids":["repository_license"]}]}
+    {
+      "benchmark_family_id": "mcp-atlas",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://labs.scale.com/leaderboard/mcp_atlas"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2602.00933"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "browsecomp",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://openai.com/index/browsecomp/"
+        },
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/openai/simple-evals"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "toolathlon",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/hkust-nlp/Toolathlon"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "agents-last-exam",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "site",
+          "kind": "official_site",
+          "url": "https://agents-last-exam.org/"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2606.05405"
+        },
+        {
+          "source_id": "dataset",
+          "kind": "official_dataset",
+          "url": "https://huggingface.co/datasets/agents-last-exam/agents-last-exam"
+        },
+        {
+          "source_id": "repository_license",
+          "kind": "official_repository",
+          "url": "https://github.com/rdi-berkeley/agents-last-exam/blob/main/LICENSE"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository licenses the benchmark code under Apache-2.0.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official task-card dataset declares the CC-BY-4.0 license.",
+          "source_ids": [
+            "dataset"
+          ]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The Apache-2.0 code license and CC-BY-4.0 task-data license do not restrict use to noncommercial purposes.",
+          "source_ids": [
+            "repository_license",
+            "dataset"
+          ]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The published licenses permit redistribution of licensed benchmark material subject to their notice and attribution conditions, so independently produced result records may be redistributed.",
+          "source_ids": [
+            "repository_license",
+            "dataset"
+          ]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository license grants use, reproduction, modification, and distribution rights for the repository's benchmark environment code.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The published licenses grant reproduction rights for the licensed code and task-card data, permitting retained copies subject to license conditions.",
+          "source_ids": [
+            "repository_license",
+            "dataset"
+          ]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The published licenses grant public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores with required attribution.",
+          "source_ids": [
+            "repository_license",
+            "dataset"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "automationbench",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "release",
+          "kind": "official_site",
+          "url": "https://zapier.com/blog/introducing-automationbench/"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2604.18934"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "officeqa-pro",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/databricks/officeqa"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2603.08655"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "finance-agent-v2",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "leaderboard",
+          "kind": "official_leaderboard",
+          "url": "https://www.vals.ai/benchmarks"
+        },
+        {
+          "source_id": "methodology",
+          "kind": "official_site",
+          "url": "https://www.vals.ai/methodology"
+        }
+      ],
+      "claims": []
+    },
+    {
+      "benchmark_family_id": "deepswe",
+      "checked_on": "2026-07-10",
+      "sources": [
+        {
+          "source_id": "repository",
+          "kind": "official_repository",
+          "url": "https://github.com/datacurve-ai/deep-swe"
+        },
+        {
+          "source_id": "repository_license",
+          "kind": "official_repository",
+          "url": "https://github.com/datacurve-ai/deep-swe/blob/main/LICENSE"
+        },
+        {
+          "source_id": "paper",
+          "kind": "primary_paper",
+          "url": "https://arxiv.org/abs/2607.07946"
+        },
+        {
+          "source_id": "dataset",
+          "kind": "official_dataset",
+          "url": "https://huggingface.co/datasets/datacurve/deep-swe"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository licenses the DeepSWE harness under Apache-2.0.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository's Apache-2.0 license covers its published DeepSWE task files.",
+          "source_ids": [
+            "repository",
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants use and distribution rights without a noncommercial restriction.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 permits redistribution of the licensed work subject to its notice conditions, so independently produced result records may be redistributed.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official repository publishes Harbor-compatible environment definitions under its Apache-2.0 license.",
+          "source_ids": [
+            "repository",
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants reproduction rights for the repository's licensed benchmark artifacts, permitting retained copies subject to license conditions.",
+          "source_ids": [
+            "repository_license"
+          ]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.",
+          "source_ids": [
+            "repository_license"
+          ]
+        }
+      ]
+    }
   ]
 }

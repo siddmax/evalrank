@@ -225,10 +225,11 @@ class ReferenceServerE2ETests(unittest.TestCase):
                 "math-reasoning",
                 "enterprise-crm-workflow",
                 "web-frontend-code-generation",
+                "vision-multimodal",
             },
             {row["cell_id"] for row in health["cells"] if row["status"] == "preview"},
         )
-        self.assertEqual(16, sum(row["status"] == "unavailable" for row in health["cells"]))
+        self.assertEqual(15, sum(row["status"] == "unavailable" for row in health["cells"]))
         self.assertTrue(
             all(
                 (row["status"] == "active")
