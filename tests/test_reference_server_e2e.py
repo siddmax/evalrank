@@ -216,6 +216,7 @@ class ReferenceServerE2ETests(unittest.TestCase):
                 "autonomous-swe-agent",
                 "code-generation",
                 "terminal-generalist",
+                "customer-support",
                 "function-calling",
                 "professional-deliverable-creation",
                 "sre-incident-response",
@@ -229,7 +230,7 @@ class ReferenceServerE2ETests(unittest.TestCase):
             },
             {row["cell_id"] for row in health["cells"] if row["status"] == "preview"},
         )
-        self.assertEqual(15, sum(row["status"] == "unavailable" for row in health["cells"]))
+        self.assertEqual(14, sum(row["status"] == "unavailable" for row in health["cells"]))
         self.assertTrue(
             all(
                 (row["status"] == "active")
