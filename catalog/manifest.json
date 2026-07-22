@@ -2067,7 +2067,7 @@
       "entity_kinds": [
         "agent_system"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "correlation_status": "declared",
       "correlated_family_group": "tau2",
@@ -2311,7 +2311,7 @@
       "entity_kinds": [
         "agent_system"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "correlation_status": "declared",
       "correlated_family_group": "tau2",
@@ -3883,8 +3883,8 @@
     {
       "feed_id": "tau2-bench-discovery",
       "benchmark_family_id": "tau2-bench",
-      "adapter_id": null,
-      "metric_direction": null,
+      "adapter_id": "tau2-bench-submissions-json-v1",
+      "metric_direction": "higher",
       "candidate_cells": [
         "function-calling",
         "customer-support"
@@ -3892,37 +3892,37 @@
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
       "configuration_passport_class": "agent-system-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
-        "harness_code_license": null,
-        "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
+        "status": "approved",
+        "harness_code_license": "not-applicable-repo-data-view",
+        "task_data_license": "MIT",
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
         "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
-        "status": "unvalidated",
-        "mode": null,
-        "expected_seconds": null,
-        "stale_after_seconds": null,
-        "stop_recommending_after_seconds": null,
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
         "as_of": null,
         "upstream_version": null
       },
       "retention": {
-        "store_artifact_bytes": false,
+        "store_artifact_bytes": true,
         "maximum_days": null
       },
       "lineage": {
-        "validation_status": "unknown",
-        "task_lineage_id": null,
-        "environment_lineage_id": null,
-        "grader_lineage_id": null,
+        "validation_status": "declared",
+        "task_lineage_id": "tau2-tasks",
+        "environment_lineage_id": "tau2-environments",
+        "grader_lineage_id": "tau2-graders",
         "correlation_status": "declared",
         "correlated_family_group": "tau2"
       },
@@ -4637,45 +4637,45 @@
     {
       "feed_id": "tau-voice-discovery",
       "benchmark_family_id": "tau-voice",
-      "adapter_id": null,
-      "metric_direction": null,
+      "adapter_id": "tau-voice-submissions-json-v1",
+      "metric_direction": "higher",
       "candidate_cells": [
         "customer-support"
       ],
       "entity_kind": "agent_system",
       "interaction_policy": "agentic",
       "configuration_passport_class": "agent-system-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
-        "harness_code_license": null,
-        "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
+        "status": "approved",
+        "harness_code_license": "not-applicable-repo-data-view",
+        "task_data_license": "MIT",
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
         "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
-        "status": "unvalidated",
-        "mode": null,
-        "expected_seconds": null,
-        "stale_after_seconds": null,
-        "stop_recommending_after_seconds": null,
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
         "as_of": null,
         "upstream_version": null
       },
       "retention": {
-        "store_artifact_bytes": false,
+        "store_artifact_bytes": true,
         "maximum_days": null
       },
       "lineage": {
-        "validation_status": "unknown",
-        "task_lineage_id": null,
-        "environment_lineage_id": null,
-        "grader_lineage_id": null,
+        "validation_status": "declared",
+        "task_lineage_id": "tau-voice-tasks",
+        "environment_lineage_id": "tau-voice-environments",
+        "grader_lineage_id": "tau-voice-graders",
         "correlation_status": "declared",
         "correlated_family_group": "tau2"
       },

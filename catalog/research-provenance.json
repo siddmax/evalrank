@@ -655,7 +655,7 @@
     },
     {
       "benchmark_family_id": "tau2-bench",
-      "checked_on": "2026-07-09",
+      "checked_on": "2026-07-22",
       "sources": [
         {
           "source_id": "repository",
@@ -663,7 +663,80 @@
           "url": "https://github.com/sierra-research/tau2-bench"
         }
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "This feed ingests published leaderboard result JSON only; no harness code ships with the data view, so the field is not applicable to it.",
+          "source_ids": [
+            "repository"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The tau2-bench repository ships its leaderboard submission results under the repository's MIT LICENSE.",
+          "source_ids": [
+            "repository"
+          ]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MIT grants use and distribution rights without a noncommercial restriction.",
+          "source_ids": [
+            "repository"
+          ]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MIT permits redistribution of the published leaderboard results, so ingested result records may be redistributed.",
+          "source_ids": [
+            "repository"
+          ]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "This feed ingests published leaderboard result JSON only, involving no execution environment; the repository's MIT license imposes no additional environment terms.",
+          "source_ids": [
+            "repository"
+          ]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MIT grants reproduction rights for the published data, permitting retained copies.",
+          "source_ids": [
+            "repository"
+          ]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MIT grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores.",
+          "source_ids": [
+            "repository"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "tau2-bench and tau-voice republish results of the same tau2 task lineage, so this feed declares correlated_family_group tau2 and is never counted as independent evidence against the other.",
+          "source_ids": [
+            "repository"
+          ]
+        }
+      ]
     },
     {
       "benchmark_family_id": "mcp-universe",
@@ -850,7 +923,7 @@
     },
     {
       "benchmark_family_id": "tau-voice",
-      "checked_on": "2026-07-09",
+      "checked_on": "2026-07-22",
       "sources": [
         {
           "source_id": "site",
@@ -858,7 +931,80 @@
           "url": "https://sierra.ai/resources/research/tau-3-bench"
         }
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "This feed ingests published leaderboard result JSON only; no harness code ships with the data view, so the field is not applicable to it.",
+          "source_ids": [
+            "site"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The tau-voice research page ships its leaderboard submission results under the repository's MIT LICENSE.",
+          "source_ids": [
+            "site"
+          ]
+        },
+        {
+          "topic": "commercial_use",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MIT grants use and distribution rights without a noncommercial restriction.",
+          "source_ids": [
+            "site"
+          ]
+        },
+        {
+          "topic": "result_redistribution",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MIT permits redistribution of the published leaderboard results, so ingested result records may be redistributed.",
+          "source_ids": [
+            "site"
+          ]
+        },
+        {
+          "topic": "environment_terms",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "This feed ingests published leaderboard result JSON only, involving no execution environment; the repository's MIT license imposes no additional environment terms.",
+          "source_ids": [
+            "site"
+          ]
+        },
+        {
+          "topic": "artifact_retention",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MIT grants reproduction rights for the published data, permitting retained copies.",
+          "source_ids": [
+            "site"
+          ]
+        },
+        {
+          "topic": "derived_score_publication",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "MIT grants public display and distribution rights for the data and derivative material, permitting publication of independently derived scores.",
+          "source_ids": [
+            "site"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "tau-voice and tau2-bench republish results of the same tau2 task lineage, so this feed declares correlated_family_group tau2 and is never counted as independent evidence against the other.",
+          "source_ids": [
+            "site"
+          ]
+        }
+      ]
     },
     {
       "benchmark_family_id": "crmarena-pro-service",
