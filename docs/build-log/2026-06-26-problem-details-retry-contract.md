@@ -13,8 +13,8 @@ Date: 2026-06-26
 ## Public Boundary
 
 - This is a contract-only port. It does not add a service client, live server, auth flow, tenant logic, rate-limit enforcement, persistence, or deployment wiring.
-- Private problem types, hosted error internals, production telemetry, customer examples, held-out eval data, and private Syndai/Finn/Savida code remain excluded.
-- Supabase schema bootstrap and migrations remain private in Syndai until EvalRank owns persistence or its own Supabase project.
+- Private problem types, hosted error internals, production telemetry, customer examples, and held-out eval data remain excluded. Runtime persistence and hosted operation are maintained in a separate private system.
+- Schema bootstrap and migrations remain private until EvalRank owns its own persistence path.
 
 ## Verification
 

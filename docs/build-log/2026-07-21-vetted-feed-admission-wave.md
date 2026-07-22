@@ -43,12 +43,12 @@ only publishable claim until calibration gates pass.
   `c217bf6a30104d297f978c771f83cf50a715236dfb66e6340442d6e96effdfa2`
   (53,297,933 bytes). The probe required accepting the Hub's additive
   `dataset_version_ids` leaderboard field (observed live 2026-07-21) as
-  optional metadata in the private resolver.
+  optional metadata.
 - `deepswe-discovery` continues on its scheduled daily contract; its parse
-  evidence is the runtime pipeline-run record, not a manual probe.
+  evidence is its scheduled pipeline record, not a manual probe.
 - The six Epoch data-view feeds and `webdev-arena-discovery` were admitted with
-  adapter contracts landed the same day in the private runtime; their first
-  dated parse evidence is recorded by the runtime's pipeline runs.
+  adapter contracts landed the same day; their first dated parse evidence is
+  recorded by their scheduled pipeline runs.
 
 ## Sources that stay unscheduled, with reasons recorded in provenance
 
@@ -63,13 +63,3 @@ only publishable claim until calibration gates pass.
 
 A granted permission request is the unlock for the first three; each has a
 dated rights-gap claim in `catalog/research-provenance.json`.
-
-## Paired private change (Syndai)
-
-The same-day private runtime change fixes the deepswe counted-proportion
-double-rounding crash (exact count-derived metric values; deterministic
-observation validation errors now quarantine instead of retry-and-dead-letter),
-adds the Epoch Hub and LMArena WebDev adapters, accepts the Hub's additive
-leaderboard field, and disables the frontier digest email transport at the
-worker seam while keeping the weekly cycle, watched-model registry updates, and
-the EvalRank nomination intact. Paired SHAs are recorded in `docs/PORTING.md`.

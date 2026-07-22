@@ -11,7 +11,7 @@ Date: 2026-06-26
 ## Boundary
 
 - This is manifest/runtime boundary parity for already-public route tools.
-- No service discovery, auth, retries, hosted receipts, private service calls, database work, scorer runtime, or private Syndai data moved into this repo.
+- No service discovery, auth, retries, hosted receipts, private service calls, database work, scorer runtime, or private data moved into this repo. Runtime persistence and hosted operation are maintained in a separate private system.
 
 ## Verification
 

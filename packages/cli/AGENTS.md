@@ -8,7 +8,7 @@
 ## Rules
 
 - Keep commands scriptable: deterministic output, explicit exit codes, no hidden network calls.
-- Do not read private Syndai env vars, private databases, or local-only secrets.
+- Do not read runtime environment variables, runtime datastores, or local-only secrets. Runtime persistence and hosted operation are maintained in a separate private system.
 - Add tests for any parser, output contract, or non-zero exit path.
 
 ## Checks

@@ -3,7 +3,7 @@
 ## Scope
 
 - Public MCP adapter for EvalRank fixtures, metadata reads, deterministic decisions, and shared-receipt retrieval.
-- Keep this package as an adapter over public contracts, not a private Syndai bridge.
+- Keep this package as an adapter over public contracts. Runtime persistence and hosted operation are maintained in a separate private system, and this package must not bridge to it.
 
 ## Rules
 

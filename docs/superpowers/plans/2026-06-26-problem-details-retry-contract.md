@@ -17,8 +17,8 @@ Pin the public, storage-free retry/error contract for EvalRank route surfaces wi
 ## Private Boundary
 
 - No auth, tenants, receipt storage, live rate-limit enforcement, service clients, deployment config, or hosted implementation.
-- No private problem types, customer examples, production telemetry, held-out eval material, or private Syndai/Finn/Savida code.
-- No Supabase migrations or DB bootstrap. Persistence remains private until EvalRank owns its own deploy path or Supabase project.
+- No private problem types, customer examples, production telemetry, held-out eval material, or private runtime code.
+- No datastore migrations or DB bootstrap. Runtime persistence and hosted operation are maintained in a separate private system until EvalRank owns its own deploy path or datastore.
 
 ## Checks
 

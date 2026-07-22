@@ -84,6 +84,50 @@ class PublicBoundaryTests(unittest.TestCase):
 
         self.assertEqual([], violations)
 
+    def test_rejects_private_runtime_internals_in_docs(self):
+        checker = load_checker()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write(root / "LICENSE", "Apache-2.0\n")
+            write(root / "NOTICE", "EvalRank\n")
+            write(
+                root / "docs/build-log/leak.md",
+                """
+                # Leak
+
+                Ran migration 2026_07_22_076_register_cadence_freshness on Syndai
+                via Supabase, granting evalrank_cron RLS on source_cursors.
+                """,
+            )
+
+            violations = list(checker.check_repository(root))
+            codes = {violation.code for violation in violations}
+
+        self.assertIn("private-internal-leak", codes)
+
+    def test_accepts_neutral_private_boundary_language(self):
+        checker = load_checker()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            write(root / "LICENSE", "Apache-2.0\n")
+            write(root / "NOTICE", "EvalRank\n")
+            write(
+                root / "docs/build-log/neutral.md",
+                """
+                # Neutral
+
+                Runtime persistence and hosted operation are maintained in a
+                separate private system. This public repo owns portable contracts.
+                """,
+            )
+
+            violations = list(checker.check_repository(root))
+            codes = {violation.code for violation in violations}
+
+        self.assertNotIn("private-internal-leak", codes)
+
     def test_cli_reports_violations_and_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

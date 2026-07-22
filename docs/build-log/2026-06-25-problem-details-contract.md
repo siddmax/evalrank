@@ -22,8 +22,8 @@ Date: 2026-06-25
 
 - Public Surface Contracts owns the shared RFC 9457 shape in this repo because it is a portable HTTP API contract.
 - Public Contracts and Methods / Schemas own future public problem-type extensions only when their semantics are product-neutral and stable.
-- Hosted Ops / Deploy Ops keeps auth, tenant, receipt, telemetry, logging, and deployment error behavior private.
-- DB Bootstrap / Syndai Ops keeps Supabase-backed error persistence and live schema checks private until EvalRank owns persistence.
+- Auth, tenant, receipt, telemetry, logging, and deployment error behavior stay private. Runtime persistence and hosted operation are maintained in a separate private system.
+- Datastore-backed error persistence and live schema checks stay private until EvalRank owns persistence. Runtime persistence and hosted operation are maintained in a separate private system.
 - Evaluation Integrity keeps held-out evaluator failures, private judge traces, and benchmark-specific error details out of this repo.
 
 ## Public Boundary Notes

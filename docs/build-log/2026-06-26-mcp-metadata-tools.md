@@ -14,13 +14,13 @@ Date: 2026-06-26
 
 This is public MCP plumbing for route contracts that already exist in `schemas/openapi.json`.
 
-No auth, retries, service discovery, environment-variable defaults, hosted receipt IDs, tenant context, private DTOs, database work, source adapters, production evidence lookup, scorer runtime, private methodology, or held-out evaluation material moved into this repo.
+No auth, retries, service discovery, environment-variable defaults, hosted receipt IDs, tenant context, private DTOs, persistence work, source adapters, production evidence lookup, scorer runtime, private methodology, or held-out evaluation material moved into this repo.
 
 ## Port Decision
 
 Port the MCP metadata tools here because they expose only storage-free public catalog routes and synthetic-testable HTTP behavior.
 
-Keep live hosted implementations, DB bootstrap, Supabase migrations, runtime scorer/materializer behavior, graph/evidence lookup, and eval-integrity material in their private owning workstreams until each has a separable public contract.
+Keep live hosted implementations, runtime persistence and bootstrap, migrations, runtime scorer/materializer behavior, graph/evidence lookup, and eval-integrity material in their private owning workstreams until each has a separable public contract. Runtime persistence and hosted operation are maintained in a separate private system.
 
 ## Verification
 

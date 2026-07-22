@@ -46,6 +46,39 @@ SECRET_VALUE_PATTERNS = (
     re.compile(r"\bsk-[A-Za-z0-9_-]{32,}\b"),
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----"),
 )
+# Private runtime internals that must never be named in the public repo. Each
+# pattern targets a concrete private identity (a private system, a private DB
+# role/table, or a private migration id) — not neutral English. The boundary
+# checker and its own tests legitimately contain these strings as patterns and
+# fixtures, so they are exempted via PRIVATE_INTERNAL_EXEMPT_FILES.
+PRIVATE_INTERNAL_TERM_PATTERNS = (
+    (re.compile(r"\bSyndai\b", re.IGNORECASE), "names the private runtime 'Syndai'"),
+    (re.compile(r"\bFinn\b", re.IGNORECASE), "names the private system 'Finn'"),
+    (re.compile(r"\bSavida\b", re.IGNORECASE), "names the private system 'Savida'"),
+    (re.compile(r"\bSupabase\b", re.IGNORECASE), "names the private datastore vendor 'Supabase'"),
+    (re.compile(r"\bStripe\b", re.IGNORECASE), "names the private billing vendor 'Stripe'"),
+    (re.compile(r"\bpgmq\b", re.IGNORECASE), "names the private queue 'pgmq'"),
+    (re.compile(r"\bDoppler\b", re.IGNORECASE), "names the private secrets manager 'Doppler'"),
+    (re.compile(r"\bevalrank_cron\b", re.IGNORECASE), "names the private DB role 'evalrank_cron'"),
+    (re.compile(r"\bevalrank_app\b", re.IGNORECASE), "names the private DB role 'evalrank_app'"),
+    (re.compile(r"\bbudget_ledger\b", re.IGNORECASE), "names the private table 'budget_ledger'"),
+    (re.compile(r"\bsource_cursors\b", re.IGNORECASE), "names the private table 'source_cursors'"),
+    (re.compile(r"\bmanifest_feed_cadence\b", re.IGNORECASE), "names the private table 'manifest_feed_cadence'"),
+    (re.compile(r"\btruth_kernel_state\b", re.IGNORECASE), "names the private table 'truth_kernel_state'"),
+    (re.compile(r"\bparser_run_freshness\b", re.IGNORECASE), "names the private table 'parser_run_freshness'"),
+    # Private migration id: YYYY_MM_DD_NNN_
+    (re.compile(r"\b20\d\d_\d\d_\d\d_\d\d\d_"), "embeds a private migration id (YYYY_MM_DD_NNN_)"),
+    # Row-level-security is a private DB access-control internal.
+    (re.compile(r"\bRLS\b"), "references private row-level-security (RLS) internals"),
+    (re.compile(r"\brow[\s-]?level[\s-]security\b", re.IGNORECASE), "references private row-level security"),
+)
+# The checker and its tests are the one place these strings must live.
+PRIVATE_INTERNAL_EXEMPT_FILES = {
+    "scripts/check_public_boundary.py",
+    "tests/test_public_boundary.py",
+    "tests/test_repo_docs.py",
+}
+
 SCANNED_FILENAMES = {"Makefile"}
 PRIVATE_DATA_PATH_MARKERS = (
     "customer-data",
@@ -61,7 +94,17 @@ PRIVATE_DATA_PATH_MARKERS = (
     "production-telemetry",
 )
 SCANNED_SUFFIXES = {".js", ".json", ".jsx", ".md", ".toml", ".ts", ".tsx", ".py", ".yaml", ".yml"}
-IGNORED_DIRS = {".codex", ".git", ".venv", "__pycache__", "node_modules", "dist", "build"}
+IGNORED_DIRS = {
+    ".claude",
+    ".codex",
+    ".git",
+    ".impeccable",
+    ".venv",
+    "__pycache__",
+    "node_modules",
+    "dist",
+    "build",
+}
 
 
 @dataclass(frozen=True)
@@ -79,6 +122,7 @@ def check_repository(root: Path | str) -> Iterable[Violation]:
         yield from _check_public_path(root, path)
         if _should_scan_content(path):
             yield from _check_secret_values(root, path)
+            yield from _check_private_internal_terms(root, path)
             yield from _check_python_imports(root, path)
             if _is_implementation_file(root, path):
                 yield from _check_disallowed_markers(root, path)
@@ -182,6 +226,21 @@ def _check_secret_values(root: Path, path: Path) -> Iterable[Violation]:
         if pattern.search(text):
             yield Violation("secret-value", rel, "Public repo must not contain high-signal secret values.")
             return
+
+
+def _check_private_internal_terms(root: Path, path: Path) -> Iterable[Violation]:
+    rel = _relative_to(root, path)
+    if rel in PRIVATE_INTERNAL_EXEMPT_FILES:
+        return
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    for pattern, reason in PRIVATE_INTERNAL_TERM_PATTERNS:
+        match = pattern.search(text)
+        if match is not None:
+            yield Violation(
+                "private-internal-leak",
+                rel,
+                f"Public file {reason} ('{match.group(0)}'); private runtime internals must not be named.",
+            )
 
 
 def _check_disallowed_markers(root: Path, path: Path) -> Iterable[Violation]:

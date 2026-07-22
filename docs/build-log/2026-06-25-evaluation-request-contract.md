@@ -17,7 +17,7 @@ Date: 2026-06-25
 ## Porting Review
 
 - This slice belongs in the Public Contracts workstream and fans out only to public schema, SDK, CLI, MCP, tests, and docs.
-- Related private work stays private: Supabase bootstrap/migrations, live evidence graph operations, telemetry, billing/admin/GTM, credentials, customer data, and held-out evaluation material.
+- Related private work stays private. Runtime persistence and hosted operation are maintained in a separate private system.
 - Next public ports should remain contract-first: add only storage-free payloads or public route contracts before adding non-fixture SDK/CLI/MCP behavior.
 
 ## Checks

@@ -12,7 +12,7 @@ Date: 2026-06-26
 ## Public Boundary
 
 - Public: response shape, JSON Schema, SDK types/re-exports, synthetic fixtures, and docs.
-- Private: evidence-floor thresholds, confidence policy, private reason taxonomy, scorer/runtime behavior, DB migrations, hosted receipts, telemetry, and held-out evaluation material.
+- Private: evidence-floor thresholds, confidence policy, private reason taxonomy, scorer/runtime behavior, and any held-out evaluation material. Runtime persistence and hosted operation are maintained in a separate private system.
 
 ## Verification
 
@@ -24,4 +24,4 @@ Date: 2026-06-26
 
 ## Porting Decision
 
-Port the public abstention object to this repo because it is storage-free and useful for interoperable recommendation responses. Keep the actual abstention policy, thresholds, scorer rows, private evidence lookups, and hosted implementation in the private Scoring / Materializer Runtime and DB Bootstrap / Syndai Ops workstreams until a later public cutover is explicitly designed.
+Port the public abstention object to this repo because it is storage-free and useful for interoperable recommendation responses. Keep the actual abstention policy, thresholds, private evidence lookups, and hosted implementation in the separate private system until a later public cutover is explicitly designed.

@@ -7,7 +7,7 @@
 
 ## Rules
 
-- Do not import private Syndai/Finn/Savida code or depend on private services.
+- Do not import private code or depend on private services. Runtime persistence and hosted operation are maintained in a separate private system.
 - Keep shared behavior in `packages/core`; SDKs and CLI should wrap public APIs, not fork contracts.
 - Avoid new dependencies until a package has real implementation that needs them.
 

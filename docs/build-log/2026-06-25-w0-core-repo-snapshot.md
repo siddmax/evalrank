@@ -16,8 +16,8 @@ Initial scope:
 Operational placement:
 
 - EvalRank public repo owns public contracts, schemas, SDK/API boundaries, examples, and public method notes.
-- Syndai owns the shared Finn/Supabase `evalrank` schema bootstrap during incubation.
-- Move DB migrations into EvalRank only after EvalRank owns its deploy/release path or moves to its own Supabase project.
+- Runtime persistence and hosted operation are maintained in a separate private system during incubation.
+- Move DB migrations into EvalRank only after EvalRank owns its own deploy/release path and persistence.
 
 Pending after first CI run:
 

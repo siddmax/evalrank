@@ -67,7 +67,7 @@ Fixture commands remain available for ingestion and evidence primitives, but rec
 
 ## Public/Private Boundary
 
-The hosted runtime, persistence, scheduler, private source adapters, held-out evals, customer data, telemetry, credentials, deployment configuration, and proprietary experiments stay outside this Apache-2.0 repo. During private incubation, migrations remain in Syndai's dedicated private `evalrank` schema because Syndai owns the shared deploy path. A private runtime must pin an immutable public EvalRank revision and may not fork the taxonomy or wire contract.
+The hosted runtime, persistence, scheduler, private source adapters, held-out evals, customer data, telemetry, credentials, deployment configuration, and proprietary experiments stay outside this Apache-2.0 repo. Runtime persistence and hosted operation are maintained in a separate private system. A private runtime must pin an immutable public EvalRank revision and may not fork the taxonomy or wire contract.
 
 ## Verification
 

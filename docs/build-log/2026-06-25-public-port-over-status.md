@@ -29,14 +29,14 @@ Scope: public EvalRank repo at https://github.com/siddmax/evalrank
 
 | Area | Why it stays out | Workstream |
 | --- | --- | --- |
-| Supabase schema bootstrap, migrations, grants/RLS, live DB checks, and shared Finn/Supabase operations | These are deploy-path and operational ownership concerns, not portable open-core contracts. | DB Bootstrap / Syndai Ops |
-| Entity graph persistence, evidence-ledger runtime, scorer, and materializer | These still depend on private data, private workers, or proprietary tuning until split. | Scoring / Materializer Runtime |
-| Hosted receipt routes, HMAC-backed ID derivation, auth, billing/admin/GTM, telemetry, deploy wiring, and credentials | These are hosted-product or secret-handling concerns. | Hosted Ops / GTM, Secrets / Deploy Ops |
+| Datastore bootstrap, migrations, access policies, and shared operational database setup | Runtime persistence and hosted operation are maintained in a separate private system. | Persistence / Ops |
+| Entity graph persistence, evidence-ledger runtime, scorer, and materializer | These still depend on private data, private runtime components, or proprietary tuning until split. | Scoring / Materializer Runtime |
+| Hosted receipt routes, cryptographic ID derivation, auth, billing/admin/GTM, telemetry, deploy wiring, and credentials | These are hosted-product or secret-handling concerns maintained in a separate private system. | Hosted Ops / GTM, Secrets / Deploy Ops |
 | Held-out suites, graders, answer keys, traces, private benchmark outputs, and judge-calibration material | Publishing these would compromise evaluation integrity. | Evaluation Integrity |
 
 ## Public-Safety Notes
 
 - Do not copy raw private planning docs into this repo. Summarize decisions in public-safe language.
 - Do not port private fixtures, production evidence rows, customer examples, live project identifiers, or runbooks.
-- GitHub secret scanning and push protection are useful backstops, but local boundary checks remain mandatory because they catch EvalRank-specific private names, paths, and held-out markers before push.
-- Supabase custom-schema/API exposure remains private until EvalRank has an explicit persistence ownership plan and public route contract.
+- Hosted platform secret scanning and push protection are useful backstops, but local boundary checks remain mandatory because they catch EvalRank-specific private names, paths, and held-out markers before push.
+- Custom-schema/API exposure remains private until EvalRank has an explicit persistence ownership plan and public route contract.

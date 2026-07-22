@@ -25,7 +25,7 @@ make check
 - `tests/test_openapi_contract.py` checks the exact seven-path launch map, decision/share/receipt operations, reusable Problem Details responses, schema refs, deleted routes, and storage-free boundary.
 - `tests/test_reference_server_e2e.py` drives raw HTTP, Python SDK, CLI, and MCP through the stdlib server; validates schema-valid family-scoped explorer reads and evidence snapshot identity, canonical golden receipt bytes, non-share invisibility, append-only sharing, and deleted-route `404`s.
 - `tests/test_methods_docs.py` checks exact method README note coverage and verifies public method notes stay aligned with the use-case taxonomy, native-metric evidence synthesis, and staged eligibility.
-- `tests/test_repo_docs.py` checks `CLAUDE.md` stays a one-line `@AGENTS.md` shim, scoped `AGENTS.md` files cover public work areas, `docs/REPO_STRUCTURE.md` tracks the public top-level directories and package directories exactly, `docs/STATUS.md` points to the canonical public authorities without private runtime traces, `docs/STATUS.md` mentions every current porting workstream from `docs/PORTING.md`, and public MCP docs do not advertise private evidence lookup.
+- `tests/test_repo_docs.py` checks `CLAUDE.md` stays a one-line `@AGENTS.md` shim, scoped `AGENTS.md` files cover public work areas, `docs/REPO_STRUCTURE.md` tracks the public top-level directories and package directories exactly, `docs/STATUS.md` points to the canonical public authorities without traces of the separate private system, `docs/STATUS.md` mentions every current porting workstream from `docs/PORTING.md`, and public MCP docs do not advertise private evidence lookup.
 - `tests/test_sdk_python.py` checks portable re-exports and validates decision/receipt/health clients, strict use-case response parsing, bounded request timeouts, strict receipt IDs, canonical request bytes, response hash verification, Problem Details, and absence of compatibility methods.
 - `tests/test_sdk_ts.py` checks package metadata, mirrored public constants, launch read/decision types, fail-closed use-case parsing, all seven client paths, semantic verifiers, and absence of retired route vocabulary.
 - `tests/test_public_boundary.py` checks repository boundary rules and CLI failure output.
@@ -41,5 +41,5 @@ make check
 ## Update Rules
 
 - Add or update tests with every non-trivial contract, parser, CLI, MCP, SDK, schema, or boundary change.
-- Keep test fixtures public and minimal. Do not copy private Syndai fixtures, held-out eval data, customer data, or telemetry into this repo.
+- Keep test fixtures public and minimal. Do not copy private fixtures, held-out eval data, customer data, or telemetry into this repo; runtime persistence and hosted operation are maintained in a separate private system.
 - If UI routes, API routes, or deeplinks come online, add `NAVIGATION.md` with route entrypoints and regression commands.

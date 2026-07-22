@@ -4,7 +4,7 @@
 
 **Goal:** Add a public-safe reference materializer that proves the storage-free W6 spine: `EvaluationRequest -> CandidateSet/StageCandidate -> EvidenceSet/ResultRow/Exclusion -> Recommendation or Abstention`.
 
-**Architecture:** Add a dependency-free `evalrank_core.materializer` module that validates the request/candidate/evidence/result boundary, ranks existing `StageCandidate` rows deterministically, emits existing `Recommendation` envelopes with `served_from="materialized-cache"`, and abstains when public evidence is insufficient. The public module exposes only portable contracts and deterministic behavior; private DB persistence, source adapters, scorer weights, thresholds, telemetry, and live evidence-graph materialization stay in Syndai.
+**Architecture:** Add a dependency-free `evalrank_core.materializer` module that validates the request/candidate/evidence/result boundary, ranks existing `StageCandidate` rows deterministically, emits existing `Recommendation` envelopes with `served_from="materialized-cache"`, and abstains when public evidence is insufficient. The public module exposes only portable contracts and deterministic behavior; runtime persistence and hosted operation are maintained in a separate private system, so DB persistence, source adapters, scorer weights, thresholds, telemetry, and live evidence-graph materialization stay out of this public package.
 
 **Tech Stack:** Python stdlib, frozen dataclass contracts already in `evalrank_core.contracts`, and stdlib `unittest`.
 
@@ -55,7 +55,7 @@ Re-export the public function from `evalrank_core.__init__` so SDKs and examples
 
 - [x] **Step 1: Document the public materializer boundary**
 
-Add a short core README note that the reference materializer emits deterministic public recommendations only from provided inputs, and that private runtime materialization remains in Syndai.
+Add a short core README note that the reference materializer emits deterministic public recommendations only from provided inputs, and that runtime persistence and hosted operation are maintained in a separate private system.
 
 - [x] **Step 2: Update test/status docs**
 

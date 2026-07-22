@@ -1,6 +1,6 @@
 # EvalRank Repo Structure
 
-This repo is the public core. Private hosted operations, production evidence data, held-out fixtures, billing/admin internals, and private Syndai integrations stay out.
+This repo is the public core. Runtime persistence and hosted operation are maintained in a separate private system, along with production evidence data, held-out fixtures, and billing/admin internals; those stay out of this repo.
 
 ## Root
 
@@ -42,7 +42,7 @@ The catalog and schemas define portable interoperability policy, not private sto
 - `docs/build-log/` stores dated progress, build-order, and port-over snapshots. Entries must be public-safe summaries, not raw private planning text.
 - `docs/superpowers/plans/` stores public-safe implementation plans for agentic work.
 - `docs/AGENTS.md` gives scoped doc-editing rules.
-- Adjacent private planning areas such as Memphant, AgentsDB, memory, or general agent-system specs are not EvalRank directories. Route them through `docs/PORTING.md` only when an explicit EvalRank storage-free contract is extracted.
+- Adjacent private planning areas are not EvalRank directories. Route them through `docs/PORTING.md` only when an explicit EvalRank storage-free contract is extracted.
 
 ## Tests And Scripts
 
@@ -55,7 +55,7 @@ The catalog and schemas define portable interoperability policy, not private sto
 - Add a scoped `AGENTS.md` when a directory has local ownership rules or commands.
 - Add or update `TESTS.md` when checks change.
 - Update `NAVIGATION.md` when public API routes, UI routes, deeplinks, or navigation-critical docs change.
-- Update `docs/PORTING.md` before moving private Syndai/Finn/Savida work into this repo.
+- Update `docs/PORTING.md` before moving private work into this repo.
 - Add a dated build log when progress status, build order, or porting ownership changes.
 - Do not add private data, secrets, private fixtures, or production evidence rows anywhere in this repo.
-- Do not add persistence/migration directories until EvalRank owns its own deploy path or its own Supabase project.
+- Do not add persistence/migration directories until EvalRank owns its own deploy path or its own hosted project.

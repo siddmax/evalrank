@@ -4,18 +4,16 @@
 
 - This is the public Apache-2.0 EvalRank core repository.
 - Keep the public core product-neutral: contracts, schemas, SDKs, CLI, MCP boundary, examples, and public method notes.
-- Do not add private Syndai, Finn, Savida, customer, held-out benchmark, production telemetry, or hosted-product-only code here.
+- Do not add private runtime, customer, held-out benchmark, production telemetry, or hosted-product-only code here.
 - Use the nearest scoped `AGENTS.md` for local rules.
 
 ## Architecture Boundary
 
-- EvalRank public repo owns public APIs and portable evaluation contracts.
-- Syndai currently owns the shared Finn/Supabase database bootstrap for the private `evalrank` schema.
-- During private incubation, Syndai projection scripts may read Syndai-owned source tables as private inputs, but all derived EvalRank rows, caches, catalog rows, grants, RLS policies, and migrations belong in the dedicated private `evalrank` schema.
-- Private Syndai customer identity/control-plane objects, including customer API-key scope catalogs used to authenticate EvalRank routes during incubation, remain in Syndai's own schema because they are shared auth infrastructure, not EvalRank persistence.
-- Keep DB migrations in Syndai until EvalRank has its own deploy/release path or its own Supabase project.
-- Keep the cross-repo link in docs and commit history, not in a long-lived public worktree: public EvalRank work lands on this repo's `main`; private runtime work lands in Syndai; paired changes must record the public EvalRank SHA and private Syndai SHA in `docs/PORTING.md`, `docs/STATUS.md`, or a public-safe `docs/build-log/` entry.
-- If EvalRank later owns persistence, add versioned migrations, update this file, and document the cutover in `README.md` and `docs/build-log/`.
+- The EvalRank public repo owns public APIs and portable evaluation contracts only.
+- Runtime persistence — databases, schemas, migrations, roles, grants, access policies, deploy wiring, and any live-datastore detail — lives in the private runtime and is never described here.
+- The public repo must never name a private datastore, schema, table, column, role, migration identifier, deploy target, or infrastructure provider. Public docs describe portable contracts and public method notes, not how any private system is built or operated.
+- Public EvalRank work lands on this repo's `main`. Private runtime work stays entirely in its own private repository; do not record private SHAs, migration IDs, or runtime-proof results in this public repo.
+- If EvalRank later owns its own persistence, describe only the public, product-neutral contract surface here and keep operational detail private.
 
 ## Commands
 
@@ -40,7 +38,6 @@ See `TESTS.md` for the current test map.
 - Root docs are cross-repo guidance only. Put package-specific rules in the nearest package `AGENTS.md`.
 - When a new top-level code area is added, add a scoped `AGENTS.md` if agents need different commands, boundaries, or ownership rules there.
 - When build progress changes, update `docs/STATUS.md`; when directory ownership changes, update `docs/REPO_STRUCTURE.md`.
-- When porting work from Syndai/private systems, update `docs/PORTING.md` and run the public boundary check before committing.
-- When EvalRank work spans this repo and Syndai, do not preserve stale branches or worktrees for continuity. Land each side on its owning branch, record the paired SHAs in public-safe docs, and delete temporary worktrees after verification.
-- When scanning private-side work, route adjacent Memphant, AgentsDB, memory, or general agent-system docs to their own workstream unless there is an explicit storage-free EvalRank contract to port here.
+- When porting a contract in from private systems, port only the public, product-neutral surface, run the public boundary check before committing, and do not reference private runtime internals (datastores, schemas, migrations, roles, or private SHAs) in any public doc or commit message.
+- Land public work on this repo's `main`; keep private runtime work in its own private repository. Do not preserve stale branches or worktrees for continuity, and delete temporary worktrees after verification.
 - When tests or navigable surfaces change, update `TESTS.md` or create/update `NAVIGATION.md` in the same change.

@@ -16,7 +16,7 @@ Date: 2026-06-26
 | New storage-free payload contracts | Port one at a time only when synthetic fixtures, schemas, and SDK/CLI/MCP surfaces can remain private-data-free. |
 | Non-fixture SDK/CLI/MCP behavior | Wait for pinned public client semantics before implementing. |
 | Scorer/materializer runtime | Incubate privately until public-input-only components are separable. |
-| Supabase migrations, hosted ops, deploy config, telemetry, billing/admin, and credentials | Keep private until a deliberate public cutover exists, if ever. |
+| Migrations, hosted ops, deploy config, telemetry, billing/admin, and credentials | Keep private until a deliberate public cutover exists, if ever. Runtime persistence and hosted operation are maintained in a separate private system. |
 | Held-out tasks, graders, traces, answers, and private benchmark outputs | Never port. |
 
 ## Verification Intent

@@ -20,7 +20,7 @@ No auth, retries, service discovery, environment-variable defaults, hosted recei
 
 Port the TypeScript SDK metadata-route helpers here because they expose only storage-free public catalog routes and synthetic-testable HTTP behavior.
 
-Keep CLI metadata commands and MCP metadata tools as separate SDK / CLI / MCP follow-up slices. Keep live hosted implementations, DB bootstrap, Supabase migrations, runtime scorer/materializer behavior, graph/evidence lookup, and eval-integrity material in their private owning workstreams until each has a separable public contract.
+Keep CLI metadata commands and MCP metadata tools as separate SDK / CLI / MCP follow-up slices. Runtime persistence and hosted operation are maintained in a separate private system, so keep live hosted implementations, database bootstrap, migrations, runtime scorer/materializer behavior, graph/evidence lookup, and eval-integrity material in their private owning workstreams until each has a separable public contract.
 
 ## Verification
 

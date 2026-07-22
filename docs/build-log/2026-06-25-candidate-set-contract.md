@@ -24,8 +24,8 @@ Date: 2026-06-25
 
 - Public Contracts owns `CandidateSet` because it is a portable, storage-free payload between request normalization and scoring.
 - Methods / Schemas owns the public vocabulary that candidate resolution emits a `CandidateSet`.
-- Scoring / Materializer Runtime keeps live candidate resolution and graph lookup private until separable from production data and proprietary tuning.
-- DB Bootstrap / Syndai Ops keeps candidate persistence and Supabase-backed entity graph tables private until EvalRank owns persistence.
+- Live candidate resolution and graph lookup stay private until separable from production data and proprietary tuning. Runtime persistence and hosted operation are maintained in a separate private system.
+- Candidate persistence and the entity-graph tables stay private until EvalRank owns persistence. Runtime persistence and hosted operation are maintained in a separate private system.
 
 ## Verification
 

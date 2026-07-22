@@ -11,7 +11,7 @@ Date: 2026-06-26
 ## Boundary
 
 - This is compile-time TypeScript parity for existing public `the_call` and `abstention` response-state contracts.
-- No scorer policy, abstention thresholds, private reason taxonomy, hosted receipt behavior, route runtime, persistence, telemetry, or private Syndai data moved into this repo.
+- No scorer policy, abstention thresholds, private reason taxonomy, hosted receipt behavior, route runtime, persistence, telemetry, or private runtime data moved into this repo. Runtime persistence and hosted operation are maintained in a separate private system.
 
 ## Verification
 

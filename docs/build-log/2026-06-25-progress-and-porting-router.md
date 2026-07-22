@@ -24,21 +24,21 @@ Scope: public EvalRank repo at https://github.com/siddmax/evalrank
 
 ## Workstreams That Stay Private For Now
 
-| Workstream | Private owner | Reason |
-| --- | --- | --- |
-| DB Bootstrap / Syndai Ops | Syndai repo | Shared Finn/Supabase incubation still owns schema bootstrap, migrations, grants, RLS, and live DB checks. |
-| Scoring / Materializer Runtime | Private incubation first | Runtime code still depends on private evidence rows, hosted workers, and proprietary tuning until split. |
-| Evaluation Integrity | Private eval systems | Held-out tasks, graders, answers, traces, and benchmark outputs must not become public. |
-| Hosted Ops / GTM | Private hosted systems | Billing, admin, telemetry, vendor intent, and account operations are hosted-product concerns. |
-| Secrets / Deploy Ops | Private ops only | Credentials, Doppler config, live project refs, HMAC keys, and deploy files must never enter Git history. |
+| Workstream | Reason |
+| --- | --- |
+| Datastore Bootstrap / Runtime Ops | Runtime persistence and hosted operation are maintained in a separate private system that owns datastore bootstrap, migrations, access policies, and live datastore checks. |
+| Scoring / Materializer Runtime | Runtime code still depends on private evidence rows, hosted execution, and proprietary tuning until split. |
+| Evaluation Integrity | Held-out tasks, graders, answers, traces, and benchmark outputs must not become public. |
+| Hosted Ops / GTM | Billing, admin, telemetry, vendor intent, and account operations are hosted-product concerns handled in the separate private system. |
+| Secrets / Deploy Ops | Credentials, secret configuration, live project references, signing keys, and deploy files must never enter Git history. |
 
 ## Boundary Notes
 
-- Recommendation join aliases are public-safe because they are plain interoperability fields. Hosted HMAC derivation and receipt storage are not public-safe until route and secret-handling contracts exist.
-- Supabase persistence remains private because custom schema API exposure requires deliberate API settings, grants, and RLS design; that is operational ownership, not a portable public contract.
-- GitHub secret scanning and push protection are useful repo-level backstops, but the local public-boundary check remains mandatory because it catches project-specific private names, paths, and held-out markers before push.
+- Recommendation join aliases are public-safe because they are plain interoperability fields. Hosted signature derivation and receipt storage are not public-safe until route and secret-handling contracts exist.
+- Runtime persistence remains private because custom schema API exposure requires deliberate API settings, access grants, and row-level policy design; that is operational ownership, not a portable public contract.
+- Repository secret scanning and push protection are useful repo-level backstops, but the local public-boundary check remains mandatory because it catches project-specific private names, paths, and held-out markers before push.
 
 ## External Guardrails Checked
 
-- GitHub push protection and secret scanning docs.
-- Supabase custom schema and API security docs, including explicit schema exposure, grants, and RLS guidance.
+- Repository push protection and secret scanning docs.
+- Custom schema and API security docs, including explicit schema exposure, access grants, and row-level policy guidance.

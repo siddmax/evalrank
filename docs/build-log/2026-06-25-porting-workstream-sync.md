@@ -28,10 +28,10 @@ Scope: public EvalRank repo at https://github.com/siddmax/evalrank
 
 | Workstream | Private owner | Reason |
 | --- | --- | --- |
-| DB Bootstrap / Syndai Ops | Syndai repo | Shared Finn/Supabase deploy path and private `evalrank` schema guardrails still live there. |
+| DB Bootstrap / Runtime Ops | Separate private system | Runtime persistence and hosted operation are maintained in a separate private system, including its deploy path and datastore guardrails. |
 | Evaluation Integrity | Private eval systems | Held-out tasks, graders, answers, traces, and benchmark results lose value if public. |
 | Hosted Ops / GTM | Private hosted systems | Billing, admin, telemetry, vendor intent, and account operations are hosted-product concerns. |
-| Secrets / Deploy Ops | Private ops only | Credentials, live project refs, Doppler config, and environment files must never enter this repo. |
+| Secrets / Deploy Ops | Private ops only | Credentials, live project refs, secret-management config, and environment files must never enter this repo. |
 
 ## Public Repo Safety Notes
 

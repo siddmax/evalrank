@@ -33,7 +33,7 @@ Scope: public EvalRank repo at https://github.com/siddmax/evalrank
 | --- | --- | --- |
 | Benchmark weights and IRT fit-cluster crosswalk | Exposes proprietary evaluation strategy and depends on private benchmark inventory and tuning. | Scoring / Materializer Runtime, Evaluation Integrity |
 | Thin-coverage, confidence, and synthesis policy details | Tied to held-out suites, private corpora, and scorer decisions. | Methods / Schemas, Evaluation Integrity |
-| Supabase migrations, grants/RLS, live DB checks, and shared Finn operations | EvalRank does not yet own persistence or its own deploy path. | DB Bootstrap / Syndai Ops |
+| Persistence, access-control, and shared bootstrap operations | Runtime persistence and hosted operation are maintained in a separate private system. EvalRank does not yet own persistence or its own deploy path. | Runtime Persistence Ops |
 | Runtime scorer, materializer, source adapters, graph lookup, and evidence ledger workers | Still coupled to production data, live workers, source credentials, and proprietary tuning. | Scoring / Materializer Runtime |
 | Hosted auth, HMAC receipt IDs, billing/admin/GTM, telemetry, and deploy config | Hosted-product and operations material, not public core. | Hosted Ops / GTM, Secrets / Deploy Ops |
 

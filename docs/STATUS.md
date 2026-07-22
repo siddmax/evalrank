@@ -2,7 +2,7 @@
 
 Last updated: 2026-07-21
 
-Portable contract status: the seven-path receipt-first launch contract, Python/TypeScript clients, CLI, MCP adapter, schemas, and stdlib reference server are implemented locally. A private release candidate now pins and conforms to the contract; deployment remains private work and this repo does not claim a live service.
+Portable contract status: the seven-path receipt-first launch contract, Python/TypeScript clients, CLI, MCP adapter, schemas, and stdlib reference server are implemented locally. A release candidate now pins and conforms to the contract; deployment remains separate private work and this repo does not claim a live service.
 
 ## Product Contract
 
@@ -35,7 +35,7 @@ evidence of runtime lineage or admission.
 - One receipt-first API vocabulary: benchmark health, deterministic decisions, and explicit shared-receipt retrieval. Recommendation and scoring-stage routes, clients, tools, commands, fixture kinds, and route-only problem codes are absent.
 - Boundary, schema, package, documentation, client, and parity checks under `make check`.
 
-The public repo owns portable contracts and method. Private runtime integrations, credentials, non-public data, and deployment behavior remain outside this repository.
+The public repo owns portable contracts and method. Runtime integrations, credentials, non-public data, and deployment behavior are maintained in a separate private system, outside this repository.
 
 ## Evidence State
 
@@ -52,9 +52,9 @@ The public repo owns portable contracts and method. Private runtime integrations
 - Safety is a cross-cutting veto, not a ranking cell.
 - Evaluator suites remain future calibration evidence, not capability families.
 
-Paired vetted-feed admission wave (2026-07-21): public contract `548fb58ba65c26ff5569b23e28a9878908f29eee`; private consumer landed on Syndai `main` through the repository ship gate (methodology migration `2026_07_21_075_register_vetted_feed_wave_methodology`, reconciled onto the scheduler admission-gate work). The private runtime pins the repinned catalog, schedules the twelve admitted feeds, repairs the DeepSWE counted-ratio persist crash, quarantines deterministic persist errors instead of retrying, disables the frontier digest email transport while preserving cycle and self-heal success semantics, and leads the web surface with explorer evidence. The methodology row is bound to public contract `548fb58` and the scheduler tick re-binds the admission-gated two-argument `enqueue_scheduler_tick(text, bigint)` to methodology `2026-07-21.1.vetted-feeds`. Deployment remains operator-gated; this status does not claim live rollout.
+Vetted-feed admission wave (2026-07-21): public contract `548fb58ba65c26ff5569b23e28a9878908f29eee`. The public catalog is repinned to admit the twelve vetted feeds. Runtime scheduling, persistence, and operational behavior for these feeds are maintained in a separate private system and are not part of this repository. Deployment remains operator-gated; this status does not claim live rollout.
 
-Prior paired release candidate: public contract `7ae2249fb2a67f0668da1a7435cf7b6898442d3f`; private consumer `10e93f05def6539f6694fe2f5fa156e0abd4a370`. The public Python and TypeScript verifiers enforce exact ranking-group identity triples for leaderboard groups and compare envelopes, plus compare cardinality, cell state, active citations, and quarantined emptiness. The private entity and compare clients fail closed unless returned explorer-view identity exactly matches the requested selector. The pair preserves the documented no-evidence preview and transitions stale response bytes plus strong ETags exactly once while retaining the snapshot-set identity. Explorer family accumulation and exact canonical scheduler reconciliation remain included. Neither commit is deployed and migrations 058-060 remain operator-gated; this status does not claim live application or cron rollout.
+Prior release candidate: public contract `7ae2249fb2a67f0668da1a7435cf7b6898442d3f`. The public Python and TypeScript verifiers enforce exact ranking-group identity triples for leaderboard groups and compare envelopes, plus compare cardinality, cell state, active citations, and quarantined emptiness. The public contract preserves the documented no-evidence preview and transitions stale response bytes plus strong ETags exactly once while retaining the snapshot-set identity. Explorer family accumulation and exact canonical scheduler reconciliation remain included at the contract level. Runtime consumers of this contract are maintained in a separate private system; this status does not claim live application or scheduled rollout.
 
 ## Current Workstreams
 
@@ -62,13 +62,13 @@ Prior paired release candidate: public contract `7ae2249fb2a67f0668da1a7435cf7b6
 - Catalog / Methods: canonical inventory, governance, provenance, and evidence synthesis.
 - SDK / CLI / MCP: product-neutral clients and adapters over pinned public operations.
 - Public Boundary / Docs: repository hygiene, public-safe planning, and drift checks.
-- Runtime Integration: private consumer work; only portable contracts return here.
+- Runtime Integration: runtime consumer work lives in a separate private system; only portable contracts return here.
 - Evaluation Integrity: non-public task material remains outside this repository.
 
 ## Next Public Work
 
 1. Publish the public contract revision through the repository's normal release process.
-2. Deploy the paired private release candidate only after its owning repository's release gates pass.
+2. Deploy the paired release candidate only after its owning system's release gates pass.
 3. Advance feeds from `shadow` only through dated rights, identity, lineage, overlap, health, cadence, uncertainty, and decision-value evidence.
 
 ## Verification

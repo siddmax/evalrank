@@ -15,7 +15,7 @@ Date: 2026-06-26
 ## Kept Out
 
 - Benchmark weights, IRT fit clusters, confidence policies, thin-coverage rules, and synthesis details.
-- DB tables, migrations, live route handlers, hosted auth, telemetry, and deployment wiring.
+- Runtime persistence, migrations, live route handlers, hosted auth, telemetry, and deployment wiring.
 - Held-out tasks, graders, answers, traces, and private benchmark outputs.
 
 ## Port-Over Decision
@@ -24,7 +24,7 @@ Date: 2026-06-26
 | --- | --- | --- |
 | Public use-case names, definitions, entity-kind spans, and safety-overlay policy | Ported into this repo as storage-free contracts, fixture output, schema, SDK/CLI/MCP parity, and a contract-only OpenAPI route. | Public Contracts, Public Surface Contracts, SDK / CLI / MCP |
 | Use-case weights, IRT crosswalks, confidence policy, synthesis and thin-coverage rules | Keep private until they can be rewritten as method notes without proprietary thresholds, held-out data, or private benchmark output. | Methods / Schemas, Scoring / Materializer Runtime, Evaluation Integrity |
-| Live DB tables, migrations, route handlers, auth, telemetry, deploy config, and hosted receipts | Keep private during incubation; move only after a deliberate persistence/deploy ownership cutover. | DB Bootstrap / Syndai Ops, Hosted Ops / Deploy Ops, Secrets / Deploy Ops |
+| Live persistence, migrations, route handlers, auth, telemetry, deploy config, and hosted receipts | Keep private during incubation; move only after a deliberate persistence/deploy ownership cutover. Runtime persistence and hosted operation are maintained in a separate private system. | Runtime Persistence, Hosted Operations, Deploy Operations |
 
 ## Verification
 

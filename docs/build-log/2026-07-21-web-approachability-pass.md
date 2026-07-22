@@ -8,7 +8,7 @@ here is presentation, plus three defects found while verifying it.
 
 ### Defects fixed
 
-Three faults in the design-system wiring were live in production, all of which
+Three faults in the design-system wiring were live, all of which
 failed silently rather than erroring:
 
 - `@theme` mapped `--font-display` to `var(--font-display)`, a self-reference
@@ -30,7 +30,7 @@ failed silently rather than erroring:
   inline script, so there is no flash and the OS stays authoritative until the
   user chooses. Theme flips are instant rather than cross-fading every surface.
 - The hub led with all 28 capability cells as one undifferentiated grid. In
-  production 21 are unavailable and none are active, so the first screen was a
+  the shipped view 21 are unavailable and none are active, so the first screen was a
   wall of dead ends. Coverage now leads with the cells that can answer a
   question today and collapses the rest behind one disclosure reading
   "N more kinds of work, not ranked yet".
@@ -71,8 +71,8 @@ ordering changed, so the first screen leads with what is actually answerable.
   name, and the a11y helper awaited every animation's `finished` promise, which
   a scroll-driven `ViewTimeline` never resolves.
 
-## Paired SHAs
+## Provenance
 
 - Public EvalRank: this commit.
-- Private Syndai: `155201484867f04defffa7c8166cf9b04f354876`
-  (branch `evalrank-web-redesign`).
+- Runtime persistence and hosted operation are maintained in a separate private
+  system; the paired private-side change is recorded there.

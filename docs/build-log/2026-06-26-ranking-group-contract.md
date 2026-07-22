@@ -24,7 +24,7 @@ Date: 2026-06-26
 | --- | --- | --- |
 | Public recommendation comparability discriminator and ranking-group row shape | Ported as closed `RankingGroup` rows for within-kind ranking only. | Public Contracts, Methods / Schemas, SDK / CLI / MCP |
 | Cross-kind normalization, score calibration, scorer thresholds, and confidence policy | Keep private until publishable as sanitized method notes without proprietary tuning or held-out signal. | Methods / Schemas, Scoring / Materializer Runtime, Evaluation Integrity |
-| Runtime scorer, entity graph lookup, source adapters, storage, and hosted receipts | Keep private during incubation. | Scoring / Materializer Runtime, DB Bootstrap / Syndai Ops, Hosted Ops / Deploy Ops |
+| Runtime scorer, entity graph lookup, source adapters, storage, and hosted receipts | Keep private during incubation. | Scoring / Materializer Runtime, Private Runtime Ops, Hosted Ops / Deploy Ops |
 
 ## Verification
 

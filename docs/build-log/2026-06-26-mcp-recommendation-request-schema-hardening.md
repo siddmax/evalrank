@@ -12,7 +12,7 @@ Date: 2026-06-26
 
 - This is manifest/OpenAPI parity for the existing public recommendation route.
 - Server-side API validation remains authoritative.
-- No auth, private DTOs, hosted receipts, service discovery, database work, scorer runtime, private source adapters, or private Syndai data moved into this repo.
+- No auth, private DTOs, hosted receipts, service discovery, database work, scorer runtime, or private source adapters moved into this repo. Runtime persistence and hosted operation are maintained in a separate private system.
 
 ## Verification
 

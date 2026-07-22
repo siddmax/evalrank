@@ -33,14 +33,14 @@ Scope: public EvalRank repo at https://github.com/siddmax/evalrank
 
 | Workstream | Owner | Reason |
 | --- | --- | --- |
-| DB Bootstrap / Syndai Ops | Syndai repo | Shared Finn/Supabase deploy path and private `evalrank` schema guardrails still live there. |
-| Secrets / Deploy Ops | Private ops only | Credentials, Doppler config, live project refs, and deployment files must never enter Git history. |
+| Runtime Persistence / Ops | Separate private system | Runtime persistence and hosted operation are maintained in a separate private system. |
+| Secrets / Deploy Ops | Private ops only | Credentials, secret configuration, live project references, and deployment files must never enter Git history. |
 | Evaluation Integrity | Private eval systems | Held-out tasks, graders, answers, traces, and benchmark outputs lose value if public. |
 | Hosted Ops / GTM | Private hosted systems | Billing, admin, telemetry, vendor intent, and account operations are not open-core artifacts. |
-| Private Integrations | Syndai/Finn/Savida repos | App-specific integration code would couple the public core to private products. |
+| Private Integrations | Private product repos | App-specific integration code would couple the public core to private products. |
 
 ## Current Boundary Decision
 
-EvalRank should stay a separate public repo for portable contracts, schemas, SDKs, CLI/MCP boundaries, examples, public method notes, and deterministic guardrails. Syndai should keep private database bootstrap, live Supabase operations, hosted product workflows, private eval integrity material, and customer or telemetry data until a public deploy path exists.
+EvalRank should stay a separate public repo for portable contracts, schemas, SDKs, CLI/MCP boundaries, examples, public method notes, and deterministic guardrails. Runtime persistence and hosted operation are maintained in a separate private system, which should keep private datastore bootstrap, live datastore operations, hosted product workflows, private eval integrity material, and customer or telemetry data until a public deploy path exists.
 
 If EvalRank later owns persistence, make that a deliberate cutover: add versioned migrations in this repo, update root `AGENTS.md`, `README.md`, `TESTS.md`, `docs/STATUS.md`, and `docs/PORTING.md`, and log the ownership change in `docs/build-log/`.

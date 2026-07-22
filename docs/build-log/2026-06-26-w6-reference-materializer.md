@@ -19,7 +19,7 @@ Scope: public-safe core runtime only.
 
 - This is a storage-free reference materializer over caller-supplied public inputs.
 - It does not add DB persistence, source adapters, network calls, private scorer weights, confidence thresholds, calibration, telemetry, hosted route execution, private evidence-graph lookup, or held-out benchmark material.
-- Real W6 proof-of-spine still belongs in Syndai: one cached ranking emitted from the private evidence graph/cache path.
+- Real W6 proof-of-spine still belongs to the separate private system: one cached ranking emitted from the private evidence graph/cache path. Runtime persistence and hosted operation are maintained in a separate private system.
 
 ## Verification
 
