@@ -2532,17 +2532,17 @@
     },
     {
       "benchmark_family_id": "mteb-beir",
-      "display_name": "MTEB and BEIR",
+      "display_name": "MTEB BEIR",
       "candidate_cells": [
         "rag-retrieval"
       ],
       "entity_kinds": [
         "component_configuration"
       ],
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
-      "correlation_status": "unknown",
-      "correlated_family_group": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "mteb-beir",
       "research_flags": [],
       "quarantine_reason": null
     },
@@ -3325,6 +3325,86 @@
       "rank_eligible_count": null,
       "correlation_status": "unknown",
       "correlated_family_group": null,
+      "research_flags": [],
+      "quarantine_reason": null
+    },
+    {
+      "benchmark_family_id": "mteb-eng-v2",
+      "display_name": "MTEB MTEB(eng, v2)",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kinds": [
+        "component_configuration"
+      ],
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "mteb-eng-v2",
+      "research_flags": [],
+      "quarantine_reason": null
+    },
+    {
+      "benchmark_family_id": "mteb-longembed",
+      "display_name": "MTEB LongEmbed",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kinds": [
+        "component_configuration"
+      ],
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "mteb-longembed",
+      "research_flags": [],
+      "quarantine_reason": null
+    },
+    {
+      "benchmark_family_id": "mteb-followir",
+      "display_name": "MTEB FollowIR",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kinds": [
+        "component_configuration"
+      ],
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "mteb-followir",
+      "research_flags": [],
+      "quarantine_reason": null
+    },
+    {
+      "benchmark_family_id": "mteb-rar-b",
+      "display_name": "MTEB RAR-b",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kinds": [
+        "component_configuration"
+      ],
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "mteb-rar-b",
+      "research_flags": [],
+      "quarantine_reason": null
+    },
+    {
+      "benchmark_family_id": "mteb-multilingual-v2",
+      "display_name": "MTEB MTEB(Multilingual, v2)",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kinds": [
+        "component_configuration"
+      ],
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "correlation_status": "declared",
+      "correlated_family_group": "mteb-multilingual-v2",
       "research_flags": [],
       "quarantine_reason": null
     }
@@ -5343,21 +5423,21 @@
       "quarantine_reason": null
     },
     {
-      "feed_id": "mteb-beir-discovery",
+      "feed_id": "mteb-beir-embedding-discovery",
       "benchmark_family_id": "mteb-beir",
-      "adapter_id": null,
-      "metric_direction": null,
+      "adapter_id": "mteb-mteb-beir-dense-v1",
+      "metric_direction": "higher",
       "candidate_cells": [
         "rag-retrieval"
       ],
       "entity_kind": "component_configuration",
       "interaction_policy": "retrieval",
       "configuration_passport_class": "component-configuration-v1",
-      "state": "discovered",
+      "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
         "status": "unknown",
-        "harness_code_license": null,
+        "harness_code_license": "Apache-2.0",
         "task_data_license": null,
         "commercial_use": "unknown",
         "result_redistribution": "unknown",
@@ -5367,11 +5447,11 @@
         "derived_score_publication": "unknown"
       },
       "cadence": {
-        "status": "unvalidated",
-        "mode": null,
-        "expected_seconds": null,
-        "stale_after_seconds": null,
-        "stop_recommending_after_seconds": null,
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
         "as_of": null,
         "upstream_version": null
       },
@@ -5380,12 +5460,62 @@
         "maximum_days": null
       },
       "lineage": {
-        "validation_status": "unknown",
-        "task_lineage_id": null,
-        "environment_lineage_id": null,
-        "grader_lineage_id": null,
-        "correlation_status": "unknown",
-        "correlated_family_group": null
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-beir-tasks",
+        "environment_lineage_id": "mteb-beir-environments",
+        "grader_lineage_id": "mteb-beir-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-beir"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-beir-reranking-discovery",
+      "benchmark_family_id": "mteb-beir",
+      "adapter_id": "mteb-mteb-beir-cross-encoder-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-beir-tasks",
+        "environment_lineage_id": "mteb-beir-environments",
+        "grader_lineage_id": "mteb-beir-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-beir"
       },
       "ranking_group_ids": [
         "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
@@ -7841,6 +7971,506 @@
       },
       "ranking_group_ids": [
         "rg-autonomous-swe-agent-agent-system-agentic-agent-system-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-eng-v2-embedding-discovery",
+      "benchmark_family_id": "mteb-eng-v2",
+      "adapter_id": "mteb-mteb-eng-v2-dense-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-eng-v2-tasks",
+        "environment_lineage_id": "mteb-eng-v2-environments",
+        "grader_lineage_id": "mteb-eng-v2-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-eng-v2"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-eng-v2-reranking-discovery",
+      "benchmark_family_id": "mteb-eng-v2",
+      "adapter_id": "mteb-mteb-eng-v2-cross-encoder-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-eng-v2-tasks",
+        "environment_lineage_id": "mteb-eng-v2-environments",
+        "grader_lineage_id": "mteb-eng-v2-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-eng-v2"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-longembed-embedding-discovery",
+      "benchmark_family_id": "mteb-longembed",
+      "adapter_id": "mteb-mteb-longembed-dense-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-longembed-tasks",
+        "environment_lineage_id": "mteb-longembed-environments",
+        "grader_lineage_id": "mteb-longembed-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-longembed"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-longembed-reranking-discovery",
+      "benchmark_family_id": "mteb-longembed",
+      "adapter_id": "mteb-mteb-longembed-cross-encoder-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-longembed-tasks",
+        "environment_lineage_id": "mteb-longembed-environments",
+        "grader_lineage_id": "mteb-longembed-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-longembed"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-followir-embedding-discovery",
+      "benchmark_family_id": "mteb-followir",
+      "adapter_id": "mteb-mteb-followir-dense-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-followir-tasks",
+        "environment_lineage_id": "mteb-followir-environments",
+        "grader_lineage_id": "mteb-followir-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-followir"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-followir-reranking-discovery",
+      "benchmark_family_id": "mteb-followir",
+      "adapter_id": "mteb-mteb-followir-cross-encoder-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-followir-tasks",
+        "environment_lineage_id": "mteb-followir-environments",
+        "grader_lineage_id": "mteb-followir-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-followir"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-rar-b-embedding-discovery",
+      "benchmark_family_id": "mteb-rar-b",
+      "adapter_id": "mteb-mteb-rar-b-dense-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-rar-b-tasks",
+        "environment_lineage_id": "mteb-rar-b-environments",
+        "grader_lineage_id": "mteb-rar-b-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-rar-b"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-rar-b-reranking-discovery",
+      "benchmark_family_id": "mteb-rar-b",
+      "adapter_id": "mteb-mteb-rar-b-cross-encoder-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-rar-b-tasks",
+        "environment_lineage_id": "mteb-rar-b-environments",
+        "grader_lineage_id": "mteb-rar-b-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-rar-b"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-multilingual-v2-embedding-discovery",
+      "benchmark_family_id": "mteb-multilingual-v2",
+      "adapter_id": "mteb-mteb-multilingual-v2-dense-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-multilingual-v2-tasks",
+        "environment_lineage_id": "mteb-multilingual-v2-environments",
+        "grader_lineage_id": "mteb-multilingual-v2-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-multilingual-v2"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
+      ],
+      "quarantine_reason": null
+    },
+    {
+      "feed_id": "mteb-multilingual-v2-reranking-discovery",
+      "benchmark_family_id": "mteb-multilingual-v2",
+      "adapter_id": "mteb-mteb-multilingual-v2-cross-encoder-v1",
+      "metric_direction": "higher",
+      "candidate_cells": [
+        "rag-retrieval"
+      ],
+      "entity_kind": "component_configuration",
+      "interaction_policy": "retrieval",
+      "configuration_passport_class": "component-configuration-v1",
+      "state": "shadow",
+      "rank_eligible_count": null,
+      "rights": {
+        "status": "unknown",
+        "harness_code_license": "Apache-2.0",
+        "task_data_license": null,
+        "commercial_use": "unknown",
+        "result_redistribution": "unknown",
+        "trajectory_redistribution": "unknown",
+        "environment_terms": "unknown",
+        "artifact_retention": "unknown",
+        "derived_score_publication": "unknown"
+      },
+      "cadence": {
+        "status": "validated",
+        "mode": "periodic",
+        "expected_seconds": 604800,
+        "stale_after_seconds": 2592000,
+        "stop_recommending_after_seconds": 15552000,
+        "as_of": null,
+        "upstream_version": null
+      },
+      "retention": {
+        "store_artifact_bytes": false,
+        "maximum_days": null
+      },
+      "lineage": {
+        "validation_status": "declared",
+        "task_lineage_id": "mteb-multilingual-v2-tasks",
+        "environment_lineage_id": "mteb-multilingual-v2-environments",
+        "grader_lineage_id": "mteb-multilingual-v2-graders",
+        "correlation_status": "declared",
+        "correlated_family_group": "mteb-multilingual-v2"
+      },
+      "ranking_group_ids": [
+        "rg-rag-retrieval-component-configuration-retrieval-component-configuration-v1"
       ],
       "quarantine_reason": null
     }

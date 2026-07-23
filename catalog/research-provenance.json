@@ -1538,20 +1538,55 @@
     },
     {
       "benchmark_family_id": "mteb-beir",
-      "checked_on": "2026-07-09",
+      "checked_on": "2026-07-22",
       "sources": [
         {
-          "source_id": "mteb",
+          "source_id": "mteb_repo",
           "kind": "official_repository",
           "url": "https://github.com/embeddings-benchmark/mteb"
         },
         {
-          "source_id": "beir",
+          "source_id": "mteb_api",
+          "kind": "official_dataset",
+          "url": "https://mteb-leaderboard-backend.hf.space/openapi.json"
+        },
+        {
+          "source_id": "mteb_license",
           "kind": "official_repository",
-          "url": "https://github.com/beir-cellar/beir"
+          "url": "https://github.com/embeddings-benchmark/mteb/blob/main/LICENSE"
         }
       ],
-      "claims": []
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official MTEB repository licenses its code under Apache-2.0.",
+          "source_ids": [
+            "mteb_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The repository Apache-2.0 license covers MTEB code, while the leaderboard OpenAPI description provides no explicit license grant for third-party score records; leaderboard-data rights remain unestablished.",
+          "source_ids": [
+            "mteb_license",
+            "mteb_api"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The MTEB leaderboard republishes BEIR retrieval scores, so this feed declares correlated_family_group mteb-beir and is never counted as independent evidence against another feed of the same task lineage.",
+          "source_ids": [
+            "mteb_repo",
+            "mteb_api"
+          ]
+        }
+      ]
     },
     {
       "benchmark_family_id": "crag",
@@ -3133,6 +3168,266 @@
           "statement": "Apache-2.0 grants public display and distribution rights for licensed and derivative material, permitting publication of independently derived scores.",
           "source_ids": [
             "repository_license"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mteb-eng-v2",
+      "checked_on": "2026-07-22",
+      "sources": [
+        {
+          "source_id": "mteb_repo",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb"
+        },
+        {
+          "source_id": "mteb_api",
+          "kind": "official_dataset",
+          "url": "https://mteb-leaderboard-backend.hf.space/openapi.json"
+        },
+        {
+          "source_id": "mteb_license",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb/blob/main/LICENSE"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official MTEB repository licenses its code under Apache-2.0.",
+          "source_ids": [
+            "mteb_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The repository Apache-2.0 license covers MTEB code, while the leaderboard OpenAPI description provides no explicit license grant for third-party score records; leaderboard-data rights remain unestablished.",
+          "source_ids": [
+            "mteb_license",
+            "mteb_api"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The MTEB leaderboard republishes MTEB(eng, v2) retrieval scores, so this feed declares correlated_family_group mteb-eng-v2 and is never counted as independent evidence against another feed of the same task lineage.",
+          "source_ids": [
+            "mteb_repo",
+            "mteb_api"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mteb-longembed",
+      "checked_on": "2026-07-22",
+      "sources": [
+        {
+          "source_id": "mteb_repo",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb"
+        },
+        {
+          "source_id": "mteb_api",
+          "kind": "official_dataset",
+          "url": "https://mteb-leaderboard-backend.hf.space/openapi.json"
+        },
+        {
+          "source_id": "mteb_license",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb/blob/main/LICENSE"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official MTEB repository licenses its code under Apache-2.0.",
+          "source_ids": [
+            "mteb_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The repository Apache-2.0 license covers MTEB code, while the leaderboard OpenAPI description provides no explicit license grant for third-party score records; leaderboard-data rights remain unestablished.",
+          "source_ids": [
+            "mteb_license",
+            "mteb_api"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The MTEB leaderboard republishes LongEmbed retrieval scores, so this feed declares correlated_family_group mteb-longembed and is never counted as independent evidence against another feed of the same task lineage.",
+          "source_ids": [
+            "mteb_repo",
+            "mteb_api"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mteb-followir",
+      "checked_on": "2026-07-22",
+      "sources": [
+        {
+          "source_id": "mteb_repo",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb"
+        },
+        {
+          "source_id": "mteb_api",
+          "kind": "official_dataset",
+          "url": "https://mteb-leaderboard-backend.hf.space/openapi.json"
+        },
+        {
+          "source_id": "mteb_license",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb/blob/main/LICENSE"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official MTEB repository licenses its code under Apache-2.0.",
+          "source_ids": [
+            "mteb_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The repository Apache-2.0 license covers MTEB code, while the leaderboard OpenAPI description provides no explicit license grant for third-party score records; leaderboard-data rights remain unestablished.",
+          "source_ids": [
+            "mteb_license",
+            "mteb_api"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The MTEB leaderboard republishes FollowIR retrieval scores, so this feed declares correlated_family_group mteb-followir and is never counted as independent evidence against another feed of the same task lineage.",
+          "source_ids": [
+            "mteb_repo",
+            "mteb_api"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mteb-rar-b",
+      "checked_on": "2026-07-22",
+      "sources": [
+        {
+          "source_id": "mteb_repo",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb"
+        },
+        {
+          "source_id": "mteb_api",
+          "kind": "official_dataset",
+          "url": "https://mteb-leaderboard-backend.hf.space/openapi.json"
+        },
+        {
+          "source_id": "mteb_license",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb/blob/main/LICENSE"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official MTEB repository licenses its code under Apache-2.0.",
+          "source_ids": [
+            "mteb_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The repository Apache-2.0 license covers MTEB code, while the leaderboard OpenAPI description provides no explicit license grant for third-party score records; leaderboard-data rights remain unestablished.",
+          "source_ids": [
+            "mteb_license",
+            "mteb_api"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The MTEB leaderboard republishes RAR-b retrieval scores, so this feed declares correlated_family_group mteb-rar-b and is never counted as independent evidence against another feed of the same task lineage.",
+          "source_ids": [
+            "mteb_repo",
+            "mteb_api"
+          ]
+        }
+      ]
+    },
+    {
+      "benchmark_family_id": "mteb-multilingual-v2",
+      "checked_on": "2026-07-22",
+      "sources": [
+        {
+          "source_id": "mteb_repo",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb"
+        },
+        {
+          "source_id": "mteb_api",
+          "kind": "official_dataset",
+          "url": "https://mteb-leaderboard-backend.hf.space/openapi.json"
+        },
+        {
+          "source_id": "mteb_license",
+          "kind": "official_repository",
+          "url": "https://github.com/embeddings-benchmark/mteb/blob/main/LICENSE"
+        }
+      ],
+      "claims": [
+        {
+          "topic": "harness_code_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The official MTEB repository licenses its code under Apache-2.0.",
+          "source_ids": [
+            "mteb_license"
+          ]
+        },
+        {
+          "topic": "task_data_license",
+          "research_flag": null,
+          "basis": "direct_source",
+          "statement": "The repository Apache-2.0 license covers MTEB code, while the leaderboard OpenAPI description provides no explicit license grant for third-party score records; leaderboard-data rights remain unestablished.",
+          "source_ids": [
+            "mteb_license",
+            "mteb_api"
+          ]
+        },
+        {
+          "topic": "scope",
+          "research_flag": null,
+          "basis": "evalrank_inference",
+          "statement": "The MTEB leaderboard republishes MTEB(Multilingual, v2) retrieval scores, so this feed declares correlated_family_group mteb-multilingual-v2 and is never counted as independent evidence against another feed of the same task lineage.",
+          "source_ids": [
+            "mteb_repo",
+            "mteb_api"
           ]
         }
       ]

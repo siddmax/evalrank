@@ -1,6 +1,5 @@
 import json
 import re
-import re
 import subprocess
 import unittest
 from datetime import date
@@ -42,7 +41,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
         self.assertEqual("2026-07-21.1", self.provenance["manifest_version"])
         self.assertEqual(self.manifest["manifest_version"], self.provenance["manifest_version"])
         self.assertEqual(expected_ids, actual_ids)
-        self.assertEqual(88, len(actual_ids))
+        self.assertEqual(93, len(actual_ids))
         self.assertEqual(len(actual_ids), len(set(actual_ids)))
 
     def test_every_family_has_dated_primary_or_official_sources(self):
@@ -213,6 +212,42 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
                     self.assertEqual(1, len(claims))
                     self.assertEqual("direct_source", claims[0]["basis"])
                     self.assertIsNone(claims[0]["research_flag"])
+
+    def test_mteb_repo_license_does_not_overstate_leaderboard_data_rights(self):
+        family_ids = {
+            "mteb-beir",
+            "mteb-eng-v2",
+            "mteb-longembed",
+            "mteb-followir",
+            "mteb-rar-b",
+            "mteb-multilingual-v2",
+        }
+        provenance = {
+            family["benchmark_family_id"]: family
+            for family in self.provenance["families"]
+            if family["benchmark_family_id"] in family_ids
+        }
+
+        for feed in self.manifest["feeds"]:
+            if feed["benchmark_family_id"] not in family_ids:
+                continue
+            with self.subTest(feed=feed["feed_id"]):
+                self.assertEqual("unknown", feed["rights"]["status"])
+                self.assertEqual(
+                    "Apache-2.0", feed["rights"]["harness_code_license"]
+                )
+                self.assertIsNone(feed["rights"]["task_data_license"])
+                self.assertEqual("unknown", feed["rights"]["artifact_retention"])
+                self.assertFalse(feed["retention"]["store_artifact_bytes"])
+
+        for family_id, family in provenance.items():
+            with self.subTest(family=family_id):
+                claims = {claim["topic"]: claim for claim in family["claims"]}
+                self.assertEqual(
+                    ["mteb_license"], claims["harness_code_license"]["source_ids"]
+                )
+                self.assertIn("Apache-2.0", claims["harness_code_license"]["statement"])
+                self.assertIn("rights remain unestablished", claims["task_data_license"]["statement"])
 
     def test_schema_is_closed_draft_2020_12_and_matches_artifact_shape(self):
         self.assertEqual(

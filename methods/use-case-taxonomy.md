@@ -19,6 +19,8 @@ SRE incident response, DevOps lifecycle, and terminal-generalist work are separa
 
 Professional deliverable creation, machine-learning engineering, and computational research reproduction are distinct decision questions with explorer-only preview groups. Their candidate families stay within those cells: aggregate professional work does not become legal, finance, medical, or support evidence; ML competition work does not become SWE evidence; and computational reproduction does not become deep-research or DevOps evidence. Catalog inclusion records a research job, not ranking readiness.
 
+Retrieval components use the `component_configuration` / `retrieval` ranking group. Embedders and rerankers may share a benchmark family for independence accounting, but remain separate feed views and are never pooled with direct-prompt models or complete systems.
+
 Safety and robustness remain a cross-cutting safety veto. They can exclude or qualify a candidate, but they are not a catalog cell and are never averaged into capability.
 
 ## Method Rules

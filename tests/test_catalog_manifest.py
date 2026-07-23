@@ -132,6 +132,22 @@ EXPECTED_FAMILY_IDS = (
     "officeqa-pro",
     "finance-agent-v2",
     "deepswe",
+    "mteb-eng-v2",
+    "mteb-longembed",
+    "mteb-followir",
+    "mteb-rar-b",
+    "mteb-multilingual-v2",
+)
+
+# MTEB families each expose an embedder + a reranker feed (both retrieval
+# components) rather than a single ``-discovery`` feed.
+_MTEB_FAMILY_IDS = (
+    "mteb-beir",
+    "mteb-eng-v2",
+    "mteb-longembed",
+    "mteb-followir",
+    "mteb-rar-b",
+    "mteb-multilingual-v2",
 )
 
 EXPECTED_FEED_IDS = tuple(
@@ -145,6 +161,10 @@ EXPECTED_FEED_IDS = tuple(
             "core-bench-v1-1-mainline-discovery",
             "core-bench-v1-1-ood-discovery",
         ),
+        **{
+            fam: (f"{fam}-embedding-discovery", f"{fam}-reranking-discovery")
+            for fam in _MTEB_FAMILY_IDS
+        },
     }.get(family_id, (f"{family_id}-discovery",))
 )
 
@@ -657,10 +677,16 @@ class CatalogManifestTests(unittest.TestCase):
                 "theagentcompany",
                 "video-mme",
                 "webdev-arena",
+                "mteb-beir",
+                "mteb-eng-v2",
+                "mteb-longembed",
+                "mteb-followir",
+                "mteb-rar-b",
+                "mteb-multilingual-v2",
             },
             shadow,
         )
-        self.assertEqual(88, len(families))
+        self.assertEqual(93, len(families))
         self.assertEqual(EXPECTED_FAMILY_IDS, tuple(row["benchmark_family_id"] for row in families))
         self.assertTrue(all(row["rank_eligible_count"] is None for row in families))
         self.assertTrue(all(set(row["candidate_cells"]) <= cell_ids for row in families))
@@ -711,11 +737,17 @@ class CatalogManifestTests(unittest.TestCase):
                 "theagentcompany": "theagentcompany",
                 "video-mme": "video-mme",
                 "webdev-arena": "webdev-arena",
+                "mteb-beir": "mteb-beir",
+                "mteb-eng-v2": "mteb-eng-v2",
+                "mteb-longembed": "mteb-longembed",
+                "mteb-followir": "mteb-followir",
+                "mteb-rar-b": "mteb-rar-b",
+                "mteb-multilingual-v2": "mteb-multilingual-v2",
             },
             declared_correlations,
         )
         feeds = manifest()["feeds"]
-        self.assertEqual(90, len(feeds))
+        self.assertEqual(101, len(feeds))
         self.assertEqual(EXPECTED_FEED_IDS, tuple(row["feed_id"] for row in feeds))
 
     def test_user_value_research_wave_maps_to_existing_decision_groups(self):
@@ -723,9 +755,19 @@ class CatalogManifestTests(unittest.TestCase):
         family_by_id = {
             row["benchmark_family_id"]: row for row in payload["benchmark_families"]
         }
+        _RESEARCH_WAVE_FAMILIES = frozenset({
+            "mcp-atlas",
+            "browsecomp",
+            "toolathlon",
+            "agents-last-exam",
+            "automationbench",
+            "officeqa-pro",
+            "finance-agent-v2",
+            "deepswe",
+        })
         feed_by_family = {
             row["benchmark_family_id"]: row for row in payload["feeds"]
-            if row["benchmark_family_id"] in EXPECTED_FAMILY_IDS[-8:]
+            if row["benchmark_family_id"] in _RESEARCH_WAVE_FAMILIES
         }
         expected = {
             "mcp-atlas": ("mcp-tool-orchestration", "rg-mcp-tool-orchestration-agent-system-agentic-agent-system-v1"),
@@ -1086,12 +1128,27 @@ class CatalogManifestTests(unittest.TestCase):
                 "theagentcompany-discovery": "higher",
                 "video-mme-discovery": "higher",
                 "webdev-arena-discovery": "higher",
+                "mteb-beir-embedding-discovery": "higher",
+                "mteb-beir-reranking-discovery": "higher",
+                "mteb-eng-v2-embedding-discovery": "higher",
+                "mteb-eng-v2-reranking-discovery": "higher",
+                "mteb-longembed-embedding-discovery": "higher",
+                "mteb-longembed-reranking-discovery": "higher",
+                "mteb-followir-embedding-discovery": "higher",
+                "mteb-followir-reranking-discovery": "higher",
+                "mteb-rar-b-embedding-discovery": "higher",
+                "mteb-rar-b-reranking-discovery": "higher",
+                "mteb-multilingual-v2-embedding-discovery": "higher",
+                "mteb-multilingual-v2-reranking-discovery": "higher",
             },
             recovered_directions,
         )
         feed_counts = Counter(feed["benchmark_family_id"] for feed in payload["feeds"])
         self.assertEqual(2, feed_counts.pop("core-bench-reproducibility"))
         self.assertEqual(2, feed_counts.pop("itbench"))
+        # Each MTEB family exposes an embedder + a reranker feed.
+        for mteb_family in _MTEB_FAMILY_IDS:
+            self.assertEqual(2, feed_counts.pop(mteb_family))
         self.assertTrue(all(count == 1 for count in feed_counts.values()))
 
         self.assertEqual([], manifest_semantic_errors(payload))
