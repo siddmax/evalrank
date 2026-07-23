@@ -462,12 +462,6 @@ test("Ajv 2020 enforces fail-closed family and feed admission states", () => {
     ["adapter", (feed: ManifestFeed) => { feed.adapter_id = null; }],
     ["rank count", (feed: ManifestFeed) => { feed.rank_eligible_count = 0; }],
     ["rights", (feed: ManifestFeed) => { feed.rights.status = "unknown"; }],
-    ["harness license review", (feed: ManifestFeed) => {
-      feed.rights.harness_code_license = null;
-    }],
-    ["task-data license review", (feed: ManifestFeed) => {
-      feed.rights.task_data_license = null;
-    }],
     ["commercial-use rights", (feed: ManifestFeed) => {
       feed.rights.commercial_use = "unknown";
     }],
@@ -476,6 +470,9 @@ test("Ajv 2020 enforces fail-closed family and feed admission states", () => {
     }],
     ["known result redistribution rights", (feed: ManifestFeed) => {
       feed.rights.result_redistribution = "unknown";
+    }],
+    ["known trajectory redistribution rights", (feed: ManifestFeed) => {
+      feed.rights.trajectory_redistribution = "unknown";
     }],
     ["environment terms", (feed: ManifestFeed) => {
       feed.rights.environment_terms = "unknown";
@@ -492,6 +489,10 @@ test("Ajv 2020 enforces fail-closed family and feed admission states", () => {
     }],
     ["known retention rights when bytes are stored", (feed: ManifestFeed) => {
       feed.retention.store_artifact_bytes = true;
+      feed.rights.artifact_retention = "unknown";
+    }],
+    ["known retention rights", (feed: ManifestFeed) => {
+      feed.retention.store_artifact_bytes = false;
       feed.rights.artifact_retention = "unknown";
     }],
     ["replayable retained artifacts", (feed: ManifestFeed) => {
@@ -531,6 +532,15 @@ test("Ajv 2020 enforces fail-closed family and feed admission states", () => {
       `active admission requires ${requirement}`,
     );
   }
+
+  const activeFeedWithDirectPermission = structuredClone(validActiveFeed);
+  const directlyPermittedFeed = activeFeedWithDirectPermission.feeds.find(
+    (row) => row.feed_id === admittedFeed.feed_id,
+  );
+  assert.ok(directlyPermittedFeed);
+  directlyPermittedFeed.rights.harness_code_license = null;
+  directlyPermittedFeed.rights.task_data_license = null;
+  assert.equal(acceptsManifest(activeFeedWithDirectPermission), true);
 
   const quarantinedFeedWithoutReason = structuredClone(manifest);
   quarantinedFeedWithoutReason.feeds.find(

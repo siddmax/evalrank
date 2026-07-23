@@ -119,6 +119,7 @@
             "task_data_license",
             "commercial_use",
             "result_redistribution",
+            "trajectory_redistribution",
             "environment_terms",
             "artifact_retention",
             "derived_score_publication"
@@ -134,6 +135,7 @@
         "basis": {
           "enum": [
             "direct_source",
+            "owner_attestation",
             "evalrank_inference"
           ]
         },

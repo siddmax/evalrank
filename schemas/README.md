@@ -5,7 +5,7 @@ Public EvalRank JSON Schema contracts live here.
 - `openapi.json` defines the public REST route contract and references the payload schemas below.
 
 - `evalrank-manifest.schema.json` defines Manifest V1 for the canonical public cell, benchmark-family, feed, governance, cadence, lineage, and eligibility inventory in `catalog/manifest.json`.
-- `benchmark-research-provenance.schema.json` defines the closed V1 companion contract for dated primary/official family sources and categorized source-backed or EvalRank-inference claims in `catalog/research-provenance.json`.
+- `benchmark-research-provenance.schema.json` defines the closed V1 companion contract for dated primary/official family sources and categorized source-backed, owner-attested, or EvalRank-inference claims in `catalog/research-provenance.json`.
 - `feed-inventory.schema.json` defines the closed V1 contract for the generated `catalog/feeds.json` join: one row per manifest feed, nesting the exact manifest benchmark-family object, the exact manifest feed object, and the exact family research object by reusing the manifest and research-provenance `$defs`.
 - `source-artifact.schema.json` content-addresses replayable upstream bytes and their canonical source coordinates.
 - `run-provenance.schema.json` records one closed parser/run envelope with a non-empty role-typed artifact-input set and exactly one `primary`; runtime validators additionally enforce canonical role order and unique artifact IDs.

@@ -423,7 +423,7 @@ class CatalogManifestTests(unittest.TestCase):
 
         self.assertEqual("evalrank_manifest", payload["object"])
         self.assertEqual("1", payload["schema_version"])
-        self.assertEqual("2026-07-21.1", payload["manifest_version"])
+        self.assertEqual("2026-07-23.1", payload["manifest_version"])
         for key, id_key in (
             ("cells", "cell_id"),
             ("ranking_groups", "ranking_group_id"),
@@ -792,7 +792,7 @@ class CatalogManifestTests(unittest.TestCase):
                     self.assertEqual("discovered", family["state"])
                     self.assertEqual("discovered", feed["state"])
                     self.assertIsNone(feed["adapter_id"])
-                    self.assertEqual("unknown", feed["rights"]["status"])
+                    self.assertEqual("approved", feed["rights"]["status"])
                     self.assertEqual("unvalidated", feed["cadence"]["status"])
                     self.assertFalse(feed["retention"]["store_artifact_bytes"])
 
@@ -963,7 +963,6 @@ class CatalogManifestTests(unittest.TestCase):
                     "measured-top-cohort-compression",
                     "active-validity-revision",
                     "scaffold-sensitive",
-                    "rights-incomplete",
                     "multidimensional-utility",
                 },
             ),
@@ -1008,7 +1007,7 @@ class CatalogManifestTests(unittest.TestCase):
                 self.assertEqual("discovered", feed["state"])
                 self.assertIsNone(feed["adapter_id"])
                 self.assertIsNone(feed["rank_eligible_count"])
-                self.assertEqual("unknown", feed["rights"]["status"])
+                self.assertEqual("approved", feed["rights"]["status"])
                 self.assertEqual("unvalidated", feed["cadence"]["status"])
                 self.assertEqual("unknown", feed["lineage"]["validation_status"])
                 self.assertFalse(feed["retention"]["store_artifact_bytes"])

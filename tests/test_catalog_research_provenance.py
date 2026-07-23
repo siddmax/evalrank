@@ -38,7 +38,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
 
         self.assertEqual("benchmark_research_provenance", self.provenance["object"])
         self.assertEqual("1", self.provenance["schema_version"])
-        self.assertEqual("2026-07-21.1", self.provenance["manifest_version"])
+        self.assertEqual("2026-07-23.1", self.provenance["manifest_version"])
         self.assertEqual(self.manifest["manifest_version"], self.provenance["manifest_version"])
         self.assertEqual(expected_ids, actual_ids)
         self.assertEqual(93, len(actual_ids))
@@ -93,7 +93,8 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
                 self.assertEqual(len(actual_flags), len(set(actual_flags)))
                 for claim in family["claims"]:
                     self.assertIn(
-                        claim["basis"], {"direct_source", "evalrank_inference"}
+                        claim["basis"],
+                        {"direct_source", "owner_attestation", "evalrank_inference"},
                     )
                     self.assertTrue(claim["statement"].strip())
                     self.assertGreaterEqual(len(claim["source_ids"]), 1)
@@ -151,7 +152,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
             if "exact-byte manual composite probe" in claim["statement"]
         )
         self.assertEqual("evalrank_inference", reconciliation["basis"])
-        self.assertEqual("2026-07-21", family["checked_on"])
+        self.assertEqual("2026-07-23", family["checked_on"])
         for expected in (
             "exact-byte manual composite probe",
             "retention remained disabled",
@@ -188,6 +189,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
             "task_data_license",
             "commercial_use",
             "result_redistribution",
+            "trajectory_redistribution",
             "environment_terms",
             "artifact_retention",
             "derived_score_publication",
@@ -210,10 +212,12 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
                 ]
                 with self.subTest(feed=feed["feed_id"], field=field):
                     self.assertEqual(1, len(claims))
-                    self.assertEqual("direct_source", claims[0]["basis"])
+                    self.assertIn(
+                        claims[0]["basis"], {"direct_source", "owner_attestation"}
+                    )
                     self.assertIsNone(claims[0]["research_flag"])
 
-    def test_mteb_repo_license_does_not_overstate_leaderboard_data_rights(self):
+    def test_mteb_direct_permission_covers_leaderboard_data_rights(self):
         family_ids = {
             "mteb-beir",
             "mteb-eng-v2",
@@ -232,12 +236,12 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
             if feed["benchmark_family_id"] not in family_ids:
                 continue
             with self.subTest(feed=feed["feed_id"]):
-                self.assertEqual("unknown", feed["rights"]["status"])
+                self.assertEqual("approved", feed["rights"]["status"])
                 self.assertEqual(
                     "Apache-2.0", feed["rights"]["harness_code_license"]
                 )
                 self.assertIsNone(feed["rights"]["task_data_license"])
-                self.assertEqual("unknown", feed["rights"]["artifact_retention"])
+                self.assertEqual("allowed", feed["rights"]["artifact_retention"])
                 self.assertFalse(feed["retention"]["store_artifact_bytes"])
 
         for family_id, family in provenance.items():
@@ -247,7 +251,7 @@ class CatalogResearchProvenanceTests(unittest.TestCase):
                     ["mteb_license"], claims["harness_code_license"]["source_ids"]
                 )
                 self.assertIn("Apache-2.0", claims["harness_code_license"]["statement"])
-                self.assertIn("rights remain unestablished", claims["task_data_license"]["statement"])
+                self.assertIn("direct source-owner permission", claims["task_data_license"]["statement"])
 
     def test_schema_is_closed_draft_2020_12_and_matches_artifact_shape(self):
         self.assertEqual(

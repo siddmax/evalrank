@@ -872,14 +872,6 @@
           },
           "then": {
             "properties": {
-              "harness_code_license": {
-                "type": "string",
-                "minLength": 1
-              },
-              "task_data_license": {
-                "type": "string",
-                "minLength": 1
-              },
               "commercial_use": {
                 "enum": [
                   "allowed",
@@ -892,6 +884,12 @@
                   "conditional"
                 ]
               },
+              "trajectory_redistribution": {
+                "enum": [
+                  "allowed",
+                  "conditional"
+                ]
+              },
               "environment_terms": {
                 "enum": [
                   "allowed",
@@ -899,6 +897,12 @@
                 ]
               },
               "derived_score_publication": {
+                "enum": [
+                  "allowed",
+                  "conditional"
+                ]
+              },
+              "artifact_retention": {
                 "enum": [
                   "allowed",
                   "conditional"

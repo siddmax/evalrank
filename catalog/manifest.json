@@ -2,7 +2,7 @@
   "$schema": "../schemas/evalrank-manifest.schema.json",
   "object": "evalrank_manifest",
   "schema_version": "1",
-  "manifest_version": "2026-07-21.1",
+  "manifest_version": "2026-07-23.1",
   "ranking_group_dimensions": [
     "cell_id",
     "entity_kind",
@@ -3195,7 +3195,6 @@
         "measured-top-cohort-compression",
         "active-validity-revision",
         "scaffold-sensitive",
-        "rights-incomplete",
         "multidimensional-utility"
       ],
       "quarantine_reason": null
@@ -3424,15 +3423,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -3479,7 +3478,7 @@
         "task_data_license": "Apache-2.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -3524,15 +3523,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -3579,7 +3578,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -3679,7 +3678,7 @@
         "task_data_license": "Apache-2.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -3724,15 +3723,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -3774,15 +3773,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -3824,15 +3823,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -3874,15 +3873,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -3924,15 +3923,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -3980,7 +3979,7 @@
         "task_data_license": "MIT",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -4026,15 +4025,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4076,15 +4075,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4126,15 +4125,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4176,15 +4175,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4226,15 +4225,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4277,15 +4276,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4328,15 +4327,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4378,15 +4377,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4428,15 +4427,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4478,15 +4477,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4528,15 +4527,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4578,15 +4577,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4628,15 +4627,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4678,15 +4677,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4733,7 +4732,7 @@
         "task_data_license": "MIT",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -4778,15 +4777,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4828,15 +4827,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4878,15 +4877,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -4933,7 +4932,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -4978,15 +4977,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5028,15 +5027,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5083,7 +5082,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -5128,15 +5127,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5185,7 +5184,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -5238,7 +5237,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -5284,15 +5283,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5334,15 +5333,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5385,15 +5384,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5436,15 +5435,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -5486,15 +5485,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -5536,15 +5535,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5586,15 +5585,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5636,15 +5635,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5686,15 +5685,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5736,15 +5735,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5786,15 +5785,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5836,15 +5835,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5886,15 +5885,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5936,15 +5935,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -5986,15 +5985,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6036,15 +6035,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6086,15 +6085,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6136,15 +6135,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6186,15 +6185,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6236,15 +6235,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6286,15 +6285,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6336,15 +6335,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6386,15 +6385,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6441,7 +6440,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -6491,7 +6490,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -6536,15 +6535,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6586,15 +6585,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6641,7 +6640,7 @@
         "task_data_license": "Apache-2.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -6686,15 +6685,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6736,15 +6735,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6786,15 +6785,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6836,15 +6835,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6886,15 +6885,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6936,15 +6935,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -6986,15 +6985,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7036,15 +7035,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7086,15 +7085,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7141,7 +7140,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -7186,15 +7185,15 @@
       "state": "quarantined",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7236,15 +7235,15 @@
       "state": "quarantined",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7287,15 +7286,15 @@
       "state": "quarantined",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7338,15 +7337,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7388,15 +7387,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7438,15 +7437,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7488,15 +7487,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7538,15 +7537,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7588,15 +7587,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7638,15 +7637,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7688,15 +7687,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7743,7 +7742,7 @@
         "task_data_license": "CC-BY-4.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -7788,15 +7787,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7838,15 +7837,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7888,15 +7887,15 @@
       "state": "discovered",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": null,
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "unvalidated",
@@ -7943,7 +7942,7 @@
         "task_data_license": "Apache-2.0",
         "commercial_use": "allowed",
         "result_redistribution": "allowed",
-        "trajectory_redistribution": "unknown",
+        "trajectory_redistribution": "allowed",
         "environment_terms": "allowed",
         "artifact_retention": "allowed",
         "derived_score_publication": "allowed"
@@ -7988,15 +7987,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8038,15 +8037,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8088,15 +8087,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8138,15 +8137,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8188,15 +8187,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8238,15 +8237,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8288,15 +8287,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8338,15 +8337,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8388,15 +8387,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
@@ -8438,15 +8437,15 @@
       "state": "shadow",
       "rank_eligible_count": null,
       "rights": {
-        "status": "unknown",
+        "status": "approved",
         "harness_code_license": "Apache-2.0",
         "task_data_license": null,
-        "commercial_use": "unknown",
-        "result_redistribution": "unknown",
-        "trajectory_redistribution": "unknown",
-        "environment_terms": "unknown",
-        "artifact_retention": "unknown",
-        "derived_score_publication": "unknown"
+        "commercial_use": "allowed",
+        "result_redistribution": "allowed",
+        "trajectory_redistribution": "allowed",
+        "environment_terms": "allowed",
+        "artifact_retention": "allowed",
+        "derived_score_publication": "allowed"
       },
       "cadence": {
         "status": "validated",
